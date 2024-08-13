@@ -489,6 +489,9 @@ const ConditionalBreakingChanges = (props: {
   const isEnabled = settings?.enabled || false;
   const possibleTargets = targetSettings.data?.targets.nodes;
   const { toast } = useToast();
+  const retentionInDays =
+    targetSettings.data?.organization?.organization?.rateLimit.retentionInDays ?? 30;
+  const defaultDays = retentionInDays >= 30 ? 30 : 7;
 
   const {
     handleSubmit,
@@ -512,7 +515,7 @@ const ConditionalBreakingChanges = (props: {
       percentage: Yup.number().min(0).max(100).required(),
       period: Yup.number()
         .min(1)
-        .max(targetSettings.data?.organization?.organization?.rateLimit.retentionInDays ?? 30)
+        .max(retentionInDays)
         .test('double-precision', 'Invalid precision', num => {
           if (typeof num !== 'number') {
             return false;
