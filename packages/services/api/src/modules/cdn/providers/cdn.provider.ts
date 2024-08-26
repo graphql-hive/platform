@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { encodeCdnToken, generatePrivateKey } from '@hive/cdn-script/cdn-token';
 import { HiveError } from '../../../shared/errors';
 import { isUUID } from '../../../shared/is-uuid';
+import { AuditLogManager } from '../../audit-logs/providers/audit-logs-manager';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { TargetAccessScope } from '../../auth/providers/scopes';
 import type { Contract } from '../../schema/providers/contracts';
@@ -23,6 +24,7 @@ export class CdnProvider {
 
   constructor(
     logger: Logger,
+    private auditLogManager: AuditLogManager,
     @Inject(AuthManager) private authManager: AuthManager,
     @Inject(CDN_CONFIG) private config: CDNConfig,
     @Inject(S3_CONFIG) private s3Config: S3Config,
@@ -220,6 +222,27 @@ export class CdnProvider {
       cdnAccessTokenRecord.id,
     );
 
+    const currentUser = await this.authManager.getCurrentUser();
+    this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'TARGET_SETTINGS_UPDATED',
+        targetSettingsUpdatedAuditLogSchema: {
+          targetId: args.targetId,
+          projectId: args.projectId,
+          updatedFields: JSON.stringify({
+            createNewCdnAccessToken: true,
+            alias: args.alias,
+          }),
+        },
+      },
+      {
+        organizationId: args.organizationId,
+        userEmail: currentUser.email,
+        userId: currentUser.id,
+        user: currentUser,
+      },
+    );
+
     return {
       type: 'success',
       cdnAccessToken: cdnAccessTokenRecord,
@@ -313,6 +336,27 @@ export class CdnProvider {
     await this.storage.deleteCDNAccessToken({
       cdnAccessTokenId: args.cdnAccessTokenId,
     });
+
+    const currentUser = await this.authManager.getCurrentUser();
+    this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'TARGET_SETTINGS_UPDATED',
+        targetSettingsUpdatedAuditLogSchema: {
+          targetId: args.targetId,
+          projectId: args.projectId,
+          updatedFields: JSON.stringify({
+            deleteCdnAccessToken: true,
+            cdnAccessTokenId: args.cdnAccessTokenId,
+          }),
+        },
+      },
+      {
+        organizationId: args.organizationId,
+        userEmail: currentUser.email,
+        userId: currentUser.id,
+        user: currentUser,
+      },
+    );
 
     return {
       type: 'success',

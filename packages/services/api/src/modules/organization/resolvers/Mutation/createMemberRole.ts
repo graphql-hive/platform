@@ -27,7 +27,7 @@ export const createMemberRole: NonNullable<MutationResolvers['createMemberRole']
 
   const organizationId = await injector.get(IdTranslator).translateOrganizationId(input);
 
-  return injector.get(OrganizationManager).createMemberRole({
+  const result = await injector.get(OrganizationManager).createMemberRole({
     organizationId,
     name: inputValidation.data.name,
     description: inputValidation.data.description,
@@ -35,4 +35,5 @@ export const createMemberRole: NonNullable<MutationResolvers['createMemberRole']
     projectAccessScopes: input.projectAccessScopes,
     targetAccessScopes: input.targetAccessScopes,
   });
+  return result;
 };

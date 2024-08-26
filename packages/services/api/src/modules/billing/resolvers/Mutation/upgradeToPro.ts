@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql';
 import { TRPCClientError } from '@trpc/client';
+import { AuditLogManager } from '../../../audit-logs/providers/audit-logs-manager';
 import { AuthManager } from '../../../auth/providers/auth-manager';
 import { OrganizationAccessScope } from '../../../auth/providers/organization-access';
 import { OrganizationManager } from '../../../organization/providers/organization-manager';

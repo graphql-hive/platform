@@ -19,4 +19,5 @@ export const updateSchemaVersionStatus: NonNullable<
     projectId: project,
     targetId: target,
   });
+
 };

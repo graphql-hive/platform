@@ -3,6 +3,7 @@ import { Inject, Injectable, Scope } from 'graphql-modules';
 import { Organization, OrganizationMemberRole } from '../../../shared/entities';
 import { HiveError } from '../../../shared/errors';
 import { cache, diffArrays, share } from '../../../shared/helpers';
+import { AuditLogManager } from '../../audit-logs/providers/audit-logs-manager';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { OrganizationAccessScope } from '../../auth/providers/organization-access';
 import { ProjectAccessScope } from '../../auth/providers/project-access';
@@ -60,6 +61,7 @@ export class OrganizationManager {
     logger: Logger,
     private storage: Storage,
     private authManager: AuthManager,
+    private auditLogManager: AuditLogManager,
     private tokenStorage: TokenStorage,
     private activityManager: ActivityManager,
     private billingProvider: BillingProvider,
@@ -310,6 +312,23 @@ export class OrganizationManager {
         },
         user,
       });
+
+      const currentUser = await this.authManager.getCurrentUser();
+      this.auditLogManager.createLogAuditEvent(
+        {
+          eventType: 'ORGANIZATION_CREATED',
+          organizationCreatedAuditLogSchema: {
+            organizationId: result.organization.id,
+            organizationName: result.organization.name,
+          },
+        },
+        {
+          organizationId: result.organization.id,
+          userEmail: currentUser.email,
+          userId: currentUser.id,
+          user: currentUser,
+        },
+      );
     }
 
     return result;
@@ -334,6 +353,22 @@ export class OrganizationManager {
 
     // Because we checked the access before, it's stale by now
     this.authManager.resetAccessCache();
+
+    const currentUser = await this.authManager.getCurrentUser();
+    this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'ORGANIZATION_DELETED',
+        organizationDeletedAuditLogSchema: {
+          organizationId: organization.id,
+        },
+      },
+      {
+        organizationId: organization.id,
+        userEmail: currentUser.email,
+        userId: currentUser.id,
+        user: currentUser,
+      },
+    );
 
     return deletedOrganization;
   }
@@ -398,6 +433,27 @@ export class OrganizationManager {
         },
       });
     }
+
+    const currentUser = await this.authManager.getCurrentUser();
+    this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'SUBSCRIPTION_UPDATED',
+        subscriptionUpdatedAuditLogSchema: {
+          updatedFields: JSON.stringify({
+            monthlyRateLimit: {
+              retentionInDays: monthlyRateLimit.retentionInDays,
+              operations: monthlyRateLimit.operations,
+            },
+          }),
+        },
+      },
+      {
+        organizationId: organization.id,
+        userEmail: currentUser.email,
+        userId: currentUser.id,
+        user: currentUser,
+      },
+    );
 
     return result;
   }
@@ -946,6 +1002,22 @@ export class OrganizationManager {
       description: input.description,
       scopes,
     });
+
+    this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'ROLE_CREATED',
+        roleCreatedAuditLogSchema: {
+          roleId: role.id,
+          roleName: role.name,
+        },
+      },
+      {
+        organizationId: input.organizationId,
+        userEmail: currentUser.email,
+        userId: currentUser.id,
+        user: currentUser,
+      },
+    );
 
     return {
       ok: {

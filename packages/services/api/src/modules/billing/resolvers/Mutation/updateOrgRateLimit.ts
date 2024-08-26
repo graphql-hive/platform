@@ -19,4 +19,6 @@ export const updateOrgRateLimit: NonNullable<MutationResolvers['updateOrgRateLim
       operations: args.monthlyLimits.operations,
     },
   });
+
+  return result;
 };
