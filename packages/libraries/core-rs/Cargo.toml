@@ -1,0 +1,18 @@
+[package]
+name = "graphql-hive-core"
+version = "0.0.1"
+edition = "2021"
+license = "MIT"
+
+[dependencies]
+anyhow = "1"
+thiserror = "1"
+graphql-parser = { version = "0.5.0", package = "graphql-parser-hive-fork" }
+graphql-tools = { version = "0.4.0", features = ["graphql_parser_fork"], default-features = false }
+serde = "1"
+tokio = { version = "1", features = ["time", "sync"] }
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+lru = "^0.12.1"
+sha2 = "0.10"
+md5 = "0.7.0"
