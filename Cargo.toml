@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "packages/libraries/async-graphql",
+  "packages/libraries/async-graphql/example",
   "packages/libraries/core-rs",
   "packages/libraries/router",
   "scripts/compress"
