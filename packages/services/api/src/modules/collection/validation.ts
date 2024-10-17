@@ -4,6 +4,7 @@ import type { TargetSelectorInput } from '../../__generated__/types.next';
 import { AuthManager } from '../auth/providers/auth-manager';
 import { TargetAccessScope } from '../auth/providers/scopes';
 import { IdTranslator } from '../shared/providers/id-translator';
+import { Storage } from '../shared/providers/storage';
 
 const MAX_INPUT_LENGTH = 10_000;
 
