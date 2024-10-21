@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { Target } from '../../../../shared/entities';
 import { assertOk } from '../../../../shared/helpers';
+import { AuditLogManager } from '../../../audit-logs/providers/audit-logs-manager';
+import { AuthManager } from '../../../auth/providers/auth-manager';
 import { OrganizationManager } from '../../../organization/providers/organization-manager';
 import { IdTranslator } from '../../../shared/providers/id-translator';
 import { Logger } from '../../../shared/providers/logger';
@@ -75,6 +77,24 @@ export const createProject: NonNullable<MutationResolvers['createProject']> = as
       organization: organizationId,
     }),
   ]);
+
+  const currentUser = await injector.get(AuthManager).getCurrentUser();
+  injector.get(AuditLogManager).createLogAuditEvent(
+    {
+      eventType: 'PROJECT_CREATED',
+      projectCreatedAuditLogSchema: {
+        projectId: result.project.id,
+        projectType: result.project.type,
+        projectName: result.project.name,
+      },
+    },
+    {
+      organizationId: organization.id,
+      userEmail: currentUser.email,
+      userId: currentUser.id,
+      user: currentUser,
+    },
+  );
 
   const logger = injector.get(Logger);
   const targets: Target[] = [];
