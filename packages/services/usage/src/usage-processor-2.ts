@@ -10,6 +10,7 @@ import * as tb from '@sinclair/typebox';
 import * as tc from '@sinclair/typebox/compiler';
 import { invalidRawOperations, rawOperationsSize, totalOperations, totalReports } from './metrics';
 import { TokensResponse } from './tokens';
+import { isValidOperationBody } from './usage-processor-1';
 
 export function usageProcessorV2(
   logger: Logger,
@@ -74,14 +75,34 @@ export function usageProcessorV2(
 
   const newKeyMappings = new Map<OperationMapRecord, string>();
 
-  function getOperationMapRecord(operationMapKey: string): string | null {
+  function getOperationMapRecordKey(operationMapKey: string): string | null {
     const operationMapRecord = incoming.map[operationMapKey] as OperationMapRecord | undefined;
 
     if (!operationMapRecord) {
+      logger.warn(
+        `Detected invalid operation. Operation map key could not be found. (target=%s): %s`,
+        token.target,
+        operationMapKey,
+      );
+      invalidRawOperations
+        .labels({
+          reason: 'operation_map_key_not_found',
+        })
+        .inc(1);
       return null;
     }
 
     let newOperationMapKey = newKeyMappings.get(operationMapRecord);
+
+    if (!isValidOperationBody(operationMapRecord.operation)) {
+      logger.warn(`Detected invalid operation (target=%s): %s`, operationMapKey);
+      invalidRawOperations
+        .labels({
+          reason: 'invalid_operation_body',
+        })
+        .inc(1);
+      return null;
+    }
 
     if (newOperationMapKey === undefined) {
       const sortedFields = operationMapRecord.fields.sort();
@@ -106,26 +127,16 @@ export function usageProcessorV2(
   }
 
   for (const operation of incomingOperations) {
-    const operationMapKey = getOperationMapRecord(operation.operationMapKey);
+    const operationMapKey = getOperationMapRecordKey(operation.operationMapKey);
 
     // if the record does not exist -> skip the operation
     if (operationMapKey === null) {
-      logger.warn(
-        `Detected invalid operation. Operation map key could not be found. (target=%s): %s`,
-        token.target,
-        operation.operationMapKey,
-      );
-      invalidRawOperations
-        .labels({
-          reason: 'operation_map_key_not_found',
-        })
-        .inc(1);
       continue;
     }
 
     let client: ClientMetadata | undefined;
     if (operation.persistedDocumentHash) {
-      const [name, version] = operation.persistedDocumentHash.split('/');
+      const [name, version] = operation.persistedDocumentHash.split('~');
       client = {
         name,
         version,
@@ -154,20 +165,10 @@ export function usageProcessorV2(
   }
 
   for (const operation of incomingSubscriptionOperations) {
-    const operationMapKey = getOperationMapRecord(operation.operationMapKey);
+    const operationMapKey = getOperationMapRecordKey(operation.operationMapKey);
 
     // if the record does not exist -> skip the operation
     if (operationMapKey === null) {
-      logger.warn(
-        `Detected invalid operation. Operation map key could not be found. (target=%s): %s`,
-        token.target,
-        operation.operationMapKey,
-      );
-      invalidRawOperations
-        .labels({
-          reason: 'operation_map_key_not_found',
-        })
-        .inc(1);
       continue;
     }
 
@@ -259,7 +260,7 @@ const MetadataSchema = tb.Type.Object(
 const PersistedDocumentHash = tb.Type.String({
   title: 'PersistedDocumentHash',
   // appName/appVersion/hash
-  pattern: '^[a-zA-Z0-9_-]{1,64}\\/[a-zA-Z0-9._-]{1,64}\\/([A-Za-z]|[0-9]|_){1,128}$',
+  pattern: '^[a-zA-Z0-9_-]{1,64}~[a-zA-Z0-9._-]{1,64}~([A-Za-z]|[0-9]|_){1,128}$',
 });
 
 /** Query + Mutation */

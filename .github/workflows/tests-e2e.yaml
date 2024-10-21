@@ -5,7 +5,7 @@ on:
         default: ghcr.io
         type: string
       imageName:
-        default: ${{ github.repository }}
+        default: ${{ github.repository_owner }}
         type: string
       imageTag:
         required: true
@@ -35,7 +35,7 @@ jobs:
         run: pnpm cypress install
 
       - name: patch compose file volumes
-        uses: mikefarah/yq@v4.44.2
+        uses: mikefarah/yq@v4.44.3
         with:
           cmd: yq -i 'del(.services.*.volumes)' docker/docker-compose.community.yml
 
@@ -50,7 +50,7 @@ jobs:
 
       - name: cypress
         timeout-minutes: 6
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         env:
           CI: true
         with:
@@ -70,7 +70,7 @@ jobs:
             -f docker/docker-compose.end2end.yml \
             logs
 
-      - uses: actions/upload-artifact@v4.3.4
+      - uses: actions/upload-artifact@v4.3.6
         if: ${{ failure() }}
         with:
           name: cypress

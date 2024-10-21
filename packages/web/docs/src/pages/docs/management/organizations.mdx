@@ -1,5 +1,5 @@
 import NextImage from 'next/image'
-import { Callout } from '@theguild/components'
+import { Callout, Tabs } from '@theguild/components'
 import orgImage from '../../../../public/docs/pages/first-steps/org.png'
 import newOrgImage from '../../../../public/docs/pages/management/create-an-organization-button.png'
 import orgCustomRoleImage from '../../../../public/docs/pages/management/org-custom-role.png'
@@ -29,7 +29,7 @@ Alternatively, you can create a new Hive organization by clicking on your user p
   className="mt-8 max-w-sm rounded-lg drop-shadow-md"
 />
 
-Follow the instructions and choose a name for your organization:
+Follow the instructions and choose a unique slug for your organization:
 
 <NextImage
   alt="Create Organization Form"
@@ -164,7 +164,7 @@ information about this type of integration.
 
 Hive offers a free tier for all users, and a paid tier for organizations that needs more data
 storage to store large volume of GraphQL operations sent through
-[Usage Reporting](/docs/features/usage-reporting) feature.
+[Usage Reporting](/docs/schema-registry/usage-reporting) feature.
 
 To manage your plan and subscription, use the **Subscription** tab under your organization's page.
 From there, you can upgrade your plan, view invoices, change your payment method, and cancel your
@@ -183,20 +183,29 @@ for your needs. You can modify your plan and resevered quota any time during the
   custom needs.
 </a>
 
-### Rename an organization
+#### How do I update my billing information?
 
-You can easily change the name of your organization in Hive by adjusting the settings of your
-organization.
+<Tabs items={['Hobby', 'Pro', 'Enterprise']}>
+  <Tabs.Tab>Not applicable</Tabs.Tab>
+  <Tabs.Tab>
+   1. Go to the **Subscription** tab under your organization's page.
+   2. Click on **Manage Subscription**.
+   3. Click on **Stripe Billing dashboard**.
+   4. Go to **Billing Information** section and click on **Update Information**.
 
-To do this, go to the **Settings** tab of your organization, and use the **Organization Name** form
-to rename your organization.
+  </Tabs.Tab>
+  <Tabs.Tab>
+    1. Go to the **Support** tab under your organization's page.
+    2. Create a **new ticket**.
+  </Tabs.Tab>
+</Tabs>
 
 ### Change slug of organization
 
 Slug is a unique identifier for your organization, and a URL namespace on GraphQL Hive.
 
-Similarly to renaming an organization, you can change the slug of your organization by visiting
-**Settings** tab of your organization, and using the **Organization Slug** form.
+You can change the slug of your organization by visiting **Settings** tab of your organization, and
+using the **Organization Slug** form.
 
 <Callout type="warning">
   Changing the slug of your organization will affect the organization URL, and will invalidate any

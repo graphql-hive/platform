@@ -1,6 +1,6 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@2.1.0/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "kamilkisiela/graphql-hive" }],
+  "$schema": "https://unpkg.com/@changesets/config@2.2.0/schema.json",
+  "changelog": ["@changesets/changelog-github", { "repo": "graphql-hive/platform" }],
   "commit": false,
   "linked": [],
   "access": "restricted",
@@ -10,5 +10,9 @@
   "snapshot": {
     "useCalculatedVersion": true,
     "prereleaseTemplate": "{tag}-{datetime}-{commit}"
+  },
+  "privatePackages": {
+    "tag": true,
+    "version": true
   }
 }

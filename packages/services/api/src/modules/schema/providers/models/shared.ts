@@ -2,14 +2,15 @@ import { PushedCompositeSchema, SingleSchema } from 'packages/services/api/src/s
 import type { CheckPolicyResponse } from '@hive/policy';
 import { CompositionFailureError } from '@hive/schema';
 import type { SchemaChangeType, SchemaCompositionError } from '@hive/storage';
-import { type Contract, type ValidContractVersion } from '../contracts';
-import {
+import type { Contract, ValidContractVersion } from '../contracts';
+import type { SchemaCoordinatesDiffResult } from '../inspector';
+import type {
   ContractCompositionResult,
   ContractCompositionSuccess,
+  RegistryChecks,
   SchemaDiffResult,
   SchemaDiffSkip,
   SchemaDiffSuccess,
-  type RegistryChecks,
 } from '../registry-checks';
 
 export const SchemaPublishConclusion = {
@@ -42,7 +43,10 @@ export const SchemaCheckConclusion = {
    */
   Failure: 'FAILURE',
   /**
-   * Skipped as the schemas have not changed from the compared schema version
+   * Skipped as the schemas have not changed from the latest schema version
+   *
+   * At this point, the schema is not checked for breaking changes or composition errors,
+   * these are passed from the latest schema version (not necessarily the latest composable version).
    */
   Skip: 'SKIP',
 } as const;
@@ -80,12 +84,12 @@ export type CheckFailureReasonCode =
 export type CheckPolicyResultRecord = CheckPolicyResponse[number] | { message: string };
 export type SchemaCheckWarning = {
   message: string;
-  source: string;
-  line: number;
-  column: number;
-  ruleId: string;
-  endLine: number | null;
-  endColumn: number | null;
+  source?: string;
+  line?: number | null;
+  column?: number | null;
+  ruleId: string | null;
+  endLine?: number | null;
+  endColumn?: number | null;
 };
 
 export type SchemaCheckSuccess = {
@@ -207,6 +211,7 @@ export type SchemaPublishFailureReason =
       code: (typeof PublishFailureReasonCode)['BreakingChanges'];
       breakingChanges: Array<SchemaChangeType>;
       changes: Array<SchemaChangeType>;
+      coordinatesDiff: SchemaCoordinatesDiffResult;
     };
 
 type ContractResult = {
@@ -223,6 +228,7 @@ type SchemaPublishSuccess = {
   state: {
     composable: boolean;
     initial: boolean;
+    coordinatesDiff: SchemaCoordinatesDiffResult | null;
     changes: Array<SchemaChangeType> | null;
     messages: string[] | null;
     breakingChanges: Array<{
@@ -277,6 +283,7 @@ export type SchemaDeleteSuccess = {
     schemas: PushedCompositeSchema[];
     breakingChanges: Array<SchemaChangeType> | null;
     compositionErrors: Array<SchemaCompositionError> | null;
+    coordinatesDiff: SchemaCoordinatesDiffResult | null;
     supergraph: string | null;
     tags: null | Array<string>;
     contracts: null | Array<ContractResult>;

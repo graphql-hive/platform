@@ -5,10 +5,11 @@ import * as Yup from 'yup';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { CardDescription } from '@/components/ui/card';
+import { DocsLink } from '@/components/ui/docs-note';
 import { Heading } from '@/components/ui/heading';
 import { AlertTriangleIcon, TrashIcon } from '@/components/ui/icon';
 import { SubPageLayout, SubPageLayoutHeader } from '@/components/ui/page-content-layout';
-import { DocsLink, Input, Modal, Table, Tag, TBody, Td, TimeAgo, Tr } from '@/components/v2';
+import { Input, Modal, Table, Tag, TBody, Td, TimeAgo, Tr } from '@/components/v2';
 import { InlineCode } from '@/components/v2/inline-code';
 import { FragmentType, graphql, useFragment } from '@/gql';
 import { TargetAccessScope } from '@/gql/graphql';
@@ -86,7 +87,7 @@ function CreateCDNAccessTokenModal(props: {
       </div>
 
       <div className="flex flex-col gap-4">
-        <label className="text-sm font-semibold" htmlFor="buildUrl">
+        <label className="text-sm font-semibold" htmlFor="alias">
           CDN Access Token Alias
         </label>
         <Input
@@ -104,7 +105,14 @@ function CreateCDNAccessTokenModal(props: {
       </div>
 
       <div className="mt-auto flex w-full gap-2 self-end">
-        <Button variant="secondary" className="ml-auto" onClick={props.onClose}>
+        <Button
+          variant="secondary"
+          className="ml-auto"
+          onClick={ev => {
+            ev.preventDefault();
+            props.onClose();
+          }}
+        >
           Cancel
         </Button>
 
@@ -417,21 +425,23 @@ export function CDNAccessTokens(props: {
                   created <TimeAgo date={node.createdAt} />
                 </Td>
                 <Td align="right">
-                  <Button
-                    className="hover:text-red-500"
-                    variant="ghost"
-                    onClick={() => {
-                      void router.navigate({
-                        search: {
-                          page: 'cdn',
-                          cdn: 'delete',
-                          id: node.id,
-                        },
-                      });
-                    }}
-                  >
-                    <TrashIcon />
-                  </Button>
+                  {canManage ? (
+                    <Button
+                      className="hover:text-red-500"
+                      variant="ghost"
+                      onClick={() => {
+                        void router.navigate({
+                          search: {
+                            page: 'cdn',
+                            cdn: 'delete',
+                            id: node.id,
+                          },
+                        });
+                      }}
+                    >
+                      <TrashIcon />
+                    </Button>
+                  ) : null}
                 </Td>
               </Tr>
             );

@@ -13,16 +13,13 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
           name
         }
         organization {
-          name
           cleanId
         }
         project {
-          name
           type
           cleanId
         }
         target {
-          name
           cleanId
         }
         canPublishSchema: hasTargetScope(scope: REGISTRY_WRITE)
@@ -35,7 +32,7 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
   }
 `);
 
-export default class WhoAmI extends Command {
+export default class WhoAmI extends Command<typeof WhoAmI> {
   static description = 'shows information about the current token';
   static flags = {
     'registry.endpoint': Flags.string({
@@ -80,7 +77,9 @@ export default class WhoAmI extends Command {
     });
 
     const result = await this.registryApi(registry, token)
-      .request(myTokenInfoQuery)
+      .request({
+        operation: myTokenInfoQuery,
+      })
       .catch(error => {
         this.handleFetchError(error);
       });
@@ -101,9 +100,9 @@ export default class WhoAmI extends Command {
       const print = createPrinter({
         'Token name:': [colors.bold(tokenInfo.token.name)],
         ' ': [''],
-        'Organization:': [colors.bold(organization.name), colors.dim(organizationUrl)],
-        'Project:': [colors.bold(project.name), colors.dim(projectUrl)],
-        'Target:': [colors.bold(target.name), colors.dim(targetUrl)],
+        'Organization:': [colors.bold(organization.cleanId), colors.dim(organizationUrl)],
+        'Project:': [colors.bold(project.cleanId), colors.dim(projectUrl)],
+        'Target:': [colors.bold(target.cleanId), colors.dim(targetUrl)],
         '  ': [''],
         'Access to schema:publish': [tokenInfo.canPublishSchema ? access.yes : access.not],
         'Access to schema:check': [tokenInfo.canCheckSchema ? access.yes : access.not],

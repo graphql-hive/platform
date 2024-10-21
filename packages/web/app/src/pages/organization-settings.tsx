@@ -13,6 +13,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { DocsLink } from '@/components/ui/docs-note';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { GitHubIcon, SlackIcon } from '@/components/ui/icon';
@@ -21,10 +29,7 @@ import { Meta } from '@/components/ui/meta';
 import { Subtitle, Title } from '@/components/ui/page';
 import { QueryError } from '@/components/ui/query-error';
 import { useToast } from '@/components/ui/use-toast';
-import {
-  DeleteOrganizationModal,
-  TransferOrganizationOwnershipModal,
-} from '@/components/v2/modals';
+import { TransferOrganizationOwnershipModal } from '@/components/v2/modals';
 import { Tag } from '@/components/v2/tag';
 import { env } from '@/env/frontend';
 import { FragmentType, graphql, useFragment } from '@/gql';
@@ -172,28 +177,6 @@ function Integrations(props: { organizationId: string }) {
   );
 }
 
-const UpdateOrganizationNameMutation = graphql(`
-  mutation Settings_UpdateOrganizationName($input: UpdateOrganizationNameInput!) {
-    updateOrganizationName(input: $input) {
-      ok {
-        updatedOrganizationPayload {
-          selector {
-            organization
-          }
-          organization {
-            id
-            cleanId
-            name
-          }
-        }
-      }
-      error {
-        message
-      }
-    }
-  }
-`);
-
 const UpdateOrganizationSlugMutation = graphql(`
   mutation Settings_UpdateOrganizationSlug($input: UpdateOrganizationSlugInput!) {
     updateOrganizationSlug(input: $input) {
@@ -219,12 +202,10 @@ const SettingsPageRenderer_OrganizationFragment = graphql(`
   fragment SettingsPageRenderer_OrganizationFragment on Organization {
     id
     cleanId
-    name
     me {
       ...CanAccessOrganization_MemberFragment
       isOwner
     }
-    ...DeleteOrganizationModal_OrganizationFragment
     ...TransferOrganizationOwnershipModal_OrganizationFragment
   }
 `);
@@ -240,17 +221,6 @@ const SlugFormSchema = z.object({
 });
 
 type SlugFormValues = z.infer<typeof SlugFormSchema>;
-
-const NameFormSchema = z.object({
-  name: z
-    .string({
-      required_error: 'Name is required',
-    })
-    .min(1, 'Name is required')
-    .max(50, 'Name must be less than 50 characters'),
-});
-
-type NameFormValues = z.infer<typeof NameFormSchema>;
 
 const SettingsPageRenderer = (props: {
   organization: FragmentType<typeof SettingsPageRenderer_OrganizationFragment>;
@@ -268,49 +238,7 @@ const SettingsPageRenderer = (props: {
   const [isTransferModalOpen, toggleTransferModalOpen] = useToggle();
   const { toast } = useToast();
 
-  const [_nameMutation, nameMutate] = useMutation(UpdateOrganizationNameMutation);
   const [_slugMutation, slugMutate] = useMutation(UpdateOrganizationSlugMutation);
-
-  const nameForm = useForm({
-    mode: 'all',
-    resolver: zodResolver(NameFormSchema),
-    defaultValues: {
-      name: organization.name,
-    },
-  });
-
-  const onNameFormSubmit = useCallback(
-    async (data: NameFormValues) => {
-      try {
-        const result = await nameMutate({
-          input: {
-            organization: props.organizationId,
-            name: data.name,
-          },
-        });
-
-        const error = result.error || result.data?.updateOrganizationName.error;
-
-        if (result.data?.updateOrganizationName?.ok) {
-          toast({
-            variant: 'default',
-            title: 'Success',
-            description: 'Organization name updated',
-          });
-        } else if (error) {
-          nameForm.setError('name', error);
-        }
-      } catch (error) {
-        console.error('error', error);
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Failed to update organization name',
-        });
-      }
-    },
-    [nameMutate, props.organizationId],
-  );
 
   const slugForm = useForm({
     mode: 'all',
@@ -370,51 +298,6 @@ const SettingsPageRenderer = (props: {
 
       {hasAccess ? (
         <div className="flex flex-col gap-y-4">
-          <Form {...nameForm}>
-            <form onSubmit={nameForm.handleSubmit(onNameFormSubmit)}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Organization Name</CardTitle>
-                  <CardDescription>
-                    Changing the name of your organization <span className="font-bold">won't</span>{' '}
-                    change the slug of your organization URL, and will invalidate any existing links
-                    to your organization.
-                    <br />
-                    <DocsLink
-                      className="text-muted-foreground text-sm"
-                      href="/management/organizations#rename-an-organization"
-                    >
-                      You can read more about it in the documentation
-                    </DocsLink>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  <FormField
-                    control={nameForm.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input placeholder="Name" className="w-80" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    disabled={nameForm.formState.isSubmitting}
-                    className="px-10"
-                    type="submit"
-                  >
-                    Save
-                  </Button>
-                </CardFooter>
-              </Card>
-            </form>
-          </Form>
-
           <Form {...slugForm}>
             <form onSubmit={slugForm.handleSubmit(onSlugFormSubmit)}>
               <Card>
@@ -552,7 +435,6 @@ const SettingsPageRenderer = (props: {
                   organizationId={props.organizationId}
                   isOpen={isDeleteModalOpen}
                   toggleModalOpen={toggleDeleteModalOpen}
-                  organization={organization}
                 />
               </CardContent>
             </Card>
@@ -611,5 +493,98 @@ export function OrganizationSettingsPage(props: { organizationId: string }) {
       <Meta title="Organization settings" />
       <SettingsPageContent organizationId={props.organizationId} />
     </>
+  );
+}
+
+export const DeleteOrganizationDocument = graphql(`
+  mutation deleteOrganization($selector: OrganizationSelectorInput!) {
+    deleteOrganization(selector: $selector) {
+      selector {
+        organization
+      }
+      organization {
+        __typename
+        id
+      }
+    }
+  }
+`);
+
+export function DeleteOrganizationModal(props: {
+  isOpen: boolean;
+  toggleModalOpen: () => void;
+  organizationId: string;
+}) {
+  const { organizationId } = props;
+  const [, mutate] = useMutation(DeleteOrganizationDocument);
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    const { error } = await mutate({
+      selector: {
+        organization: organizationId,
+      },
+    });
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to delete organization',
+        description: error.message,
+      });
+    } else {
+      toast({
+        title: 'Organization deleted',
+        description: 'The organization has been successfully deleted.',
+      });
+      props.toggleModalOpen();
+      void router.navigate({
+        to: '/',
+      });
+    }
+  };
+
+  return (
+    <DeleteOrganizationModalContent
+      isOpen={props.isOpen}
+      toggleModalOpen={props.toggleModalOpen}
+      handleDelete={handleDelete}
+    />
+  );
+}
+
+export function DeleteOrganizationModalContent(props: {
+  isOpen: boolean;
+  toggleModalOpen: () => void;
+  handleDelete: () => void;
+}) {
+  return (
+    <Dialog open={props.isOpen} onOpenChange={props.toggleModalOpen}>
+      <DialogContent className="w-4/5 max-w-[520px] md:w-3/5">
+        <DialogHeader>
+          <DialogTitle>Delete organization</DialogTitle>
+          <DialogDescription>
+            Every project created under this organization will be deleted as well.
+          </DialogDescription>
+          <DialogDescription>
+            <span className="font-bold">This action is irreversible!</span>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="gap-2">
+          <Button
+            variant="outline"
+            onClick={ev => {
+              ev.preventDefault();
+              props.toggleModalOpen();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={props.handleDelete}>
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

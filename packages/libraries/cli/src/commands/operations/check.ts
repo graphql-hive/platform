@@ -14,7 +14,7 @@ const fetchLatestVersionQuery = graphql(/* GraphQL */ `
   }
 `);
 
-export default class OperationsCheck extends Command {
+export default class OperationsCheck extends Command<typeof OperationsCheck> {
   static description = 'checks operations against a published schema';
   static flags = {
     'registry.endpoint': Flags.string({
@@ -119,7 +119,9 @@ export default class OperationsCheck extends Command {
         return;
       }
 
-      const result = await this.registryApi(endpoint, accessToken).request(fetchLatestVersionQuery);
+      const result = await this.registryApi(endpoint, accessToken).request({
+        operation: fetchLatestVersionQuery,
+      });
 
       const sdl = result.latestValidVersion?.sdl;
 

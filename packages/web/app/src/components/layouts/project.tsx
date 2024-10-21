@@ -15,7 +15,6 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { UserMenu } from '@/components/ui/user-menu';
-import { Tabs } from '@/components/v2/tabs';
 import { graphql } from '@/gql';
 import { canAccessProject, ProjectAccessScope, useProjectAccess } from '@/lib/access/project';
 import { useToggle } from '@/lib/hooks';
@@ -25,6 +24,7 @@ import { Link, useRouter } from '@tanstack/react-router';
 import { ProjectMigrationToast } from '../project/migration-toast';
 import { HiveLink } from '../ui/hive-link';
 import { PlusIcon } from '../ui/icon';
+import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { ProjectSelector } from './project-selector';
 
 export enum Page {
@@ -44,7 +44,6 @@ const ProjectLayoutQuery = graphql(`
       nodes {
         id
         cleanId
-        name
         me {
           id
           ...CanAccessProject_MemberFragment
@@ -53,7 +52,6 @@ const ProjectLayoutQuery = graphql(`
           nodes {
             id
             cleanId
-            name
             registryModel
           }
         }
@@ -130,8 +128,8 @@ export function ProjectLayout({
         <div className="container flex items-center justify-between">
           {currentOrganization && currentProject ? (
             <Tabs value={page}>
-              <Tabs.List>
-                <Tabs.Trigger value={Page.Targets} asChild>
+              <TabsList variant="menu">
+                <TabsTrigger variant="menu" value={Page.Targets} asChild>
                   <Link
                     to="/$organizationId/$projectId"
                     params={{
@@ -141,9 +139,9 @@ export function ProjectLayout({
                   >
                     Targets
                   </Link>
-                </Tabs.Trigger>
+                </TabsTrigger>
                 {canAccessProject(ProjectAccessScope.Alerts, currentOrganization.me) && (
-                  <Tabs.Trigger value={Page.Alerts} asChild>
+                  <TabsTrigger variant="menu" value={Page.Alerts} asChild>
                     <Link
                       to="/$organizationId/$projectId/view/alerts"
                       params={{
@@ -153,11 +151,11 @@ export function ProjectLayout({
                     >
                       Alerts
                     </Link>
-                  </Tabs.Trigger>
+                  </TabsTrigger>
                 )}
                 {canAccessProject(ProjectAccessScope.Settings, currentOrganization.me) && (
                   <>
-                    <Tabs.Trigger value={Page.Policy} asChild>
+                    <TabsTrigger variant="menu" value={Page.Policy} asChild>
                       <Link
                         to="/$organizationId/$projectId/view/policy"
                         params={{
@@ -167,8 +165,8 @@ export function ProjectLayout({
                       >
                         Policy
                       </Link>
-                    </Tabs.Trigger>
-                    <Tabs.Trigger value={Page.Settings} asChild>
+                    </TabsTrigger>
+                    <TabsTrigger variant="menu" value={Page.Settings} asChild>
                       <Link
                         to="/$organizationId/$projectId/view/settings"
                         params={{
@@ -178,10 +176,10 @@ export function ProjectLayout({
                       >
                         Settings
                       </Link>
-                    </Tabs.Trigger>
+                    </TabsTrigger>
                   </>
                 )}
-              </Tabs.List>
+              </TabsList>
             </Tabs>
           ) : (
             <div className="flex flex-row gap-x-8 border-b-2 border-b-transparent px-4 py-3">
@@ -223,29 +221,28 @@ export const CreateTarget_CreateTargetMutation = graphql(`
         createdTarget {
           id
           cleanId
-          name
         }
       }
       error {
         message
         inputErrors {
-          name
+          slug
         }
       }
     }
   }
 `);
 
-const createProjectFormSchema = z.object({
-  targetName: z
+const createTargetFormSchema = z.object({
+  targetSlug: z
     .string({
-      required_error: 'Target name is required',
+      required_error: 'Target slug is required',
     })
     .min(2, {
-      message: 'Target name must be at least 2 characters long',
+      message: 'Target slug must be at least 2 characters long',
     })
     .max(50, {
-      message: 'Target name must be at most 50 characters long',
+      message: 'Target slug must be at most 50 characters long',
     }),
 });
 
@@ -260,20 +257,20 @@ function CreateTargetModal(props: {
   const router = useRouter();
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof createProjectFormSchema>>({
+  const form = useForm<z.infer<typeof createTargetFormSchema>>({
     mode: 'onChange',
-    resolver: zodResolver(createProjectFormSchema),
+    resolver: zodResolver(createTargetFormSchema),
     defaultValues: {
-      targetName: '',
+      targetSlug: '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof createProjectFormSchema>) {
+  async function onSubmit(values: z.infer<typeof createTargetFormSchema>) {
     const { data, error } = await mutate({
       input: {
         project: props.projectId,
         organization: props.organizationId,
-        name: values.targetName,
+        slug: values.targetSlug,
       },
     });
 
@@ -290,11 +287,11 @@ function CreateTargetModal(props: {
       toast({
         variant: 'default',
         title: 'Target created',
-        description: `Your target "${data.createTarget.ok.createdTarget.name}" has been created`,
+        description: `Your target "${data.createTarget.ok.createdTarget.cleanId}" has been created`,
       });
-    } else if (data?.createTarget.error?.inputErrors.name) {
-      form.setError('targetName', {
-        message: data?.createTarget.error?.inputErrors.name,
+    } else if (data?.createTarget.error?.inputErrors.slug) {
+      form.setError('targetSlug', {
+        message: data?.createTarget.error?.inputErrors.slug,
       });
     } else {
       toast({
@@ -318,8 +315,8 @@ function CreateTargetModal(props: {
 export function CreateTargetModalContent(props: {
   isOpen: boolean;
   toggleModalOpen: () => void;
-  onSubmit: (values: z.infer<typeof createProjectFormSchema>) => void | Promise<void>;
-  form: UseFormReturn<z.infer<typeof createProjectFormSchema>>;
+  onSubmit: (values: z.infer<typeof createTargetFormSchema>) => void | Promise<void>;
+  form: UseFormReturn<z.infer<typeof createTargetFormSchema>>;
 }) {
   return (
     <Dialog open={props.isOpen} onOpenChange={props.toggleModalOpen}>
@@ -335,12 +332,12 @@ export function CreateTargetModalContent(props: {
             <div className="space-y-8">
               <FormField
                 control={props.form.control}
-                name="targetName"
+                name="targetSlug"
                 render={({ field }) => {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input placeholder="Target name" autoComplete="off" {...field} />
+                        <Input placeholder="my-target" autoComplete="off" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -8,8 +8,10 @@ beforeAll(() => {
   nock.cleanAll();
 });
 
+const logger = createLogger('silent');
+
 test('use persisted documents (GraphQL over HTTP "documentId")', async () => {
-  const httpScope = nock('http://artifatcs-cdn.localhost', {
+  const httpScope = nock('http://artifacts-cdn.localhost', {
     reqheaders: {
       'X-Hive-CDN-Key': value => {
         expect(value).toBe('foo');
@@ -33,9 +35,12 @@ test('use persisted documents (GraphQL over HTTP "documentId")', async () => {
         enabled: false,
         experimental__persistedDocuments: {
           cdn: {
-            endpoint: 'http://artifatcs-cdn.localhost',
+            endpoint: 'http://artifacts-cdn.localhost',
             accessToken: 'foo',
           },
+        },
+        agent: {
+          logger,
         },
       }),
     ],
@@ -47,7 +52,7 @@ test('use persisted documents (GraphQL over HTTP "documentId")', async () => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      documentId: 'client-name/client-version/hash',
+      documentId: 'client-name~client-version~hash',
     }),
   });
 
@@ -58,7 +63,7 @@ test('use persisted documents (GraphQL over HTTP "documentId")', async () => {
 });
 
 test('use persisted documents (GraphQL over HTTP "documentId") real thing', async () => {
-  const httpScope = nock('http://artifatcs-cdn.localhost', {
+  const httpScope = nock('http://artifacts-cdn.localhost', {
     reqheaders: {
       'X-Hive-CDN-Key': value => {
         expect(value).toBe('foo');
@@ -82,9 +87,12 @@ test('use persisted documents (GraphQL over HTTP "documentId") real thing', asyn
         enabled: false,
         experimental__persistedDocuments: {
           cdn: {
-            endpoint: 'http://artifatcs-cdn.localhost',
+            endpoint: 'http://artifacts-cdn.localhost',
             accessToken: 'foo',
           },
+        },
+        agent: {
+          logger,
         },
       }),
     ],
@@ -103,7 +111,7 @@ test('use persisted documents (GraphQL over HTTP "documentId") real thing', asyn
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      documentId: 'client-name/client-version/hash',
+      documentId: 'client-name~client-version~hash',
     }),
   });
 
@@ -114,6 +122,17 @@ test('use persisted documents (GraphQL over HTTP "documentId") real thing', asyn
 });
 
 test('persisted document not found (GraphQL over HTTP "documentId")', async () => {
+  const httpScope = nock('http://artifacts-cdn.localhost', {
+    reqheaders: {
+      'X-Hive-CDN-Key': value => {
+        expect(value).toBe('foo');
+        return true;
+      },
+    },
+  })
+    .get('/apps/client-name/client-version/hash')
+    .reply(404);
+
   const yoga = createYoga({
     schema: createSchema({
       typeDefs: /* GraphQL */ `
@@ -127,24 +146,16 @@ test('persisted document not found (GraphQL over HTTP "documentId")', async () =
         enabled: false,
         experimental__persistedDocuments: {
           cdn: {
-            endpoint: 'http://artifatcs-cdn.localhost',
+            endpoint: 'http://artifacts-cdn.localhost',
             accessToken: 'foo',
           },
+        },
+        agent: {
+          logger,
         },
       }),
     ],
   });
-
-  const httpScope = nock('http://artifatcs-cdn.localhost', {
-    reqheaders: {
-      'X-Hive-CDN-Key': value => {
-        expect(value).toBe('foo');
-        return true;
-      },
-    },
-  })
-    .get('/apps/client-name/client-version/hash')
-    .reply(404);
 
   const response = await yoga.fetch('http://localhost/graphql', {
     method: 'POST',
@@ -152,7 +163,7 @@ test('persisted document not found (GraphQL over HTTP "documentId")', async () =
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      documentId: 'client-name/client-version/hash',
+      documentId: 'client-name~client-version~hash',
     }),
   });
 
@@ -185,7 +196,7 @@ test('arbitrary options are rejected with allowArbitraryDocuments=false (GraphQL
         enabled: false,
         experimental__persistedDocuments: {
           cdn: {
-            endpoint: 'http://artifatcs-cdn.localhost',
+            endpoint: 'http://artifacts-cdn.localhost',
             accessToken: 'foo',
           },
           allowArbitraryDocuments: false,
@@ -229,7 +240,7 @@ test('arbitrary options are allowed with allowArbitraryDocuments=true (GraphQL o
         enabled: false,
         experimental__persistedDocuments: {
           cdn: {
-            endpoint: 'http://artifatcs-cdn.localhost',
+            endpoint: 'http://artifacts-cdn.localhost',
             accessToken: 'foo',
           },
           allowArbitraryDocuments: true,
@@ -255,8 +266,8 @@ test('arbitrary options are allowed with allowArbitraryDocuments=true (GraphQL o
   });
 });
 
-test('use persisted documents for subscription (GraphQL over HTTP "documentId")', async () => {
-  const httpScope = nock('http://artifatcs-cdn.localhost', {
+test('use persisted documents for SSE GET (GraphQL over HTTP "documentId")', async () => {
+  const httpScope = nock('http://artifacts-cdn.localhost', {
     reqheaders: {
       'X-Hive-CDN-Key': value => {
         expect(value).toBe('foo');
@@ -293,9 +304,12 @@ test('use persisted documents for subscription (GraphQL over HTTP "documentId")'
         enabled: false,
         experimental__persistedDocuments: {
           cdn: {
-            endpoint: 'http://artifatcs-cdn.localhost',
+            endpoint: 'http://artifacts-cdn.localhost',
             accessToken: 'foo',
           },
+        },
+        agent: {
+          logger,
         },
       }),
     ],
@@ -308,7 +322,7 @@ test('use persisted documents for subscription (GraphQL over HTTP "documentId")'
       Accept: 'text/event-stream',
     },
     body: JSON.stringify({
-      documentId: 'client-name/client-version/hash',
+      documentId: 'client-name~client-version~hash',
     }),
   });
 
@@ -326,8 +340,82 @@ test('use persisted documents for subscription (GraphQL over HTTP "documentId")'
   httpScope.done();
 });
 
+test('use persisted documents for subscription over SSE (GraphQL over HTTP "documentId")', async () => {
+  const httpScope = nock('http://artifacts-cdn.localhost', {
+    reqheaders: {
+      'X-Hive-CDN-Key': value => {
+        expect(value).toBe('foo');
+        return true;
+      },
+    },
+  })
+    .get('/apps/client-name/client-version/hash')
+    .reply(200, 'subscription { hi }');
+
+  const yoga = createYoga({
+    schema: createSchema({
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hi: String
+        }
+
+        type Subscription {
+          hi: String
+        }
+      `,
+      resolvers: {
+        Subscription: {
+          hi: {
+            async *subscribe() {
+              yield { hi: 'hi' };
+            },
+          },
+        },
+      },
+    }),
+    plugins: [
+      useHive({
+        enabled: false,
+        experimental__persistedDocuments: {
+          cdn: {
+            endpoint: 'http://artifacts-cdn.localhost',
+            accessToken: 'foo',
+          },
+        },
+        agent: {
+          logger,
+        },
+      }),
+    ],
+  });
+
+  const response = await yoga.fetch(
+    'http://localhost/graphql?documentId=client-name~client-version~hash',
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/event-stream',
+      },
+    },
+  );
+
+  expect(response.status).toBe(200);
+  expect(await response.text()).toMatchInlineSnapshot(`
+    :
+
+    event: next
+    data: {"data":{"hi":"hi"}}
+
+    event: complete
+    data:
+  `);
+
+  httpScope.done();
+});
+
 test('usage reporting for persisted document', async () => {
-  const httpScope = nock('http://artifatcs-cdn.localhost', {
+  const httpScope = nock('http://artifacts-cdn.localhost', {
     reqheaders: {
       'X-Hive-CDN-Key': value => {
         expect(value).toBe('foo');
@@ -363,7 +451,7 @@ test('usage reporting for persisted document', async () => {
         {
           metadata: {},
           operationMapKey: 'ace78a32bbf8a79071356e5d5b13c5c83baf4e14',
-          persistedDocumentHash: 'client-name/client-version/hash',
+          persistedDocumentHash: 'client-name~client-version~hash',
         },
       ]);
 
@@ -386,7 +474,7 @@ test('usage reporting for persisted document', async () => {
         token: 'brrrt',
         experimental__persistedDocuments: {
           cdn: {
-            endpoint: 'http://artifatcs-cdn.localhost',
+            endpoint: 'http://artifacts-cdn.localhost',
             accessToken: 'foo',
           },
         },
@@ -427,7 +515,7 @@ test('usage reporting for persisted document', async () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          documentId: 'client-name/client-version/hash',
+          documentId: 'client-name~client-version~hash',
         }),
       });
       expect(response.status).toBe(200);
@@ -440,7 +528,7 @@ test('usage reporting for persisted document', async () => {
 });
 
 test('usage reporting for persisted document (subscription)', async () => {
-  const httpScope = nock('http://artifatcs-cdn.localhost', {
+  const httpScope = nock('http://artifacts-cdn.localhost', {
     reqheaders: {
       'X-Hive-CDN-Key': value => {
         expect(value).toBe('foo');
@@ -476,7 +564,7 @@ test('usage reporting for persisted document (subscription)', async () => {
         {
           metadata: {},
           operationMapKey: '74cf03b67c3846231d04927b02e1fca45e727223',
-          persistedDocumentHash: 'client-name/client-version/hash',
+          persistedDocumentHash: 'client-name~client-version~hash',
         },
       ]);
 
@@ -511,7 +599,7 @@ test('usage reporting for persisted document (subscription)', async () => {
         token: 'brrrt',
         experimental__persistedDocuments: {
           cdn: {
-            endpoint: 'http://artifatcs-cdn.localhost',
+            endpoint: 'http://artifacts-cdn.localhost',
             accessToken: 'foo',
           },
         },
@@ -553,7 +641,7 @@ test('usage reporting for persisted document (subscription)', async () => {
           Accept: 'text/event-stream',
         },
         body: JSON.stringify({
-          documentId: 'client-name/client-version/hash',
+          documentId: 'client-name~client-version~hash',
         }),
       });
       expect(response.status).toBe(200);
@@ -571,4 +659,63 @@ test('usage reporting for persisted document (subscription)', async () => {
 
   httpScope.done();
   usageScope.done();
+});
+
+test('deduplication of parallel requests resolving the same document from CDN', async () => {
+  const httpScope = nock('http://artifacts-cdn.localhost', {
+    reqheaders: {
+      'X-Hive-CDN-Key': value => {
+        expect(value).toBe('foo');
+        return true;
+      },
+    },
+  })
+    // Note: this handler is only invoked for the first call, additional calls will fail.
+    .get('/apps/client-name/client-version/hash')
+    .reply(200, () => {
+      return 'query { hi }';
+    });
+
+  const yoga = createYoga({
+    schema: createSchema({
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hi: String
+        }
+      `,
+    }),
+    plugins: [
+      useHive({
+        enabled: false,
+        experimental__persistedDocuments: {
+          cdn: {
+            endpoint: 'http://artifacts-cdn.localhost',
+            accessToken: 'foo',
+          },
+        },
+        agent: {
+          logger,
+        },
+      }),
+    ],
+  });
+
+  const request = async () =>
+    yoga.fetch('http://localhost/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        documentId: 'client-name~client-version~hash',
+      }),
+    });
+
+  const [request1, request2] = await Promise.all([request(), request()]);
+  expect(request1.status).toBe(200);
+  expect(await request1.json()).toEqual({ data: { hi: null } });
+  expect(request2.status).toBe(200);
+  expect(await request2.json()).toEqual({ data: { hi: null } });
+
+  httpScope.done();
 });

@@ -1,6 +1,5 @@
 {
   "name": "@hive/usage-estimator",
-  "version": "0.0.0",
   "type": "module",
   "description": "A microservice for Hive Cloud, that calculates and exposes usage information.",
   "license": "MIT",
@@ -13,13 +12,13 @@
   "devDependencies": {
     "@hive/api": "workspace:*",
     "@hive/service-common": "workspace:*",
-    "@sentry/node": "7.118.0",
+    "@sentry/node": "7.119.0",
     "@trpc/server": "10.45.2",
     "dotenv": "16.4.5",
-    "got": "14.4.1",
-    "pino-pretty": "11.2.1",
+    "got": "14.4.2",
+    "pino-pretty": "11.2.2",
     "reflect-metadata": "0.2.2",
-    "tslib": "2.6.3",
+    "tslib": "2.7.0",
     "zod": "3.23.8"
   },
   "buildOptions": {

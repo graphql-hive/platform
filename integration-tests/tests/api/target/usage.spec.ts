@@ -334,7 +334,7 @@ test.concurrent('check usage from two selected targets', async ({ expect }) => {
 
   const productionTargetResult = await createTarget(
     {
-      name: 'target2',
+      slug: 'target2',
       organization: organization.cleanId,
       project: project.cleanId,
     },
@@ -1114,6 +1114,99 @@ describe('changes with usage data', () => {
     reportOperation: {
       operation: 'query videoOnly { media { __typename ... on Video { url } } }',
       operationName: 'videoOnly',
+      fields: 'auto-collect',
+    },
+  });
+
+  testChangesWithUsageData({
+    title: 'removing a used enum value is a breaking change',
+    publishSdl: /* GraphQL */ `
+      type Query {
+        feed: Post
+      }
+
+      enum Media {
+        Image
+        Video
+      }
+
+      type Post {
+        id: ID!
+        title: String!
+        type: Media
+      }
+    `,
+    checkSdl: /* GraphQL */ `
+      type Query {
+        feed: Post
+      }
+
+      enum Media {
+        Image
+      }
+
+      type Post {
+        id: ID!
+        title: String!
+        type: Media
+      }
+    `,
+    expectedSchemaCheckTypename: {
+      // Should be breaking,
+      // because it will cause existing queries
+      // that use this enum value to error
+      beforeReportedOperation: 'SchemaCheckError',
+      afterReportedOperation: 'SchemaCheckError',
+    },
+    reportOperation: {
+      operation: 'query feed { feed { id type } }',
+      operationName: 'feed',
+      fields: 'auto-collect',
+    },
+  });
+
+  testChangesWithUsageData({
+    title: 'adding a new value to a used enum value is NOT a breaking change',
+    publishSdl: /* GraphQL */ `
+      type Query {
+        feed: Post
+      }
+
+      enum Media {
+        Image
+        Video
+      }
+
+      type Post {
+        id: ID!
+        title: String!
+        type: Media
+      }
+    `,
+    checkSdl: /* GraphQL */ `
+      type Query {
+        feed: Post
+      }
+
+      enum Media {
+        Image
+        Video
+        Audio
+      }
+
+      type Post {
+        id: ID!
+        title: String!
+        type: Media
+      }
+    `,
+    expectedSchemaCheckTypename: {
+      beforeReportedOperation: 'SchemaCheckSuccess',
+      afterReportedOperation: 'SchemaCheckSuccess',
+    },
+    reportOperation: {
+      operation: 'query feed { feed { id type } }',
+      operationName: 'feed',
       fields: 'auto-collect',
     },
   });

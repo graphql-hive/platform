@@ -2,8 +2,8 @@ import { Callout, Tabs } from '@theguild/components'
 
 # Hive CLI (Command Line Interface)
 
-You can perform [schema-registry actions](/docs/features/schema-registry#actions-on-schemas) on your
-Hive targets schemas using the Hive CLI.
+You can perform [schema-registry actions](/docs/schema-registry#actions-on-schemas) on your Hive
+targets schemas using the Hive CLI.
 
 ## Installation
 
@@ -73,15 +73,16 @@ You can also download a specific version of the binary:
 
 <Callout>
   We recommend publishing the schema from your CI/CD pipeline. You can find more information in out
-  [CI/CD Integration guide](../integrations/ci-cd.mdx).
+  [CI/CD Integration guide](/docs/other-integrations/ci-cd).
 </Callout>
 
-Start by setting your Hive token in [`hive.json`](/docs/api-reference/cli#config-file-hivejson)
+Start by setting your Hive token in
+[`hive.json`](https://github.com/graphql-hive/platform/blob/main/packages/libraries/cli/README.md#config-file-hivejson)
 file, or set it as `HIVE_TOKEN` environment variable.
 
 Further reading:
 
-- [Publishing a schema to the Schema Registry](/docs/features/schema-registry#publish-a-schema)
+- [Publishing a schema to the Schema Registry](/docs/schema-registry#publish-a-schema)
 
 #### Single Schema Project
 
@@ -110,8 +111,8 @@ hive schema:publish --service reviews --url http://my-service.com/graphql schema
 Further reading:
 
 - [`schema:publish` API Reference](/docs/api-reference/cli#hive-schemapublish-file)
-- [Apollo Router integration](/docs/integrations/apollo-router)
-- [Apollo-Server integration](/docs/integrations/apollo-server)
+- [Apollo Router integration](/docs/other-integrations/apollo-router)
+- [Apollo-Server integration](/docs/other-integrations/apollo-server)
 
 #### Hive Metadata
 
@@ -134,7 +135,7 @@ hive schema:publish schema.graphql --metadata '{ "someData": true }'
 
 Further reading:
 
-- [Fetching Hive Metadata from the CDN](/docs/features/high-availability-cdn)
+- [Fetching Hive Metadata from the CDN](/docs/high-availability-cdn)
 
 ### Check a schema
 
@@ -142,7 +143,8 @@ Further reading:
   This CLI command requires an active registry token with **Read** permissions to the target.
 </Callout>
 
-Start by setting your Hive token in [`hive.json`](/docs/api-reference/cli#config-file-hivejson)
+Start by setting your Hive token in
+[`hive.json`](https://github.com/graphql-hive/platform/blob/main/packages/libraries/cli/README.md#config-file-hivejson)
 file, or set it as `HIVE_TOKEN` environment variable.
 
 Checking a GraphQL schema is the form of checking the compatbility of an upcoming schema, compared
@@ -174,7 +176,7 @@ hive schema:check --contextId "pr-123" "src/*.graphql"
 
 Further reading:
 
-- [Publishing a schema to the Schema Registry](/docs/features/schema-registry#publish-a-schema)
+- [Publishing a schema to the Schema Registry](/docs/schema-registry#publish-a-schema)
 - [Conditional Breaking Changes](/docs/management/targets#conditional-breaking-changes)
 
 ### Delete a schema
@@ -188,7 +190,8 @@ Further reading:
   This action is only available for Schema-Stitching and Apollo Federation projects.
 </Callout>
 
-Start by setting your Hive token in [`hive.json`](/docs/api-reference/cli#config-file-hivejson)
+Start by setting your Hive token in
+[`hive.json`](https://github.com/graphql-hive/platform/blob/main/packages/libraries/cli/README.md#config-file-hivejson)
 file, or set it as `HIVE_TOKEN` environment variable.
 
 In case you want to compose a schema (or a subgraph in case of Federation), you can do so by using
@@ -209,14 +212,21 @@ In case you want to confirm deletion of the service without typing anything in t
 
 ### Develop schema locally
 
-<Callout type="info" emoji="🔑">
-  This CLI command requires an active registry token with **Read** permissions to the target and the
-  project.
-</Callout>
+When developing subgraphs locally, you might want to compose a supergraph with your local subgraph
+changes. GraphQL Hive helps you to do that with the `hive dev` command.
 
 <Callout type="info">This action is only available for Apollo Federation projects.</Callout>
 
-This command enables you to replace the subgraph(s) available in the Registry with your local
+<details>
+
+<summary>Remote mode</summary>
+
+<Callout type="info" emoji="🔑">
+  This CLI command requires an active registry token with **Read** permissions to the target and the
+  project, to preform a composition according to your project configuration.
+</Callout>
+
+This mode enables you to replace the subgraph(s) available in the Registry with your local
 subgraph(s) and compose a Supergraph.
 
 ```mermaid
@@ -251,6 +261,59 @@ the gateway.
 
 ```bash
 # Introspect the SDL of the local service
+hive dev --remote --service reviews --url http://localhost:3001/graphql
+
+# Watch mode
+hive dev --remote --watch --service reviews --url http://localhost:3001/graphql
+
+# Provide the SDL of the local service
+hive dev --remote --service reviews --url http://localhost:3001/graphql --schema reviews.graphql
+
+# or with multiple services
+hive dev \
+  --remote \
+  --service reviews --url http://localhost:3001/graphql \
+  --service products --url http://localhost:3002/graphql --schema products.graphql
+
+# Custom output file (default: supergraph.graphql)
+hive dev --remote --service reviews --url http://localhost:3001/graphql --write local-supergraph.graphql
+```
+
+**Usage example**
+
+Let's say you have two subgraphs, `reviews` and `products`, and you want to test the `reviews`
+service.
+
+First, you need to start the `reviews` service locally and then run the following command:
+
+```bash
+hive dev --remote --watch --service reviews --url http://localhost:3001/graphql
+```
+
+This command will fetch subgraph's schema from the provided URL, replace the original `reviews`
+subgraph from the Registry with the local one, and compose a supergraph. The outcome will be saved
+in the `supergraph.graphql` file.
+
+The `products` subgraph will stay untoched, meaing that the gateway will route requests to its
+remote endpoint.
+
+> The `--watch` flag will keep the process running and update the supergraph whenever the local
+> schema changes.
+
+Now you're ready to use the `supergraph.graphql` file in your gateway and execute queries.
+
+</details>
+
+This mode enables you to compose a Supergraph with your local subgraph(s).
+
+Rather than uploading your local schema to the registry and retrieving the supergraph from the CDN,
+you can integrate your local modifications directly into the supergraph.
+
+The result of executing this command is a file containing the Supergraph SDL, which can be feed into
+the gateway.
+
+```bash
+# Introspect the SDL of the local service
 hive dev --service reviews --url http://localhost:3001/graphql
 
 # Watch mode
@@ -268,7 +331,7 @@ hive dev \
 hive dev --service reviews --url http://localhost:3001/graphql --write local-supergraph.graphql
 ```
 
-#### Usage example
+**Usage example**
 
 Let's say you have two subgraphs, `reviews` and `products`, and you want to test the `reviews`
 service.
@@ -279,12 +342,10 @@ First, you need to start the `reviews` service locally and then run the followin
 hive dev --watch --service reviews --url http://localhost:3001/graphql
 ```
 
-This command will fetch subgraph's schema from the provided URL, replace the original `reviews`
-subgraph from the Registry with the local one, and compose a supergraph. The outcome will be saved
-in the `supergraph.graphql` file.
+This command will fetch subgraph's schema from the provided URL and compose a supergraph. The
+outcome will be saved in the `supergraph.graphql` file.
 
-The `products` subgraph will stay untoched, meaing that the gateway will route requests to its
-remote endpoint.
+The `products` subgraph will be omitted from the supergraph.
 
 > The `--watch` flag will keep the process running and update the supergraph whenever the local
 > schema changes.
@@ -320,9 +381,8 @@ Sometimes it is useful to fetch a schema (SDL or Supergraph) from Hive, for exam
 local development. This can be done using the `schema:fetch` command.
 
 <Callout type="info">
-  Don't confuse this with the [high-availability CDN](/docs/features/high-availability-cdn.mdx).
-  This command is used to fetch a schema from the API where the CDN always represents the latest
-  valid schema.
+  Don't confuse this with the [high-availability CDN](/docs/high-availability-cdn). This command is
+  used to fetch a schema from the API where the CDN always represents the latest valid schema.
 </Callout>
 
 You can fetch a schema by using the action id (commit sha) that was used for publishing the schema
@@ -339,7 +399,7 @@ hive schema:fetch --type supergraph --write supergraph.graphql feb8aa9ec8932eb
 ```
 
 For more information please refer to the
-[CLI readme](https://github.com/kamilkisiela/graphql-hive/blob/main/packages/libraries/cli/README.md#commands).
+[CLI readme](https://github.com/graphql-hive/platform/blob/main/packages/libraries/cli/README.md#commands).
 
 ### Fetch a schema from CDN
 
@@ -347,7 +407,7 @@ You can fetch the GraphQL schema from the CDN using the `artifact:fetch` command
 
 <Callout type="info">
   You can learn how to create a CDN access token in the [High-Availability CDN
-  documentation](/docs/features/high-availability-cdn).
+  documentation](/docs/high-availability-cdn).
 </Callout>
 
 ```bash
@@ -355,7 +415,7 @@ hive artifact:fetch --artifact sdl --cdn.endpoint VALUE --cdn.accessToken VALUE
 ```
 
 For more information please refer to the
-[CLI readme](https://github.com/kamilkisiela/graphql-hive/blob/main/packages/libraries/cli/README.md#commands).
+[CLI readme](https://github.com/graphql-hive/platform/blob/main/packages/libraries/cli/README.md#commands).
 
 ### CLI and GitHub Integration
 
@@ -375,11 +435,11 @@ hive schema:check schema.graphql --github
 ```
 
 <Callout>
-  Check our [CI/CD Integration guide](../integrations/ci-cd.mdx) for more information and GitHub
-  workflow examples.
+  Check our [CI/CD Integration guide](/docs/other-integrations/ci-cd) for more information and
+  GitHub workflow examples.
 </Callout>
 
 ## API Reference
 
 List of all available CLI commands and their options can be found
-[here](https://github.com/kamilkisiela/graphql-hive/blob/main/packages/libraries/cli/README.md#commands)
+[here](https://github.com/graphql-hive/platform/blob/main/packages/libraries/cli/README.md#commands)

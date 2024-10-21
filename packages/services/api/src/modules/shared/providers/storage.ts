@@ -44,6 +44,7 @@ import type { OrganizationAccessScope } from '../../auth/providers/organization-
 import type { ProjectAccessScope } from '../../auth/providers/project-access';
 import type { TargetAccessScope } from '../../auth/providers/target-access';
 import type { Contracts } from '../../schema/providers/contracts';
+import type { SchemaCoordinatesDiffResult } from '../../schema/providers/inspector';
 
 export interface OrganizationSelector {
   organization: string;
@@ -98,13 +99,22 @@ export interface Storage {
   getMyOrganization(_: { user: string }): Promise<Organization | null>;
   getOrganizations(_: { user: string }): Promise<readonly Organization[] | never>;
   createOrganization(
-    _: Pick<Organization, 'cleanId' | 'name'> & {
+    _: Pick<Organization, 'cleanId'> & {
       user: string;
       adminScopes: ReadonlyArray<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>;
       viewerScopes: ReadonlyArray<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>;
-      reservedNames: string[];
+      reservedSlugs: string[];
     },
-  ): Promise<Organization | never>;
+  ): Promise<
+    | {
+        ok: true;
+        organization: Organization;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
   deleteOrganization(_: OrganizationSelector): Promise<
     | (Organization & {
@@ -113,12 +123,9 @@ export interface Storage {
     | never
   >;
 
-  updateOrganizationName(
-    _: OrganizationSelector & Pick<Organization, 'name'> & { user: string },
-  ): Promise<Organization | never>;
   updateOrganizationCleanId(
     _: OrganizationSelector &
-      Pick<Organization, 'cleanId'> & { user: string; reservedNames: string[] },
+      Pick<Organization, 'cleanId'> & { user: string; reservedSlugs: string[] },
   ): Promise<
     | {
         ok: true;
@@ -265,9 +272,16 @@ export interface Storage {
 
   getProjects(_: OrganizationSelector): Promise<Project[] | never>;
 
-  createProject(
-    _: Pick<Project, 'name' | 'cleanId' | 'type'> & OrganizationSelector,
-  ): Promise<Project | never>;
+  createProject(_: Pick<Project, 'type'> & { slug: string } & OrganizationSelector): Promise<
+    | {
+        ok: true;
+        project: Project;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
   deleteProject(_: ProjectSelector): Promise<
     | (Project & {
@@ -276,9 +290,16 @@ export interface Storage {
     | never
   >;
 
-  updateProjectName(
-    _: ProjectSelector & Pick<Project, 'name' | 'cleanId'> & { user: string },
-  ): Promise<Project | never>;
+  updateProjectSlug(_: ProjectSelector & { slug: string; user: string }): Promise<
+    | {
+        ok: true;
+        project: Project;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
   updateNativeSchemaComposition(
     _: ProjectSelector & {
@@ -311,11 +332,27 @@ export interface Storage {
     } & ProjectSelector,
   ): Promise<Target | null>;
 
-  createTarget(_: Pick<Target, 'cleanId' | 'name'> & ProjectSelector): Promise<Target | never>;
+  createTarget(_: { slug: string } & ProjectSelector): Promise<
+    | {
+        ok: true;
+        target: Target;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
-  updateTargetName(
-    _: TargetSelector & Pick<Project, 'name' | 'cleanId'> & { user: string },
-  ): Promise<Target | never>;
+  updateTargetSlug(_: TargetSelector & { slug: string; user: string }): Promise<
+    | {
+        ok: true;
+        target: Target;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
   updateTargetGraphQLEndpointUrl(_: {
     targetId: string;
@@ -442,6 +479,7 @@ export interface Storage {
       diffSchemaVersionId: string | null;
       conditionalBreakingChangeMetadata: null | ConditionalBreakingChangeMetadata;
       contracts: null | Array<CreateContractVersionInput>;
+      coordinatesDiff: SchemaCoordinatesDiffResult | null;
     } & TargetSelector &
       (
         | {
@@ -480,6 +518,7 @@ export interface Storage {
       };
       contracts: null | Array<CreateContractVersionInput>;
       conditionalBreakingChangeMetadata: null | ConditionalBreakingChangeMetadata;
+      coordinatesDiff: SchemaCoordinatesDiffResult | null;
     } & TargetSelector) &
       (
         | {

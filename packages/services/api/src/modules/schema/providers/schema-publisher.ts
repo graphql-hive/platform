@@ -32,7 +32,7 @@ import { ProjectManager } from '../../project/providers/project-manager';
 import { RateLimitProvider } from '../../rate-limit/providers/rate-limit.provider';
 import { DistributedCache } from '../../shared/providers/distributed-cache';
 import { Logger } from '../../shared/providers/logger';
-import { Mutex } from '../../shared/providers/mutex';
+import { Mutex, MutexResourceLockedError } from '../../shared/providers/mutex';
 import { Storage, type TargetSelector } from '../../shared/providers/storage';
 import { TargetManager } from '../../target/providers/target-manager';
 import { toGraphQLSchemaCheck } from '../to-graphql-schema-check';
@@ -95,10 +95,15 @@ export type PublishInput = Types.SchemaPublishInput &
 
 type BreakPromise<T> = T extends Promise<infer U> ? U : never;
 
-type PublishResult = BreakPromise<ReturnType<SchemaPublisher['internalPublish']>>;
+type PublishResult =
+  | BreakPromise<ReturnType<SchemaPublisher['internalPublish']>>
+  | {
+      readonly __typename: 'SchemaPublishRetry';
+      readonly reason: string;
+    };
 
 function registryLockId(targetId: string) {
-  return `registry:lock:${targetId}`;
+  return `registry-lock:${targetId}`;
 }
 
 function assertNonNull<T>(value: T | null, message: string): T {
@@ -509,27 +514,14 @@ export class SchemaPublisher {
       );
     });
 
-    const compareToPreviousComposableVersion = shouldUseLatestComposableVersion(
-      target.id,
-      project,
-      organization,
-    );
-
-    const comparedVersion = compareToPreviousComposableVersion
-      ? latestComposableVersion
-      : latestVersion;
-    const comparedSchemaVersion = compareToPreviousComposableVersion
-      ? latestComposableSchemaVersion
-      : latestSchemaVersion;
-
     const conditionalBreakingChangeConfiguration =
       await this.getConditionalBreakingChangeConfiguration({
         selector,
       });
 
-    const schemaVersionContracts = comparedSchemaVersion
+    const latestSchemaVersionContracts = latestSchemaVersion
       ? await this.contracts.getContractVersionsForSchemaVersion({
-          schemaVersionId: comparedSchemaVersion.id,
+          schemaVersionId: latestSchemaVersion.id,
         })
       : null;
 
@@ -584,6 +576,8 @@ export class SchemaPublisher {
                 isComposable: latestVersion.valid,
                 sdl: latestSchemaVersion?.compositeSchemaSDL ?? null,
                 schemas: ensureCompositeSchemas(latestVersion.schemas),
+                contractNames:
+                  latestSchemaVersionContracts?.edges.map(edge => edge.node.contractName) ?? null,
               }
             : null,
           latestComposable: latestComposableVersion
@@ -593,8 +587,6 @@ export class SchemaPublisher {
                 schemas: ensureCompositeSchemas(latestComposableVersion.schemas),
               }
             : null,
-          schemaVersionContractNames:
-            schemaVersionContracts?.edges.map(edge => edge.node.contractName) ?? null,
           baseSchema,
           project,
           organization,
@@ -715,14 +707,14 @@ export class SchemaPublisher {
           })) ?? null,
       });
     } else if (checkResult.conclusion === SchemaCheckConclusion.Skip) {
-      if (!comparedVersion || !comparedSchemaVersion) {
+      if (!latestVersion || !latestSchemaVersion) {
         throw new Error('This cannot happen 1 :)');
       }
 
       const [compositeSchemaSdl, supergraphSdl, compositionErrors] = await Promise.all([
-        this.schemaVersionHelper.getCompositeSchemaSdl(comparedSchemaVersion),
-        this.schemaVersionHelper.getSupergraphSdl(comparedSchemaVersion),
-        this.schemaVersionHelper.getSchemaCompositionErrors(comparedSchemaVersion),
+        this.schemaVersionHelper.getCompositeSchemaSdl(latestSchemaVersion),
+        this.schemaVersionHelper.getSupergraphSdl(latestSchemaVersion),
+        this.schemaVersionHelper.getSchemaCompositionErrors(latestSchemaVersion),
       ]);
 
       schemaCheck = await this.storage.createSchemaCheck({
@@ -730,7 +722,7 @@ export class SchemaPublisher {
         serviceName: input.service ?? null,
         meta: input.meta ?? null,
         targetId: target.id,
-        schemaVersionId: comparedVersion?.version ?? null,
+        schemaVersionId: latestSchemaVersion.id ?? null,
         breakingSchemaChanges: null,
         safeSchemaChanges: null,
         schemaPolicyWarnings: null,
@@ -766,9 +758,9 @@ export class SchemaPublisher {
           projectId: project.id,
           targetId: target.id,
         }),
-        contracts: schemaVersionContracts
+        contracts: latestSchemaVersionContracts
           ? await Promise.all(
-              schemaVersionContracts?.edges.map(async edge => ({
+              latestSchemaVersionContracts?.edges.map(async edge => ({
                 contractId: edge.node.contractId,
                 contractName: edge.node.contractName,
                 comparedContractVersionId:
@@ -840,14 +832,14 @@ export class SchemaPublisher {
 
       // SchemaCheckConclusion.Skip
 
-      if (!comparedVersion || !comparedSchemaVersion) {
+      if (!latestVersion || !latestSchemaVersion) {
         throw new Error('This cannot happen 2 :)');
       }
 
-      if (comparedSchemaVersion.isComposable) {
+      if (latestSchemaVersion.isComposable) {
         increaseSchemaCheckCountMetric('accepted');
         const contracts = await this.contracts.getContractVersionsForSchemaVersion({
-          schemaVersionId: comparedSchemaVersion.id,
+          schemaVersionId: latestSchemaVersion.id,
         });
         const failedContractCompositionCount =
           contracts?.edges.filter(edge => edge.node.schemaCompositionErrors !== null).length ?? 0;
@@ -876,7 +868,7 @@ export class SchemaPublisher {
         conclusion: SchemaCheckConclusion.Failure,
         changes: null,
         breakingChanges: null,
-        compositionErrors: comparedSchemaVersion.schemaCompositionErrors,
+        compositionErrors: latestSchemaVersion.schemaCompositionErrors,
         warnings: null,
         errors: null,
         schemaCheckId: schemaCheck?.id ?? null,
@@ -960,11 +952,11 @@ export class SchemaPublisher {
 
     // SchemaCheckConclusion.Skip
 
-    if (!comparedVersion || !comparedSchemaVersion) {
+    if (!latestVersion || !latestSchemaVersion) {
       throw new Error('This cannot happen 3 :)');
     }
 
-    if (comparedSchemaVersion.isComposable) {
+    if (latestSchemaVersion.isComposable) {
       increaseSchemaCheckCountMetric('accepted');
       return {
         __typename: 'SchemaCheckSuccess',
@@ -977,7 +969,7 @@ export class SchemaPublisher {
     }
 
     const contractVersions = await this.contracts.getContractVersionsForSchemaVersion({
-      schemaVersionId: comparedSchemaVersion.id,
+      schemaVersionId: latestSchemaVersion.id,
     });
 
     increaseSchemaCheckCountMetric('rejected');
@@ -987,7 +979,7 @@ export class SchemaPublisher {
       changes: [],
       warnings: [],
       errors: [
-        ...(comparedSchemaVersion.schemaCompositionErrors?.map(error => ({
+        ...(latestSchemaVersion.schemaCompositionErrors?.map(error => ({
           message: error.message,
           source: error.source,
         })) ?? []),
@@ -1028,7 +1020,14 @@ export class SchemaPublisher {
     );
 
     const token = this.authManager.ensureApiToken();
-    const contracts = await this.contracts.getActiveContractsByTargetId({ targetId: input.target });
+    const [contracts, latestVersion] = await Promise.all([
+      this.contracts.getActiveContractsByTargetId({ targetId: input.target }),
+      this.schemaManager.getMaybeLatestVersion({
+        organization: input.organization,
+        project: input.project,
+        target: input.target,
+      }),
+    ]);
 
     const checksum = createHash('md5')
       .update(
@@ -1042,6 +1041,10 @@ export class SchemaPublisher {
             contractId: contract.id,
             contractName: contract.contractName,
           })),
+          // We include the latest version ID to avoid caching a schema publication that targets different versions.
+          // When deleting a schema, and publishing it again, the latest version ID will be different.
+          // If we don't include it, the cache will return the previous result.
+          latestVersionId: latestVersion?.id,
         }),
       )
       .update(token)
@@ -1054,29 +1057,50 @@ export class SchemaPublisher {
       input.target,
     );
 
-    return this.mutex.perform(
-      registryLockId(input.target),
-      {
-        signal,
-      },
-      async () => {
-        await this.authManager.ensureTargetAccess({
-          target: input.target,
-          project: input.project,
-          organization: input.organization,
-          scope: TargetAccessScope.REGISTRY_WRITE,
-        });
-        return this.distributedCache.wrap({
-          key: `schema:publish:${checksum}`,
-          ttlSeconds: 15,
-          executor: () =>
-            this.internalPublish({
-              ...input,
-              checksum,
-            }),
-        });
-      },
-    );
+    return this.mutex
+      .perform(
+        registryLockId(input.target),
+        {
+          /**
+           * The global request timeout is 60 seconds.
+           * We don't want to try acquiring the lock longer than 30 seconds.
+           * If it succeeds after 30 seconds,
+           * we have 30 seconds for actually running the business logic.
+           *
+           * If we would wait longer we risk the user facing 504 errors.
+           */
+          retries: 30,
+          retryDelay: 1_000,
+          signal,
+        },
+        async () => {
+          await this.authManager.ensureTargetAccess({
+            target: input.target,
+            project: input.project,
+            organization: input.organization,
+            scope: TargetAccessScope.REGISTRY_WRITE,
+          });
+          return this.distributedCache.wrap({
+            key: `schema:publish:${checksum}`,
+            ttlSeconds: 15,
+            executor: () =>
+              this.internalPublish({
+                ...input,
+                checksum,
+              }),
+          });
+        },
+      )
+      .catch((error: unknown) => {
+        if (error instanceof MutexResourceLockedError && input.supportsRetry === true) {
+          return {
+            __typename: 'SchemaPublishRetry',
+            reason: 'Another schema publish is currently in progress.',
+          } satisfies PublishResult;
+        }
+
+        throw error;
+      });
   }
 
   public async updateVersionStatus(input: TargetSelector & { version: string; valid: boolean }) {
@@ -1278,14 +1302,6 @@ export class SchemaPublisher {
               })
             : null;
 
-        const contractIdToLatestValidContractVersionId = new Map<string, string | null>();
-        for (const contract of contracts ?? []) {
-          contractIdToLatestValidContractVersionId.set(
-            contract.contract.id,
-            contract.latestValidVersion?.id ?? null,
-          );
-        }
-
         const deleteResult = await this.models[project.type][modelVersion].delete({
           input: {
             serviceName: input.serviceName,
@@ -1335,6 +1351,7 @@ export class SchemaPublisher {
               composable: deleteResult.state.composable,
               diffSchemaVersionId,
               changes: deleteResult.state.changes,
+              coordinatesDiff: deleteResult.state.coordinatesDiff,
               contracts:
                 deleteResult.state.contracts?.map(contract => ({
                   contractId: contract.contractId,
@@ -1623,14 +1640,6 @@ export class SchemaPublisher {
           })
         : null;
 
-    const contractIdToLatestValidContractVersionId = new Map<string, string | null>();
-    for (const contract of contracts ?? []) {
-      contractIdToLatestValidContractVersionId.set(
-        contract.contract.id,
-        contract.latestValidVersion?.id ?? null,
-      );
-    }
-
     const compareToPreviousComposableVersion = shouldUseLatestComposableVersion(
       target.id,
       project,
@@ -1639,9 +1648,10 @@ export class SchemaPublisher {
     const comparedSchemaVersion = compareToPreviousComposableVersion
       ? latestComposableSchemaVersion
       : latestSchemaVersion;
-    const schemaVersionContracts = comparedSchemaVersion
+
+    const latestSchemaVersionContracts = latestSchemaVersion
       ? await this.contracts.getContractVersionsForSchemaVersion({
-          schemaVersionId: comparedSchemaVersion.id,
+          schemaVersionId: latestSchemaVersion.id,
         })
       : null;
 
@@ -1693,6 +1703,8 @@ export class SchemaPublisher {
                 isComposable: latestVersion.valid,
                 sdl: latestSchemaVersion?.compositeSchemaSDL ?? null,
                 schemas: ensureCompositeSchemas(latestVersion.schemas),
+                contractNames:
+                  latestSchemaVersionContracts?.edges.map(edge => edge.node.contractName) ?? null,
               }
             : null,
           latestComposable: latestComposable
@@ -1702,8 +1714,6 @@ export class SchemaPublisher {
                 schemas: ensureCompositeSchemas(latestComposable.schemas),
               }
             : null,
-          schemaVersionContractNames:
-            schemaVersionContracts?.edges.map(edge => edge.node.contractName) ?? null,
           organization,
           project,
           target,
@@ -1859,14 +1869,7 @@ export class SchemaPublisher {
 
     const supergraph = publishResult.state.supergraph ?? null;
 
-    let diffSchemaVersionId: string | null = null;
-    if (compareToPreviousComposableVersion && latestComposableSchemaVersion) {
-      diffSchemaVersionId = latestComposableSchemaVersion.id;
-    }
-
-    if (!compareToPreviousComposableVersion && latestSchemaVersion) {
-      diffSchemaVersionId = latestSchemaVersion.id;
-    }
+    const diffSchemaVersionId = comparedSchemaVersion?.id ?? null;
 
     this.logger.debug(`Assigning ${schemaLogIds.length} schemas to new version`);
 
@@ -1909,6 +1912,7 @@ export class SchemaPublisher {
         }
       },
       changes,
+      coordinatesDiff: publishResult.state.coordinatesDiff,
       diffSchemaVersionId,
       previousSchemaVersion: latestVersion?.version ?? null,
       conditionalBreakingChangeMetadata: await this.getConditionalBreakingChangeMetadata({

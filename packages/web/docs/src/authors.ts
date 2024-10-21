@@ -8,22 +8,32 @@ type Author = {
 export const authors: Record<string, Author> = {
   kamil: {
     name: 'Kamil Kisiela',
-    link: 'https://twitter.com/kamilkisiela',
+    link: 'https://x.com/kamilkisiela',
     github: 'kamilkisiela',
   },
   laurin: {
     name: 'Laurin Quast',
-    link: 'https://twitter.com/n1rual',
+    link: 'https://x.com/n1rual',
     github: 'n1ru4l',
+  },
+  arda: {
+    name: 'Arda Tanrikulu',
+    link: 'https://twitter.com/ardatanrikulu',
+    github: 'ardatan',
   },
   aleksandra: {
     name: 'Aleksandra Sikora',
-    link: 'https://twitter.com/aleksandrasays',
+    link: 'https://x.com/aleksandrasays',
     github: 'beerose',
   },
   jiri: {
     name: 'Jiri Spac',
-    link: 'https://twitter.com/capajj',
+    link: 'https://x.com/capajj',
     github: 'capaj',
+  },
+  dimitri: {
+    name: 'Dimitri Postolov',
+    link: 'https://x.com/dimaMachina_',
+    github: 'dimaMachina',
   },
 };

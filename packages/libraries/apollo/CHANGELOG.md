@@ -1,5 +1,134 @@
 # @graphql-hive/apollo
 
+## 0.36.2
+
+### Patch Changes
+
+- [#5676](https://github.com/graphql-hive/platform/pull/5676)
+  [`c728803`](https://github.com/graphql-hive/platform/commit/c7288038f24c0214b4023994f306c6229c1ce72c)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Correct collection of enum values when
+  used in a list
+
+- Updated dependencies
+  [[`c728803`](https://github.com/graphql-hive/platform/commit/c7288038f24c0214b4023994f306c6229c1ce72c)]:
+  - @graphql-hive/core@0.8.2
+
+## 0.36.1
+
+### Patch Changes
+
+- [#5667](https://github.com/kamilkisiela/graphql-hive/pull/5667)
+  [`be5d39c`](https://github.com/kamilkisiela/graphql-hive/commit/be5d39cbf08d0681d142e83a708d300abc504c44)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Report enum values when an enum is used
+  as an output type
+
+- Updated dependencies
+  [[`be5d39c`](https://github.com/kamilkisiela/graphql-hive/commit/be5d39cbf08d0681d142e83a708d300abc504c44)]:
+  - @graphql-hive/core@0.8.1
+
+## 0.36.0
+
+### Minor Changes
+
+- [#5401](https://github.com/kamilkisiela/graphql-hive/pull/5401)
+  [`3ffdb6e`](https://github.com/kamilkisiela/graphql-hive/commit/3ffdb6e9466deb3c3aa09eea1445fc4caf698fd5)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Deduplicate persisted document lookups from the
+  registry for reducing the amount of concurrent HTTP requests.
+
+### Patch Changes
+
+- Updated dependencies
+  [[`3ffdb6e`](https://github.com/kamilkisiela/graphql-hive/commit/3ffdb6e9466deb3c3aa09eea1445fc4caf698fd5)]:
+  - @graphql-hive/core@0.8.0
+
+## 0.35.1
+
+### Patch Changes
+
+- [#5367](https://github.com/kamilkisiela/graphql-hive/pull/5367)
+  [`a896642`](https://github.com/kamilkisiela/graphql-hive/commit/a896642197e6d7779ba7ed71f365dfbd80532282)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Move createSupergraphSDLFetcher to
+  @graphql-hive/core package
+
+- Updated dependencies
+  [[`a896642`](https://github.com/kamilkisiela/graphql-hive/commit/a896642197e6d7779ba7ed71f365dfbd80532282)]:
+  - @graphql-hive/core@0.7.1
+
+## 0.35.0
+
+### Minor Changes
+
+- [#5307](https://github.com/kamilkisiela/graphql-hive/pull/5307)
+  [`0a3b24d`](https://github.com/kamilkisiela/graphql-hive/commit/0a3b24d400770c2cc84642959febb9288ad1c1b7)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Re-introduce retry logging removed in previous
+  release.
+
+### Patch Changes
+
+- [#5361](https://github.com/kamilkisiela/graphql-hive/pull/5361)
+  [`3f03e7b`](https://github.com/kamilkisiela/graphql-hive/commit/3f03e7b3a65707ba8aa04335684f0aa8d261868f)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fixed issue where usage reports were
+  sent only on app disposal or max batch size, now also sent at set intervals.
+- Updated dependencies
+  [[`3f03e7b`](https://github.com/kamilkisiela/graphql-hive/commit/3f03e7b3a65707ba8aa04335684f0aa8d261868f),
+  [`0a3b24d`](https://github.com/kamilkisiela/graphql-hive/commit/0a3b24d400770c2cc84642959febb9288ad1c1b7)]:
+  - @graphql-hive/core@0.7.0
+
+## 0.34.1
+
+### Patch Changes
+
+- [#5304](https://github.com/kamilkisiela/graphql-hive/pull/5304)
+  [`f2fef08`](https://github.com/kamilkisiela/graphql-hive/commit/f2fef08e9d1e13cb4a89d3882922db6dc822542e)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fixed a logging issue where both
+  initiated requests and successful responses were being recorded. This was causing the logs to be
+  filled with unnecessary information and affected `hive artifact:fetch --artifact` command.
+
+- Updated dependencies
+  [[`f2fef08`](https://github.com/kamilkisiela/graphql-hive/commit/f2fef08e9d1e13cb4a89d3882922db6dc822542e)]:
+  - @graphql-hive/core@0.6.1
+
+## 0.34.0
+
+### Minor Changes
+
+- [#5234](https://github.com/kamilkisiela/graphql-hive/pull/5234)
+  [`e6dc5c9`](https://github.com/kamilkisiela/graphql-hive/commit/e6dc5c9df34c30c52555b27b0bca50e0be75480b)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Better HTTP info, error and debug logging.
+
+  For the supergraph manager, pass a `console` instance as the `logger` property.
+
+  ```ts
+  import { createSupergraphManager } from '@graphql-hive/apollo'
+
+  const manager = createSupergraphManager({
+    ...otherOptions,
+    logger: console
+  })
+  ```
+
+  For the supergraph SDL fetcher pass a `console` instance as the `logger` property.
+
+  ```ts
+  import { createSupergraphSDLFetcher } from '@graphql-hive/apollo'
+
+  const manager = createSupergraphSDLFetcher({
+    ...otherOptions,
+    logger: console
+  })
+  ```
+
+- [#5234](https://github.com/kamilkisiela/graphql-hive/pull/5234)
+  [`e6dc5c9`](https://github.com/kamilkisiela/graphql-hive/commit/e6dc5c9df34c30c52555b27b0bca50e0be75480b)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Improved logging output of HTTP requests and
+  retires.
+
+### Patch Changes
+
+- Updated dependencies
+  [[`e6dc5c9`](https://github.com/kamilkisiela/graphql-hive/commit/e6dc5c9df34c30c52555b27b0bca50e0be75480b)]:
+  - @graphql-hive/core@0.6.0
+
 ## 0.33.4
 
 ### Patch Changes

@@ -32,6 +32,7 @@ module.exports = {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
+      inherit: 'inherit',
       white: '#fcfcfc',
       black: '#0b0d11',
       emerald: colors.emerald,
@@ -105,7 +106,7 @@ module.exports = {
           foreground: 'hsl(var(--secondary-foreground))',
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
+          DEFAULT: 'rgb(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
         muted: {
@@ -227,6 +228,14 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: 0 },
         },
+        shimmer: {
+          from: {
+            backgroundPosition: '0 0',
+          },
+          to: {
+            backgroundPosition: '-200% 0',
+          },
+        },
       },
       animation: {
         // Dropdown menu
@@ -255,6 +264,8 @@ module.exports = {
         'toast-swipe-out-y': 'toast-swipe-out-y 100ms ease-out forwards',
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        //
+        shimmer: 'shimmer 1.5s linear infinite',
       },
       minHeight: {
         content: 'var(--content-height)',
@@ -296,8 +307,8 @@ function asd() {
 }
 
 function addVariablesForColors({ addBase, theme }) {
-  let allColors = flattenColorPalette(theme('colors'));
-  let newVars = Object.fromEntries(
+  const allColors = flattenColorPalette(theme('colors'));
+  const newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val]),
   );
 

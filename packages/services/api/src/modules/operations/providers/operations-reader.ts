@@ -944,7 +944,7 @@ export class OperationsReader {
      * top_operations_by_coordinates -> get the top operations for schema coordinates, we need to right join operations_daily as coordinates_daily does not contain the client_names column
      */
     const results = await this.clickHouse
-      .query<unknown>({
+      .postQuery({
         queryId: '_getTopOperationsForSchemaCoordinates',
         query: sql`
           WITH "top_operations_by_coordinates" AS (
@@ -987,7 +987,7 @@ export class OperationsReader {
               "coordinates_daily"."target" IN (${sql.array(args.targetIds, 'String')})
               AND "coordinates_daily"."timestamp" >= toDateTime(${formatDate(args.period.from)}, 'UTC')
               AND "coordinates_daily"."timestamp" <= toDateTime(${formatDate(args.period.to)}, 'UTC')
-              AND "coordinates_daily"."coordinate" IN (${sql.array(args.schemaCoordinates, 'String')})
+              AND "coordinates_daily"."coordinate" IN (${sql.longArray(args.schemaCoordinates, 'String')})
             HAVING "total" >= ${String(args.requestCountThreshold)}
             ORDER BY
               "total" DESC,
@@ -1097,7 +1097,7 @@ export class OperationsReader {
     this.logger.debug('Fetching top clients for schema coordinates (args=%o)', args);
 
     const results = await this.clickHouse
-      .query<unknown>({
+      .postQuery({
         queryId: '_getTopClientsForSchemaCoordinates',
         query: sql`
           WITH "coordinates_to_client_name_mapping" AS (
@@ -1144,7 +1144,7 @@ export class OperationsReader {
               "coordinates_daily"."target" IN (${sql.array(args.targetIds, 'String')})
               AND "coordinates_daily"."timestamp" >= toDateTime(${formatDate(args.period.from)}, 'UTC')
               AND "coordinates_daily"."timestamp" <= toDateTime(${formatDate(args.period.to)}, 'UTC')
-              AND "coordinates_daily"."coordinate" IN (${sql.array(args.schemaCoordinates, 'String')})
+              AND "coordinates_daily"."coordinate" IN (${sql.longArray(args.schemaCoordinates, 'String')})
             LIMIT 1
             BY
               "coordinates_daily"."coordinate",
@@ -1297,7 +1297,7 @@ export class OperationsReader {
     >
   > {
     const ORs = args.typeNames.map(
-      typeName => sql`( cd.coordinate = ${typeName} OR cd.coordinate LIKE ${typeName + '.%'} )`,
+      typeName => sql`( cdi.coordinate = ${typeName} OR cdi.coordinate LIKE ${typeName + '.%'} )`,
     );
 
     const result = await this.clickHouse.query<{
@@ -1320,14 +1320,13 @@ export class OperationsReader {
                 ${this.createFilter({
                   target: args.targetId,
                   period: args.period,
-                  extra: [sql`cdi.coordinate NOT LIKE '%.%.%'`],
+                  extra: [sql`cdi.coordinate NOT LIKE '%.%.%'`, sql`(${sql.join(ORs, ' OR ')})`],
                   namespace: 'cdi',
                 })}
               GROUP BY cdi.hash, cdi.coordinate ORDER by total DESC, cdi.hash ASC LIMIT ${sql.raw(
                 String(args.limit),
               )} by cdi.coordinate
             ) as cd
-            WHERE ${sql.join(ORs, ' OR ')}
           )
           SELECT total, hash, coordinate, ocd.name
           FROM coordinates as c LEFT JOIN (

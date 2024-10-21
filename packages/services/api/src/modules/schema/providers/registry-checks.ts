@@ -5,6 +5,7 @@ import hashObject from 'object-hash';
 import { CriticalityLevel } from '@graphql-inspector/core';
 import type { CheckPolicyResponse } from '@hive/policy';
 import type { CompositionFailureError, ContractsInputType } from '@hive/schema';
+import { traceFn } from '@hive/service-common';
 import {
   HiveSchemaChangeModel,
   type RegistryServiceUrlChangeSerializableChange,
@@ -24,7 +25,7 @@ import type {
   SingleSchema,
 } from './../../../shared/entities';
 import { Logger } from './../../shared/providers/logger';
-import { Inspector } from './inspector';
+import { diffSchemaCoordinates, Inspector, SchemaCoordinatesDiffResult } from './inspector';
 import { SchemaCheckWarning } from './models/shared';
 import { extendWithBase, isCompositeSchema, SchemaHelper } from './schema-helper';
 
@@ -37,7 +38,7 @@ export type ConditionalBreakingChangeDiffConfig = {
 
 // The reason why I'm using `result` and `reason` instead of just `data` for both:
 // https://bit.ly/hive-check-result-data
-export type CheckResult<C = unknown, F = unknown> =
+export type CheckResult<C = unknown, F = unknown, S = unknown> =
   | {
       status: 'completed';
       result: C;
@@ -48,6 +49,7 @@ export type CheckResult<C = unknown, F = unknown> =
     }
   | {
       status: 'skipped';
+      data?: S;
     };
 
 type Schemas = [SingleSchema] | PushedCompositeSchema[];
@@ -134,6 +136,7 @@ type SchemaDiffFailure = {
     breaking: Array<SchemaChangeType> | null;
     safe: Array<SchemaChangeType> | null;
     all: Array<SchemaChangeType> | null;
+    coordinatesDiff: SchemaCoordinatesDiffResult | null;
   };
   result?: never;
 };
@@ -144,6 +147,7 @@ export type SchemaDiffSuccess = {
     breaking: Array<SchemaChangeType> | null;
     safe: Array<SchemaChangeType> | null;
     all: Array<SchemaChangeType> | null;
+    coordinatesDiff: SchemaCoordinatesDiffResult | null;
   };
   reason?: never;
 };
@@ -168,21 +172,27 @@ export class RegistryChecks {
     private operationsReader: OperationsReader,
   ) {}
 
+  /**
+   * Compare the incoming schema with the existing schema.
+   * In case of a Federated schema, it's a subgraph.
+   * Comparing the whole collection of subgraphs makes no sense,
+   * as the only element that is different is the subgraph that is updated.
+   * The rest of the subgraphs are inherited from the previous version, meaning they are the same.
+   */
   async checksum(args: {
     incoming: {
-      schemas: Schemas;
+      schema: SingleSchema | PushedCompositeSchema;
       contractNames: null | Array<string>;
     };
     existing: null | {
-      schemas: Schemas;
+      schema: SingleSchema | PushedCompositeSchema;
       contractNames: null | Array<string>;
     };
   }) {
     this.logger.debug(
-      'Checksum check (existingSchemaCount=%s, existingContractCount=%s, incomingSchemaCount=%s, existingContractCount=%s)',
-      args.existing?.schemas.length ?? null,
+      'Checksum check (existingSchema=%s, existingContractCount=%s, incomingContractCount=%s)',
+      args.existing?.schema ? 'yes' : 'no',
       args.existing?.contractNames?.length ?? null,
-      args.incoming.schemas.length,
       args.incoming.contractNames?.length ?? null,
     );
 
@@ -192,8 +202,8 @@ export class RegistryChecks {
     }
 
     const isSchemasModified =
-      this.helper.createChecksumFromSchemas(args.existing.schemas) !==
-      this.helper.createChecksumFromSchemas(args.incoming.schemas);
+      this.helper.createChecksum(args.existing.schema) !==
+      this.helper.createChecksum(args.incoming.schema);
 
     if (isSchemasModified) {
       this.logger.debug('Schema is modified.');
@@ -343,6 +353,7 @@ export class RegistryChecks {
     return existingSchemaResult.sdl ?? null;
   }
 
+  @traceFn('RegistryChecks.policyCheck')
   async policyCheck({
     selector,
     modifiedSdl,
@@ -394,6 +405,7 @@ export class RegistryChecks {
    * Diff incoming and existing SDL and generate a list of changes.
    * Uses usage stats to determine whether a change is safe or not (if available).
    */
+  @traceFn('RegistryChecks.diff')
   async diff(args: {
     /** The existing SDL */
     existingSdl: string | null;
@@ -412,32 +424,39 @@ export class RegistryChecks {
     /** Settings for fetching conditional breaking changes. */
     conditionalBreakingChangeConfig: null | ConditionalBreakingChangeDiffConfig;
   }) {
-    if (args.existingSdl == null || args.incomingSdl == null) {
-      this.logger.debug('Skip diff check due to either existing or incoming SDL being absent.');
+    let existingSchema: GraphQLSchema | null = null;
+    let incomingSchema: GraphQLSchema | null = null;
+
+    try {
+      existingSchema = args.existingSdl
+        ? buildSortedSchemaFromSchemaObject(
+            this.helper.createSchemaObject({
+              sdl: args.existingSdl,
+            }),
+          )
+        : null;
+
+      incomingSchema = args.incomingSdl
+        ? buildSortedSchemaFromSchemaObject(
+            this.helper.createSchemaObject({
+              sdl: args.incomingSdl,
+            }),
+          )
+        : null;
+    } catch (error) {
+      this.logger.error('Failed to build schema for diff. Skip diff check.');
       return {
         status: 'skipped',
       } satisfies CheckResult;
     }
 
-    let existingSchema: GraphQLSchema;
-    let incomingSchema: GraphQLSchema;
-
-    try {
-      existingSchema = buildSortedSchemaFromSchemaObject(
-        this.helper.createSchemaObject({
-          sdl: args.existingSdl,
-        }),
-      );
-
-      incomingSchema = buildSortedSchemaFromSchemaObject(
-        this.helper.createSchemaObject({
-          sdl: args.incomingSdl,
-        }),
-      );
-    } catch (error) {
-      this.logger.error('Failed to build schema for diff. Skip diff check.');
+    if (existingSchema === null || incomingSchema === null) {
+      this.logger.debug('Skip diff check due to either existing or incoming SDL being absent.');
       return {
         status: 'skipped',
+        data: {
+          coordinatesDiff: incomingSchema ? diffSchemaCoordinates(null, incomingSchema) : null,
+        },
       } satisfies CheckResult;
     }
 
@@ -511,6 +530,8 @@ export class RegistryChecks {
     const safeChanges: Array<SchemaChangeType> = [];
     const breakingChanges: Array<SchemaChangeType> = [];
 
+    const coordinatesDiff = diffSchemaCoordinates(existingSchema, incomingSchema);
+
     for (const change of inspectorChanges) {
       if (change.criticality === CriticalityLevel.Breaking) {
         if (change.isSafeBasedOnUsage === true) {
@@ -549,6 +570,7 @@ export class RegistryChecks {
             }
             return null;
           },
+          coordinatesDiff,
         },
       } satisfies SchemaDiffFailure;
     }
@@ -568,6 +590,7 @@ export class RegistryChecks {
           }
           return null;
         },
+        coordinatesDiff,
       },
     } satisfies SchemaDiffSuccess;
   }

@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { DocsLink } from '@/components/ui/docs-note';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +40,6 @@ import {
 } from '@/components/ui/table';
 import { TimeAgo } from '@/components/ui/time-ago';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { DocsLink } from '@/components/v2';
 import { FragmentType, graphql, useFragment } from '@/gql';
 import { cn } from '@/lib/utils';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
@@ -435,7 +435,7 @@ function CreateContractDialogContent(props: {
           <div className="flex flex-col gap-5">
             <Heading className="text-center">Create Schema Contract</Heading>
             <div className="flex flex-col gap-4">
-              <label className="text-sm font-semibold" htmlFor="buildUrl">
+              <label className="text-sm font-semibold" htmlFor="contractName">
                 Contract Name
               </label>
               <Input
@@ -454,7 +454,7 @@ function CreateContractDialogContent(props: {
             </div>
 
             <div className="flex flex-col gap-4">
-              <label className="text-sm font-semibold" htmlFor="includedTagsInput">
+              <label className="text-sm font-semibold" htmlFor="includeTagsInput">
                 Included Tags
               </label>
               <div className="flex">
@@ -524,7 +524,7 @@ function CreateContractDialogContent(props: {
                               >
                                 <Check
                                   className={cn(
-                                    'mr-2 h-4 w-4',
+                                    'mr-2 size-4',
                                     form.values.includeTags.includes(value)
                                       ? 'opacity-100'
                                       : 'opacity-0',
@@ -567,7 +567,7 @@ function CreateContractDialogContent(props: {
             </div>
 
             <div className="flex flex-col gap-4">
-              <label className="text-sm font-semibold" htmlFor="buildUrl">
+              <label className="text-sm font-semibold" htmlFor="excludeTagsInput">
                 Excluded Tags
               </label>
               <div className="flex">
@@ -637,7 +637,7 @@ function CreateContractDialogContent(props: {
                               >
                                 <Check
                                   className={cn(
-                                    'mr-2 h-4 w-4',
+                                    'mr-2 size-4',
                                     form.values.excludeTags.includes(value)
                                       ? 'opacity-100'
                                       : 'opacity-0',
@@ -680,7 +680,10 @@ function CreateContractDialogContent(props: {
             </div>
 
             <div className="flex flex-col gap-4">
-              <label className="text-sm font-semibold" htmlFor="buildUrl">
+              <label
+                className="text-sm font-semibold"
+                htmlFor="removeUnreachableTypesFromPublicApiSchema"
+              >
                 Remove unreachable Types
               </label>
               <div className="flex items-center pl-1 pt-2">

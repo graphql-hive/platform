@@ -1,10 +1,11 @@
+import type { Scalars } from '../../__generated__/types.next';
 import type { AdminOrganizationStats } from '../../shared/entities';
 
 export type AdminQueryMapper = {};
 export type AdminStatsMapper = {
   period: {
-    from: string;
-    to: string;
+    from: Scalars['DateTime']['input'];
+    to: Scalars['DateTime']['input'];
   };
   resolution: number;
 };

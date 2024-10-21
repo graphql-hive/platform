@@ -1,6 +1,6 @@
 import { AuthCard, AuthCardContent, AuthCardHeader } from '@/components/auth';
+import { DocsLink } from '@/components/ui/docs-note';
 import { Meta } from '@/components/ui/meta';
-import { DocsLink } from '@/components/v2';
 import { env } from '@/env/frontend';
 import { startAuthFlowForOIDCProvider } from '@/lib/supertokens/third-party-email-password-react-oidc-provider';
 import { useQuery } from '@tanstack/react-query';
@@ -14,8 +14,9 @@ function AuthOIDC(props: { oidcId: string; redirectToPath: string }) {
       if (!env.auth.oidc) {
         throw new Error('OIDC provider is not configured');
       }
-
       await startAuthFlowForOIDCProvider(props.oidcId);
+      // we need to return something, otherwise react-query will throw an error
+      return true;
     },
   });
 

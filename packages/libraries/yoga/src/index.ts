@@ -12,7 +12,13 @@ import {
 } from '@graphql-hive/core';
 import { usePersistedOperations } from '@graphql-yoga/plugin-persisted-operations';
 
-export { atLeastOnceSampler, createSchemaFetcher, createServicesFetcher } from '@graphql-hive/core';
+export {
+  atLeastOnceSampler,
+  createSchemaFetcher,
+  createServicesFetcher,
+  createSupergraphSDLFetcher,
+} from '@graphql-hive/core';
+export type { SupergraphSDLFetcherOptions } from '@graphql-hive/core';
 
 type CacheRecord = {
   callback: CollectUsageCallback;
@@ -187,9 +193,15 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
       }
       addPlugin(
         usePersistedOperations({
-          extractPersistedOperationId(body) {
+          extractPersistedOperationId(body, request) {
             if ('documentId' in body && typeof body.documentId === 'string') {
               return body.documentId;
+            }
+
+            const documentId = new URL(request.url).searchParams.get('documentId');
+
+            if (documentId) {
+              return documentId;
             }
 
             return null;

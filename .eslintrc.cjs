@@ -3,6 +3,7 @@
 const guildConfig = require('@theguild/eslint-config/base');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { REACT_RESTRICTED_SYNTAX, RESTRICTED_SYNTAX } = require('@theguild/eslint-config/constants');
+const path = require('path');
 
 const SCHEMA_PATH = './packages/services/api/src/modules/*/module.graphql.ts';
 const OPERATIONS_PATHS = [
@@ -14,11 +15,9 @@ const OPERATIONS_PATHS = [
 const rulesToExtends = Object.fromEntries(
   Object.entries(guildConfig.rules).filter(([key]) =>
     [
-      'no-implicit-coercion',
       'import/first',
       'no-restricted-globals',
       '@typescript-eslint/no-unused-vars',
-      'unicorn/no-useless-fallback-in-spread',
       'unicorn/no-array-push-push',
       'no-else-return',
       'no-lonely-if',
@@ -37,6 +36,11 @@ const HIVE_RESTRICTED_SYNTAX = [
   },
 ];
 
+const tailwindCallees = ['clsx', 'cn', 'cva', 'cx'];
+
+/**
+ * @type {import('eslint').Linter.Config}
+ */
 module.exports = {
   ignorePatterns: [
     'scripts',
@@ -81,6 +85,7 @@ module.exports = {
       plugins: ['@graphql-eslint'],
       rules: {
         '@graphql-eslint/require-id-when-available': 'error',
+        '@graphql-eslint/no-deprecated': 'error',
       },
     },
     {
@@ -122,15 +127,17 @@ module.exports = {
           },
         ],
         '@typescript-eslint/no-floating-promises': 'error',
+        'sonarjs/no-unused-collection': 'warn',
+        'sonarjs/no-inverted-boolean-check': 'warn',
         ...rulesToExtends,
         'no-lonely-if': 'off',
         'object-shorthand': 'off',
         'no-restricted-syntax': ['error', ...HIVE_RESTRICTED_SYNTAX, ...RESTRICTED_SYNTAX],
         'prefer-destructuring': 'off',
         'prefer-const': 'off',
+        'no-useless-escape': 'off',
+        'no-inner-declarations': 'off',
         '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-
-        // 🚨 The following rules needs to be fixed and was temporarily disabled to avoid printing warning
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',
@@ -171,8 +178,8 @@ module.exports = {
         'jsx-a11y/alt-text': ['warn', { elements: ['img'], img: ['Image', 'NextImage'] }],
         'no-restricted-syntax': ['error', ...HIVE_RESTRICTED_SYNTAX, ...REACT_RESTRICTED_SYNTAX],
         'prefer-destructuring': 'off',
-        // TODO: enable below rules👇
         'no-console': 'off',
+        'no-useless-escape': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',
         'react/jsx-no-useless-fragment': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
@@ -189,14 +196,17 @@ module.exports = {
         'jsx-a11y/no-static-element-interactions': 'off',
         '@next/next/no-html-link-for-pages': 'off',
         'unicorn/no-negated-condition': 'off',
+        'no-implicit-coercion': 'off',
       },
     },
     {
       files: ['packages/web/app/**'],
       settings: {
         tailwindcss: {
-          config: 'packages/web/app/tailwind.config.cjs',
-          whitelist: ['drag-none', 'graphiql-toolbar-icon', 'graphiql-toolbar-button'],
+          callees: tailwindCallees,
+          config: path.join(__dirname, './packages/web/app/tailwind.config.cjs'),
+          whitelist: ['drag-none'],
+          cssFiles: ['packages/web/app/src/index.css', 'node_modules/graphiql/dist/style.css'],
         },
       },
     },
@@ -214,7 +224,9 @@ module.exports = {
           rootDir: 'packages/web/docs',
         },
         tailwindcss: {
-          config: 'packages/web/docs/tailwind.config.cjs',
+          callees: tailwindCallees,
+          whitelist: ['light'],
+          config: path.join(__dirname, './packages/web/docs/tailwind.config.cjs'),
         },
       },
     },

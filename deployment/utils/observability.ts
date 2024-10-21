@@ -25,7 +25,7 @@ export type ObservabilityConfig = {
 // prettier-ignore
 export const OTLP_COLLECTOR_CHART = helmChart('https://open-telemetry.github.io/opentelemetry-helm-charts', 'opentelemetry-collector', '0.96.0');
 // prettier-ignore
-export const VECTOR_HELM_CHART = helmChart('https://helm.vector.dev', 'vector', '0.34.0');
+export const VECTOR_HELM_CHART = helmChart('https://helm.vector.dev', 'vector', '0.35.0');
 
 export class Observability {
   constructor(
@@ -55,6 +55,8 @@ export class Observability {
         },
       },
       podAnnotations: {
+        // This is done because open-telemetry collector doesn't always update the deployment
+        // when the config file changes. This will force-restart it.
         'pulumi.com/update-timestamp': Date.now().toString(),
       },
       clusterRole: {
@@ -133,21 +135,30 @@ export class Observability {
             limit_mib: 409,
             spike_limit_mib: 128,
           },
+          // Filter OpenTelemetry traces that are not needed for debugging.
           'filter/traces': {
             error_mode: 'ignore',
             traces: {
               span: [
+                // Ignore all HEAD/OPTIONS requests
                 'attributes["component"] == "proxy" and attributes["http.method"] == "HEAD"',
                 'attributes["component"] == "proxy" and attributes["http.method"] == "OPTIONS"',
-                'attributes["component"] == "proxy" and attributes["http.method"] == "GET" and IsMatch(attributes["http.url"], ".*/_health") == true',
-                'attributes["component"] == "proxy" and attributes["http.method"] == "POST" and attributes["http.url"] == "/usage"',
-                'attributes["component"] == "proxy" and attributes["http.method"] == "GET" and attributes["http.url"] == "/metrics"',
+                // Ignore health checks
                 'attributes["component"] == "proxy" and attributes["http.method"] == "GET" and attributes["http.url"] == "/_readiness"',
                 'attributes["component"] == "proxy" and attributes["http.method"] == "GET" and attributes["http.url"] == "/_health"',
+                'attributes["component"] == "proxy" and attributes["http.method"] == "GET" and IsMatch(attributes["http.url"], ".*/_health") == true',
+                // Ignore Contour/Envoy traces for /usage requests
+                'attributes["component"] == "proxy" and attributes["http.method"] == "POST" and attributes["http.url"] == "/usage"',
+                'attributes["component"] == "proxy" and attributes["http.method"] == "POST" and IsMatch(attributes["upstream_cluster.name"], "default_usage-service-.*") == true',
+                'attributes["component"] == "proxy" and attributes["http.method"] == "POST" and IsMatch(attributes["upstream_cluster.name"], "default_app-.*") == true',
+                // Ignore metrics scraping
+                'attributes["component"] == "proxy" and attributes["http.method"] == "GET" and attributes["http.url"] == "/metrics"',
+                // Ignore webapp HTTP calls
                 'attributes["component"] == "proxy" and attributes["http.method"] == "GET" and IsMatch(attributes["upstream_cluster.name"], "default_app-.*") == true',
               ],
             },
           },
+          // Remove raw trace information that we don't really need and exposed by default.
           'attributes/trace_filter': {
             actions: [
               'downstream_cluster',
@@ -156,12 +167,12 @@ export class Observability {
               'zone',
               'upstream_cluster',
               'peer.address',
-              'response_flags',
             ].map(key => ({
               key,
               action: 'delete',
             })),
           },
+          // Remove attributes that are not needed for debugging.
           'resource/trace_cleanup': {
             attributes: [
               'host.arch',
@@ -182,6 +193,10 @@ export class Observability {
               action: 'delete',
             })),
           },
+          // Contour spans are not very human-readable by default, so we are transforming them
+          // into a format that is easier to understand.
+          // First, we modify the span URL to be relative, and remove the hostname and full path,
+          // Then, we rename to be "METHOD /path"
           'transform/patch_envoy_spans': {
             error_mode: 'ignore',
             trace_statements: [
@@ -191,7 +206,7 @@ export class Observability {
                   // By defualt, Envoy reports this as full URL, but we only want the path
                   'replace_pattern(attributes["http.url"], "https?://[^/]+(/[^?#]*)", "$$1") where attributes["component"] == "proxy"',
                   // Replace Envoy default span name with a more human-readable one (e.g. "METHOD /path")
-                  'set(name, Concat([attributes["http.method"], attributes["http.url"]], " ")) where attributes["component"] == "proxy"',
+                  'set(name, Concat([attributes["http.method"], attributes["http.url"]], " ")) where attributes["component"] == "proxy" and attributes["http.method"] != nil',
                 ],
               },
             ],
