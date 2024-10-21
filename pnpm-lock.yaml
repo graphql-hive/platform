@@ -32,9 +32,9 @@ patchedDependencies:
   eslint@8.57.1:
     hash: fjbpfrtrjd6idngyeqxnwopfva
     path: patches/eslint@8.57.1.patch
-  got@14.4.2:
+  got@14.4.3:
     hash: b6pwqmrs3qqykctltsasvrfwti
-    path: patches/got@14.4.2.patch
+    path: patches/got@14.4.3.patch
   mjml-core@4.14.0:
     hash: zxxsxbqejjmcwuzpigutzzq6wa
     path: patches/mjml-core@4.14.0.patch
@@ -610,8 +610,8 @@ importers:
         specifier: 16.4.5
         version: 16.4.5
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       graphql:
         specifier: 16.9.0
         version: 16.9.0
@@ -746,8 +746,8 @@ importers:
         specifier: 2.1.0
         version: 2.1.0
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       graphql:
         specifier: 16.9.0
         version: 16.9.0
@@ -1056,8 +1056,8 @@ importers:
         specifier: 16.4.5
         version: 16.4.5
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       pino-pretty:
         specifier: 11.2.2
         version: 11.2.2
@@ -1113,8 +1113,8 @@ importers:
         specifier: 4.28.1
         version: 4.28.1
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       graphql:
         specifier: 16.9.0
         version: 16.9.0
@@ -1224,8 +1224,8 @@ importers:
         specifier: 4.28.1
         version: 4.28.1
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       graphql:
         specifier: 16.9.0
         version: 16.9.0
@@ -1363,8 +1363,8 @@ importers:
         specifier: 2.1.0
         version: 2.1.0
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       pg-promise:
         specifier: 11.9.1
         version: 11.9.1
@@ -1411,8 +1411,8 @@ importers:
         specifier: 16.4.5
         version: 16.4.5
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       pino-pretty:
         specifier: 11.2.2
         version: 11.2.2
@@ -1504,8 +1504,8 @@ importers:
         specifier: 16.4.5
         version: 16.4.5
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       graphql:
         specifier: 16.9.0
         version: 16.9.0
@@ -1546,8 +1546,8 @@ importers:
         specifier: 16.4.5
         version: 16.4.5
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       pino-pretty:
         specifier: 11.2.2
         version: 11.2.2
@@ -1585,8 +1585,8 @@ importers:
         specifier: 16.4.5
         version: 16.4.5
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       graphql:
         specifier: 16.9.0
         version: 16.9.0
@@ -1627,8 +1627,8 @@ importers:
         specifier: 16.4.5
         version: 16.4.5
       got:
-        specifier: 14.4.2
-        version: 14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
+        specifier: 14.4.3
+        version: 14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti)
       ioredis:
         specifier: 5.4.1
         version: 5.4.1
@@ -1844,7 +1844,7 @@ importers:
         version: 4.3.3(vite@5.4.6(@types/node@20.16.1)(less@4.2.0)(terser@5.31.1))
       autoprefixer:
         specifier: 10.4.20
-        version: 10.4.20(postcss@8.4.47)
+        version: 10.4.20(postcss@8.4.41)
       class-variance-authority:
         specifier: 0.7.0
         version: 0.7.0
@@ -7404,8 +7404,8 @@ packages:
     resolution: {integrity: sha512-TV7t8GKYaJWsn00tFDqBw8+Uqmr8A0fRU1tvTQhyZzGv0sJCGRQL3JGMI3ucuKo3XIZdUP+Lx7/gh2t3lewy7g==}
     engines: {node: '>=14.16'}
 
-  '@sindresorhus/is@7.0.0':
-    resolution: {integrity: sha512-WDTlVTyvFivSOuyvMeedzg2hdoBLZ3f1uNVuEida2Rl9BrfjrIRjWA/VZIrMRLvSwJYCAlCRA3usDt1THytxWQ==}
+  '@sindresorhus/is@7.0.1':
+    resolution: {integrity: sha512-QWLl2P+rsCJeofkDNIT3WFmb6NrRud1SUYW8dIhXK/46XFV8Q/g7Bsvib0Askb0reRLe+WYPeeE+l5cH7SlkuQ==}
     engines: {node: '>=18'}
 
   '@sindresorhus/merge-streams@2.3.0':
@@ -8712,11 +8712,6 @@ packages:
 
   acorn@8.10.0:
     resolution: {integrity: sha512-F0SAmZ8iUtS//m8DmCTA0jlh6TDKkHQyK6xc6V4KDTyZKA9dnvX9/3sRTVQrWm79glUAZbnmmNcdYwUIHWVybw==}
-    engines: {node: '>=0.4.0'}
-    hasBin: true
-
-  acorn@8.11.2:
-    resolution: {integrity: sha512-nc0Axzp/0FILLEVsm4fNwLCwMttvhEI263QtVPQcbpfZZ3ts0hLsZGOpE6czNlid7CJ9MlyH8reXkpsf3YUY4w==}
     engines: {node: '>=0.4.0'}
     hasBin: true
 
@@ -11386,8 +11381,8 @@ packages:
     resolution: {integrity: sha512-XfBk1CxOOScDcMr9O1yKkNaQyy865NbYs+F7dr4H0LZMVgCj2Le59k6PqbNHoL5ToeaEQUYh6c6yMfVcc6SJxA==}
     engines: {node: '>=16'}
 
-  got@14.4.2:
-    resolution: {integrity: sha512-+Te/qEZ6hr7i+f0FNgXx/6WQteSM/QqueGvxeYQQFm0GDfoxLVJ/oiwUKYMTeioColWUTdewZ06hmrBjw6F7tw==}
+  got@14.4.3:
+    resolution: {integrity: sha512-iTC0Z87yxSijWTh/IpvGpwOhIQK7+GgWkYrMRoN/hB9qeRj9RPuLGODwevs0p5idUf7nrxCVa5IlOmK3b8z+KA==}
     engines: {node: '>=20'}
 
   graceful-fs@4.2.11:
@@ -13586,10 +13581,6 @@ packages:
   normalize-url@6.1.0:
     resolution: {integrity: sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==}
     engines: {node: '>=10'}
-
-  normalize-url@8.0.0:
-    resolution: {integrity: sha512-uVFpKhj5MheNBJRTiMZ9pE/7hD1QTeEvugSJW/OmLzAp78PB5O6adfMNTvmfKhXBkvCzC+rqifWcVYpGFwTjnw==}
-    engines: {node: '>=14.16'}
 
   normalize-url@8.0.1:
     resolution: {integrity: sha512-IO9QvjUMWxPQQhs60oOu10CRkWCiZzSUkzbXGGV9pviYl1fXYcvkzQ5jV9z8Y6un8ARoVRl4EtC6v6jNqbaJ/w==}
@@ -16316,8 +16307,8 @@ packages:
     resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
     engines: {node: '>=14.16'}
 
-  type-fest@4.20.0:
-    resolution: {integrity: sha512-MBh+PHUHHisjXf4tlx0CFWoMdjx8zCMLJHOjnV1prABYZFHqtFOyauCIK2/7w4oIfwkF8iNhLtnJEfVY2vn3iw==}
+  type-fest@4.26.1:
+    resolution: {integrity: sha512-yOGpmOAL7CkKe/91I5O3gPICmJNLJ1G4zFYVAsRHg7M64biSnPtRj0WNQt++bRkjYOqjWXrhnUw1utzmVErAdg==}
     engines: {node: '>=16'}
 
   type-is@1.6.18:
@@ -24425,7 +24416,7 @@ snapshots:
 
   '@sindresorhus/is@5.6.0': {}
 
-  '@sindresorhus/is@7.0.0': {}
+  '@sindresorhus/is@7.0.1': {}
 
   '@sindresorhus/merge-streams@2.3.0': {}
 
@@ -26176,8 +26167,6 @@ snapshots:
 
   acorn@8.10.0: {}
 
-  acorn@8.11.2: {}
-
   acorn@8.12.0: {}
 
   addressparser@1.0.1: {}
@@ -26352,11 +26341,11 @@ snapshots:
 
   array.prototype.tosorted@1.1.1:
     dependencies:
-      call-bind: 1.0.5
+      call-bind: 1.0.7
       define-properties: 1.2.1
       es-abstract: 1.22.3
       es-shim-unscopables: 1.0.0
-      get-intrinsic: 1.2.2
+      get-intrinsic: 1.2.4
 
   arraybuffer.prototype.slice@1.0.2:
     dependencies:
@@ -26430,16 +26419,6 @@ snapshots:
       normalize-range: 0.1.2
       picocolors: 1.0.1
       postcss: 8.4.41
-      postcss-value-parser: 4.2.0
-
-  autoprefixer@10.4.20(postcss@8.4.47):
-    dependencies:
-      browserslist: 4.23.3
-      caniuse-lite: 1.0.30001651
-      fraction.js: 4.3.7
-      normalize-range: 0.1.2
-      picocolors: 1.0.1
-      postcss: 8.4.47
       postcss-value-parser: 4.2.0
 
   available-typed-arrays@1.0.5: {}
@@ -26814,7 +26793,7 @@ snapshots:
       http-cache-semantics: 4.1.1
       keyv: 4.5.4
       mimic-response: 4.0.0
-      normalize-url: 8.0.0
+      normalize-url: 8.0.1
       responselike: 3.0.0
 
   cacheable-request@12.0.1:
@@ -28176,14 +28155,14 @@ snapshots:
   es-iterator-helpers@1.0.15:
     dependencies:
       asynciterator.prototype: 1.0.0
-      call-bind: 1.0.5
+      call-bind: 1.0.7
       define-properties: 1.2.1
       es-abstract: 1.22.3
       es-set-tostringtag: 2.0.2
       function-bind: 1.1.2
-      get-intrinsic: 1.2.2
+      get-intrinsic: 1.2.4
       globalthis: 1.0.3
-      has-property-descriptors: 1.0.1
+      has-property-descriptors: 1.0.2
       has-proto: 1.0.1
       has-symbols: 1.0.3
       internal-slot: 1.0.6
@@ -28544,7 +28523,7 @@ snapshots:
 
   eslint-plugin-unicorn@55.0.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
     dependencies:
-      '@babel/helper-validator-identifier': 7.24.7
+      '@babel/helper-validator-identifier': 7.25.7
       '@eslint-community/eslint-utils': 4.4.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       ci-info: 4.0.0
       clean-regexp: 1.0.0
@@ -29526,9 +29505,9 @@ snapshots:
       p-cancelable: 3.0.0
       responselike: 3.0.0
 
-  got@14.4.2(patch_hash=b6pwqmrs3qqykctltsasvrfwti):
+  got@14.4.3(patch_hash=b6pwqmrs3qqykctltsasvrfwti):
     dependencies:
-      '@sindresorhus/is': 7.0.0
+      '@sindresorhus/is': 7.0.1
       '@szmarczak/http-timer': 5.0.1
       cacheable-lookup: 7.0.0
       cacheable-request: 12.0.1
@@ -29538,7 +29517,7 @@ snapshots:
       lowercase-keys: 3.0.0
       p-cancelable: 4.0.1
       responselike: 3.0.0
-      type-fest: 4.20.0
+      type-fest: 4.26.1
 
   graceful-fs@4.2.11: {}
 
@@ -32458,8 +32437,6 @@ snapshots:
 
   normalize-url@6.1.0: {}
 
-  normalize-url@8.0.0: {}
-
   normalize-url@8.0.1: {}
 
   npm-bundled@3.0.0:
@@ -32555,7 +32532,7 @@ snapshots:
 
   object.entries@1.1.7:
     dependencies:
-      call-bind: 1.0.5
+      call-bind: 1.0.7
       define-properties: 1.2.1
       es-abstract: 1.22.3
 
@@ -32851,7 +32828,7 @@ snapshots:
 
   parse-json@7.1.1:
     dependencies:
-      '@babel/code-frame': 7.24.7
+      '@babel/code-frame': 7.25.7
       error-ex: 1.3.2
       json-parse-even-better-errors: 3.0.0
       lines-and-columns: 2.0.3
@@ -34872,10 +34849,10 @@ snapshots:
 
   string.prototype.matchall@4.0.8:
     dependencies:
-      call-bind: 1.0.5
+      call-bind: 1.0.7
       define-properties: 1.2.1
       es-abstract: 1.22.3
-      get-intrinsic: 1.2.2
+      get-intrinsic: 1.2.4
       has-symbols: 1.0.3
       internal-slot: 1.0.6
       regexp.prototype.flags: 1.5.1
@@ -35504,7 +35481,7 @@ snapshots:
 
   type-fest@3.13.1: {}
 
-  type-fest@4.20.0: {}
+  type-fest@4.26.1: {}
 
   type-is@1.6.18:
     dependencies:
