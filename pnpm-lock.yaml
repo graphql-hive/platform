@@ -815,8 +815,8 @@ importers:
   packages/services/broker-worker:
     devDependencies:
       '@cloudflare/workers-types':
-        specifier: 4.20240821.1
-        version: 4.20240821.1
+        specifier: 4.20241018.0
+        version: 4.20241018.0
       '@types/service-worker-mock':
         specifier: 2.0.4
         version: 2.0.4
@@ -848,8 +848,8 @@ importers:
   packages/services/cdn-worker:
     devDependencies:
       '@cloudflare/workers-types':
-        specifier: 4.20240821.1
-        version: 4.20240821.1
+        specifier: 4.20241018.0
+        version: 4.20241018.0
       '@types/service-worker-mock':
         specifier: 2.0.4
         version: 2.0.4
@@ -901,7 +901,7 @@ importers:
     devDependencies:
       wrangler:
         specifier: 3.61.0
-        version: 3.61.0(@cloudflare/workers-types@4.20240821.1)
+        version: 3.61.0(@cloudflare/workers-types@4.20241018.0)
 
   packages/services/emails:
     devDependencies:
@@ -3561,8 +3561,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workers-types@4.20240821.1':
-    resolution: {integrity: sha512-icAkbnAqgVl6ef9lgLTom8na+kj2RBw2ViPAQ586hbdj0xZcnrjK7P46Eu08OU9D/lNDgN2sKU/sxhe2iK/gIg==}
+  '@cloudflare/workers-types@4.20241018.0':
+    resolution: {integrity: sha512-gGWumpaaqnjN/G6SI7CZQ13G4SpIUV+EM8QqvuN2D3cGDF6mKIm+ov7H4x7V/c+AdY90v0FCc8B5nmEEt90MvQ==}
 
   '@codemirror/language@6.10.2':
     resolution: {integrity: sha512-kgbTYTo0Au6dCSc/TFy7fK3fpJmgHDv1sG1KNQKJXVi+xBTEeBPY/M30YXiU6mMXeH+YIDLsbrT4ZwNRdtF+SA==}
@@ -19670,7 +19670,7 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20240610.1':
     optional: true
 
-  '@cloudflare/workers-types@4.20240821.1': {}
+  '@cloudflare/workers-types@4.20241018.0': {}
 
   '@codemirror/language@6.10.2':
     dependencies:
@@ -36276,7 +36276,7 @@ snapshots:
 
   workers-loki-logger@0.1.15: {}
 
-  wrangler@3.61.0(@cloudflare/workers-types@4.20240821.1):
+  wrangler@3.61.0(@cloudflare/workers-types@4.20241018.0):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.3.3
       '@esbuild-plugins/node-globals-polyfill': 0.2.3(esbuild@0.17.19)
@@ -36294,7 +36294,7 @@ snapshots:
       unenv: unenv-nightly@1.10.0-1717606461.a117952
       xxhash-wasm: 1.0.2
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20240821.1
+      '@cloudflare/workers-types': 4.20241018.0
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
