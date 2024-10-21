@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 const IncrementalNativeCompositionSwitch_TargetFragment = graphql(`
   fragment IncrementalNativeCompositionSwitch_TargetFragment on Target {
     id
-    cleanId
+    slug
     experimental_forcedLegacySchemaComposition
   }
 `);
@@ -38,8 +38,8 @@ const IncrementalNativeCompositionSwitch_Mutation = graphql(`
 `);
 
 const IncrementalNativeCompositionSwitch = (props: {
-  organizationCleanId: string;
-  projectCleanId: string;
+  organizationSlug: string;
+  projectSlug: string;
   target: FragmentType<typeof IncrementalNativeCompositionSwitch_TargetFragment>;
 }) => {
   const target = useFragment(IncrementalNativeCompositionSwitch_TargetFragment, props.target);
@@ -53,7 +53,7 @@ const IncrementalNativeCompositionSwitch = (props: {
       )}
     >
       <div>
-        <div className="text-sm font-semibold">{target.cleanId}</div>
+        <div className="text-sm font-semibold">{target.slug}</div>
         <div className="min-w-32 text-xs">
           {target.experimental_forcedLegacySchemaComposition ? 'Legacy' : 'Native'} composition
         </div>
@@ -67,9 +67,9 @@ const IncrementalNativeCompositionSwitch = (props: {
                 onCheckedChange={nativeComposition => {
                   void mutate({
                     input: {
-                      organization: props.organizationCleanId,
-                      project: props.projectCleanId,
-                      target: target.cleanId,
+                      organizationSlug: props.organizationSlug,
+                      projectSlug: props.projectSlug,
+                      targetSlug: target.slug,
                       nativeComposition,
                     },
                   });
@@ -93,14 +93,14 @@ const IncrementalNativeCompositionSwitch = (props: {
 const NativeCompositionSettings_OrganizationFragment = graphql(`
   fragment NativeCompositionSettings_OrganizationFragment on Organization {
     id
-    cleanId
+    slug
   }
 `);
 
 const NativeCompositionSettings_ProjectFragment = graphql(`
   fragment NativeCompositionSettings_ProjectFragment on Project {
     id
-    cleanId
+    slug
     isNativeFederationEnabled
     experimental_nativeCompositionPerTarget
     externalSchemaComposition {
@@ -153,8 +153,8 @@ export function NativeCompositionSettings(props: {
     query: NativeCompositionSettings_ProjectQuery,
     variables: {
       selector: {
-        organization: organization.cleanId,
-        project: project.cleanId,
+        organizationSlug: organization.slug,
+        projectSlug: project.slug,
       },
     },
     pause: project.isNativeFederationEnabled,
@@ -172,8 +172,8 @@ export function NativeCompositionSettings(props: {
       try {
         const result = await mutate({
           input: {
-            organization: organization.cleanId,
-            project: project.cleanId,
+            organizationSlug: organization.slug,
+            projectSlug: project.slug,
             enabled,
           },
         });
@@ -210,7 +210,7 @@ export function NativeCompositionSettings(props: {
         });
       }
     },
-    [mutate, toast, organization.cleanId, project.cleanId],
+    [mutate, toast, organization.slug, project.slug],
   );
 
   let display: 'error' | 'compatibility' | 'enabled' = 'compatibility';
@@ -255,8 +255,8 @@ export function NativeCompositionSettings(props: {
               <div className="flex flex-row gap-4">
                 {project.targets.nodes.map(target => (
                   <IncrementalNativeCompositionSwitch
-                    organizationCleanId={organization.cleanId}
-                    projectCleanId={project.cleanId}
+                    organizationSlug={organization.slug}
+                    projectSlug={project.slug}
                     key={target.id}
                     target={target}
                   />

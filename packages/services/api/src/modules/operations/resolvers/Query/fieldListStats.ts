@@ -16,9 +16,9 @@ export const fieldListStats: NonNullable<QueryResolvers['fieldListStats']> = asy
   ]);
 
   return injector.get(OperationsManager).readFieldListStats({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     fields: selector.fields,
     period: parseDateRangeInput(selector.period),
   });

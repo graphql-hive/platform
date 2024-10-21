@@ -46,7 +46,7 @@ export function createOrganization(input: CreateOrganizationInput, authToken: st
             createdOrganizationPayload {
               organization {
                 id
-                cleanId
+                slug
                 owner {
                   id
                   organizationAccessScopes
@@ -80,14 +80,14 @@ export function createOrganization(input: CreateOrganizationInput, authToken: st
   });
 }
 
-export function getOrganization(organizationId: string, authToken: string) {
+export function getOrganization(organizationSlug: string, authToken: string) {
   return execute({
     document: graphql(`
-      query getOrganization($organizationId: ID!) {
-        organization(selector: { organization: $organizationId }) {
+      query getOrganization($organizationSlug: String!) {
+        organization(selector: { organizationSlug: $organizationSlug }) {
           organization {
             id
-            cleanId
+            slug
             getStarted {
               creatingProject
               publishingSchema
@@ -102,7 +102,7 @@ export function getOrganization(organizationId: string, authToken: string) {
     `),
     authToken,
     variables: {
-      organizationId,
+      organizationSlug,
     },
   });
 }
@@ -140,12 +140,12 @@ export function updateOrganizationSlug(input: UpdateOrganizationSlugInput, authT
           ok {
             updatedOrganizationPayload {
               selector {
-                organization
+                organizationSlug
               }
               organization {
                 id
                 name
-                cleanId
+                slug
               }
             }
           }
@@ -171,7 +171,7 @@ export function joinOrganization(code: string, authToken: string) {
           ... on OrganizationPayload {
             organization {
               id
-              cleanId
+              slug
               me {
                 id
                 user {
@@ -238,7 +238,7 @@ export function getOrganizationProjects(selector: OrganizationSelectorInput, aut
             projects {
               nodes {
                 id
-                cleanId
+                slug
                 name
               }
             }
@@ -331,12 +331,12 @@ export function createProject(input: CreateProjectInput, authToken: string) {
           ok {
             createdProject {
               id
-              cleanId
+              slug
               name
             }
             createdTargets {
               id
-              cleanId
+              slug
               name
             }
           }
@@ -357,13 +357,13 @@ export function updateProjectSlug(input: UpdateProjectSlugInput, authToken: stri
         updateProjectSlug(input: $input) {
           ok {
             selector {
-              organization
-              project
+              organizationSlug
+              projectSlug
             }
             project {
               id
               name
-              cleanId
+              slug
             }
           }
           error {
@@ -386,7 +386,7 @@ export function updateRegistryModel(input: UpdateProjectRegistryModelInput, auth
         updateProjectRegistryModel(input: $input) {
           ok {
             id
-            cleanId
+            slug
           }
           error {
             message
@@ -409,7 +409,7 @@ export function createTarget(input: CreateTargetInput, authToken: string) {
           ok {
             createdTarget {
               id
-              cleanId
+              slug
             }
           }
           error {
@@ -432,13 +432,13 @@ export function updateTargetSlug(input: UpdateTargetSlugInput, authToken: string
         updateTargetSlug(input: $input) {
           ok {
             selector {
-              organization
-              project
-              target
+              organizationSlug
+              projectSlug
+              targetSlug
             }
             target {
               id
-              cleanId
+              slug
               name
             }
           }
@@ -536,7 +536,7 @@ export function createMemberRole(input: CreateMemberRoleInput, authToken: string
           ok {
             updatedOrganization {
               id
-              cleanId
+              slug
               memberRoles {
                 id
                 name
@@ -596,7 +596,7 @@ export function deleteMemberRole(input: DeleteMemberRoleInput, authToken: string
           ok {
             updatedOrganization {
               id
-              cleanId
+              slug
               memberRoles {
                 id
                 name
@@ -926,9 +926,9 @@ export function readOperationsStats(input: OperationsStatsSelectorInput, token: 
 
 export function readOperationBody(
   selector: {
-    organization: string;
-    project: string;
-    target: string;
+    organizationSlug: string;
+    projectSlug: string;
+    targetSlug: string;
     hash: string;
   },
   token: string,
@@ -947,9 +947,9 @@ export function readOperationBody(
     token,
     variables: {
       selector: {
-        organization: selector.organization,
-        project: selector.project,
-        target: selector.target,
+        organizationSlug: selector.organizationSlug,
+        projectSlug: selector.projectSlug,
+        targetSlug: selector.targetSlug,
       },
       hash: selector.hash,
     },
@@ -1096,22 +1096,28 @@ export function fetchVersions(selector: TargetSelectorInput, first: number, toke
 
 export function compareToPreviousVersion(
   selector: {
-    organization: string;
-    project: string;
-    target: string;
+    organizationSlug: string;
+    projectSlug: string;
+    targetSlug: string;
     version: string;
   },
   token: string,
 ) {
   return execute({
     document: graphql(`
-      query SchemaCompareToPreviousVersionQuery(
-        $organization: ID!
-        $project: ID!
-        $target: ID!
+      query compareToPreviousVersion(
+        $organizationSlug: String!
+        $projectSlug: String!
+        $targetSlug: String!
         $version: ID!
       ) {
-        target(selector: { organization: $organization, project: $project, target: $target }) {
+        target(
+          selector: {
+            organizationSlug: $organizationSlug
+            projectSlug: $projectSlug
+            targetSlug: $targetSlug
+          }
+        ) {
           id
           schemaVersion(id: $version) {
             id

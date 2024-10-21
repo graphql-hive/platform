@@ -27,7 +27,7 @@ import { Link, useRouter } from '@tanstack/react-router';
 const TargetCard_TargetFragment = graphql(`
   fragment TargetCard_TargetFragment on Target {
     id
-    cleanId
+    slug
   }
 `);
 
@@ -37,8 +37,8 @@ const TargetCard = (props: {
   requestsOverTime: { date: string; value: number }[] | null;
   schemaVersionsCount: number | null;
   days: number;
-  organizationId: string;
-  projectId: string;
+  organizationSlug: string;
+  projectSlug: string;
 }): ReactElement => {
   const target = useFragment(TargetCard_TargetFragment, props.target);
   const { highestNumberOfRequests } = props;
@@ -67,11 +67,11 @@ const TargetCard = (props: {
       className="h-full self-start bg-gray-900/50 px-0 pt-4 hover:bg-gray-800/40 hover:shadow-md hover:shadow-gray-800/50"
     >
       <Link
-        to="/$organizationId/$projectId/$targetId"
+        to="/$organizationSlug/$projectSlug/$targetSlug"
         params={{
-          organizationId: props.organizationId ?? 'unknown-yet',
-          projectId: props.projectId ?? 'unknown-yet',
-          targetId: target?.cleanId ?? 'unknown-yet',
+          organizationSlug: props.organizationSlug ?? 'unknown-yet',
+          projectSlug: props.projectSlug ?? 'unknown-yet',
+          targetSlug: target?.slug ?? 'unknown-yet',
         }}
       >
         <TooltipProvider>
@@ -152,7 +152,7 @@ const TargetCard = (props: {
               <div className="flex flex-row items-center justify-between gap-y-3 px-4 pt-4">
                 <div>
                   {target ? (
-                    <h4 className="line-clamp-2 text-lg font-bold">{target.cleanId}</h4>
+                    <h4 className="line-clamp-2 text-lg font-bold">{target.slug}</h4>
                   ) : (
                     <div className="h-4 w-48 animate-pulse rounded-full bg-gray-800 py-2" />
                   )}
@@ -214,7 +214,7 @@ export const ProjectIndexRouteSearch = z.object({
 type RouteSearchProps = z.infer<typeof ProjectIndexRouteSearch>;
 
 const ProjectsPageContent = (
-  props: { organizationId: string; projectId: string } & RouteSearchProps,
+  props: { organizationSlug: string; projectSlug: string } & RouteSearchProps,
 ) => {
   const period = useRef<{
     from: string;
@@ -246,8 +246,8 @@ const ProjectsPageContent = (
   const [query] = useQuery({
     query: ProjectOverviewPageQuery,
     variables: {
-      organizationId: props.organizationId,
-      projectId: props.projectId,
+      organizationSlug: props.organizationSlug,
+      projectSlug: props.projectSlug,
       chartResolution: days, // 14 days = 14 data points
       period: period.current,
     },
@@ -264,7 +264,7 @@ const ProjectsPageContent = (
     const searchPhrase = props.search;
     const newTargets = searchPhrase
       ? targetConnection.nodes.filter(target =>
-          target.cleanId.toLowerCase().includes(searchPhrase.toLowerCase()),
+          target.slug.toLowerCase().includes(searchPhrase.toLowerCase()),
         )
       : targetConnection.nodes.slice();
 
@@ -281,11 +281,11 @@ const ProjectsPageContent = (
       }
 
       if (sortKey === 'name') {
-        return a.cleanId.localeCompare(b.cleanId) * sortOrder * -1;
+        return a.slug.localeCompare(b.slug) * sortOrder * -1;
       }
 
       // falls back to sort by name in ascending order
-      return a.cleanId.localeCompare(b.cleanId);
+      return a.slug.localeCompare(b.slug);
     });
   }, [targetConnection, props.search, sortKey, sortOrder]);
 
@@ -303,14 +303,14 @@ const ProjectsPageContent = (
   }, [targetConnection?.nodes]);
 
   if (query.error) {
-    return <QueryError organizationId={props.organizationId} error={query.error} />;
+    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
   }
 
   return (
     <ProjectLayout
       page={Page.Targets}
-      organizationId={props.organizationId}
-      projectId={props.projectId}
+      organizationSlug={props.organizationSlug}
+      projectSlug={props.projectSlug}
       className="flex justify-between gap-12"
     >
       <div className="grow">
@@ -428,8 +428,8 @@ const ProjectsPageContent = (
                   highestNumberOfRequests={highestNumberOfRequests}
                   requestsOverTime={target.requestsOverTime}
                   schemaVersionsCount={target.schemaVersionsCount}
-                  organizationId={props.organizationId}
-                  projectId={props.projectId}
+                  organizationSlug={props.organizationSlug}
+                  projectSlug={props.projectSlug}
                 />
               ))
             )
@@ -443,8 +443,8 @@ const ProjectsPageContent = (
                   highestNumberOfRequests={highestNumberOfRequests}
                   requestsOverTime={null}
                   schemaVersionsCount={null}
-                  organizationId={props.organizationId}
-                  projectId={props.projectId}
+                  organizationSlug={props.organizationSlug}
+                  projectSlug={props.projectSlug}
                 />
               ))}
             </>
@@ -457,16 +457,16 @@ const ProjectsPageContent = (
 
 const ProjectOverviewPageQuery = graphql(`
   query ProjectOverviewPageQuery(
-    $organizationId: ID!
-    $projectId: ID!
+    $organizationSlug: String!
+    $projectSlug: String!
     $chartResolution: Int!
     $period: DateRangeInput!
   ) {
-    targets(selector: { organization: $organizationId, project: $projectId }) {
+    targets(selector: { organizationSlug: $organizationSlug, projectSlug: $projectSlug }) {
       total
       nodes {
         id
-        cleanId
+        slug
         ...TargetCard_TargetFragment
         totalRequests(period: $period)
         requestsOverTime(resolution: $chartResolution, period: $period) {
@@ -480,14 +480,14 @@ const ProjectOverviewPageQuery = graphql(`
 `);
 
 export function ProjectPage(
-  props: { organizationId: string; projectId: string } & RouteSearchProps,
+  props: { organizationSlug: string; projectSlug: string } & RouteSearchProps,
 ): ReactElement {
   return (
     <>
       <Meta title="Targets" />
       <ProjectsPageContent
-        organizationId={props.organizationId}
-        projectId={props.projectId}
+        organizationSlug={props.organizationSlug}
+        projectSlug={props.projectSlug}
         search={props.search}
         sortBy={props.sortBy}
         sortOrder={props.sortOrder}

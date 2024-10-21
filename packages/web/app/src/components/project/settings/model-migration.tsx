@@ -128,14 +128,14 @@ const ModelMigrationSettings_upgradeProjectRegistryModelMutation = graphql(`
 const ModelMigrationSettings_ProjectFragment = graphql(`
   fragment ModelMigrationSettings_ProjectFragment on Project {
     type
-    cleanId
+    slug
     registryModel
   }
 `);
 
 export function ModelMigrationSettings(props: {
   project: FragmentType<typeof ModelMigrationSettings_ProjectFragment>;
-  organizationId: string;
+  organizationSlug: string;
 }): ReactElement | null {
   const project = useFragment(ModelMigrationSettings_ProjectFragment, props.project);
   const isStitching = project.type === 'STITCHING';
@@ -150,8 +150,8 @@ export function ModelMigrationSettings(props: {
     try {
       const result = await upgradeMutation({
         input: {
-          project: project.cleanId,
-          organization: props.organizationId,
+          projectSlug: project.slug,
+          organizationSlug: props.organizationSlug,
           model: RegistryModel.Modern,
         },
       });
@@ -195,8 +195,8 @@ export function ModelMigrationSettings(props: {
             size="lg"
             onClick={() => {
               void router.navigate({
-                to: '/$organizationId/view/support',
-                params: { organizationId: props.organizationId },
+                to: '/$organizationSlug/view/support',
+                params: { organizationSlug: props.organizationSlug },
               });
             }}
           >
@@ -333,8 +333,8 @@ export function ModelMigrationSettings(props: {
                 variant="link"
                 onClick={() => {
                   void router.navigate({
-                    to: '/$organizationId/view/support',
-                    params: { organizationId: props.organizationId },
+                    to: '/$organizationSlug/view/support',
+                    params: { organizationSlug: props.organizationSlug },
                   });
                 }}
               >

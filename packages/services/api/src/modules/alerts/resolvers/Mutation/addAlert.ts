@@ -17,16 +17,16 @@ export const addAlert: NonNullable<MutationResolvers['addAlert']> = async (
   ]);
 
   const project = await injector.get(ProjectManager).getProject({
-    organization: organizationId,
-    project: projectId,
+    organizationId: organizationId,
+    projectId: projectId,
   });
 
   try {
     const alert = await injector.get(AlertsManager).addAlert({
-      organization: organizationId,
-      project: projectId,
-      target: targetId,
-      channel: input.channel,
+      organizationId,
+      projectId,
+      targetId,
+      channelId: input.channelId,
       type: input.type,
     });
 

@@ -75,12 +75,12 @@ export class OrganizationManager {
     const result = await this.tokenStorage.getToken({ token });
 
     await this.authManager.ensureOrganizationAccess({
-      organization: result.organization,
+      organizationId: result.organization,
       scope: OrganizationAccessScope.READ,
     });
 
     return this.storage.getOrganization({
-      organization: result.organization,
+      organizationId: result.organization,
     });
   });
 
@@ -108,7 +108,7 @@ export class OrganizationManager {
   async getOrganizations(): Promise<readonly Organization[]> {
     this.logger.debug('Fetching organizations');
     const user = await this.authManager.getCurrentUser();
-    return this.storage.getOrganizations({ user: user.id });
+    return this.storage.getOrganizations({ userId: user.id });
   }
 
   getFeatureFlags(selector: OrganizationSelector) {
@@ -123,8 +123,8 @@ export class OrganizationManager {
     userId: string;
   }) {
     const member = await this.storage.getOrganizationMember({
-      organization: organizationId,
-      user: userId,
+      organizationId: organizationId,
+      userId: userId,
     });
 
     if (!member) {
@@ -149,7 +149,7 @@ export class OrganizationManager {
     }
 
     const membersCount = await this.countOrganizationMembers({
-      organization: organizationId,
+      organizationId: organizationId,
     });
 
     if (membersCount > 1) {
@@ -190,14 +190,14 @@ export class OrganizationManager {
     }
 
     await this.storage.deleteOrganizationMember({
-      user: user.id,
-      organization: organizationId,
+      userId: user.id,
+      organizationId: organizationId,
     });
 
     await this.activityManager.create({
       type: 'MEMBER_LEFT',
       selector: {
-        organization: organizationId,
+        organizationId: organizationId,
       },
       user: user,
       meta: {
@@ -230,7 +230,7 @@ export class OrganizationManager {
     }
 
     const hasAccess = await this.authManager.checkOrganizationAccess({
-      organization: organization.id,
+      organizationId: organization.id,
       scope: OrganizationAccessScope.READ,
     });
 
@@ -243,7 +243,7 @@ export class OrganizationManager {
     return organization;
   }
 
-  @cache((selector: OrganizationSelector) => selector.organization)
+  @cache((selector: OrganizationSelector) => selector.organizationId)
   async getOrganizationMembers(selector: OrganizationSelector) {
     return this.storage.getOrganizationMembers(selector);
   }
@@ -252,7 +252,7 @@ export class OrganizationManager {
     return this.storage.countOrganizationMembers(selector);
   }
 
-  async getOrganizationMember(selector: OrganizationSelector & { user: string }) {
+  async getOrganizationMember(selector: OrganizationSelector & { userId: string }) {
     const member = await this.storage.getOrganizationMember(selector);
 
     if (!member) {
@@ -262,10 +262,10 @@ export class OrganizationManager {
     return member;
   }
 
-  @cache((selector: OrganizationSelector) => selector.organization)
+  @cache((selector: OrganizationSelector) => selector.organizationId)
   async getInvitations(selector: OrganizationSelector) {
     await this.authManager.ensureOrganizationAccess({
-      organization: selector.organization,
+      organizationId: selector.organizationId,
       scope: OrganizationAccessScope.MEMBERS,
     });
     return this.storage.getOrganizationInvitations(selector);
@@ -295,8 +295,8 @@ export class OrganizationManager {
     }
 
     const result = await this.storage.createOrganization({
-      cleanId: slug,
-      user: user.id,
+      slug,
+      userId: user.id,
       adminScopes: organizationAdminScopes,
       viewerScopes: organizationViewerScopes,
       reservedSlugs: reservedOrganizationSlugs,
@@ -306,7 +306,7 @@ export class OrganizationManager {
       await this.activityManager.create({
         type: 'ORGANIZATION_CREATED',
         selector: {
-          organization: result.organization.id,
+          organizationId: result.organization.id,
         },
         user,
       });
@@ -316,18 +316,18 @@ export class OrganizationManager {
   }
 
   async deleteOrganization(selector: OrganizationSelector): Promise<Organization> {
-    this.logger.info('Deleting an organization (organization=%s)', selector.organization);
+    this.logger.info('Deleting an organization (organization=%s)', selector.organizationId);
     await this.authManager.ensureOrganizationAccess({
-      organization: selector.organization,
+      organizationId: selector.organizationId,
       scope: OrganizationAccessScope.DELETE,
     });
 
     const organization = await this.getOrganization({
-      organization: selector.organization,
+      organizationId: selector.organizationId,
     });
 
     const deletedOrganization = await this.storage.deleteOrganization({
-      organization: organization.id,
+      organizationId: organization.id,
     });
 
     await this.tokenStorage.invalidateTokens(deletedOrganization.tokens);
@@ -350,18 +350,18 @@ export class OrganizationManager {
       scope: OrganizationAccessScope.SETTINGS,
     });
     const organization = await this.getOrganization({
-      organization: input.organization,
+      organizationId: input.organizationId,
     });
 
     const result = await this.storage.updateOrganizationPlan({
       billingPlan: plan,
-      organization: organization.id,
+      organizationId: organization.id,
     });
 
     await this.activityManager.create({
       type: 'ORGANIZATION_PLAN_UPDATED',
       selector: {
-        organization: organization.id,
+        organizationId: organization.id,
       },
       meta: {
         newPlan: plan,
@@ -382,12 +382,12 @@ export class OrganizationManager {
       scope: OrganizationAccessScope.SETTINGS,
     });
     const organization = await this.getOrganization({
-      organization: input.organization,
+      organizationId: input.organizationId,
     });
 
     const result = await this.storage.updateOrganizationRateLimits({
       monthlyRateLimit,
-      organization: organization.id,
+      organizationId: organization.id,
     });
 
     if (this.billingProvider.enabled) {
@@ -416,21 +416,21 @@ export class OrganizationManager {
     const [user, organization] = await Promise.all([
       this.authManager.getCurrentUser(),
       this.getOrganization({
-        organization: input.organization,
+        organizationId: input.organizationId,
       }),
     ]);
 
-    if (organization.cleanId === slug) {
+    if (organization.slug === slug) {
       return {
         ok: true,
         organization,
       } as const;
     }
 
-    const result = await this.storage.updateOrganizationCleanId({
-      cleanId: slug,
-      organization: organization.id,
-      user: user.id,
+    const result = await this.storage.updateOrganizationSlug({
+      slug,
+      organizationId: organization.id,
+      userId: user.id,
       reservedSlugs: reservedOrganizationSlugs,
     });
 
@@ -438,10 +438,10 @@ export class OrganizationManager {
       await this.activityManager.create({
         type: 'ORGANIZATION_ID_UPDATED',
         selector: {
-          organization: organization.id,
+          organizationId: organization.id,
         },
         meta: {
-          value: result.organization.cleanId,
+          value: result.organization.slug,
         },
       });
     }
@@ -449,10 +449,10 @@ export class OrganizationManager {
     return result;
   }
 
-  async deleteInvitation(input: { email: string; organization: string }) {
+  async deleteInvitation(input: { email: string; organizationId: string }) {
     await this.authManager.ensureOrganizationAccess({
       scope: OrganizationAccessScope.MEMBERS,
-      organization: input.organization,
+      organizationId: input.organizationId,
     });
     return this.storage.deleteOrganizationInvitationByEmail(input);
   }
@@ -460,7 +460,7 @@ export class OrganizationManager {
   async inviteByEmail(input: { email: string; organization: string; role?: string | null }) {
     await this.authManager.ensureOrganizationAccess({
       scope: OrganizationAccessScope.MEMBERS,
-      organization: input.organization,
+      organizationId: input.organization,
     });
 
     const { email } = input;
@@ -471,11 +471,11 @@ export class OrganizationManager {
       input.role,
     );
     const organization = await this.getOrganization({
-      organization: input.organization,
+      organizationId: input.organization,
     });
 
     const [members, currentUserAccessScopes] = await Promise.all([
-      this.getOrganizationMembers({ organization: input.organization }),
+      this.getOrganizationMembers({ organizationId: input.organization }),
       this.authManager.getCurrentUserAccessScopes(organization.id),
     ]);
     const existingMember = members.find(member => member.user.email === email);
@@ -519,20 +519,20 @@ export class OrganizationManager {
 
     // Delete existing invitation
     await this.storage.deleteOrganizationInvitationByEmail({
-      organization: organization.id,
+      organizationId: organization.id,
       email,
     });
 
     // create an invitation code (with 7d TTL)
     const invitation = await this.storage.createOrganizationInvitation({
-      organization: organization.id,
+      organizationId: organization.id,
       email,
       roleId: role.id,
     });
 
     await Promise.all([
       this.storage.completeGetStartedStep({
-        organization: organization.id,
+        organizationId: organization.id,
         step: 'invitingMembers',
       }),
       // schedule an email
@@ -607,8 +607,8 @@ export class OrganizationManager {
 
     await this.storage.addOrganizationMemberViaInvitationCode({
       code,
-      user: user.id,
-      organization: organization.id,
+      userId: user.id,
+      organizationId: organization.id,
     });
 
     // Because we checked the access before, it's stale by now
@@ -616,14 +616,14 @@ export class OrganizationManager {
 
     await Promise.all([
       this.storage.completeGetStartedStep({
-        organization: organization.id,
+        organizationId: organization.id,
         step: 'invitingMembers',
       }),
       this.activityManager.create({
         type: 'MEMBER_ADDED',
         selector: {
-          organization: organization.id,
-          user: user.id,
+          organizationId: organization.id,
+          userId: user.id,
         },
       }),
     ]);
@@ -633,12 +633,12 @@ export class OrganizationManager {
 
   async requestOwnershipTransfer(
     selector: {
-      user: string;
+      userId: string;
     } & OrganizationSelector,
   ) {
     const currentUser = await this.authManager.getCurrentUser();
 
-    if (currentUser.id === selector.user) {
+    if (currentUser.id === selector.userId) {
       return {
         error: {
           message: 'Cannot transfer ownership to yourself',
@@ -647,7 +647,7 @@ export class OrganizationManager {
     }
 
     await this.authManager.ensureOrganizationOwnership({
-      organization: selector.organization,
+      organization: selector.organizationId,
     });
 
     const member = await this.storage.getOrganizationMember(selector);
@@ -663,8 +663,8 @@ export class OrganizationManager {
     const organization = await this.getOrganization(selector);
 
     const { code } = await this.storage.createOrganizationTransferRequest({
-      organization: organization.id,
-      user: member.user.id,
+      organizationId: organization.id,
+      userId: member.user.id,
     });
 
     await this.emails.schedule({
@@ -680,7 +680,7 @@ export class OrganizationManager {
                 <mj-text>
                   ${member.user.displayName} wants to transfer the ownership of the <strong>${organization.name}</strong> organization.
                 </mj-text>
-                <mj-button href="${mjml.raw(this.appBaseUrl)}/action/transfer/${organization.cleanId}/${code}">
+                <mj-button href="${mjml.raw(this.appBaseUrl)}/action/transfer/${organization.slug}/${code}">
                   Accept the transfer
                 </mj-button>
                 <mj-text align="center">
@@ -707,15 +707,15 @@ export class OrganizationManager {
     } & OrganizationSelector,
   ) {
     await this.authManager.ensureOrganizationAccess({
-      organization: selector.organization,
+      organizationId: selector.organizationId,
       scope: OrganizationAccessScope.READ,
     });
     const currentUser = await this.authManager.getCurrentUser();
 
     return this.storage.getOrganizationTransferRequest({
-      organization: selector.organization,
+      organizationId: selector.organizationId,
       code: selector.code,
-      user: currentUser.id,
+      userId: currentUser.id,
     });
   }
 
@@ -726,15 +726,15 @@ export class OrganizationManager {
     } & OrganizationSelector,
   ) {
     await this.authManager.ensureOrganizationAccess({
-      organization: input.organization,
+      organizationId: input.organizationId,
       scope: OrganizationAccessScope.READ,
     });
     const currentUser = await this.authManager.getCurrentUser();
 
     await this.storage.answerOrganizationTransferRequest({
-      organization: input.organization,
+      organizationId: input.organizationId,
       code: input.code,
-      user: currentUser.id,
+      userId: currentUser.id,
       accept: input.accept,
     });
   }
@@ -750,7 +750,7 @@ export class OrganizationManager {
       scope: OrganizationAccessScope.MEMBERS,
     });
     const owner = await this.getOrganizationOwner(selector);
-    const { user, organization } = selector;
+    const { user, organizationId: organization } = selector;
 
     if (user === owner.id) {
       throw new HiveError(`Cannot remove the owner from the organization`);
@@ -760,12 +760,12 @@ export class OrganizationManager {
 
     const [currentUserAsMember, member] = await Promise.all([
       this.storage.getOrganizationMember({
-        organization,
-        user: currentUser.id,
+        organizationId: organization,
+        userId: currentUser.id,
       }),
       this.storage.getOrganizationMember({
-        organization,
-        user,
+        organizationId: organization,
+        userId: user,
       }),
     ]);
 
@@ -789,15 +789,15 @@ export class OrganizationManager {
     }
 
     await this.storage.deleteOrganizationMember({
-      user,
-      organization,
+      userId: user,
+      organizationId: organization,
     });
 
     if (member) {
       await this.activityManager.create({
         type: 'MEMBER_DELETED',
         selector: {
-          organization,
+          organizationId: organization,
         },
         meta: {
           email: member.user.email,
@@ -809,7 +809,7 @@ export class OrganizationManager {
     this.authManager.resetAccessCache();
 
     return this.storage.getOrganization({
-      organization,
+      organizationId: organization,
     });
   }
 
@@ -831,12 +831,12 @@ export class OrganizationManager {
 
     const [currentMember, member] = await Promise.all([
       this.getOrganizationMember({
-        organization: input.organization,
-        user: currentUser.id,
+        organizationId: input.organizationId,
+        userId: currentUser.id,
       }),
       this.getOrganizationMember({
-        organization: input.organization,
-        user: input.user,
+        organizationId: input.organizationId,
+        userId: input.user,
       }),
     ]);
 
@@ -866,8 +866,8 @@ export class OrganizationManager {
 
     // Update the scopes
     await this.storage.updateOrganizationMemberAccess({
-      organization: input.organization,
-      user: input.user,
+      organizationId: input.organizationId,
+      userId: input.user,
       scopes: newScopes,
     });
 
@@ -875,7 +875,7 @@ export class OrganizationManager {
     this.authManager.resetAccessCache();
 
     return this.storage.getOrganization({
-      organization: input.organization,
+      organizationId: input.organizationId,
     });
   }
 
@@ -888,7 +888,7 @@ export class OrganizationManager {
     targetAccessScopes: readonly TargetAccessScope[];
   }) {
     await this.authManager.ensureOrganizationAccess({
-      organization: input.organizationId,
+      organizationId: input.organizationId,
       scope: OrganizationAccessScope.MEMBERS,
     });
 
@@ -900,8 +900,8 @@ export class OrganizationManager {
 
     const currentUser = await this.authManager.getCurrentUser();
     const currentUserAsMember = await this.getOrganizationMember({
-      organization: input.organizationId,
-      user: currentUser.id,
+      organizationId: input.organizationId,
+      userId: currentUser.id,
     });
 
     // Ensure user has access to all scopes in the role
@@ -950,7 +950,7 @@ export class OrganizationManager {
     return {
       ok: {
         updatedOrganization: await this.storage.getOrganization({
-          organization: input.organizationId,
+          organizationId: input.organizationId,
         }),
         createdRole: role,
       },
@@ -959,7 +959,7 @@ export class OrganizationManager {
 
   async deleteMemberRole(input: { organizationId: string; roleId: string }) {
     await this.authManager.ensureOrganizationAccess({
-      organization: input.organizationId,
+      organizationId: input.organizationId,
       scope: OrganizationAccessScope.MEMBERS,
     });
 
@@ -978,8 +978,8 @@ export class OrganizationManager {
 
     const currentUser = await this.authManager.getCurrentUser();
     const currentUserAsMember = await this.getOrganizationMember({
-      organization: input.organizationId,
-      user: currentUser.id,
+      organizationId: input.organizationId,
+      userId: currentUser.id,
     });
 
     const accessCheckResult = await this.canDeleteRole(role, currentUserAsMember.scopes);
@@ -1001,7 +1001,7 @@ export class OrganizationManager {
     return {
       ok: {
         updatedOrganization: await this.storage.getOrganization({
-          organization: input.organizationId,
+          organizationId: input.organizationId,
         }),
       },
     };
@@ -1009,14 +1009,14 @@ export class OrganizationManager {
 
   async assignMemberRole(input: { organizationId: string; userId: string; roleId: string }) {
     await this.authManager.ensureOrganizationAccess({
-      organization: input.organizationId,
+      organizationId: input.organizationId,
       scope: OrganizationAccessScope.MEMBERS,
     });
 
     // Ensure selected member is part of the organization
     const member = await this.storage.getOrganizationMember({
-      organization: input.organizationId,
-      user: input.userId,
+      organizationId: input.organizationId,
+      userId: input.userId,
     });
 
     if (!member) {
@@ -1026,8 +1026,8 @@ export class OrganizationManager {
     const currentUser = await this.authManager.getCurrentUser();
     const [currentUserAsMember, newRole] = await Promise.all([
       this.getOrganizationMember({
-        organization: input.organizationId,
-        user: currentUser.id,
+        organizationId: input.organizationId,
+        userId: currentUser.id,
       }),
       this.storage.getOrganizationMemberRole({
         organizationId: input.organizationId,
@@ -1105,8 +1105,8 @@ export class OrganizationManager {
     return {
       ok: {
         updatedMember: await this.getOrganizationMember({
-          organization: input.organizationId,
-          user: input.userId,
+          organizationId: input.organizationId,
+          userId: input.userId,
         }),
         previousMemberRole: member.role,
       },
@@ -1123,7 +1123,7 @@ export class OrganizationManager {
     targetAccessScopes: readonly TargetAccessScope[];
   }) {
     await this.authManager.ensureOrganizationAccess({
-      organization: input.organizationId,
+      organizationId: input.organizationId,
       scope: OrganizationAccessScope.MEMBERS,
     });
 
@@ -1134,8 +1134,8 @@ export class OrganizationManager {
         roleId: input.roleId,
       }),
       this.getOrganizationMember({
-        organization: input.organizationId,
-        user: currentUser.id,
+        organizationId: input.organizationId,
+        userId: currentUser.id,
       }),
     ]);
 
@@ -1243,7 +1243,7 @@ export class OrganizationManager {
   async getMembersWithoutRole(selector: { organizationId: string }) {
     if (
       await this.authManager.checkOrganizationAccess({
-        organization: selector.organizationId,
+        organizationId: selector.organizationId,
         scope: OrganizationAccessScope.MEMBERS,
       })
     ) {
@@ -1258,7 +1258,7 @@ export class OrganizationManager {
 
   async getMemberRoles(selector: { organizationId: string }) {
     await this.authManager.ensureOrganizationAccess({
-      organization: selector.organizationId,
+      organizationId: selector.organizationId,
       scope: OrganizationAccessScope.MEMBERS,
     });
 
@@ -1269,7 +1269,7 @@ export class OrganizationManager {
 
   async getMemberRole(selector: { organizationId: string; roleId: string }) {
     await this.authManager.ensureOrganizationAccess({
-      organization: selector.organizationId,
+      organizationId: selector.organizationId,
       scope: OrganizationAccessScope.MEMBERS,
     });
 
@@ -1430,8 +1430,8 @@ export class OrganizationManager {
   }: {
     organizationId: string;
     assignRole?: {
-      role: string;
-      users: readonly string[];
+      roleId: string;
+      userIds: readonly string[];
     } | null;
     createRole?: {
       name: string;
@@ -1439,13 +1439,13 @@ export class OrganizationManager {
       organizationScopes: readonly OrganizationAccessScope[];
       projectScopes: readonly ProjectAccessScope[];
       targetScopes: readonly TargetAccessScope[];
-      users: readonly string[];
+      userIds: readonly string[];
     } | null;
   }) {
     const currentUser = await this.authManager.getCurrentUser();
     const currentUserAsMember = await this.getOrganizationMember({
-      organization: organizationId,
-      user: currentUser.id,
+      organizationId: organizationId,
+      userId: currentUser.id,
     });
 
     if (!this.isAdminRole(currentUserAsMember.role)) {
@@ -1459,8 +1459,8 @@ export class OrganizationManager {
     if (assignRole) {
       return this.assignRoleToMembersMigration({
         organizationId,
-        roleId: assignRole.role,
-        users: assignRole.users,
+        roleId: assignRole.roleId,
+        userIds: assignRole.userIds,
       });
     }
 
@@ -1481,7 +1481,7 @@ export class OrganizationManager {
     organizationScopes: readonly OrganizationAccessScope[];
     projectScopes: readonly ProjectAccessScope[];
     targetScopes: readonly TargetAccessScope[];
-    users: readonly string[];
+    userIds: readonly string[];
   }) {
     const result = await this.createMemberRole({
       organizationId: input.organizationId,
@@ -1496,7 +1496,7 @@ export class OrganizationManager {
       return this.assignRoleToMembersMigration({
         roleId: result.ok.createdRole.id,
         organizationId: input.organizationId,
-        users: input.users,
+        userIds: input.userIds,
       });
     }
 
@@ -1506,18 +1506,18 @@ export class OrganizationManager {
   private async assignRoleToMembersMigration(input: {
     organizationId: string;
     roleId: string;
-    users: readonly string[];
+    userIds: readonly string[];
   }) {
     await this.storage.assignOrganizationMemberRoleToMany({
       organizationId: input.organizationId,
       roleId: input.roleId,
-      userIds: input.users,
+      userIds: input.userIds,
     });
 
     return {
       ok: {
         updatedOrganization: await this.storage.getOrganization({
-          organization: input.organizationId,
+          organizationId: input.organizationId,
         }),
       },
     };

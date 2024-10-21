@@ -59,7 +59,7 @@ const MemberInvitationForm_InviteByEmail = graphql(`
 const MemberInvitationForm_OrganizationFragment = graphql(`
   fragment MemberInvitationForm_OrganizationFragment on Organization {
     id
-    cleanId
+    slug
     memberRoles {
       id
       name
@@ -120,9 +120,9 @@ function MemberInvitationForm(props: {
     try {
       const result = await invite({
         input: {
-          organization: organization.cleanId,
+          organizationSlug: organization.slug,
           email: data.email,
-          role: data.role,
+          roleId: data.role,
         },
       });
 
@@ -298,7 +298,7 @@ const Members_Invitation = graphql(`
 
 function Invitation(props: {
   invitation: FragmentType<typeof Members_Invitation>;
-  organizationCleanId: string;
+  organizationSlug: string;
   refetchInvitations(): void;
 }) {
   const invitation = useFragment(Members_Invitation, props.invitation);
@@ -336,7 +336,7 @@ function Invitation(props: {
                   try {
                     const result = await deleteInvitation({
                       input: {
-                        organization: props.organizationCleanId,
+                        organizationSlug: props.organizationSlug,
                         email: invitation.email,
                       },
                     });
@@ -406,7 +406,7 @@ function Invitation(props: {
 const OrganizationInvitations_OrganizationFragment = graphql(`
   fragment OrganizationInvitations_OrganizationFragment on Organization {
     id
-    cleanId
+    slug
     invitations {
       nodes {
         id
@@ -453,7 +453,7 @@ export function OrganizationInvitations(props: {
               <Invitation
                 key={node.id}
                 invitation={node}
-                organizationCleanId={organization.cleanId}
+                organizationSlug={organization.slug}
                 refetchInvitations={props.refetchInvitations}
               />
             ))}

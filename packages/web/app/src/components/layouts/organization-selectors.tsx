@@ -6,13 +6,13 @@ const OrganizationSelector_OrganizationConnectionFragment = graphql(`
   fragment OrganizationSelector_OrganizationConnectionFragment on OrganizationConnection {
     nodes {
       id
-      cleanId
+      slug
     }
   }
 `);
 
 export function OrganizationSelector(props: {
-  currentOrganizationCleanId: string;
+  currentOrganizationSlug: string;
   organizations: FragmentType<typeof OrganizationSelector_OrganizationConnectionFragment> | null;
 }) {
   const router = useRouter();
@@ -22,30 +22,30 @@ export function OrganizationSelector(props: {
   )?.nodes;
 
   const currentOrganization = organizations?.find(
-    node => node.cleanId === props.currentOrganizationCleanId,
+    node => node.slug === props.currentOrganizationSlug,
   );
 
   return organizations ? (
     <Select
-      value={props.currentOrganizationCleanId}
+      value={props.currentOrganizationSlug}
       onValueChange={id => {
         void router.navigate({
-          to: '/$organizationId',
+          to: '/$organizationSlug',
           params: {
-            organizationId: id,
+            organizationSlug: id,
           },
         });
       }}
     >
       <SelectTrigger variant="default">
         <div className="font-medium" data-cy="organization-picker-current">
-          {currentOrganization?.cleanId}
+          {currentOrganization?.slug}
         </div>
       </SelectTrigger>
       <SelectContent>
         {organizations.map(org => (
-          <SelectItem key={org.cleanId} value={org.cleanId}>
-            {org.cleanId}
+          <SelectItem key={org.slug} value={org.slug}>
+            {org.slug}
           </SelectItem>
         ))}
       </SelectContent>

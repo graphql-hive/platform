@@ -362,9 +362,9 @@ export class RegistryChecks {
     modifiedSdl: string;
     incomingSdl: string | null;
     selector: {
-      organization: string;
-      project: string;
-      target: string;
+      organizationId: string;
+      projectId: string;
+      targetId: string;
     };
   }) {
     if (incomingSdl == null) {

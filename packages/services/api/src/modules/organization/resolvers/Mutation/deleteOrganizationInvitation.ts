@@ -8,7 +8,7 @@ export const deleteOrganizationInvitation: NonNullable<
   const organizationId = await injector.get(IdTranslator).translateOrganizationId(input);
   const invitation = await injector
     .get(OrganizationManager)
-    .deleteInvitation({ organization: organizationId, email: input.email });
+    .deleteInvitation({ organizationId: organizationId, email: input.email });
 
   if (invitation) {
     return {

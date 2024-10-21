@@ -38,11 +38,11 @@ export class ProjectManager {
       type: ProjectType;
     } & OrganizationSelector,
   ) {
-    const { slug, type, organization } = input;
+    const { slug, type, organizationId: organization } = input;
     this.logger.info('Creating a project (input=%o)', input);
 
     await this.authManager.ensureOrganizationAccess({
-      organization: input.organization,
+      organizationId: input.organizationId,
       scope: OrganizationAccessScope.READ,
     });
 
@@ -57,20 +57,20 @@ export class ProjectManager {
     const result = await this.storage.createProject({
       slug,
       type,
-      organization,
+      organizationId: organization,
     });
 
     if (result.ok) {
       await Promise.all([
         this.storage.completeGetStartedStep({
-          organization,
+          organizationId: organization,
           step: 'creatingProject',
         }),
         this.activityManager.create({
           type: 'PROJECT_CREATED',
           selector: {
-            organization,
-            project: result.project.id,
+            organizationId: organization,
+            projectId: result.project.id,
           },
           meta: {
             projectType: type,
@@ -82,17 +82,20 @@ export class ProjectManager {
     return result;
   }
 
-  async deleteProject({ organization, project }: ProjectSelector): Promise<Project> {
+  async deleteProject({
+    organizationId: organization,
+    projectId: project,
+  }: ProjectSelector): Promise<Project> {
     this.logger.info('Deleting a project (project=%s, organization=%s)', project, organization);
     await this.authManager.ensureProjectAccess({
-      project,
-      organization,
+      projectId: project,
+      organizationId: organization,
       scope: ProjectAccessScope.DELETE,
     });
 
     const deletedProject = await this.storage.deleteProject({
-      project,
-      organization,
+      projectId: project,
+      organizationId: organization,
     });
 
     await this.tokenStorage.invalidateTokens(deletedProject.tokens);
@@ -100,11 +103,11 @@ export class ProjectManager {
     await this.activityManager.create({
       type: 'PROJECT_DELETED',
       selector: {
-        organization,
+        organizationId: organization,
       },
       meta: {
         name: deletedProject.name,
-        cleanId: deletedProject.cleanId,
+        cleanId: deletedProject.slug,
       },
     });
 
@@ -150,7 +153,7 @@ export class ProjectManager {
         message: string;
       }
   > {
-    const { slug, organization, project } = input;
+    const { slug, organizationId: organization, projectId: project } = input;
     this.logger.info('Updating a project slug (input=%o)', input);
     await this.authManager.ensureProjectAccess({
       ...input,
@@ -166,9 +169,9 @@ export class ProjectManager {
     }
 
     const result = await this.storage.updateProjectSlug({
-      organization,
-      project,
-      user: user.id,
+      organizationId: organization,
+      projectId: project,
+      userId: user.id,
       slug,
     });
 
@@ -176,8 +179,8 @@ export class ProjectManager {
       await this.activityManager.create({
         type: 'PROJECT_ID_UPDATED',
         selector: {
-          organization,
-          project,
+          organizationId: organization,
+          projectId: project,
         },
         meta: {
           value: slug,

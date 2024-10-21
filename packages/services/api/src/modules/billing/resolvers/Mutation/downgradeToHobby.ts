@@ -13,15 +13,15 @@ export const downgradeToHobby: NonNullable<MutationResolvers['downgradeToHobby']
   { injector },
 ) => {
   const organizationId = await injector.get(IdTranslator).translateOrganizationId({
-    organization: args.input.organization.organization,
+    organizationSlug: args.input.organization.organizationSlug,
   });
   await injector.get(AuthManager).ensureOrganizationAccess({
-    organization: organizationId,
+    organizationId: organizationId,
     scope: OrganizationAccessScope.SETTINGS,
   });
 
   let organization = await injector.get(OrganizationManager).getOrganization({
-    organization: organizationId,
+    organizationId: organizationId,
   });
 
   if (organization.billingPlan === 'PRO') {
@@ -33,11 +33,11 @@ export const downgradeToHobby: NonNullable<MutationResolvers['downgradeToHobby']
     // Upgrade the actual org plan to HOBBY
     organization = await injector
       .get(OrganizationManager)
-      .updatePlan({ plan: 'HOBBY', organization: organizationId });
+      .updatePlan({ plan: 'HOBBY', organizationId: organizationId });
 
     // Upgrade the limits
     organization = await injector.get(OrganizationManager).updateRateLimits({
-      organization: organizationId,
+      organizationId: organizationId,
       monthlyRateLimit: {
         retentionInDays: USAGE_DEFAULT_LIMITATIONS.HOBBY.retention,
         operations: USAGE_DEFAULT_LIMITATIONS.HOBBY.operations,

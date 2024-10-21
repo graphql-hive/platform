@@ -32,13 +32,13 @@ export const createProject: NonNullable<MutationResolvers['createProject']> = as
 
   const translator = injector.get(IdTranslator);
   const organizationId = await translator.translateOrganizationId({
-    organization: input.organization,
+    organizationSlug: input.organizationSlug,
   });
 
   const result = await injector.get(ProjectManager).createProject({
     slug: input.slug,
     type: input.type,
-    organization: organizationId,
+    organizationId: organizationId,
   });
 
   if (result.ok === false) {
@@ -53,7 +53,7 @@ export const createProject: NonNullable<MutationResolvers['createProject']> = as
   assertOk(result, 'Expected result to be ok');
 
   const organization = await injector.get(OrganizationManager).getOrganization({
-    organization: organizationId,
+    organizationId: organizationId,
   });
 
   const targetManager = injector.get(TargetManager);
@@ -61,18 +61,18 @@ export const createProject: NonNullable<MutationResolvers['createProject']> = as
   const targetResults = await Promise.all([
     targetManager.createTarget({
       slug: 'production',
-      project: result.project.id,
-      organization: organizationId,
+      projectId: result.project.id,
+      organizationId: organizationId,
     }),
     targetManager.createTarget({
       slug: 'staging',
-      project: result.project.id,
-      organization: organizationId,
+      projectId: result.project.id,
+      organizationId: organizationId,
     }),
     targetManager.createTarget({
       slug: 'development',
-      project: result.project.id,
-      organization: organizationId,
+      projectId: result.project.id,
+      organizationId: organizationId,
     }),
   ]);
 

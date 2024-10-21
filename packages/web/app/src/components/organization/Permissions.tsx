@@ -25,11 +25,11 @@ const OrganizationPermissions_UpdateMemberAccessMutation = graphql(`
   ) {
     updateOrganizationMemberAccess(input: $input) {
       selector {
-        organization
+        organizationSlug
       }
       organization {
         id
-        cleanId
+        slug
       }
     }
   }
@@ -251,7 +251,7 @@ export const PermissionsSpace = memo(
 
 const UsePermissionManager_OrganizationFragment = graphql(`
   fragment UsePermissionManager_OrganizationFragment on Organization {
-    cleanId
+    slug
     me {
       ...CanAccessOrganization_MemberFragment
       ...CanAccessProject_MemberFragment
@@ -312,8 +312,8 @@ export function usePermissionsManager({
       setState('LOADING');
       const result = await mutate({
         input: {
-          organization: organization.cleanId,
-          user: member.user.id,
+          organizationSlug: organization.slug,
+          userId: member.user.id,
           targetScopes,
           projectScopes,
           organizationScopes,

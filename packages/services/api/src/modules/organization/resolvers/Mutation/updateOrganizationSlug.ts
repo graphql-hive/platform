@@ -21,7 +21,7 @@ export const updateOrganizationSlug: NonNullable<
   const organizationId = await injector.get(IdTranslator).translateOrganizationId(input);
   const result = await injector.get(OrganizationManager).updateSlug({
     slug: parsedInput.data,
-    organization: organizationId,
+    organizationId: organizationId,
   });
 
   if (result.ok) {
@@ -29,7 +29,7 @@ export const updateOrganizationSlug: NonNullable<
       ok: {
         updatedOrganizationPayload: {
           selector: {
-            organization: result.organization.cleanId,
+            organizationSlug: result.organization.slug,
           },
           organization: result.organization,
         },

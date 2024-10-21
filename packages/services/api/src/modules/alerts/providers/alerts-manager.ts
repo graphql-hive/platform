@@ -1,5 +1,4 @@
 import { Injectable, Scope } from 'graphql-modules';
-import type { AlertsModule } from '../__generated__/types';
 import type { Alert, AlertChannel } from '../../../shared/entities';
 import { cache } from '../../../shared/helpers';
 import { AuthManager } from '../../auth/providers/auth-manager';
@@ -38,54 +37,74 @@ export class AlertsManager {
     this.logger = logger.child({ source: 'AlertsManager' });
   }
 
-  async addChannel(input: AlertsModule.AddAlertChannelInput): Promise<AlertChannel> {
+  async addChannel(input: {
+    name: string;
+    organizationId: string;
+    projectId: string;
+    type: AlertChannel['type'];
+    slackChannel?: string | null;
+    webhookEndpoint?: string | null;
+  }): Promise<AlertChannel> {
     this.logger.debug(
       'Adding Alert Channel (organization=%s, project=%s, type=%s)',
-      input.organization,
-      input.project,
+      input.organizationId,
+      input.projectId,
       input.type,
     );
     await this.authManager.ensureProjectAccess({
-      ...input,
       scope: ProjectAccessScope.ALERTS,
+      organizationId: input.organizationId,
+      projectId: input.projectId,
     });
 
-    const channel = await this.storage.addAlertChannel(input);
+    const channel = await this.storage.addAlertChannel({
+      slackChannel: input.slackChannel,
+      webhookEndpoint: input.webhookEndpoint,
+      name: input.name,
+      type: input.type,
+      organizationId: input.organizationId,
+      projectId: input.projectId,
+    });
 
     await this.triggerChannelConfirmation({
       kind: 'created',
       channel,
-      organization: input.organization,
-      project: input.project,
+      organization: input.organizationId,
+      project: input.projectId,
     });
 
     return channel;
   }
 
-  async deleteChannels(
-    input: ProjectSelector & {
-      channels: readonly string[];
-    },
-  ): Promise<readonly AlertChannel[]> {
+  async deleteChannels(input: {
+    channelIds: readonly string[];
+    organizationId: string;
+    projectId: string;
+  }): Promise<readonly AlertChannel[]> {
     this.logger.debug(
       'Deleting Alert Channels (organization=%s, project=%s, size=%s)',
-      input.organization,
-      input.project,
-      input.channels.length,
+      input.organizationId,
+      input.projectId,
+      input.channelIds.length,
     );
     await this.authManager.ensureProjectAccess({
-      ...input,
       scope: ProjectAccessScope.ALERTS,
+      organizationId: input.organizationId,
+      projectId: input.projectId,
     });
-    const channels = await this.storage.deleteAlertChannels(input);
+    const channels = await this.storage.deleteAlertChannels({
+      organizationId: input.organizationId,
+      projectId: input.projectId,
+      channelIds: input.channelIds,
+    });
 
     await Promise.all(
       channels.map(channel =>
         this.triggerChannelConfirmation({
           kind: 'deleted',
           channel,
-          organization: input.organization,
-          project: input.project,
+          organization: input.organizationId,
+          project: input.projectId,
         }),
       ),
     );
@@ -93,12 +112,12 @@ export class AlertsManager {
     return channels;
   }
 
-  @cache<ProjectSelector>(selector => selector.project + selector.organization)
+  @cache<ProjectSelector>(selector => selector.projectId + selector.organizationId)
   async getChannels(selector: ProjectSelector): Promise<readonly AlertChannel[]> {
     this.logger.debug(
       'Fetching Alert Channels (organization=%s, project=%s)',
-      selector.organization,
-      selector.project,
+      selector.organizationId,
+      selector.projectId,
     );
     await this.authManager.ensureProjectAccess({
       ...selector,
@@ -107,19 +126,32 @@ export class AlertsManager {
     return this.storage.getAlertChannels(selector);
   }
 
-  async addAlert(input: AlertsModule.AddAlertInput): Promise<Alert> {
+  async addAlert(input: {
+    type: Alert['type'];
+    organizationId: string;
+    projectId: string;
+    targetId: string;
+    channelId: string;
+  }): Promise<Alert> {
     this.logger.debug(
       'Adding Alert (organization=%s, project=%s, type=%s)',
-      input.organization,
-      input.project,
+      input.organizationId,
+      input.projectId,
       input.type,
     );
     await this.authManager.ensureProjectAccess({
-      ...input,
       scope: ProjectAccessScope.ALERTS,
+      organizationId: input.organizationId,
+      projectId: input.projectId,
     });
 
-    return this.storage.addAlert(input);
+    return this.storage.addAlert({
+      type: input.type,
+      channelId: input.channelId,
+      organizationId: input.organizationId,
+      projectId: input.projectId,
+      targetId: input.targetId,
+    });
   }
 
   async deleteAlerts(
@@ -129,22 +161,26 @@ export class AlertsManager {
   ): Promise<readonly Alert[]> {
     this.logger.debug(
       'Deleting Alerts (organization=%s, project=%s, size=%s)',
-      input.organization,
-      input.project,
+      input.organizationId,
+      input.projectId,
       input.alerts.length,
     );
     await this.authManager.ensureProjectAccess({
       ...input,
       scope: ProjectAccessScope.ALERTS,
     });
-    return this.storage.deleteAlerts(input);
+    return this.storage.deleteAlerts({
+      organizationId: input.organizationId,
+      projectId: input.projectId,
+      alertIds: input.alerts,
+    });
   }
 
   async getAlerts(selector: ProjectSelector): Promise<readonly Alert[]> {
     this.logger.debug(
       'Fetching Alerts (organization=%s, project=%s)',
-      selector.organization,
-      selector.project,
+      selector.organizationId,
+      selector.projectId,
     );
     await this.authManager.ensureProjectAccess({
       ...selector,
@@ -153,7 +189,18 @@ export class AlertsManager {
     return this.storage.getAlerts(selector);
   }
 
-  async triggerSchemaChangeNotifications(event: SchemaChangeNotificationInput['event']) {
+  async triggerSchemaChangeNotifications(
+    // Omitting cleanId fields from the event object.
+    // The cleanId is in the type for backwards compatibility,
+    // but we replaced it with slug.
+    // Ugly, but otherwise we would have to write a new type,
+    // specific for this parameter.
+    event: Omit<SchemaChangeNotificationInput['event'], 'organization' | 'project' | 'target'> & {
+      organization: Omit<SchemaChangeNotificationInput['event']['organization'], 'cleanId'>;
+      project: Omit<SchemaChangeNotificationInput['event']['project'], 'cleanId'>;
+      target: Omit<SchemaChangeNotificationInput['event']['target'], 'cleanId'>;
+    },
+  ) {
     const organization = event.organization.id;
     const project = event.project.id;
     const target = event.target.id;
@@ -167,15 +214,15 @@ export class AlertsManager {
     );
 
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
     const [channels, alerts] = await Promise.all([
-      this.getChannels({ organization, project }),
-      this.getAlerts({ organization, project }),
+      this.getChannels({ organizationId: organization, projectId: project }),
+      this.getAlerts({ organizationId: organization, projectId: project }),
     ]);
 
     const matchingAlerts = alerts.filter(
@@ -189,9 +236,9 @@ export class AlertsManager {
     });
 
     const slackToken = await this.slackIntegrationManager.getToken({
-      organization: event.organization.id,
-      project: event.project.id,
-      target: event.target.id,
+      organizationId: event.organization.id,
+      projectId: event.project.id,
+      targetId: event.target.id,
       context: IntegrationsAccessContext.SchemaPublishing,
     });
 
@@ -206,17 +253,20 @@ export class AlertsManager {
     const safeEvent: SchemaChangeNotificationInput['event'] = {
       organization: {
         id: event.organization.id,
-        cleanId: event.organization.cleanId,
+        cleanId: event.organization.slug,
+        slug: event.organization.slug,
         name: event.organization.name,
       },
       project: {
         id: event.project.id,
-        cleanId: event.project.cleanId,
+        cleanId: event.project.slug,
+        slug: event.project.slug,
         name: event.project.name,
       },
       target: {
         id: event.target.id,
-        cleanId: event.target.cleanId,
+        cleanId: event.target.slug,
+        slug: event.target.slug,
         name: event.target.name,
       },
       schema: {
@@ -268,11 +318,11 @@ export class AlertsManager {
     const { channel } = input;
     const [organization, project] = await Promise.all([
       this.organizationManager.getOrganization({
-        organization: input.organization,
+        organizationId: input.organization,
       }),
       this.projectManager.getProject({
-        organization: input.organization,
-        project: input.project,
+        organizationId: input.organization,
+        projectId: input.project,
       }),
     ]);
 
@@ -281,12 +331,14 @@ export class AlertsManager {
         kind: input.kind,
         organization: {
           id: organization.id,
-          cleanId: organization.cleanId,
+          cleanId: organization.slug,
+          slug: organization.slug,
           name: organization.name,
         },
         project: {
           id: project.id,
-          cleanId: project.cleanId,
+          cleanId: project.slug,
+          slug: project.slug,
           name: project.name,
         },
       },
@@ -300,8 +352,8 @@ export class AlertsManager {
 
     if (channel.type === 'SLACK') {
       const slackToken = await this.slackIntegrationManager.getToken({
-        organization: organization.id,
-        project: project.id,
+        organizationId: organization.id,
+        projectId: project.id,
         context: IntegrationsAccessContext.ChannelConfirmation,
       });
       if (!slackToken) {

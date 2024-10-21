@@ -32,16 +32,16 @@ export const updateProjectSlug: NonNullable<MutationResolvers['updateProjectSlug
 
   const result = await injector.get(ProjectManager).updateSlug({
     slug: input.slug,
-    organization: organizationId,
-    project: projectId,
+    organizationId: organizationId,
+    projectId: projectId,
   });
 
   if (result.ok) {
     return {
       ok: {
         selector: {
-          organization: input.organization,
-          project: result.project.cleanId,
+          organizationSlug: input.organizationSlug,
+          projectSlug: result.project.slug,
         },
         project: result.project,
       },

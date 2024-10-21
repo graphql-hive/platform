@@ -103,11 +103,16 @@ export class OperationsManager {
     );
   }
 
-  async getOperation({ organization, project, target, hash }: { hash: string } & TargetSelector) {
+  async getOperation({
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
+    hash,
+  }: { hash: string } & TargetSelector) {
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -117,10 +122,10 @@ export class OperationsManager {
     });
   }
 
-  async readMonthlyUsage({ organization }: OrganizationSelector) {
+  async readMonthlyUsage({ organizationId: organization }: OrganizationSelector) {
     this.logger.info('Reading monthly usage (organization=%s)', organization);
     await this.authManager.ensureOrganizationAccess({
-      organization,
+      organizationId: organization,
       // Why? Monthly usage is specific to organization settings (subscription page)
       scope: OrganizationAccessScope.SETTINGS,
     });
@@ -129,9 +134,9 @@ export class OperationsManager {
   }
 
   async countUniqueOperations({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     period,
     operations,
     clients,
@@ -142,9 +147,9 @@ export class OperationsManager {
   } & TargetSelector) {
     this.logger.info('Counting unique operations (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -156,12 +161,16 @@ export class OperationsManager {
     });
   }
 
-  async hasCollectedOperations({ organization, project, target }: TargetSelector) {
+  async hasCollectedOperations({
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
+  }: TargetSelector) {
     this.logger.info('Checking existence of collected operations (target=%s)', target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -172,12 +181,16 @@ export class OperationsManager {
     );
   }
 
-  async hasCollectedSubscriptionOperations({ organization, project, target }: TargetSelector) {
+  async hasCollectedSubscriptionOperations({
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
+  }: TargetSelector) {
     this.logger.info('Checking existence of collected subscription operations (target=%s)', target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -187,15 +200,15 @@ export class OperationsManager {
   }
 
   async countRequestsWithSchemaCoordinate({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     period,
     schemaCoordinate,
   }: {
     period: DateRange;
     schemaCoordinate: string;
-  } & Listify<TargetSelector, 'target'>) {
+  } & Listify<TargetSelector, 'targetId'>) {
     this.logger.info(
       'Counting requests with schema coordinate (period=%o, target=%s, coordinate=%s)',
       period,
@@ -203,9 +216,9 @@ export class OperationsManager {
       schemaCoordinate,
     );
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -219,9 +232,9 @@ export class OperationsManager {
   }
 
   async countRequestsAndFailures({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     period,
     operations,
     clients,
@@ -229,12 +242,12 @@ export class OperationsManager {
     period: DateRange;
     operations?: readonly string[];
     clients?: readonly string[];
-  } & Listify<TargetSelector, 'target'>) {
+  } & Listify<TargetSelector, 'targetId'>) {
     this.logger.info('Counting requests and failures (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -249,18 +262,18 @@ export class OperationsManager {
   }
 
   async countRequests({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     period,
   }: {
     period: DateRange;
-  } & Listify<TargetSelector, 'target'>): Promise<number> {
+  } & Listify<TargetSelector, 'targetId'>): Promise<number> {
     this.logger.info('Counting requests (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -271,29 +284,29 @@ export class OperationsManager {
   }
 
   async countRequestsOfProject({
-    organization,
-    project,
+    organizationId: organization,
+    projectId: project,
     period,
   }: {
     period: DateRange;
   } & ProjectSelector): Promise<number> {
     this.logger.info('Counting requests of project (period=%o, project=%s)', period, project);
     const targets = await this.storage.getTargetIdsOfProject({
-      organization,
-      project,
+      organizationId: organization,
+      projectId: project,
     });
     return this.countRequests({
-      organization,
-      project,
-      target: targets,
+      organizationId: organization,
+      projectId: project,
+      targetId: targets,
       period,
     });
   }
 
   async countFailures({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     period,
     operations,
     clients,
@@ -304,9 +317,9 @@ export class OperationsManager {
   } & TargetSelector) {
     this.logger.info('Counting failures (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -323,12 +336,20 @@ export class OperationsManager {
     input: Optional<ReadFieldStatsInput, 'field'>,
   ): Promise<Optional<ReadFieldStatsOutput, 'field'>>;
   async readFieldStats(input: ReadFieldStatsInput): Promise<ReadFieldStatsOutput> {
-    const { type, field, argument, period, organization, project, target } = input;
+    const {
+      type,
+      field,
+      argument,
+      period,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
+    } = input;
     this.logger.info('Counting a field (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -356,9 +377,9 @@ export class OperationsManager {
   async readFieldListStats({
     fields,
     period,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     excludedClients,
   }: {
     fields: ReadonlyArray<{
@@ -368,7 +389,7 @@ export class OperationsManager {
     }>;
     period: DateRange;
     excludedClients?: readonly string[];
-  } & Listify<TargetSelector, 'target'>) {
+  } & Listify<TargetSelector, 'targetId'>) {
     this.logger.info(
       'Counting fields (period=%o, target=%s, excludedClients=%s)',
       period,
@@ -377,9 +398,9 @@ export class OperationsManager {
     );
 
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -393,9 +414,9 @@ export class OperationsManager {
 
   async readOperationsStats({
     period,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     operations,
     clients,
     schemaCoordinate,
@@ -407,9 +428,9 @@ export class OperationsManager {
   } & TargetSelector) {
     this.logger.info('Reading operations stats (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -426,8 +447,8 @@ export class OperationsManager {
   async readRequestsOverTimeOfProject({
     period,
     resolution,
-    organization,
-    project,
+    organizationId: organization,
+    projectId: project,
   }: {
     period: DateRange;
     resolution: number;
@@ -444,15 +465,15 @@ export class OperationsManager {
       project,
     );
     const targets = await this.storage.getTargetIdsOfProject({
-      organization,
-      project,
+      organizationId: organization,
+      projectId: project,
     });
     await Promise.all(
       targets.map(target =>
         this.authManager.ensureTargetAccess({
-          organization,
-          project,
-          target,
+          organizationId: organization,
+          projectId: project,
+          targetId: target,
           scope: TargetAccessScope.REGISTRY_READ,
         }),
       ),
@@ -494,8 +515,8 @@ export class OperationsManager {
   async readRequestsOverTimeOfTargets({
     period,
     resolution,
-    organization,
-    project,
+    organizationId: organization,
+    projectId: project,
     targets,
   }: {
     period: DateRange;
@@ -511,9 +532,9 @@ export class OperationsManager {
     await Promise.all(
       targets.map(target =>
         this.authManager.ensureTargetAccess({
-          organization,
-          project,
-          target,
+          organizationId: organization,
+          projectId: project,
+          targetId: target,
           scope: TargetAccessScope.REGISTRY_READ,
         }),
       ),
@@ -529,9 +550,9 @@ export class OperationsManager {
   async readRequestsOverTime({
     period,
     resolution,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     operations,
     clients,
     schemaCoordinate,
@@ -549,9 +570,9 @@ export class OperationsManager {
       target,
     );
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -568,9 +589,9 @@ export class OperationsManager {
   async readFailuresOverTime({
     period,
     resolution,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     operations,
     clients,
   }: {
@@ -586,9 +607,9 @@ export class OperationsManager {
       target,
     );
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -604,9 +625,9 @@ export class OperationsManager {
   async readDurationOverTime({
     period,
     resolution,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     operations,
     clients,
   }: {
@@ -622,9 +643,9 @@ export class OperationsManager {
       target,
     );
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -639,9 +660,9 @@ export class OperationsManager {
 
   async readGeneralDurationPercentiles({
     period,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     operations,
     clients,
   }: {
@@ -651,9 +672,9 @@ export class OperationsManager {
   } & TargetSelector) {
     this.logger.info('Reading overall duration percentiles (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -668,9 +689,9 @@ export class OperationsManager {
   @cache<{ period: DateRange } & TargetSelector>(selector => JSON.stringify(selector))
   async readDetailedDurationPercentiles({
     period,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     operations,
     clients,
     schemaCoordinate,
@@ -687,9 +708,9 @@ export class OperationsManager {
       clients,
     );
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -704,9 +725,9 @@ export class OperationsManager {
 
   async readUniqueClients({
     period,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     operations,
     clients,
     schemaCoordinate,
@@ -718,9 +739,9 @@ export class OperationsManager {
   } & TargetSelector) {
     this.logger.info('Counting unique clients (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -735,16 +756,16 @@ export class OperationsManager {
 
   async readUniqueClientNames({
     period,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     operations,
-  }: { period: DateRange; operations?: readonly string[] } & Listify<TargetSelector, 'target'>) {
+  }: { period: DateRange; operations?: readonly string[] } & Listify<TargetSelector, 'targetId'>) {
     this.logger.info('Read unique client names (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -757,9 +778,9 @@ export class OperationsManager {
 
   async readClientVersions({
     period,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     clientName,
     limit,
   }: {
@@ -769,9 +790,9 @@ export class OperationsManager {
   } & TargetSelector) {
     this.logger.info('Read client versions (period=%o, target=%s)', period, target);
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -785,9 +806,9 @@ export class OperationsManager {
 
   async countClientVersions({
     period,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     clientName,
   }: {
     period: DateRange;
@@ -800,9 +821,9 @@ export class OperationsManager {
       clientName,
     );
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -854,14 +875,14 @@ export class OperationsManager {
     } & TargetSelector,
   ) {
     await this.authManager.ensureTargetAccess({
-      organization: args.organization,
-      project: args.project,
-      target: args.target,
+      organizationId: args.organizationId,
+      projectId: args.projectId,
+      targetId: args.targetId,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
     const loader = this.getClientNamesPerCoordinateOfTypeLoader({
-      target: args.target,
+      target: args.targetId,
       period: args.period,
     });
 
@@ -933,9 +954,9 @@ export class OperationsManager {
     coordinate: string;
   }) {
     await this.authManager.ensureTargetAccess({
-      organization: args.organizationId,
-      project: args.projectId,
-      target: args.targetId,
+      organizationId: args.organizationId,
+      projectId: args.projectId,
+      targetId: args.targetId,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -955,9 +976,9 @@ export class OperationsManager {
     period: DateRange;
   }): Promise<Set<string>> {
     await this.authManager.ensureTargetAccess({
-      organization: args.organizationId,
-      project: args.projectId,
-      target: args.targetId,
+      organizationId: args.organizationId,
+      projectId: args.projectId,
+      targetId: args.targetId,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -970,7 +991,7 @@ export class OperationsManager {
   async hasOperationsForOrganization(selector: OrganizationSelector): Promise<boolean> {
     this.logger.info(
       'Checking existence of collected operations (organization=%s)',
-      selector.organization,
+      selector.organizationId,
     );
     const targets = await this.storage.getTargetIdsOfOrganization(selector);
 
@@ -982,7 +1003,7 @@ export class OperationsManager {
 
     if (hasCollectedOperations) {
       await this.storage.completeGetStartedStep({
-        organization: selector.organization,
+        organizationId: selector.organizationId,
         step: 'reportingOperations',
       });
       return true;
@@ -1002,18 +1023,18 @@ export class OperationsManager {
   >(selector => JSON.stringify(selector))
   async countCoordinatesOfType({
     period,
-    target,
-    project,
-    organization,
+    targetId: target,
+    projectId: project,
+    organizationId: organization,
     typename,
   }: {
     period: DateRange;
     typename: string;
   } & TargetSelector) {
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 
@@ -1050,16 +1071,16 @@ export class OperationsManager {
   >(selector => JSON.stringify(selector))
   async countCoordinatesOfTarget({
     period,
-    target,
-    project,
-    organization,
+    targetId: target,
+    projectId: project,
+    organizationId: organization,
   }: {
     period: DateRange;
   } & TargetSelector) {
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.REGISTRY_READ,
     });
 

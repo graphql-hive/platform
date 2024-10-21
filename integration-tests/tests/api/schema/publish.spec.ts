@@ -496,7 +496,7 @@ describe.each`
           : null;
 
       expect(linkToWebsite).toEqual(
-        `${process.env.HIVE_APP_BASE_URL}/${organization.cleanId}/${project.cleanId}/${target.cleanId}`,
+        `${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}`,
       );
     },
   );
@@ -546,7 +546,7 @@ describe.each`
           : null;
 
       expect(linkToWebsite).toMatch(
-        `${process.env.HIVE_APP_BASE_URL}/${organization.cleanId}/${project.cleanId}/${target.cleanId}/history/`,
+        `${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}/history/`,
       );
       expect(linkToWebsite).toMatch(/history\/[a-z0-9-]+$/);
     },
@@ -575,8 +575,8 @@ describe.each`
       .then(r => r.expectNoGraphQLErrors());
     const createTargetResult = await createTarget(
       {
-        organization: organization.cleanId,
-        project: project.cleanId,
+        organizationSlug: organization.slug,
+        projectSlug: project.slug,
         slug: 'target2',
       },
       ownerToken,
@@ -692,9 +692,9 @@ describe('schema publishing changes are persisted', () => {
       }
 
       const latestVersion = await storage.getLatestVersion({
-        target: target.id,
-        project: project.id,
-        organization: organization.id,
+        targetId: target.id,
+        projectId: project.id,
+        organizationId: organization.id,
       });
 
       const changes = await storage.getSchemaChangesForVersion({
@@ -2667,12 +2667,18 @@ describe('schema publishing changes are persisted', () => {
 
 const SchemaCompareToPreviousVersionQuery = graphql(`
   query SchemaCompareToPreviousVersionQuery(
-    $organization: ID!
-    $project: ID!
-    $target: ID!
+    $organizationSlug: String!
+    $projectSlug: String!
+    $targetSlug: String!
     $version: ID!
   ) {
-    target(selector: { organization: $organization, project: $project, target: $target }) {
+    target(
+      selector: {
+        organizationSlug: $organizationSlug
+        projectSlug: $projectSlug
+        targetSlug: $targetSlug
+      }
+    ) {
       id
       schemaVersion(id: $version) {
         id
@@ -2790,17 +2796,17 @@ test('Target.schemaVersion: result is read from the database', async () => {
     }
 
     const latestVersion = await storage.getLatestVersion({
-      target: target.id,
-      project: project.id,
-      organization: organization.id,
+      targetId: target.id,
+      projectId: project.id,
+      organizationId: organization.id,
     });
 
     const result = await execute({
       document: SchemaCompareToPreviousVersionQuery,
       variables: {
-        organization: organization.cleanId,
-        project: project.cleanId,
-        target: target.cleanId,
+        organizationSlug: organization.slug,
+        projectSlug: project.slug,
+        targetSlug: target.slug,
         version: latestVersion.id,
       },
       authToken: ownerToken,
@@ -2893,8 +2899,8 @@ test('Composition Error (Federation 2) can be served from the database', async (
         endpoint: `http://${serviceAddress}/compose`,
         // eslint-disable-next-line no-process-env
         secret: process.env.EXTERNAL_COMPOSITION_SECRET!,
-        project: project.cleanId,
-        organization: organization.cleanId,
+        projectSlug: project.slug,
+        organizationSlug: organization.slug,
       },
       readWriteToken.secret,
     ).then(r => r.expectNoGraphQLErrors());
@@ -2929,17 +2935,17 @@ test('Composition Error (Federation 2) can be served from the database', async (
     }
 
     const latestVersion = await storage.getLatestVersion({
-      target: target.id,
-      project: project.id,
-      organization: organization.id,
+      targetId: target.id,
+      projectId: project.id,
+      organizationId: organization.id,
     });
 
     const result = await execute({
       document: SchemaCompareToPreviousVersionQuery,
       variables: {
-        organization: organization.cleanId,
-        project: project.cleanId,
-        target: target.cleanId,
+        organizationSlug: organization.slug,
+        projectSlug: project.slug,
+        targetSlug: target.slug,
         version: latestVersion.id,
       },
       authToken: ownerToken,
@@ -3022,8 +3028,8 @@ test('Composition Network Failure (Federation 2)', async () => {
         endpoint: `http://${serviceAddress}/compose`,
         // eslint-disable-next-line no-process-env
         secret: process.env.EXTERNAL_COMPOSITION_SECRET!,
-        project: project.cleanId,
-        organization: organization.cleanId,
+        projectSlug: project.slug,
+        organizationSlug: organization.slug,
       },
       readWriteToken.secret,
     ).then(r => r.expectNoGraphQLErrors());
@@ -3062,8 +3068,8 @@ test('Composition Network Failure (Federation 2)', async () => {
       {
         endpoint: `http://${serviceAddress}/no_compose`,
         secret: process.env.EXTERNAL_COMPOSITION_SECRET!,
-        project: project.cleanId,
-        organization: organization.cleanId,
+        projectSlug: project.slug,
+        organizationSlug: organization.slug,
       },
       readWriteToken.secret,
     ).then(r => r.expectNoGraphQLErrors());
@@ -3086,17 +3092,17 @@ test('Composition Network Failure (Federation 2)', async () => {
     }
 
     const latestVersion = await storage.getLatestVersion({
-      target: target.id,
-      project: project.id,
-      organization: organization.id,
+      targetId: target.id,
+      projectId: project.id,
+      organizationId: organization.id,
     });
 
     const result = await execute({
       document: SchemaCompareToPreviousVersionQuery,
       variables: {
-        organization: organization.cleanId,
-        project: project.cleanId,
-        target: target.cleanId,
+        organizationSlug: organization.slug,
+        projectSlug: project.slug,
+        targetSlug: target.slug,
         version: latestVersion.id,
       },
       authToken: ownerToken,
@@ -4289,15 +4295,15 @@ test.concurrent(
       github: null,
       metadata: null,
       logIds: [],
-      project: project.id,
+      projectId: project.id,
       service: null,
-      organization: organization.id,
+      organizationId: organization.id,
       previousSchemaVersion: null,
       valid: true,
       schemaCompositionErrors: [],
       supergraphSDL: null,
       tags: null,
-      target: target.id,
+      targetId: target.id,
       url: null,
     });
     await storage.destroy();
