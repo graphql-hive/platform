@@ -9,14 +9,13 @@ export type AuthorizationPolicyStatement = {
 };
 
 /**
- * Parses a Hive Resource identifier into an object
+ * Parses a Hive Resource identifier into an object containing a organization path and resourceId path.
  * e.g. `"hrn:aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa:target/bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"`
  * becomes
  * ```json
  * {
  *   "organizationId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
- *   "resourceType": "target",
- *   "resourceId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+ *   "resourceId": "target/bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
  * }
  * ```
  */
@@ -33,15 +32,14 @@ function parseResourceIdentifier(resource: string) {
     throw new Error('Invalid resource identifier. Expected UUID or * (3)');
   }
   const organizationId = parts[1];
+
   if (!parts[2]) {
     throw new Error('Invalid resource identifier. Expected type or * (4)');
   }
 
-  const resourceParts = parts[2].split('/');
-  const resourceType = resourceParts[0];
-  const resourceId = resourceParts.at(1) ?? null;
+  // TODO: maybe some stricter validation of the resource id characters
 
-  return { organizationId, resourceType, resourceId };
+  return { organizationId, resourceId: parts[2] };
 }
 
 /**
@@ -60,15 +58,14 @@ export abstract class Session {
    * Check whether a session is allowed to perform a specific action.
    * Throws a HiveError if the action is not allowed.
    */
-  public async assertPerformAction(args: {
+  public async assertPerformAction<TAction extends keyof typeof actionDefinitions>(args: {
+    action: TAction;
     organizationId: string;
-    resourceType: 'target' | 'project' | 'organization';
-    resourceId: string | null;
-    action: `${string}:${string}`;
+    params: Parameters<(typeof actionDefinitions)[TAction]>[0];
   }): Promise<void> {
     const permissions = await this.loadPolicyStatementsForOrganization(args.organizationId);
-    const [actionScope] = args.action.split(':');
 
+    const resourceIdsForAction = actionDefinitions[args.action](args.params as any);
     let isAllowed = false;
 
     for (const permission of permissions) {
@@ -76,47 +73,30 @@ export abstract class Session {
         Array.isArray(permission.resource) ? permission.resource : [permission.resource]
       ).map(parseResourceIdentifier);
 
-      let didMatchResource = false;
+      /** If no resource matches, we skip this permission */
+      if (
+        !parsedResources.some(resource => {
+          if (resource.organizationId !== '*' && resource.organizationId !== args.organizationId) {
+            return false;
+          }
 
-      // check if resource matches
-      for (const resource of parsedResources) {
-        // if org is not the same, skip
-        if (resource.organizationId !== '*' && resource.organizationId !== args.organizationId) {
-          continue;
-        }
+          for (const resourceActionId of resourceIdsForAction) {
+            if (isResourceIdMatch(resource.resourceId, resourceActionId)) {
+              return true;
+            }
+          }
 
-        // if resource type is not the same, skip
-        if (resource.resourceType !== '*' && resource.resourceType !== args.resourceType) {
-          continue;
-        }
-
-        if (
-          args.resourceId &&
-          resource.resourceType !== '*' &&
-          resource.resourceId !== '*' &&
-          args.resourceId !== resource.resourceId
-        ) {
-          continue;
-        }
-
-        didMatchResource = true;
-      }
-
-      if (!didMatchResource) {
+          return false;
+        })
+      ) {
         continue;
       }
 
-      // check if action matches
       const actions = Array.isArray(permission.action) ? permission.action : [permission.action];
+
+      // check if action matches
       for (const action of actions) {
-        if (
-          // any action
-          action === '*' ||
-          // exact action
-          args.action === action ||
-          // scope:*
-          (actionScope === action.split(':')[0] && action.split(':')[1] === '*')
-        ) {
+        if (isActionMatch(action, args.action)) {
           if (permission.effect === 'deny') {
             throw new HiveError('Permission denied.');
           } else {
@@ -131,6 +111,140 @@ export abstract class Session {
     }
   }
 }
+
+/** Check whether a action definition (using wildcards) matches a action */
+function isActionMatch(actionContainingWildcard: string, action: string) {
+  // any action
+  if (actionContainingWildcard === '*') {
+    return true;
+  }
+  // exact match
+  if (actionContainingWildcard === action) {
+    return true;
+  }
+
+  const [actionScope] = action.split(':');
+  const [userSpecifiedActionScope, userSpecifiedActionId] = actionContainingWildcard.split(':');
+
+  // wildcard match "scope:*"
+  if (actionScope === userSpecifiedActionScope && userSpecifiedActionId === '*') {
+    return true;
+  }
+
+  return false;
+}
+
+/** Check whether a resource id path (containing wildcards) matches a resource id path */
+function isResourceIdMatch(
+  /** The resource id path containing wildcards */
+  resourceIdContainingWildcards: string,
+  /** The Resource id without wildcards */
+  resourceId: string,
+): boolean {
+  const wildcardIdParts = resourceIdContainingWildcards.split('/');
+  const resourceIdParts = resourceId.split('/');
+
+  do {
+    const wildcardIdPart = wildcardIdParts.shift();
+    const resourceIdPart = resourceIdParts.shift();
+
+    if (wildcardIdPart === '*' && wildcardIdParts.length === 0) {
+      return true;
+    }
+
+    if (wildcardIdPart !== resourceIdPart) {
+      return false;
+    }
+  } while (wildcardIdParts.length || resourceIdParts.length);
+
+  return true;
+}
+
+function defaultOrgIdentity(args: { organizationId: string }) {
+  return [`organization/${args.organizationId}`];
+}
+
+function defaultProjectIdentity(
+  args: { projectId: string } & Parameters<typeof defaultOrgIdentity>[0],
+) {
+  return [...defaultOrgIdentity(args), `project/${args.projectId}`];
+}
+
+function defaultTargetIdentity(
+  args: { targetId: string } & Parameters<typeof defaultProjectIdentity>[0],
+) {
+  return [...defaultProjectIdentity(args), `target/${args.targetId}`];
+}
+
+function defaultAppDeploymentIdentity(
+  args: { appDeploymentName: string } & Parameters<typeof defaultTargetIdentity>[0],
+) {
+  return [
+    ...defaultTargetIdentity(args),
+    `target/${args.targetId}/appDeployment/${args.appDeploymentName}`,
+  ];
+}
+
+function schemaCheckOrPublishIdentity(
+  args: { serviceName: string | null } & Parameters<typeof defaultTargetIdentity>[0],
+) {
+  const ids = defaultTargetIdentity(args);
+
+  if (args.serviceName !== null) {
+    ids.push(`target/${args.targetId}/service/${args.serviceName}`);
+  }
+
+  return ids;
+}
+
+/**
+ * Object map containing all possible actions
+ * and resource identifier builder functions required for checking whether an action can be performed.
+ *
+ * Used within the `Session.assertPerformAction` function for a fully type-safe experience.
+ * If you are adding new permissions to the existing system.
+ * This is the place to do so.
+ */
+const actionDefinitions = {
+  'organization:describe': defaultOrgIdentity,
+  'organization:updateSlug': defaultOrgIdentity,
+  'organization:delete': defaultOrgIdentity,
+  'organization:modifyGitHubIntegration': defaultOrgIdentity,
+  'organization:modifySlackIntegration': defaultOrgIdentity,
+  'organization:modifyOIDC': defaultOrgIdentity,
+  'support:manageTickets': defaultOrgIdentity,
+  'billing:describe': defaultOrgIdentity,
+  'billing:update': defaultOrgIdentity,
+  'policy:describe': defaultOrgIdentity,
+  'policy:modify': defaultOrgIdentity,
+  'accessToken:describe': defaultOrgIdentity,
+  'accessToken:create': defaultOrgIdentity,
+  'accessToken:delete': defaultOrgIdentity,
+  'member:describe': defaultOrgIdentity,
+  'member:assignRole': defaultOrgIdentity,
+  'member:modifyRole': defaultOrgIdentity,
+  'member:removeMember': defaultOrgIdentity,
+  'member:manageInvites': defaultOrgIdentity,
+  'project:create': defaultProjectIdentity,
+  'project:describe': defaultProjectIdentity,
+  'project:delete': defaultProjectIdentity,
+  'alert:modify': defaultProjectIdentity,
+  'project:updateSlug': defaultProjectIdentity,
+  'schemaLinting:manage': defaultProjectIdentity,
+  'target:create': defaultProjectIdentity,
+  'target:delete': defaultTargetIdentity,
+  'schemaCheck:create': schemaCheckOrPublishIdentity,
+  'schemaCheck:approve': schemaCheckOrPublishIdentity,
+  'schemaVersion:publish': schemaCheckOrPublishIdentity,
+  'appDeployment:create': defaultAppDeploymentIdentity,
+  'appDeployment:publish': defaultAppDeploymentIdentity,
+  'laboratory:describe': defaultTargetIdentity,
+  'laboratory:modify': defaultTargetIdentity,
+} satisfies ActionDefinitionMap;
+
+type ActionDefinitionMap = {
+  [key: `${string}:${string}`]: (args: any) => Array<string>;
+};
 
 /** Unauthenticated session that is returned by default. */
 class UnauthenticatedSession extends Session {
