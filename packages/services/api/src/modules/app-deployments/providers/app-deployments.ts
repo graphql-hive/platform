@@ -118,7 +118,7 @@ export class AppDeployments {
 
     if (this.appDeploymentsEnabled === false) {
       const organization = await this.storage.getOrganization({
-        organization: args.organizationId,
+        organizationId: args.organizationId,
       });
       if (organization.featureFlags.appDeployments === false) {
         this.logger.debug(
@@ -233,7 +233,7 @@ export class AppDeployments {
   }) {
     if (this.appDeploymentsEnabled === false) {
       const organization = await this.storage.getOrganization({
-        organization: args.organizationId,
+        organizationId: args.organizationId,
       });
       if (organization.featureFlags.appDeployments === false) {
         this.logger.debug(
@@ -280,7 +280,7 @@ export class AppDeployments {
 
     if (args.operations.length !== 0) {
       const latestSchemaVersion = await this.storage.getMaybeLatestValidVersion({
-        target: args.targetId,
+        targetId: args.targetId,
       });
 
       if (latestSchemaVersion === null) {
@@ -296,9 +296,9 @@ export class AppDeployments {
 
       const compositeSchemaSdl = await this.schemaVersionHelper.getCompositeSchemaSdl({
         ...latestSchemaVersion,
-        organization: args.organizationId,
-        project: args.projectId,
-        target: args.targetId,
+        organizationId: args.organizationId,
+        projectId: args.projectId,
+        targetId: args.targetId,
       });
       if (compositeSchemaSdl === null) {
         // No valid schema found.
@@ -348,7 +348,7 @@ export class AppDeployments {
 
     if (this.appDeploymentsEnabled === false) {
       const organization = await this.storage.getOrganization({
-        organization: args.organizationId,
+        organizationId: args.organizationId,
       });
       if (organization.featureFlags.appDeployments === false) {
         this.logger.debug(
@@ -488,7 +488,7 @@ export class AppDeployments {
 
     if (this.appDeploymentsEnabled === false) {
       const organization = await this.storage.getOrganization({
-        organization: args.organizationId,
+        organizationId: args.organizationId,
       });
       if (organization.featureFlags.appDeployments === false) {
         this.logger.debug(

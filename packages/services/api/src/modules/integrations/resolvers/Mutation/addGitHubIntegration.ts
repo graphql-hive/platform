@@ -10,7 +10,7 @@ export const addGitHubIntegration: NonNullable<MutationResolvers['addGitHubInteg
   const organization = await injector.get(IdTranslator).translateOrganizationId(input);
 
   await injector.get(GitHubIntegrationManager).register({
-    organization,
+    organizationId: organization,
     installationId: input.installationId,
   });
 

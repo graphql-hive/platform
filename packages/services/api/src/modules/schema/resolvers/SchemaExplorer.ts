@@ -40,9 +40,9 @@ export const SchemaExplorer: SchemaExplorerResolvers = {
         .get(OperationsManager)
         .countCoordinatesOfType({
           typename: entity.name,
-          organization: source.usage.organization,
-          project: source.usage.project,
-          target: source.usage.target,
+          organizationId: source.usage.organizationId,
+          projectId: source.usage.projectId,
+          targetId: source.usage.targetId,
           period: source.usage.period,
         })
         .then(usage =>
@@ -158,9 +158,9 @@ export const SchemaExplorer: SchemaExplorerResolvers = {
 
     async function getStats(typename: string) {
       const stats = await operationsManager.countCoordinatesOfTarget({
-        target: usage.target,
-        organization: usage.organization,
-        project: usage.project,
+        targetId: usage.targetId,
+        organizationId: usage.organizationId,
+        projectId: usage.projectId,
         period: usage.period,
       });
 
@@ -294,9 +294,9 @@ export const SchemaExplorer: SchemaExplorerResolvers = {
         return operationsManager
           .countCoordinatesOfType({
             typename: entity.name,
-            organization: usage.organization,
-            project: usage.project,
-            target: usage.target,
+            organizationId: usage.organizationId,
+            projectId: usage.projectId,
+            targetId: usage.targetId,
             period: usage.period,
           })
           .then(stats =>
@@ -334,9 +334,9 @@ export const SchemaExplorer: SchemaExplorerResolvers = {
         return operationsManager
           .countCoordinatesOfType({
             typename: entity.name,
-            organization: usage.organization,
-            project: usage.project,
-            target: usage.target,
+            organizationId: usage.organizationId,
+            projectId: usage.projectId,
+            targetId: usage.targetId,
             period: usage.period,
           })
           .then(stats =>
@@ -374,9 +374,9 @@ export const SchemaExplorer: SchemaExplorerResolvers = {
         return operationsManager
           .countCoordinatesOfType({
             typename: entity.name,
-            organization: usage.organization,
-            project: usage.project,
-            target: usage.target,
+            organizationId: usage.organizationId,
+            projectId: usage.projectId,
+            targetId: usage.targetId,
             period: usage.period,
           })
           .then(stats =>

@@ -14,7 +14,7 @@ export const deleteOIDCIntegration: NonNullable<
       ok: {
         organization: await injector
           .get(OrganizationManager)
-          .getOrganization({ organization: result.organizationId }),
+          .getOrganization({ organizationId: result.organizationId }),
       },
     };
   }

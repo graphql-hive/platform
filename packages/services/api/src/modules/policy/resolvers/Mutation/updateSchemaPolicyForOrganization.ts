@@ -15,12 +15,14 @@ export const updateSchemaPolicyForOrganization: NonNullable<
     await injector.get(SchemaPolicyApiProvider).validateConfig({ config });
     const updatedPolicy = await injector
       .get(SchemaPolicyProvider)
-      .setOrganizationPolicy({ organization }, config, allowOverrides);
+      .setOrganizationPolicy({ organizationId: organization }, config, allowOverrides);
 
     return {
       ok: {
         updatedPolicy,
-        organization: await injector.get(OrganizationManager).getOrganization({ organization }),
+        organization: await injector
+          .get(OrganizationManager)
+          .getOrganization({ organizationId: organization }),
       },
     };
   } catch (e) {

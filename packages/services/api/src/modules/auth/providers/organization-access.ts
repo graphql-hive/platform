@@ -12,24 +12,24 @@ import type { TargetAccessScope } from './target-access';
 export { OrganizationAccessScope } from './scopes';
 
 export interface OrganizationOwnershipSelector {
-  user: string;
-  organization: string;
+  userId: string;
+  organizationId: string;
 }
 
 export interface OrganizationUserScopesSelector {
-  user: string;
-  organization: string;
+  userId: string;
+  organizationId: string;
 }
 
 export interface OrganizationUserAccessSelector {
-  user: string;
-  organization: string;
+  userId: string;
+  organizationId: string;
   scope: OrganizationAccessScope;
 }
 
 interface OrganizationTokenAccessSelector {
   token: string;
-  organization: string;
+  organizationId: string;
   scope: OrganizationAccessScope;
 }
 
@@ -59,7 +59,7 @@ export class OrganizationAccess {
   tokenInfo: DataLoader<TokenSelector, Token | null, string>;
   ownership: DataLoader<
     {
-      organization: string;
+      organizationId: string;
     },
     string | null,
     string
@@ -96,8 +96,8 @@ export class OrganizationAccess {
         cacheKeyFn(selector) {
           return JSON.stringify({
             type: 'OrganizationAccess:user',
-            organization: selector.organization,
-            user: selector.user,
+            organization: selector.organizationId,
+            user: selector.userId,
             scope: selector.scope,
           });
         },
@@ -109,7 +109,7 @@ export class OrganizationAccess {
           selectors.map(async selector => {
             const tokenInfo = await this.tokenInfo.load(selector);
 
-            if (tokenInfo?.organization === selector.organization) {
+            if (tokenInfo?.organization === selector.organizationId) {
               return tokenInfo.scopes.includes(selector.scope);
             }
 
@@ -120,7 +120,7 @@ export class OrganizationAccess {
         cacheKeyFn(selector) {
           return JSON.stringify({
             type: 'OrganizationAccess:token',
-            organization: selector.organization,
+            organization: selector.organizationId,
             token: selector.token,
             scope: selector.scope,
           });
@@ -137,8 +137,8 @@ export class OrganizationAccess {
         cacheKeyFn(selector) {
           return JSON.stringify({
             type: 'OrganizationAccess:allScopes',
-            organization: selector.organization,
-            user: selector.user,
+            organization: selector.organizationId,
+            user: selector.userId,
           });
         },
       },
@@ -166,8 +166,8 @@ export class OrganizationAccess {
         cacheKeyFn(selector) {
           return JSON.stringify({
             type: 'OrganizationAccess:scopes',
-            organization: selector.organization,
-            user: selector.user,
+            organization: selector.organizationId,
+            user: selector.userId,
           });
         },
       },
@@ -185,7 +185,7 @@ export class OrganizationAccess {
         cacheKeyFn(selector) {
           return JSON.stringify({
             type: 'OrganizationAccess:ownership',
-            organization: selector.organization,
+            organization: selector.organizationId,
           });
         },
       },
@@ -228,7 +228,7 @@ export class OrganizationAccess {
       return false;
     }
 
-    return owner === selector.user;
+    return owner === selector.userId;
   }
 
   async getMemberScopes(selector: OrganizationUserScopesSelector) {
