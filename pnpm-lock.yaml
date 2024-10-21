@@ -650,8 +650,8 @@ importers:
         specifier: 3.637.0
         version: 3.637.0
       '@date-fns/utc':
-        specifier: 1.2.0
-        version: 1.2.0
+        specifier: 2.1.0
+        version: 2.1.0
       '@graphql-hive/core':
         specifier: workspace:*
         version: link:../../libraries/core/dist
@@ -1648,8 +1648,8 @@ importers:
   packages/web/app:
     devDependencies:
       '@date-fns/utc':
-        specifier: 1.2.0
-        version: 1.2.0
+        specifier: 2.1.0
+        version: 2.1.0
       '@fastify/cors':
         specifier: 9.0.1
         version: 9.0.1
@@ -3591,8 +3591,8 @@ packages:
   '@cypress/xvfb@1.2.4':
     resolution: {integrity: sha512-skbBzPggOVYCbnGgV+0dmBdW/s77ZkAOXIC1knS8NagwDjBrNC1LuXtQJeiN6l+m7lzmHtaoUw/ctJKdqkG57Q==}
 
-  '@date-fns/utc@1.2.0':
-    resolution: {integrity: sha512-YLq+crMPJiBmIdkRmv9nZuZy1mVtMlDcUKlg4mvI0UsC/dZeIaGoGB5p/C4FrpeOhZ7zBTK03T58S0DFkRNMnw==}
+  '@date-fns/utc@2.1.0':
+    resolution: {integrity: sha512-176grgAgU2U303rD2/vcOmNg0kGPbhzckuH1TEP2al7n0AQipZIy9P15usd2TKQCG1g+E1jX/ZVQSzs4sUDwgA==}
 
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
@@ -19704,7 +19704,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@date-fns/utc@1.2.0': {}
+  '@date-fns/utc@2.1.0': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 
