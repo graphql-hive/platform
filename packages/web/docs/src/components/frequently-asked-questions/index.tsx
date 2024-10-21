@@ -1,7 +1,7 @@
 import { Children, ComponentPropsWithoutRef } from 'react';
 import * as Accordion from '@radix-ui/react-accordion';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
-import { Heading } from '@theguild/components';
+import { Anchor, Heading } from '@theguild/components';
 import { cn } from '../../lib';
 import Questions from './questions.mdx';
 
@@ -15,6 +15,9 @@ export function FrequentlyAskedQuestions({ className }: { className?: string }) 
     >
       <Questions
         components={{
+          a: (
+            props: ComponentPropsWithoutRef<'a'> & { href: string; children: React.ReactNode },
+          ) => <Anchor className="hive-focus rounded underline hover:text-blue-700" {...props} />,
           h2: (props: ComponentPropsWithoutRef<'h2'>) => (
             <Heading as="h2" size="md" className="basis-1/2" {...props} />
           ),
