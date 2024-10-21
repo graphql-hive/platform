@@ -29,9 +29,9 @@ export class SingleModel {
 
   @traceFn('Single modern: check', {
     initAttributes: args => ({
-      'hive.project.id': args.selector.project,
-      'hive.target.id': args.selector.target,
-      'hive.organization.id': args.selector.organization,
+      'hive.project.id': args.selector.projectId,
+      'hive.target.id': args.selector.targetId,
+      'hive.organization.id': args.selector.organizationId,
     }),
   })
   async check({
@@ -49,9 +49,9 @@ export class SingleModel {
       sdl: string;
     };
     selector: {
-      organization: string;
-      project: string;
-      target: string;
+      organizationId: string;
+      projectId: string;
+      targetId: string;
     };
     latest: {
       isComposable: boolean;
@@ -74,7 +74,7 @@ export class SingleModel {
       id: temp,
       author: temp,
       commit: temp,
-      target: selector.target,
+      target: selector.targetId,
       date: Date.now(),
       sdl: input.sdl,
       metadata: null,
@@ -107,7 +107,7 @@ export class SingleModel {
 
     const compositionCheck = await this.checks.composition({
       orchestrator: this.orchestrator,
-      targetId: selector.target,
+      targetId: selector.targetId,
       project,
       organization,
       schemas,
@@ -120,7 +120,7 @@ export class SingleModel {
       version: comparedVersion,
       organization,
       project,
-      targetId: selector.target,
+      targetId: selector.targetId,
     });
 
     const [diffCheck, policyCheck] = await Promise.all([

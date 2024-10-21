@@ -16,14 +16,14 @@ export const deleteAlerts: NonNullable<MutationResolvers['deleteAlerts']> = asyn
   ]);
 
   const project = await injector.get(ProjectManager).getProject({
-    organization: organizationId,
-    project: projectId,
+    organizationId: organizationId,
+    projectId: projectId,
   });
 
   try {
     await injector.get(AlertsManager).deleteAlerts({
-      organization: organizationId,
-      project: projectId,
+      organizationId: organizationId,
+      projectId: projectId,
       alerts: input.alertIds,
     });
 

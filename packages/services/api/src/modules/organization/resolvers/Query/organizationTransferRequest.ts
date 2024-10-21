@@ -9,7 +9,7 @@ export const organizationTransferRequest: NonNullable<
   const organizationManager = injector.get(OrganizationManager);
 
   const transferRequest = await organizationManager.getOwnershipTransferRequest({
-    organization: organizationId,
+    organizationId: organizationId,
     code: selector.code,
   });
 
@@ -19,7 +19,7 @@ export const organizationTransferRequest: NonNullable<
 
   return {
     organization: await organizationManager.getOrganization({
-      organization: organizationId,
+      organizationId: organizationId,
     }),
   };
 };

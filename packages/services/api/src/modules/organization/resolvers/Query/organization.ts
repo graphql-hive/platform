@@ -12,7 +12,7 @@ export const organization: NonNullable<QueryResolvers['organization']> = async (
   return {
     selector,
     organization: await injector.get(OrganizationManager).getOrganization({
-      organization,
+      organizationId: organization,
     }),
   };
 };

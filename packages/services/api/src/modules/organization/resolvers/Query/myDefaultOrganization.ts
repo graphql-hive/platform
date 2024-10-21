@@ -19,7 +19,7 @@ export const myDefaultOrganization: NonNullable<QueryResolvers['myDefaultOrganiz
     });
     if (oidcIntegration.type === 'ok') {
       const org = await organizationManager.getOrganization({
-        organization: oidcIntegration.organizationId,
+        organizationId: oidcIntegration.organizationId,
       });
 
       return {
@@ -42,7 +42,7 @@ export const myDefaultOrganization: NonNullable<QueryResolvers['myDefaultOrganiz
 
     if (orgId) {
       const org = await organizationManager.getOrganization({
-        organization: orgId,
+        organizationId: orgId,
       });
 
       if (org) {

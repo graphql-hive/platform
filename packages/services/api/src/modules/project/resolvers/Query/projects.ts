@@ -8,5 +8,5 @@ export const projects: NonNullable<QueryResolvers['projects']> = async (
   { injector },
 ) => {
   const organization = await injector.get(IdTranslator).translateOrganizationId(selector);
-  return injector.get(ProjectManager).getProjects({ organization });
+  return injector.get(ProjectManager).getProjects({ organizationId: organization });
 };

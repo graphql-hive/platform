@@ -12,7 +12,7 @@ export const deleteOrganization: NonNullable<MutationResolvers['deleteOrganizati
     organizationSlug: selector.organizationSlug,
   });
   const organization = await injector.get(OrganizationManager).deleteOrganization({
-    organization: organizationId,
+    organizationId: organizationId,
   });
   return {
     selector: {

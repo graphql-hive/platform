@@ -8,9 +8,9 @@ export const UnusedSchemaExplorer: UnusedSchemaExplorerResolvers = {
         isUsed: false,
         usedCoordinates: usage.usedCoordinates,
         period: usage.period,
-        organization: usage.organization,
-        project: usage.project,
-        target: usage.target,
+        organizationId: usage.organizationId,
+        projectId: usage.projectId,
+        targetId: usage.targetId,
       }) as const;
 
     return buildGraphQLTypesFromSDL(sdl, unused, supergraph).sort((a, b) =>

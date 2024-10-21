@@ -66,7 +66,7 @@ export class BillingProvider {
     this.logger.debug('Fetching organization billing (selector=%o)', selector);
 
     return this.storage.getOrganizationBilling({
-      organization: selector.organizationId,
+      organizationId: selector.organizationId,
     });
   }
 

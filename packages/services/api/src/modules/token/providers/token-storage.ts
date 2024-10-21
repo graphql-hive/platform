@@ -61,9 +61,9 @@ export class TokenStorage {
 
     const response = await this.tokensService.createToken.mutate({
       name: input.name,
-      target: input.target,
-      project: input.project,
-      organization: input.organization,
+      target: input.targetId,
+      project: input.projectId,
+      organization: input.organizationId,
       scopes: input.scopes,
     });
 
@@ -96,7 +96,7 @@ export class TokenStorage {
     this.logger.debug('Fetching tokens (selector=%o)', selector);
 
     const response = await this.tokensService.targetTokens.query({
-      targetId: selector.target,
+      targetId: selector.targetId,
     });
 
     return response || [];

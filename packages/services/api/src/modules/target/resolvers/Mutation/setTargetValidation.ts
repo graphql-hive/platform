@@ -16,15 +16,15 @@ export const setTargetValidation: NonNullable<MutationResolvers['setTargetValida
 
   const targetManager = injector.get(TargetManager);
   await targetManager.setTargetValidation({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     enabled: input.enabled,
   });
 
   return targetManager.getTarget({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
   });
 };

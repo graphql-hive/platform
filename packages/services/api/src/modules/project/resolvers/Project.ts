@@ -24,7 +24,7 @@ export const Project: Pick<
     }
 
     const organization = await injector.get(OrganizationManager).getOrganization({
-      organization: project.orgId,
+      organizationId: project.orgId,
     });
 
     return organization.featureFlags.forceLegacyCompositionInTargets.length > 0;

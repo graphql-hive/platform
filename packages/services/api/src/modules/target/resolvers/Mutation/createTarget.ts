@@ -36,8 +36,8 @@ export const createTarget: NonNullable<MutationResolvers['createTarget']> = asyn
     }),
   ]);
   const result = await injector.get(TargetManager).createTarget({
-    organization: organizationId,
-    project: projectId,
+    organizationId: organizationId,
+    projectId: projectId,
     slug: inputParseResult.data.slug,
   });
 

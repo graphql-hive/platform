@@ -12,7 +12,7 @@ export const disableExternalSchemaComposition: NonNullable<
   ]);
 
   return injector.get(SchemaManager).disableExternalSchemaComposition({
-    project,
-    organization,
+    projectId: project,
+    organizationId: organization,
   });
 };

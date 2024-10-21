@@ -88,9 +88,9 @@ export class CompositeModel {
 
   @traceFn('Composite modern: check', {
     initAttributes: args => ({
-      'hive.project.id': args.selector.project,
-      'hive.target.id': args.selector.target,
-      'hive.organization.id': args.selector.organization,
+      'hive.project.id': args.selector.projectId,
+      'hive.target.id': args.selector.targetId,
+      'hive.organization.id': args.selector.organizationId,
     }),
   })
   async check({
@@ -110,9 +110,9 @@ export class CompositeModel {
       serviceName: string;
     };
     selector: {
-      organization: string;
-      project: string;
-      target: string;
+      organizationId: string;
+      projectId: string;
+      targetId: string;
     };
     latest: {
       isComposable: boolean;
@@ -141,7 +141,7 @@ export class CompositeModel {
       id: temp,
       author: temp,
       commit: temp,
-      target: selector.target,
+      target: selector.targetId,
       date: Date.now(),
       sdl: input.sdl,
       service_name: input.serviceName,
@@ -156,7 +156,7 @@ export class CompositeModel {
     schemas.sort((a, b) => a.service_name.localeCompare(b.service_name));
 
     const compareToPreviousComposableVersion = shouldUseLatestComposableVersion(
-      selector.target,
+      selector.targetId,
       project,
       organization,
     );
@@ -190,7 +190,7 @@ export class CompositeModel {
 
     const compositionCheck = await this.checks.composition({
       orchestrator,
-      targetId: selector.target,
+      targetId: selector.targetId,
       project,
       organization,
       schemas,
@@ -212,7 +212,7 @@ export class CompositeModel {
       version: comparedVersion,
       organization,
       project,
-      targetId: selector.target,
+      targetId: selector.targetId,
     });
 
     const contractChecks = await this.getContractChecks({

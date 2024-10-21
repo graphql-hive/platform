@@ -35,9 +35,9 @@ export class AppDeploymentsManager {
     },
   ): Promise<null | AppDeploymentRecord> {
     await this.auth.ensureTargetAccess({
-      organization: target.orgId,
-      project: target.projectId,
-      target: target.id,
+      organizationId: target.orgId,
+      projectId: target.projectId,
+      targetId: target.id,
       scope: TargetAccessScope.READ,
     });
 
@@ -76,9 +76,9 @@ export class AppDeploymentsManager {
     const tokenRecord = await this.tokenStorage.getToken({ token });
 
     await this.auth.ensureTargetAccess({
-      organization: tokenRecord.organization,
-      project: tokenRecord.project,
-      target: tokenRecord.target,
+      organizationId: tokenRecord.organization,
+      projectId: tokenRecord.project,
+      targetId: tokenRecord.target,
       scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
@@ -103,9 +103,9 @@ export class AppDeploymentsManager {
     const tokenRecord = await this.tokenStorage.getToken({ token });
 
     await this.auth.ensureTargetAccess({
-      organization: tokenRecord.organization,
-      project: tokenRecord.project,
-      target: tokenRecord.target,
+      organizationId: tokenRecord.organization,
+      projectId: tokenRecord.project,
+      targetId: tokenRecord.target,
       scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
@@ -128,9 +128,9 @@ export class AppDeploymentsManager {
     const tokenRecord = await this.tokenStorage.getToken({ token });
 
     await this.auth.ensureTargetAccess({
-      organization: tokenRecord.organization,
-      project: tokenRecord.project,
-      target: tokenRecord.target,
+      organizationId: tokenRecord.organization,
+      projectId: tokenRecord.project,
+      targetId: tokenRecord.target,
       scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
@@ -151,9 +151,9 @@ export class AppDeploymentsManager {
     const target = await this.targetManager.getTargetById({ targetId: args.targetId });
 
     await this.auth.ensureTargetAccess({
-      organization: target.orgId,
-      project: target.projectId,
-      target: target.id,
+      organizationId: target.orgId,
+      projectId: target.projectId,
+      targetId: target.id,
       scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
@@ -183,9 +183,9 @@ export class AppDeploymentsManager {
     args: { cursor: string | null; first: number | null },
   ) {
     await this.auth.ensureTargetAccess({
-      organization: target.orgId,
-      project: target.projectId,
-      target: target.id,
+      organizationId: target.orgId,
+      projectId: target.projectId,
+      targetId: target.id,
       scope: TargetAccessScope.READ,
     });
 

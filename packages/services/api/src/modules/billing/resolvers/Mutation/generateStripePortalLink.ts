@@ -12,7 +12,7 @@ export const generateStripePortalLink: NonNullable<
   });
   const organization = await injector.get(OrganizationManager).getOrganization(
     {
-      organization: organizationId,
+      organizationId: organizationId,
     },
     OrganizationAccessScope.SETTINGS,
   );

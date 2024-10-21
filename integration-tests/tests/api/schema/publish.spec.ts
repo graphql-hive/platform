@@ -692,9 +692,9 @@ describe('schema publishing changes are persisted', () => {
       }
 
       const latestVersion = await storage.getLatestVersion({
-        target: target.id,
-        project: project.id,
-        organization: organization.id,
+        targetId: target.id,
+        projectId: project.id,
+        organizationId: organization.id,
       });
 
       const changes = await storage.getSchemaChangesForVersion({
@@ -2796,9 +2796,9 @@ test('Target.schemaVersion: result is read from the database', async () => {
     }
 
     const latestVersion = await storage.getLatestVersion({
-      target: target.id,
-      project: project.id,
-      organization: organization.id,
+      targetId: target.id,
+      projectId: project.id,
+      organizationId: organization.id,
     });
 
     const result = await execute({
@@ -2935,9 +2935,9 @@ test('Composition Error (Federation 2) can be served from the database', async (
     }
 
     const latestVersion = await storage.getLatestVersion({
-      target: target.id,
-      project: project.id,
-      organization: organization.id,
+      targetId: target.id,
+      projectId: project.id,
+      organizationId: organization.id,
     });
 
     const result = await execute({
@@ -3092,9 +3092,9 @@ test('Composition Network Failure (Federation 2)', async () => {
     }
 
     const latestVersion = await storage.getLatestVersion({
-      target: target.id,
-      project: project.id,
-      organization: organization.id,
+      targetId: target.id,
+      projectId: project.id,
+      organizationId: organization.id,
     });
 
     const result = await execute({
@@ -4295,15 +4295,15 @@ test.concurrent(
       github: null,
       metadata: null,
       logIds: [],
-      project: project.id,
+      projectId: project.id,
       service: null,
-      organization: organization.id,
+      organizationId: organization.id,
       previousSchemaVersion: null,
       valid: true,
       schemaCompositionErrors: [],
       supergraphSDL: null,
       tags: null,
-      target: target.id,
+      targetId: target.id,
       url: null,
     });
     await storage.destroy();

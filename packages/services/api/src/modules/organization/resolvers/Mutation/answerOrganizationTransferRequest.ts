@@ -10,7 +10,7 @@ export const answerOrganizationTransferRequest: NonNullable<
 
   try {
     await injector.get(OrganizationManager).answerOwnershipTransferRequest({
-      organization,
+      organizationId: organization,
       code: input.code,
       accept: input.accept,
     });

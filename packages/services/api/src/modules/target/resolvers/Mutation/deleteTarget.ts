@@ -23,9 +23,9 @@ export const deleteTarget: NonNullable<MutationResolvers['deleteTarget']> = asyn
     }),
   ]);
   const target = await injector.get(TargetManager).deleteTarget({
-    organization: organizationId,
-    project: projectId,
-    target: targetId,
+    organizationId: organizationId,
+    projectId: projectId,
+    targetId: targetId,
   });
   return {
     selector: {

@@ -12,7 +12,7 @@ export const updateOrganizationMemberAccess: NonNullable<
       organizationSlug: input.organizationSlug,
     },
     organization: await injector.get(OrganizationManager).updateMemberAccess({
-      organization: organizationId,
+      organizationId: organizationId,
       user: input.userId,
       organizationScopes: input.organizationScopes,
       projectScopes: input.projectScopes,

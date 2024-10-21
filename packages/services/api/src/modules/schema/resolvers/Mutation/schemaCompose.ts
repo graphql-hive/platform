@@ -18,9 +18,9 @@ export const schemaCompose: NonNullable<MutationResolvers['schemaCompose']> = as
   const result = await injector.get(SchemaManager).compose({
     onlyComposable: input.useLatestComposableVersion === true,
     services: input.services,
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
   });
 
   if (result.kind === 'error') {

@@ -13,7 +13,7 @@ export const updateOrgRateLimit: NonNullable<MutationResolvers['updateOrgRateLim
   });
 
   return injector.get(OrganizationManager).updateRateLimits({
-    organization: organizationId,
+    organizationId: organizationId,
     monthlyRateLimit: {
       retentionInDays: USAGE_DEFAULT_LIMITATIONS.PRO.retention,
       operations: args.monthlyLimits.operations,

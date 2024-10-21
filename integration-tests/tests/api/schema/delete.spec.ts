@@ -178,9 +178,9 @@ test.concurrent(
       expect(deleteServiceResult.schemaDelete.__typename).toBe('SchemaDeleteSuccess');
 
       const latestVersion = await storage.getLatestVersion({
-        target: target.id,
-        project: project.id,
-        organization: organization.id,
+        targetId: target.id,
+        projectId: project.id,
+        organizationId: organization.id,
       });
 
       expect(latestVersion.compositeSchemaSDL).toMatchInlineSnapshot(`
@@ -310,9 +310,9 @@ test.concurrent(
       expect(deleteServiceResult.schemaDelete.__typename).toBe('SchemaDeleteSuccess');
 
       const latestVersion = await storage.getLatestVersion({
-        target: target.id,
-        project: project.id,
-        organization: organization.id,
+        targetId: target.id,
+        projectId: project.id,
+        organizationId: organization.id,
       });
 
       expect(latestVersion.compositeSchemaSDL).toEqual(null);

@@ -34,7 +34,7 @@ export class IdTranslator {
       filterSelector('organization', selector),
     );
     const organizationId = await this.storage.getOrganizationId({
-      organization: selector.organizationSlug,
+      organizationSlug: selector.organizationSlug,
     });
 
     if (!organizationId) {
@@ -51,7 +51,7 @@ export class IdTranslator {
       filterSelector('organization', selector),
     );
     return this.storage.getOrganizationId({
-      organization: selector.organizationSlug,
+      organizationSlug: selector.organizationSlug,
     });
   }
 
@@ -64,34 +64,24 @@ export class IdTranslator {
       filterSelector('project', selector),
     );
     return this.storage.getProjectId({
-      organization: selector.organizationSlug,
-      project: selector.projectSlug,
+      organizationSlug: selector.organizationSlug,
+      projectSlug: selector.projectSlug,
     });
   }
 
-  @cache<
-    TargetSelectorInput & {
-      useIds?: boolean;
-    }
-  >(selector =>
-    [selector.organizationSlug, selector.projectSlug, selector.targetSlug, selector.useIds].join(
-      ',',
-    ),
+  @cache<TargetSelectorInput>(selector =>
+    [selector.organizationSlug, selector.projectSlug, selector.targetSlug].join(','),
   )
-  translateTargetId(
-    selector: TargetSelectorInput & {
-      useIds?: boolean;
-    },
-  ) {
+  translateTargetId(selector: TargetSelectorInput) {
     this.logger.debug(
       'Translating Target Clean ID (selector=%o)',
       filterSelector('target', selector),
     );
+
     return this.storage.getTargetId({
-      organization: selector.organizationSlug,
-      project: selector.projectSlug,
-      target: selector.targetSlug,
-      useIds: selector.useIds,
+      organizationSlug: selector.organizationSlug,
+      projectSlug: selector.projectSlug,
+      targetSlug: selector.targetSlug,
     });
   }
 }

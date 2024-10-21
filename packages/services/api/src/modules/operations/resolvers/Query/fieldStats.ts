@@ -16,9 +16,9 @@ export const fieldStats: NonNullable<QueryResolvers['fieldStats']> = async (
   ]);
 
   return injector.get(OperationsManager).readFieldStats({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
     type: selector.type,
     field: selector.field,
     argument: selector.argument ?? undefined,

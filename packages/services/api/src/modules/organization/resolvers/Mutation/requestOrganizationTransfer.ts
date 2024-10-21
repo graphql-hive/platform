@@ -7,7 +7,7 @@ export const requestOrganizationTransfer: NonNullable<
 > = async (_, { input }, { injector }) => {
   const organizationId = await injector.get(IdTranslator).translateOrganizationId(input);
   return injector.get(OrganizationManager).requestOwnershipTransfer({
-    organization: organizationId,
-    user: input.userId,
+    organizationId: organizationId,
+    userId: input.userId,
   });
 };

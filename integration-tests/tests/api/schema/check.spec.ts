@@ -1980,15 +1980,15 @@ test.concurrent(
       github: null,
       metadata: null,
       logIds: [],
-      project: project.id,
+      projectId: project.id,
       service: null,
-      organization: organization.id,
+      organizationId: organization.id,
       previousSchemaVersion: null,
       valid: true,
       schemaCompositionErrors: [],
       supergraphSDL: null,
       tags: null,
-      target: target.id,
+      targetId: target.id,
       url: null,
     });
     await storage.destroy();

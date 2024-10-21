@@ -18,8 +18,8 @@ export const deleteProject: NonNullable<MutationResolvers['deleteProject']> = as
     }),
   ]);
   const deletedProject = await injector.get(ProjectManager).deleteProject({
-    organization: organizationId,
-    project: projectId,
+    organizationId: organizationId,
+    projectId: projectId,
   });
   return {
     selector: {

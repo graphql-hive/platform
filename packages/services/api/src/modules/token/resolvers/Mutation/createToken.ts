@@ -32,9 +32,9 @@ export const createToken: NonNullable<MutationResolvers['createToken']> = async 
   ]);
   const token = await injector.get(TokenManager).createToken({
     name: input.name,
-    target,
-    project,
-    organization,
+    targetId: target,
+    projectId: project,
+    organizationId: organization,
     organizationScopes: input.organizationScopes,
     projectScopes: input.projectScopes,
     targetScopes: input.targetScopes,

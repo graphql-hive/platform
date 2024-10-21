@@ -17,7 +17,7 @@ export const usageEstimation: NonNullable<QueryResolvers['usageEstimation']> = a
   });
 
   await injector.get(AuthManager).ensureOrganizationAccess({
-    organization: organizationId,
+    organizationId: organizationId,
     scope: OrganizationAccessScope.SETTINGS,
   });
 
