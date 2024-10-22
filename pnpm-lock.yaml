@@ -107,8 +107,8 @@ importers:
         specifier: 2.33.1
         version: 2.33.1(encoding@0.1.13)
       '@swc/core':
-        specifier: 1.7.36
-        version: 1.7.36(@swc/helpers@0.5.11)
+        specifier: 1.7.39
+        version: 1.7.39(@swc/helpers@0.5.11)
       '@theguild/eslint-config':
         specifier: 0.12.1
         version: 0.12.1(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.5.4)
@@ -138,7 +138,7 @@ importers:
         version: link:rules
       eslint-plugin-tailwindcss:
         specifier: npm:@hasparus/eslint-plugin-tailwindcss@3.17.5
-        version: '@hasparus/eslint-plugin-tailwindcss@3.17.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)))'
+        version: '@hasparus/eslint-plugin-tailwindcss@3.17.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)))'
       fs-extra:
         specifier: 11.2.0
         version: 11.2.0
@@ -168,10 +168,10 @@ importers:
         version: 4.4.1
       ts-node:
         specifier: 10.9.2
-        version: 10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)
+        version: 10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)
       tsup:
         specifier: 8.2.4
-        version: 8.2.4(@swc/core@1.7.36(@swc/helpers@0.5.11))(jiti@1.21.0)(postcss@8.4.47)(tsx@4.18.0)(typescript@5.5.4)(yaml@2.5.0)
+        version: 8.2.4(@swc/core@1.7.39(@swc/helpers@0.5.11))(jiti@1.21.0)(postcss@8.4.47)(tsx@4.18.0)(typescript@5.5.4)(yaml@2.5.0)
       tsx:
         specifier: 4.18.0
         version: 4.18.0
@@ -192,28 +192,28 @@ importers:
     dependencies:
       '@lbrlabs/pulumi-grafana':
         specifier: 0.1.0
-        version: 0.1.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+        version: 0.1.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
       '@manypkg/get-packages':
         specifier: 2.2.2
         version: 2.2.2
       '@pulumi/cloudflare':
         specifier: 4.16.0
-        version: 4.16.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+        version: 4.16.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
       '@pulumi/command':
         specifier: 1.0.1
-        version: 1.0.1(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+        version: 1.0.1(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
       '@pulumi/kubernetes':
         specifier: 4.17.1
-        version: 4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+        version: 4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
       '@pulumi/kubernetesx':
         specifier: 0.1.6
-        version: 0.1.6(@pulumi/kubernetes@4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4))(@pulumi/pulumi@3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4))
+        version: 0.1.6(@pulumi/kubernetes@4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4))(@pulumi/pulumi@3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4))
       '@pulumi/pulumi':
         specifier: 3.130.0
-        version: 3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+        version: 3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
       '@pulumi/random':
         specifier: 4.16.2
-        version: 4.16.2(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+        version: 4.16.2(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
       js-yaml:
         specifier: 4.1.0
         version: 4.1.0
@@ -626,7 +626,7 @@ importers:
         version: 30.4.4(patch_hash=jxrvl4xmdvyktjijg7yfdkb34i)
       ts-node:
         specifier: 10.9.2
-        version: 10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)
+        version: 10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)
       tslib:
         specifier: 2.7.0
         version: 2.7.0
@@ -1206,8 +1206,8 @@ importers:
         specifier: 7.119.0
         version: 7.119.0
       '@swc/core':
-        specifier: 1.7.36
-        version: 1.7.36(@swc/helpers@0.5.11)
+        specifier: 1.7.39
+        version: 1.7.39(@swc/helpers@0.5.11)
       '@trpc/client':
         specifier: 10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -1967,10 +1967,10 @@ importers:
         version: 2.5.2
       tailwindcss:
         specifier: 3.4.14
-        version: 3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
+        version: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
       tailwindcss-animate:
         specifier: 1.0.7
-        version: 1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)))
+        version: 1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)))
       tailwindcss-radix:
         specifier: 3.0.4
         version: 3.0.4
@@ -2021,7 +2021,7 @@ importers:
         version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@theguild/components':
         specifier: 7.0.2
-        version: 7.0.2(patch_hash=oskjo2y24bb7ptwj3nsbyin4w4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.15(@babel/core@7.22.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)(webpack@5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0))
+        version: 7.0.2(patch_hash=oskjo2y24bb7ptwj3nsbyin4w4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.15(@babel/core@7.22.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)(webpack@5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0))
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -2051,14 +2051,14 @@ importers:
         version: 2.5.2
       tailwindcss-animate:
         specifier: 1.0.7
-        version: 1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)))
+        version: 1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)))
       tailwindcss-radix:
         specifier: 3.0.3
         version: 3.0.3
     devDependencies:
       '@theguild/tailwind-config':
         specifier: 0.5.0
-        version: 0.5.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
+        version: 0.5.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
       '@types/react':
         specifier: 18.3.3
         version: 18.3.3
@@ -2076,7 +2076,7 @@ importers:
         version: 1.2.2
       tailwindcss:
         specifier: 3.4.14
-        version: 3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
+        version: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
 
   rules:
     devDependencies:
@@ -4419,7 +4419,6 @@ packages:
 
   '@fastify/vite@6.0.7':
     resolution: {integrity: sha512-+dRo9KUkvmbqdmBskG02SwigWl06Mwkw8SBDK1zTNH6vd4DyXbRvI7RmJEmBkLouSU81KTzy1+OzwHSffqSD6w==}
-    bundledDependencies: []
 
   '@floating-ui/core@1.2.6':
     resolution: {integrity: sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==}
@@ -7816,68 +7815,68 @@ packages:
     resolution: {integrity: sha512-pKS3wZnJoL1iTyGBXAvCwduNNeghJHY6QSRSNNvpYnrrQrLZ6Owsazjyynu0e0ObRgks0i7Rv+pe2M7/MBTZpQ==}
     engines: {node: '>=12.16'}
 
-  '@swc/core-darwin-arm64@1.7.36':
-    resolution: {integrity: sha512-8vDczXzCgv3ceTPhEivlpGprN44YlrCK1nbfU9g2TrhV/Aiqi09W/eM5zLesdoM1Z3mJl492gc/8nlTkpDdusw==}
+  '@swc/core-darwin-arm64@1.7.39':
+    resolution: {integrity: sha512-o2nbEL6scMBMCTvY9OnbyVXtepLuNbdblV9oNJEFia5v5eGj9WMrnRQiylH3Wp/G2NYkW7V1/ZVW+kfvIeYe9A==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [darwin]
 
-  '@swc/core-darwin-x64@1.7.36':
-    resolution: {integrity: sha512-Pa2Gao7+Wf5m3SsK4abKRtd48AtoUnJInvaC3d077swBfgZjbjUbQvcpdc2dOeQtWwo49rFqUZJonMsL0jnPgQ==}
+  '@swc/core-darwin-x64@1.7.39':
+    resolution: {integrity: sha512-qMlv3XPgtPi/Fe11VhiPDHSLiYYk2dFYl747oGsHZPq+6tIdDQjIhijXPcsUHIXYDyG7lNpODPL8cP/X1sc9MA==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [darwin]
 
-  '@swc/core-linux-arm-gnueabihf@1.7.36':
-    resolution: {integrity: sha512-3YsMWd7V+WZEjbfBnLkkz/olcRBa8nyoK0iIOnNARJBMcYaJxjkJSMZpmSojCnIVwvjA1N83CPAbUL+W+fCnHg==}
+  '@swc/core-linux-arm-gnueabihf@1.7.39':
+    resolution: {integrity: sha512-NP+JIkBs1ZKnpa3Lk2W1kBJMwHfNOxCUJXuTa2ckjFsuZ8OUu2gwdeLFkTHbR43dxGwH5UzSmuGocXeMowra/Q==}
     engines: {node: '>=10'}
     cpu: [arm]
     os: [linux]
 
-  '@swc/core-linux-arm64-gnu@1.7.36':
-    resolution: {integrity: sha512-lqM3aBB7kJazJYOwHeA5OGNLqXoQPZ/76b3dV+XcjN1GhD0CcXz6mW5PRYVin6OSN1eKrKBKJjtDA1mqADDEvw==}
+  '@swc/core-linux-arm64-gnu@1.7.39':
+    resolution: {integrity: sha512-cPc+/HehyHyHcvAsk3ML/9wYcpWVIWax3YBaA+ScecJpSE04l/oBHPfdqKUPslqZ+Gcw0OWnIBGJT/fBZW2ayw==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
 
-  '@swc/core-linux-arm64-musl@1.7.36':
-    resolution: {integrity: sha512-bqei2YDzvUfG0pth5W2xJaj0eG4XWYk0d/NJ75vBX6bkIzK6dC8iuKQ41jOfUWonnrAs7rTDDJW0sTn/evvRdw==}
+  '@swc/core-linux-arm64-musl@1.7.39':
+    resolution: {integrity: sha512-8RxgBC6ubFem66bk9XJ0vclu3exJ6eD7x7CwDhp5AD/tulZslTYXM7oNPjEtje3xxabXuj/bEUMNvHZhQRFdqA==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
 
-  '@swc/core-linux-x64-gnu@1.7.36':
-    resolution: {integrity: sha512-03maXTUyaBjeCxlDltmdzHje1ryQt1C4OWmmNgSSRXjLb+GNnAenwOJMSrcvHP/aNClD2pwsFCnYKDGy+sYE6w==}
+  '@swc/core-linux-x64-gnu@1.7.39':
+    resolution: {integrity: sha512-3gtCPEJuXLQEolo9xsXtuPDocmXQx12vewEyFFSMSjOfakuPOBmOQMa0sVL8Wwius8C1eZVeD1fgk0omMqeC+Q==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
 
-  '@swc/core-linux-x64-musl@1.7.36':
-    resolution: {integrity: sha512-XXysqLkvjtQnXm1zHqLhy00UYPv/gk5OtwR732X+piNisnEbcJBqI8Qp9O7YvLWllRcoP8IMBGDWLGdGLSpViA==}
+  '@swc/core-linux-x64-musl@1.7.39':
+    resolution: {integrity: sha512-mg39pW5x/eqqpZDdtjZJxrUvQNSvJF4O8wCl37fbuFUqOtXs4TxsjZ0aolt876HXxxhsQl7rS+N4KioEMSgTZw==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
 
-  '@swc/core-win32-arm64-msvc@1.7.36':
-    resolution: {integrity: sha512-k7+dmb13a/zPw+E4XYfPmLZFWJgcOcBRKIjYl9nQErtYsgsg3Ji6TBbsvJVETy23lNHyewZ17V5Vq6NzaG0hzg==}
+  '@swc/core-win32-arm64-msvc@1.7.39':
+    resolution: {integrity: sha512-NZwuS0mNJowH3e9bMttr7B1fB8bW5svW/yyySigv9qmV5VcQRNz1kMlCvrCLYRsa93JnARuiaBI6FazSeG8mpA==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [win32]
 
-  '@swc/core-win32-ia32-msvc@1.7.36':
-    resolution: {integrity: sha512-ridD3ay6YM2PEYHZXXFN+edYEv0FOynaqOBP+NSnGNHA35azItIjoIe+KNi4WltGtAjpKCHSpjGCNfna12wdYQ==}
+  '@swc/core-win32-ia32-msvc@1.7.39':
+    resolution: {integrity: sha512-qFmvv5UExbJPXhhvCVDBnjK5Duqxr048dlVB6ZCgGzbRxuarOlawCzzLK4N172230pzlAWGLgn9CWl3+N6zfHA==}
     engines: {node: '>=10'}
     cpu: [ia32]
     os: [win32]
 
-  '@swc/core-win32-x64-msvc@1.7.36':
-    resolution: {integrity: sha512-j1z2Z1Ln9d0E3dHsPkC1K9XDh0ojhRPwV+GfRTu4D61PE+aYhYLvbJC6xPvL4/204QrStRS7eDu3m+BcDp3rgQ==}
+  '@swc/core-win32-x64-msvc@1.7.39':
+    resolution: {integrity: sha512-o+5IMqgOtj9+BEOp16atTfBgCogVak9svhBpwsbcJQp67bQbxGYhAPPDW/hZ2rpSSF7UdzbY9wudoX9G4trcuQ==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [win32]
 
-  '@swc/core@1.7.36':
-    resolution: {integrity: sha512-bu7ymMX+LCJOSSrKank25Jaq66ymLVA9fOUuy4ck3/6rbXdLw+pIJPnIDKQ9uNcxww8KDxOuJk9Ui9pqR+aGFw==}
+  '@swc/core@1.7.39':
+    resolution: {integrity: sha512-jns6VFeOT49uoTKLWIEfiQqJAlyqldNAt80kAr8f7a5YjX0zgnG3RBiLMpksx4Ka4SlK4O6TJ/lumIM3Trp82g==}
     engines: {node: '>=10'}
     peerDependencies:
       '@swc/helpers': '*'
@@ -21642,11 +21641,11 @@ snapshots:
       protobufjs: 7.3.0
       yargs: 17.7.2
 
-  '@hasparus/eslint-plugin-tailwindcss@3.17.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)))':
+  '@hasparus/eslint-plugin-tailwindcss@3.17.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)))':
     dependencies:
       fast-glob: 3.3.2
       postcss: 8.4.41
-      tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
+      tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
 
   '@headlessui/react@1.7.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -21850,9 +21849,9 @@ snapshots:
 
   '@kamilkisiela/fast-url-parser@1.1.4': {}
 
-  '@lbrlabs/pulumi-grafana@0.1.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
+  '@lbrlabs/pulumi-grafana@0.1.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
-      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
     transitivePeerDependencies:
       - bluebird
       - supports-color
@@ -23246,27 +23245,27 @@ snapshots:
 
   '@protobufjs/utf8@1.1.0': {}
 
-  '@pulumi/cloudflare@4.16.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
+  '@pulumi/cloudflare@4.16.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
-      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
     transitivePeerDependencies:
       - bluebird
       - supports-color
       - ts-node
       - typescript
 
-  '@pulumi/command@1.0.1(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
+  '@pulumi/command@1.0.1(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
-      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
     transitivePeerDependencies:
       - bluebird
       - supports-color
       - ts-node
       - typescript
 
-  '@pulumi/kubernetes@4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
+  '@pulumi/kubernetes@4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
-      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
       '@types/node-fetch': 2.6.4
       '@types/tmp': 0.0.33
       glob: 10.3.12
@@ -23280,12 +23279,12 @@ snapshots:
       - ts-node
       - typescript
 
-  '@pulumi/kubernetesx@0.1.6(@pulumi/kubernetes@4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4))(@pulumi/pulumi@3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4))':
+  '@pulumi/kubernetesx@0.1.6(@pulumi/kubernetes@4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4))(@pulumi/pulumi@3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4))':
     dependencies:
-      '@pulumi/kubernetes': 4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
-      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+      '@pulumi/kubernetes': 4.17.1(encoding@0.1.13)(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
 
-  '@pulumi/pulumi@3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
+  '@pulumi/pulumi@3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
       '@grpc/grpc-js': 1.10.1
       '@logdna/tail-file': 2.2.0
@@ -23318,7 +23317,7 @@ snapshots:
       tmp: 0.2.3
       upath: 1.2.0
     optionalDependencies:
-      ts-node: 10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)
+      ts-node: 10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)
       typescript: 5.5.4
     transitivePeerDependencies:
       - bluebird
@@ -23326,9 +23325,9 @@ snapshots:
 
   '@pulumi/query@0.3.0': {}
 
-  '@pulumi/random@4.16.2(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
+  '@pulumi/random@4.16.2(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
-      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
+      '@pulumi/pulumi': 3.130.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)
     transitivePeerDependencies:
       - bluebird
       - supports-color
@@ -25096,51 +25095,51 @@ snapshots:
 
   '@stripe/stripe-js@3.5.0': {}
 
-  '@swc/core-darwin-arm64@1.7.36':
+  '@swc/core-darwin-arm64@1.7.39':
     optional: true
 
-  '@swc/core-darwin-x64@1.7.36':
+  '@swc/core-darwin-x64@1.7.39':
     optional: true
 
-  '@swc/core-linux-arm-gnueabihf@1.7.36':
+  '@swc/core-linux-arm-gnueabihf@1.7.39':
     optional: true
 
-  '@swc/core-linux-arm64-gnu@1.7.36':
+  '@swc/core-linux-arm64-gnu@1.7.39':
     optional: true
 
-  '@swc/core-linux-arm64-musl@1.7.36':
+  '@swc/core-linux-arm64-musl@1.7.39':
     optional: true
 
-  '@swc/core-linux-x64-gnu@1.7.36':
+  '@swc/core-linux-x64-gnu@1.7.39':
     optional: true
 
-  '@swc/core-linux-x64-musl@1.7.36':
+  '@swc/core-linux-x64-musl@1.7.39':
     optional: true
 
-  '@swc/core-win32-arm64-msvc@1.7.36':
+  '@swc/core-win32-arm64-msvc@1.7.39':
     optional: true
 
-  '@swc/core-win32-ia32-msvc@1.7.36':
+  '@swc/core-win32-ia32-msvc@1.7.39':
     optional: true
 
-  '@swc/core-win32-x64-msvc@1.7.36':
+  '@swc/core-win32-x64-msvc@1.7.39':
     optional: true
 
-  '@swc/core@1.7.36(@swc/helpers@0.5.11)':
+  '@swc/core@1.7.39(@swc/helpers@0.5.11)':
     dependencies:
       '@swc/counter': 0.1.3
       '@swc/types': 0.1.13
     optionalDependencies:
-      '@swc/core-darwin-arm64': 1.7.36
-      '@swc/core-darwin-x64': 1.7.36
-      '@swc/core-linux-arm-gnueabihf': 1.7.36
-      '@swc/core-linux-arm64-gnu': 1.7.36
-      '@swc/core-linux-arm64-musl': 1.7.36
-      '@swc/core-linux-x64-gnu': 1.7.36
-      '@swc/core-linux-x64-musl': 1.7.36
-      '@swc/core-win32-arm64-msvc': 1.7.36
-      '@swc/core-win32-ia32-msvc': 1.7.36
-      '@swc/core-win32-x64-msvc': 1.7.36
+      '@swc/core-darwin-arm64': 1.7.39
+      '@swc/core-darwin-x64': 1.7.39
+      '@swc/core-linux-arm-gnueabihf': 1.7.39
+      '@swc/core-linux-arm64-gnu': 1.7.39
+      '@swc/core-linux-arm64-musl': 1.7.39
+      '@swc/core-linux-x64-gnu': 1.7.39
+      '@swc/core-linux-x64-musl': 1.7.39
+      '@swc/core-win32-arm64-msvc': 1.7.39
+      '@swc/core-win32-ia32-msvc': 1.7.39
+      '@swc/core-win32-x64-msvc': 1.7.39
       '@swc/helpers': 0.5.11
 
   '@swc/counter@0.1.3': {}
@@ -25259,16 +25258,16 @@ snapshots:
 
   '@theguild/buddy@0.1.0(patch_hash=ryylgra5xglhidfoiaxehn22hq)': {}
 
-  '@theguild/components@7.0.2(patch_hash=oskjo2y24bb7ptwj3nsbyin4w4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.15(@babel/core@7.22.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)(webpack@5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0))':
+  '@theguild/components@7.0.2(patch_hash=oskjo2y24bb7ptwj3nsbyin4w4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.15(@babel/core@7.22.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))(typescript@5.5.4)(webpack@5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0))':
     dependencies:
       '@giscus/react': 3.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@next/bundle-analyzer': 14.2.15
       '@radix-ui/react-navigation-menu': 1.2.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@theguild/tailwind-config': 0.5.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
+      '@theguild/tailwind-config': 0.5.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
       clsx: 2.1.1
       fuzzy: 0.1.3
       next: 14.2.15(@babel/core@7.22.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      next-videos: 1.5.0(webpack@5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0))
+      next-videos: 1.5.0(webpack@5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0))
       nextra: 3.0.12(@types/react@18.3.3)(next@14.2.15(@babel/core@7.22.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4)
       nextra-theme-docs: 3.0.12(next@14.2.15(@babel/core@7.22.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(nextra@3.0.12(@types/react@18.3.3)(next@14.2.15(@babel/core@7.22.9)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
@@ -25361,13 +25360,13 @@ snapshots:
       npm-to-yarn: 3.0.0
       unist-util-visit: 5.0.0
 
-  '@theguild/tailwind-config@0.5.0(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))':
+  '@theguild/tailwind-config@0.5.0(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))':
     dependencies:
       autoprefixer: 10.4.20(postcss@8.4.41)
       cssnano: 7.0.3(postcss@8.4.41)
       postcss: 8.4.41
       postcss-import: 16.1.0(postcss@8.4.41)
-      tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
+      tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
     transitivePeerDependencies:
       - ts-node
 
@@ -29019,11 +29018,11 @@ snapshots:
     dependencies:
       flat-cache: 3.0.4
 
-  file-loader@4.3.0(webpack@5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0)):
+  file-loader@4.3.0(webpack@5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0)):
     dependencies:
       loader-utils: 1.4.2
       schema-utils: 2.7.1
-      webpack: 5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0)
+      webpack: 5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0)
 
   filelist@1.0.4:
     dependencies:
@@ -32239,9 +32238,9 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  next-videos@1.5.0(webpack@5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0)):
+  next-videos@1.5.0(webpack@5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0)):
     dependencies:
-      file-loader: 4.3.0(webpack@5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0))
+      file-loader: 4.3.0(webpack@5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0))
     transitivePeerDependencies:
       - webpack
 
@@ -33184,13 +33183,13 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.41
 
-  postcss-load-config@4.0.1(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)):
+  postcss-load-config@4.0.1(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)):
     dependencies:
       lilconfig: 2.1.0
       yaml: 2.5.0
     optionalDependencies:
       postcss: 8.4.41
-      ts-node: 10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)
+      ts-node: 10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)
 
   postcss-load-config@6.0.1(jiti@1.21.0)(postcss@8.4.47)(tsx@4.18.0)(yaml@2.5.0):
     dependencies:
@@ -35064,15 +35063,15 @@ snapshots:
 
   tailwind-merge@2.5.2: {}
 
-  tailwindcss-animate@1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))):
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))):
     dependencies:
-      tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
+      tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
 
   tailwindcss-radix@3.0.3: {}
 
   tailwindcss-radix@3.0.4: {}
 
-  tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)):
+  tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -35091,7 +35090,7 @@ snapshots:
       postcss: 8.4.41
       postcss-import: 15.1.0(postcss@8.4.41)
       postcss-js: 4.0.1(postcss@8.4.41)
-      postcss-load-config: 4.0.1(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
+      postcss-load-config: 4.0.1(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4))
       postcss-nested: 6.0.1(postcss@8.4.41)
       postcss-selector-parser: 6.1.0
       resolve: 1.22.8
@@ -35161,16 +35160,16 @@ snapshots:
 
   term-size@2.2.1: {}
 
-  terser-webpack-plugin@5.3.10(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0)(webpack@5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0)):
+  terser-webpack-plugin@5.3.10(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0)(webpack@5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
       terser: 5.31.1
-      webpack: 5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0)
+      webpack: 5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0)
     optionalDependencies:
-      '@swc/core': 1.7.36(@swc/helpers@0.5.11)
+      '@swc/core': 1.7.39(@swc/helpers@0.5.11)
       esbuild: 0.23.0
 
   terser@5.31.1:
@@ -35316,7 +35315,7 @@ snapshots:
       '@ts-morph/common': 0.23.0
       code-block-writer: 13.0.1
 
-  ts-node@10.9.2(@swc/core@1.7.36(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4):
+  ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.16.1)(typescript@5.5.4):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.9
@@ -35334,7 +35333,7 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     optionalDependencies:
-      '@swc/core': 1.7.36(@swc/helpers@0.5.11)
+      '@swc/core': 1.7.39(@swc/helpers@0.5.11)
 
   tsconfck@3.0.3(typescript@5.5.4):
     optionalDependencies:
@@ -35365,7 +35364,7 @@ snapshots:
 
   tslib@2.7.0: {}
 
-  tsup@8.2.4(@swc/core@1.7.36(@swc/helpers@0.5.11))(jiti@1.21.0)(postcss@8.4.47)(tsx@4.18.0)(typescript@5.5.4)(yaml@2.5.0):
+  tsup@8.2.4(@swc/core@1.7.39(@swc/helpers@0.5.11))(jiti@1.21.0)(postcss@8.4.47)(tsx@4.18.0)(typescript@5.5.4)(yaml@2.5.0):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
       cac: 6.7.14
@@ -35384,7 +35383,7 @@ snapshots:
       sucrase: 3.35.0
       tree-kill: 1.2.2
     optionalDependencies:
-      '@swc/core': 1.7.36(@swc/helpers@0.5.11)
+      '@swc/core': 1.7.39(@swc/helpers@0.5.11)
       postcss: 8.4.47
       typescript: 5.5.4
     transitivePeerDependencies:
@@ -36102,7 +36101,7 @@ snapshots:
 
   webpack-virtual-modules@0.5.0: {}
 
-  webpack@5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0):
+  webpack@5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.5
@@ -36125,7 +36124,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0)(webpack@5.92.1(@swc/core@1.7.36(@swc/helpers@0.5.11))(esbuild@0.23.0))
+      terser-webpack-plugin: 5.3.10(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0)(webpack@5.92.1(@swc/core@1.7.39(@swc/helpers@0.5.11))(esbuild@0.23.0))
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     transitivePeerDependencies:
