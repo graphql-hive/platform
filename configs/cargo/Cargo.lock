@@ -122,12 +122,13 @@ dependencies = [
 
 [[package]]
 name = "apollo-federation"
-version = "1.56.0"
+version = "1.57.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48a90d7b33b44db6d69c7f096b3f257c2cfc858afed9e7f7c9afb5cd43d12776"
+checksum = "28f769828fd388cd92c18776c51a6fe959af29d78c3532a32329839ddf9ed4eb"
 dependencies = [
  "apollo-compiler",
  "derive_more",
+ "either",
  "indexmap 2.2.6",
  "itertools 0.13.0",
  "lazy_static",
@@ -157,9 +158,9 @@ dependencies = [
 
 [[package]]
 name = "apollo-router"
-version = "1.56.0"
+version = "1.57.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90b5e52bff53947fa2bd7b12bc818b8de26feccbfb28fd63340ff08e74da6e76"
+checksum = "bc0943e4e3fd804d7da5b9d204511bcf53963edefa22a1ef6f22e6154dbc21de"
 dependencies = [
  "access-json",
  "ahash",
@@ -202,6 +203,7 @@ dependencies = [
  "graphql_client",
  "heck 0.5.0",
  "hex",
+ "hickory-resolver",
  "hmac",
  "http 0.2.11",
  "http-body 0.4.6",
@@ -295,7 +297,6 @@ dependencies = [
  "tracing-futures",
  "tracing-serde",
  "tracing-subscriber",
- "trust-dns-resolver",
  "uname",
  "url",
  "urlencoding",
@@ -1518,9 +1519,9 @@ checksum = "68b0cf012f1230e43cd00ebb729c6bb58707ecfa8ad08b52ef3a4ccd2697fc30"
 
 [[package]]
 name = "either"
-version = "1.8.1"
+version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7fcaabb2fef8c910e7f4c7ce9f67a1283a1715879a7c230ca9d6d1ae31f16d91"
+checksum = "60b1af1c220855b6ceac025d3f6ecdd2b7c4894bfe9cd9bda4fbb4bc7c0d4cf0"
 
 [[package]]
 name = "encode_unicode"
@@ -2116,6 +2117,51 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "hickory-proto"
+version = "0.24.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "07698b8420e2f0d6447a436ba999ec85d8fbf2a398bbd737b82cac4a2e96e512"
+dependencies = [
+ "async-trait",
+ "cfg-if",
+ "data-encoding",
+ "enum-as-inner",
+ "futures-channel",
+ "futures-io",
+ "futures-util",
+ "idna 0.4.0",
+ "ipnet",
+ "once_cell",
+ "rand 0.8.5",
+ "thiserror",
+ "tinyvec",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "hickory-resolver"
+version = "0.24.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "28757f23aa75c98f254cf0405e6d8c25b831b32921b050a66692427679b1f243"
+dependencies = [
+ "cfg-if",
+ "futures-util",
+ "hickory-proto",
+ "ipconfig",
+ "lru-cache",
+ "once_cell",
+ "parking_lot",
+ "rand 0.8.5",
+ "resolv-conf",
+ "smallvec",
+ "thiserror",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -4113,9 +4159,9 @@ dependencies = [
 
 [[package]]
 name = "router-bridge"
-version = "0.6.3+v2.9.2"
+version = "0.6.4+v2.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f183e217b4010e7d37d581b7919ca5e0136a46b6d6b1ff297c52e702bce1089"
+checksum = "0bcc6f2aa0c619a4fb74ce271873a500f5640c257ca2e7aa8ea6be6226262855"
 dependencies = [
  "anyhow",
  "async-channel",
@@ -5382,52 +5428,6 @@ checksum = "e6631e42e10b40c0690bf92f404ebcfe6e1fdb480391d15f17cc8e96eeed5369"
 dependencies = [
  "serde",
  "stable_deref_trait",
-]
-
-[[package]]
-name = "trust-dns-proto"
-version = "0.23.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3119112651c157f4488931a01e586aa459736e9d6046d3bd9105ffb69352d374"
-dependencies = [
- "async-trait",
- "cfg-if",
- "data-encoding",
- "enum-as-inner",
- "futures-channel",
- "futures-io",
- "futures-util",
- "idna 0.4.0",
- "ipnet",
- "once_cell",
- "rand 0.8.5",
- "smallvec",
- "thiserror",
- "tinyvec",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "trust-dns-resolver"
-version = "0.23.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10a3e6c3aff1718b3c73e395d1f35202ba2ffa847c6a62eea0db8fb4cfe30be6"
-dependencies = [
- "cfg-if",
- "futures-util",
- "ipconfig",
- "lru-cache",
- "once_cell",
- "parking_lot",
- "rand 0.8.5",
- "resolv-conf",
- "smallvec",
- "thiserror",
- "tokio",
- "tracing",
- "trust-dns-proto",
 ]
 
 [[package]]
