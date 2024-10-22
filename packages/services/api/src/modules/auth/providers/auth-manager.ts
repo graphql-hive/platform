@@ -1,5 +1,4 @@
-import { CONTEXT, Inject, Injectable, Scope } from 'graphql-modules';
-import type { RegistryContext } from '../../../context';
+import { Injectable, Scope } from 'graphql-modules';
 import type { User } from '../../../shared/entities';
 import { AccessError } from '../../../shared/errors';
 import type { Listify, MapToArray } from '../../../shared/helpers';
@@ -45,19 +44,15 @@ export interface TargetAccessSelector {
   global: true,
 })
 export class AuthManager {
-  private session: Session;
-
   constructor(
-    @Inject(CONTEXT) context: RegistryContext,
     private organizationAccess: OrganizationAccess,
     private projectAccess: ProjectAccess,
     private targetAccess: TargetAccess,
     private userManager: UserManager,
     private tokenStorage: TokenStorage,
     private storage: Storage,
-  ) {
-    this.session = context.session;
-  }
+    private session: Session,
+  ) {}
 
   async ensureTargetAccess(
     selector: Listify<TargetAccessSelector, 'targetId'>,

@@ -1135,9 +1135,6 @@ importers:
       '@envelop/core':
         specifier: 5.0.2
         version: 5.0.2
-      '@envelop/generic-auth':
-        specifier: 7.0.0
-        version: 7.0.0(@envelop/core@5.0.2)(graphql@16.9.0)
       '@envelop/graphql-jit':
         specifier: 8.0.3
         version: 8.0.3(@envelop/core@5.0.2)(graphql@16.9.0)
@@ -3110,20 +3107,6 @@ packages:
   '@envelop/core@5.0.2':
     resolution: {integrity: sha512-tVL6OrMe6UjqLosiE+EH9uxh2TQC0469GwF4tE014ugRaDDKKVWwFwZe0TBMlcyHKh5MD4ZxktWo/1hqUxIuhw==}
     engines: {node: '>=18.0.0'}
-
-  '@envelop/extended-validation@4.0.0':
-    resolution: {integrity: sha512-pvJ/OL+C+lpNiiCXezHT+vP3PTq37MQicoOB1l5MdgOOZZWRAp0NDOgvEKcXUY7AWNpvNHgSE0QFSRfGwsfwFQ==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@envelop/core': ^5.0.0
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-
-  '@envelop/generic-auth@7.0.0':
-    resolution: {integrity: sha512-FxGzoSjIXJlv+aiVyhQ8oHoz41ol4gJe8KAzNX7FP3qrhldbrqcC5Q+J/VtNlo5jXYX0YuLHH6ehF80tQDZJ4Q==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@envelop/core': ^5.0.0
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
 
   '@envelop/graphql-jit@8.0.3':
     resolution: {integrity: sha512-IZnKc7dVOQV9jEi5s5RkG8fVKqc6Ss/mBN9PRt2iYFa9o6XkL/haPLJRfWFsS/CSJfFOQuzLyxYuALA8DaoOYw==}
@@ -17844,21 +17827,6 @@ snapshots:
   '@envelop/core@5.0.2':
     dependencies:
       '@envelop/types': 5.0.0
-      tslib: 2.8.0
-
-  '@envelop/extended-validation@4.0.0(@envelop/core@5.0.2)(graphql@16.9.0)':
-    dependencies:
-      '@envelop/core': 5.0.2
-      '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
-      graphql: 16.9.0
-      tslib: 2.8.0
-
-  '@envelop/generic-auth@7.0.0(@envelop/core@5.0.2)(graphql@16.9.0)':
-    dependencies:
-      '@envelop/core': 5.0.2
-      '@envelop/extended-validation': 4.0.0(@envelop/core@5.0.2)(graphql@16.9.0)
-      '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
-      graphql: 16.9.0
       tslib: 2.8.0
 
   '@envelop/graphql-jit@8.0.3(@envelop/core@5.0.2)(graphql@16.9.0)':

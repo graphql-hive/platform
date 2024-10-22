@@ -9,10 +9,15 @@ import {
   type DefinitionNode,
   type OperationDefinitionNode,
 } from 'graphql';
-import { createYoga, Plugin, useErrorHandler, useExecutionCancellation } from 'graphql-yoga';
+import {
+  createYoga,
+  Plugin,
+  useErrorHandler,
+  useExecutionCancellation,
+  useExtendContext,
+} from 'graphql-yoga';
 import hyperid from 'hyperid';
 import { isGraphQLError } from '@envelop/core';
-import { useGenericAuth } from '@envelop/generic-auth';
 import { useGraphQlJit } from '@envelop/graphql-jit';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 import { useOpenTelemetry } from '@envelop/opentelemetry';
@@ -157,13 +162,9 @@ export const graphqlHandler = (options: GraphQLHandlerOptions): RouteHandlerMeth
           }
         }
       }),
-      useGenericAuth({
-        mode: 'resolve-only',
-        contextFieldName: 'session',
-        async resolveUserFn(ctx: Context) {
-          return options.authN.authenticate(ctx);
-        },
-      }),
+      useExtendContext(async context => ({
+        session: await options.authN.authenticate(context),
+      })),
       useHive({
         debug: true,
         enabled: !!options.hiveConfig,
