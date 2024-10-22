@@ -1,4 +1,4 @@
-import { HiveError } from '../../../shared/errors';
+import { AccessError } from '../../../shared/errors';
 import { AuthorizationPolicyStatement, Session } from './authz';
 
 class TestSession extends Session {
@@ -27,7 +27,7 @@ describe('Session.assertPerformAction', () => {
         },
       })
       .catch(error => error);
-    expect(result).toBeInstanceOf(HiveError);
+    expect(result).toBeInstanceOf(AccessError);
   });
   test('Single allow policy on specific resource allows action', async () => {
     const session = new TestSession([
@@ -139,7 +139,7 @@ describe('Session.assertPerformAction', () => {
         },
       })
       .catch(error => error);
-    expect(result).toBeInstanceOf(HiveError);
+    expect(result).toBeInstanceOf(AccessError);
   });
   test('A single deny policy always disallows action', async () => {
     const session = new TestSession([
@@ -163,7 +163,7 @@ describe('Session.assertPerformAction', () => {
         },
       })
       .catch(error => error);
-    expect(result).toBeInstanceOf(HiveError);
+    expect(result).toBeInstanceOf(AccessError);
   });
 
   test('Allow on org level, but deny on project level for single resource', async () => {
@@ -205,6 +205,6 @@ describe('Session.assertPerformAction', () => {
         },
       })
       .catch(err => err);
-    expect(result2).toBeInstanceOf(HiveError);
+    expect(result2).toBeInstanceOf(AccessError);
   });
 });

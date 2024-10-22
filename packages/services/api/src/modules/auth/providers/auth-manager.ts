@@ -177,19 +177,7 @@ export class AuthManager {
   });
 
   getCurrentUser: () => Promise<(User & { isAdmin: boolean }) | never> = share(async () => {
-    if (!(this.session instanceof SuperTokensCookieBasedSession)) {
-      throw new AccessError('Authorization token is missing', 'UNAUTHENTICATED');
-    }
-
-    const user = await this.storage.getUserBySuperTokenId({
-      superTokensUserId: this.session.superTokensUserId,
-    });
-
-    if (!user) {
-      throw new AccessError('User not found');
-    }
-
-    return user;
+    return this.session.getViewer();
   });
 
   async getCurrentUserAccessScopes(organizationId: string) {

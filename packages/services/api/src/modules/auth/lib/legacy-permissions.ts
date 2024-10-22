@@ -15,6 +15,13 @@ export function transformLegacyPolicies(
   const policies: Array<AuthorizationPolicyStatement> = [];
   for (const scope of scopes) {
     switch (scope) {
+      case OrganizationAccessScope.READ: {
+        policies.push({
+          effect: 'allow',
+          action: ['support:manageTickets'],
+          resource: [`hrn:${organizationId}:*`],
+        });
+      }
       case OrganizationAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',

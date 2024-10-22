@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from '@hive/service-common';
-import { HiveError } from '../../../shared/errors';
+import type { User } from '../../../shared/entities';
+import { AccessError } from '../../../shared/errors';
 import { isUUID } from '../../../shared/is-uuid';
 
 export type AuthorizationPolicyStatement = {
@@ -54,9 +55,13 @@ export abstract class Session {
     organizationId: string,
   ): Promise<Array<AuthorizationPolicyStatement>> | Array<AuthorizationPolicyStatement>;
 
+  public getViewer(): Promise<User> {
+    throw new AccessError('Authorization token is missing', 'UNAUTHENTICATED');
+  }
+
   /**
    * Check whether a session is allowed to perform a specific action.
-   * Throws a HiveError if the action is not allowed.
+   * Throws a AccessError if the action is not allowed.
    */
   public async assertPerformAction<TAction extends keyof typeof actionDefinitions>(args: {
     action: TAction;
@@ -98,7 +103,7 @@ export abstract class Session {
       for (const action of actions) {
         if (isActionMatch(action, args.action)) {
           if (permission.effect === 'deny') {
-            throw new HiveError('Permission denied.');
+            throw new AccessError(`Missing permissions '${args.action}' on resource.`);
           } else {
             isAllowed = true;
           }
@@ -107,7 +112,7 @@ export abstract class Session {
     }
 
     if (!isAllowed) {
-      throw new HiveError('Permission denied.');
+      throw new AccessError(`Missing permissions '${args.action}' on resource.`);
     }
   }
 }

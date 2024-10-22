@@ -1,8 +1,9 @@
 import SessionNode from 'supertokens-node/recipe/session/index.js';
 import * as zod from 'zod';
+import { User } from '@hive/api';
 import type { FastifyReply, FastifyRequest, ServiceLogger } from '@hive/service-common';
 import { captureException } from '@sentry/node';
-import { HiveError } from '../../../shared/errors';
+import { AccessError, HiveError } from '../../../shared/errors';
 import { isUUID } from '../../../shared/is-uuid';
 import type { Storage } from '../../shared/providers/storage';
 import { AuthNStrategy, AuthorizationPolicyStatement, Session } from './authz';
@@ -21,13 +22,7 @@ export class SuperTokensCookieBasedSession extends Session {
   protected async loadPolicyStatementsForOrganization(
     organizationId: string,
   ): Promise<Array<AuthorizationPolicyStatement>> {
-    const user = await this.storage.getUserBySuperTokenId({
-      superTokensUserId: this.superTokensUserId,
-    });
-
-    if (!user) {
-      return [];
-    }
+    const user = await this.getViewer();
 
     if (!isUUID(organizationId)) {
       return [];
@@ -43,6 +38,18 @@ export class SuperTokensCookieBasedSession extends Session {
     }
 
     return [];
+  }
+
+  public async getViewer(): Promise<User> {
+    const user = await this.storage.getUserBySuperTokenId({
+      superTokensUserId: this.superTokensUserId,
+    });
+
+    if (!user) {
+      throw new AccessError('User not found');
+    }
+
+    return user;
   }
 }
 
