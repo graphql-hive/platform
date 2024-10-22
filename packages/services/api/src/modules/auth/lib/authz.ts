@@ -4,7 +4,7 @@ import { isUUID } from '../../../shared/is-uuid';
 
 export type AuthorizationPolicyStatement = {
   effect: 'allow' | 'deny';
-  action: string | string[];
+  action: Actions | Actions[];
   resource: string | string[];
 };
 
@@ -209,9 +209,9 @@ const actionDefinitions = {
   'organization:describe': defaultOrgIdentity,
   'organization:updateSlug': defaultOrgIdentity,
   'organization:delete': defaultOrgIdentity,
-  'organization:modifyGitHubIntegration': defaultOrgIdentity,
-  'organization:modifySlackIntegration': defaultOrgIdentity,
-  'organization:modifyOIDC': defaultOrgIdentity,
+  'gitHubIntegration:modify': defaultOrgIdentity,
+  'slackIntegration:modify': defaultOrgIdentity,
+  'oidc:modify': defaultOrgIdentity,
   'support:manageTickets': defaultOrgIdentity,
   'billing:describe': defaultOrgIdentity,
   'billing:update': defaultOrgIdentity,
@@ -245,6 +245,8 @@ const actionDefinitions = {
 type ActionDefinitionMap = {
   [key: `${string}:${string}`]: (args: any) => Array<string>;
 };
+
+type Actions = keyof typeof actionDefinitions;
 
 /** Unauthenticated session that is returned by default. */
 class UnauthenticatedSession extends Session {
