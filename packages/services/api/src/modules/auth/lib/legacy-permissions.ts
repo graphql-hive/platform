@@ -39,6 +39,14 @@ export function transformLegacyPolicies(
         });
         break;
       }
+      case ProjectAccessScope.ALERTS: {
+        policies.push({
+          effect: 'allow',
+          action: ['alert:modify', 'alert:describe'],
+          resource: [`hrn:${organizationId}:*`],
+        });
+        break;
+      }
     }
   }
 

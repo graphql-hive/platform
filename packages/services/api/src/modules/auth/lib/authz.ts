@@ -233,6 +233,7 @@ const actionDefinitions = {
   'project:create': defaultProjectIdentity,
   'project:describe': defaultProjectIdentity,
   'project:delete': defaultProjectIdentity,
+  'alert:describe': defaultProjectIdentity,
   'alert:modify': defaultProjectIdentity,
   'project:updateSlug': defaultProjectIdentity,
   'schemaLinting:manageOrganization': defaultProjectIdentity,
