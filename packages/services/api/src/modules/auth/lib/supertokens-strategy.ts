@@ -3,6 +3,7 @@ import * as zod from 'zod';
 import type { FastifyReply, FastifyRequest, ServiceLogger } from '@hive/service-common';
 import { captureException } from '@sentry/node';
 import { HiveError } from '../../../shared/errors';
+import { isUUID } from '../../../shared/is-uuid';
 import type { Storage } from '../../shared/providers/storage';
 import { AuthNStrategy, AuthorizationPolicyStatement, Session } from './authz';
 import { transformLegacyPolicies } from './legacy-permissions';
@@ -25,6 +26,10 @@ export class SuperTokensCookieBasedSession extends Session {
     });
 
     if (!user) {
+      return [];
+    }
+
+    if (!isUUID(organizationId)) {
       return [];
     }
 
@@ -63,6 +68,7 @@ export class SuperTokensUserAuthNStrategy extends AuthNStrategy<SuperTokensCooki
       });
       this.logger.debug('Session resolution ended successfully');
     } catch (error) {
+      this.logger.debug('Session resolution failed');
       if (SessionNode.Error.isErrorFromSuperTokens(error)) {
         // Check whether the email is already verified.
         // If it is not then we need to redirect to the email verification page - which will trigger the email sending.
@@ -84,7 +90,8 @@ export class SuperTokensUserAuthNStrategy extends AuthNStrategy<SuperTokensCooki
         }
       }
 
-      this.logger.error(error, 'Error while resolving user');
+      this.logger.error('Error while resolving user');
+      console.log(error);
       captureException(error);
 
       throw error;
