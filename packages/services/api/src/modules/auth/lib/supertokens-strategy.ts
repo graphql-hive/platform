@@ -1,8 +1,8 @@
 import SessionNode from 'supertokens-node/recipe/session/index.js';
 import * as zod from 'zod';
-import { User } from '@hive/api';
 import type { FastifyReply, FastifyRequest, ServiceLogger } from '@hive/service-common';
 import { captureException } from '@sentry/node';
+import type { User } from '../../../shared/entities';
 import { AccessError, HiveError } from '../../../shared/errors';
 import { isUUID } from '../../../shared/is-uuid';
 import type { Storage } from '../../shared/providers/storage';

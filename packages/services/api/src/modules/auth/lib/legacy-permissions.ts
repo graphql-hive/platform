@@ -21,6 +21,7 @@ export function transformLegacyPolicies(
           action: ['support:manageTickets'],
           resource: [`hrn:${organizationId}:*`],
         });
+        break;
       }
       case OrganizationAccessScope.SETTINGS: {
         policies.push({

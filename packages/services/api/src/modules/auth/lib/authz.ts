@@ -103,7 +103,7 @@ export abstract class Session {
       for (const action of actions) {
         if (isActionMatch(action, args.action)) {
           if (permission.effect === 'deny') {
-            throw new AccessError(`Missing permissions '${args.action}' on resource.`);
+            throw new AccessError(`Missing permission for performing '${args.action}' on resource`);
           } else {
             isAllowed = true;
           }
@@ -112,7 +112,7 @@ export abstract class Session {
     }
 
     if (!isAllowed) {
-      throw new AccessError(`Missing permissions '${args.action}' on resource.`);
+      throw new AccessError(`Missing permission for performing '${args.action}' on resource`);
     }
   }
 }
@@ -235,7 +235,8 @@ const actionDefinitions = {
   'project:delete': defaultProjectIdentity,
   'alert:modify': defaultProjectIdentity,
   'project:updateSlug': defaultProjectIdentity,
-  'schemaLinting:manage': defaultProjectIdentity,
+  'schemaLinting:manageOrganization': defaultProjectIdentity,
+  'schemaLinting:manageProject': defaultProjectIdentity,
   'target:create': defaultProjectIdentity,
   'target:delete': defaultTargetIdentity,
   'schemaCheck:create': schemaCheckOrPublishIdentity,
