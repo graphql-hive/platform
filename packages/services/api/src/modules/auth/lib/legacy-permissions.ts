@@ -63,6 +63,14 @@ export function transformLegacyPolicies(
         });
         break;
       }
+      case TargetAccessScope.SETTINGS: {
+        policies.push({
+          effect: 'allow',
+          action: ['schemaContract:create', 'schemaContract:disable', 'schemaContract:describe'],
+          resource: [`hrn:${organizationId}:*`],
+        });
+        break;
+      }
     }
   }
 

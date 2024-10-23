@@ -262,6 +262,9 @@ const actionDefinitions = {
   'appDeployment:retire': defaultAppDeploymentIdentity,
   'laboratory:describe': defaultTargetIdentity,
   'laboratory:modify': defaultTargetIdentity,
+  'schemaContract:describe': defaultTargetIdentity,
+  'schemaContract:create': defaultTargetIdentity,
+  'schemaContract:disable': defaultTargetIdentity,
 } satisfies ActionDefinitionMap;
 
 type ActionDefinitionMap = {
