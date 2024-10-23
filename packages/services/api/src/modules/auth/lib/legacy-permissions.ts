@@ -34,7 +34,7 @@ export function transformLegacyPolicies(
       case OrganizationAccessScope.INTEGRATIONS: {
         policies.push({
           effect: 'allow',
-          action: ['oidc:modify'],
+          action: ['oidc:modify', 'gitHubIntegration:modify'],
           resource: [`hrn:${organizationId}:*`],
         });
         break;
