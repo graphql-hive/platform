@@ -35,7 +35,9 @@ test.concurrent(
       .then(r => r.expectGraphQLErrors());
 
     expect(resultErrors).toHaveLength(1);
-    expect(resultErrors[0].message).toMatch('target:registry:write');
+    expect(resultErrors[0].message).toMatch(
+      '"Missing permission for performing \'schema:publish\' on resource"',
+    );
   },
 );
 

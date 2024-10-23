@@ -57,7 +57,7 @@ test.concurrent(
     });
 
     await expect(tokenResult).rejects.toThrowError(
-      'No access (reason: "Missing target:tokens:write permission")',
+      'No access (reason: "Missing permission for performing \'accessToken:create\' on resource")',
     );
   },
 );

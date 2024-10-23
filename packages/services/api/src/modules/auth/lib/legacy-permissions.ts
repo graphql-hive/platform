@@ -19,7 +19,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['support:manageTickets'],
-          resource: [`hrn:${organizationId}:*`],
+          resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;
       }
@@ -27,7 +27,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['organization:updateSlug'],
-          resource: [`hrn:${organizationId}:*`],
+          resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;
       }
@@ -35,7 +35,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['oidc:modify', 'gitHubIntegration:modify', 'slackIntegration:modify'],
-          resource: [`hrn:${organizationId}:*`],
+          resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;
       }
@@ -43,7 +43,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['alert:modify', 'alert:describe'],
-          resource: [`hrn:${organizationId}:*`],
+          resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;
       }
@@ -51,7 +51,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['appDeployment:describe', 'schema:check'],
-          resource: [`hrn:${organizationId}:*`],
+          resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;
       }
@@ -68,7 +68,23 @@ export function transformLegacyPolicies(
             'schema:check',
             'schema:approve',
           ],
-          resource: [`hrn:${organizationId}:*`],
+          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+        });
+        break;
+      }
+      case TargetAccessScope.TOKENS_READ: {
+        policies.push({
+          effect: 'allow',
+          action: ['accessToken:create', 'accessToken:describe'],
+          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+        });
+        break;
+      }
+      case TargetAccessScope.TOKENS_WRITE: {
+        policies.push({
+          effect: 'allow',
+          action: ['accessToken:create', 'accessToken:delete'],
+          resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;
       }
@@ -83,7 +99,7 @@ export function transformLegacyPolicies(
             'accessToken:delete',
             'accessToken:describe',
           ],
-          resource: [`hrn:${organizationId}:*`],
+          resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;
       }
