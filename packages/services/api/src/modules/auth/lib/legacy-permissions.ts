@@ -50,7 +50,7 @@ export function transformLegacyPolicies(
       case TargetAccessScope.REGISTRY_READ: {
         policies.push({
           effect: 'allow',
-          action: ['appDeployment:describe'],
+          action: ['appDeployment:describe', 'schema:check'],
           resource: [`hrn:${organizationId}:*`],
         });
         break;
@@ -63,7 +63,10 @@ export function transformLegacyPolicies(
             'appDeployment:publish',
             'appDeployment:retire',
             'accessToken:create',
-            'schemaVersion:publish',
+            'schema:publish',
+            'schema:deleteService',
+            'schema:check',
+            'schema:approve',
           ],
           resource: [`hrn:${organizationId}:*`],
         });

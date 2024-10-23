@@ -20,8 +20,7 @@ import { createPeriod } from '../../../shared/helpers';
 import { isGitHubRepositoryString } from '../../../shared/is-github-repository-string';
 import { bolderize } from '../../../shared/markdown';
 import { AlertsManager } from '../../alerts/providers/alerts-manager';
-import { AuthManager } from '../../auth/providers/auth-manager';
-import { TargetAccessScope } from '../../auth/providers/target-access';
+import { Session } from '../../auth/lib/authz';
 import {
   GitHubIntegrationManager,
   type GitHubCheckRun,
@@ -142,7 +141,7 @@ export class SchemaPublisher {
 
   constructor(
     logger: Logger,
-    private authManager: AuthManager,
+    private session: Session,
     private storage: Storage,
     private schemaManager: SchemaManager,
     private targetManager: TargetManager,
@@ -288,11 +287,15 @@ export class SchemaPublisher {
   async check(input: CheckInput) {
     this.logger.info('Checking schema (input=%o)', lodash.omit(input, ['sdl']));
 
-    await this.authManager.ensureTargetAccess({
-      targetId: input.targetId,
-      projectId: input.projectId,
+    await this.session.assertPerformAction({
+      action: 'schema:check',
       organizationId: input.organizationId,
-      scope: TargetAccessScope.REGISTRY_READ,
+      params: {
+        organizationId: input.organizationId,
+        projectId: input.projectId,
+        targetId: input.targetId,
+        serviceName: input.service ?? null,
+      },
     });
 
     const [
@@ -1019,7 +1022,8 @@ export class SchemaPublisher {
       input.targetId,
     );
 
-    const token = this.authManager.ensureApiToken();
+    const selector = this.session.getLegacySelector();
+
     const [contracts, latestVersion] = await Promise.all([
       this.contracts.getActiveContractsByTargetId({ targetId: input.targetId }),
       this.schemaManager.getMaybeLatestVersion({
@@ -1047,7 +1051,7 @@ export class SchemaPublisher {
           latestVersionId: latestVersion?.id,
         }),
       )
-      .update(token)
+      .update(selector.token)
       .digest('base64');
 
     this.logger.debug(
@@ -1074,11 +1078,15 @@ export class SchemaPublisher {
           signal,
         },
         async () => {
-          await this.authManager.ensureTargetAccess({
-            targetId: input.targetId,
-            projectId: input.projectId,
+          await this.session.assertPerformAction({
+            action: 'schema:publish',
             organizationId: input.organizationId,
-            scope: TargetAccessScope.REGISTRY_WRITE,
+            params: {
+              targetId: input.targetId,
+              projectId: input.projectId,
+              organizationId: input.organizationId,
+              serviceName: input.service ?? null,
+            },
           });
           return this.distributedCache.wrap({
             key: `schema:publish:${checksum}`,
@@ -1189,12 +1197,17 @@ export class SchemaPublisher {
         signal,
       },
       async () => {
-        await this.authManager.ensureTargetAccess({
+        await this.session.assertPerformAction({
+          action: 'schema:deleteService',
           organizationId: input.organizationId,
-          projectId: input.projectId,
-          targetId: input.target.id,
-          scope: TargetAccessScope.REGISTRY_WRITE,
+          params: {
+            organizationId: input.organizationId,
+            projectId: input.projectId,
+            targetId: input.target.id,
+            serviceName: input.serviceName,
+          },
         });
+
         const [
           project,
           organization,

@@ -40,6 +40,7 @@ export class TargetAccessTokenSession extends Session {
 
   public getLegacySelector() {
     return {
+      token: this.token,
       organizationId: this.organizationId,
       projectId: this.projectId,
       targetId: this.targetId,

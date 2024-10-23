@@ -62,6 +62,7 @@ export abstract class Session {
 
   /** Retrieve the access token of the request. */
   public getLegacySelector(): {
+    token: string;
     organizationId: string;
     projectId: string;
     targetId: string;
@@ -253,9 +254,10 @@ const actionDefinitions = {
   'schemaLinting:manageProject': defaultProjectIdentity,
   'target:create': defaultProjectIdentity,
   'target:delete': defaultTargetIdentity,
-  'schemaCheck:create': schemaCheckOrPublishIdentity,
-  'schemaCheck:approve': schemaCheckOrPublishIdentity,
-  'schemaVersion:publish': schemaCheckOrPublishIdentity,
+  'schema:check': schemaCheckOrPublishIdentity,
+  'schema:approve': schemaCheckOrPublishIdentity,
+  'schema:publish': schemaCheckOrPublishIdentity,
+  'schema:deleteService': schemaCheckOrPublishIdentity,
   'appDeployment:describe': defaultTargetIdentity,
   'appDeployment:create': defaultAppDeploymentIdentity,
   'appDeployment:publish': defaultAppDeploymentIdentity,
