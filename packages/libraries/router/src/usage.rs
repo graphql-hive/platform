@@ -2,7 +2,6 @@ use crate::agent::{AgentError, ExecutionReport, UsageAgent};
 use apollo_router::layers::ServiceBuilderExt;
 use apollo_router::plugin::Plugin;
 use apollo_router::plugin::PluginInit;
-use apollo_router::register_plugin;
 use apollo_router::services::*;
 use apollo_router::Context;
 use core::ops::Drop;
@@ -41,13 +40,13 @@ struct OperationConfig {
     client_version_header: String,
 }
 
-struct UsagePlugin {
+pub struct UsagePlugin {
     config: OperationConfig,
     agent: Option<Arc<Mutex<UsageAgent>>>,
 }
 
 #[derive(Clone, Debug, Deserialize, JsonSchema)]
-struct Config {
+pub struct Config {
     /// Default: true
     enabled: Option<bool>,
     /// Sample rate to determine sampling.
@@ -342,9 +341,7 @@ impl Plugin for UsagePlugin {
 fn try_add_report(agent: Arc<Mutex<UsageAgent>>, execution_report: ExecutionReport) {
     agent
         .lock()
-        .map_err(|e| {
-AgentError::Lock(e.to_string())
-        })
+        .map_err(|e| AgentError::Lock(e.to_string()))
         .and_then(|a| a.add_report(execution_report))
         .unwrap_or_else(|e| {
             tracing::error!("Error adding report: {}", e);
@@ -356,9 +353,4 @@ impl Drop for UsagePlugin {
         tracing::debug!("UsagePlugin has been dropped!");
         // TODO: flush the buffer
     }
-}
-
-// Register the hive.usage plugin
-pub fn register() {
-    register_plugin!("hive", "usage", UsagePlugin);
 }
