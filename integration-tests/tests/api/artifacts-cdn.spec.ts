@@ -404,7 +404,7 @@ function runArtifactsCDNTests(
             'content-type': 'application/json',
           },
           body: JSON.stringify({
-            query: /* GraphQL */ `
+            query: `
               {
                 __schema {
                   types {
