@@ -34,7 +34,7 @@ export function transformLegacyPolicies(
       case OrganizationAccessScope.INTEGRATIONS: {
         policies.push({
           effect: 'allow',
-          action: ['oidc:modify', 'gitHubIntegration:modify'],
+          action: ['oidc:modify', 'gitHubIntegration:modify', 'slackIntegration:modify'],
           resource: [`hrn:${organizationId}:*`],
         });
         break;
@@ -63,6 +63,7 @@ export function transformLegacyPolicies(
             'appDeployment:publish',
             'appDeployment:retire',
             'accessToken:create',
+            'schemaVersion:publish',
           ],
           resource: [`hrn:${organizationId}:*`],
         });

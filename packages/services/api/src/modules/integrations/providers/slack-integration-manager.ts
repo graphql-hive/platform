@@ -1,9 +1,6 @@
 import { Injectable, Scope } from 'graphql-modules';
 import { AccessError } from '../../../shared/errors';
-import { AuthManager } from '../../auth/providers/auth-manager';
-import { OrganizationAccessScope } from '../../auth/providers/organization-access';
-import { ProjectAccessScope } from '../../auth/providers/project-access';
-import { TargetAccessScope } from '../../auth/providers/target-access';
+import { Session } from '../../auth/lib/authz';
 import { CryptoProvider } from '../../shared/providers/crypto';
 import { Logger } from '../../shared/providers/logger';
 import {
@@ -23,7 +20,7 @@ export class SlackIntegrationManager {
 
   constructor(
     logger: Logger,
-    private authManager: AuthManager,
+    private session: Session,
     private storage: Storage,
     private crypto: CryptoProvider,
   ) {
@@ -38,9 +35,12 @@ export class SlackIntegrationManager {
     },
   ): Promise<void> {
     this.logger.debug('Registering Slack integration (organization=%s)', input.organizationId);
-    await this.authManager.ensureOrganizationAccess({
-      ...input,
-      scope: OrganizationAccessScope.INTEGRATIONS,
+    await this.session.assertPerformAction({
+      action: 'slackIntegration:modify',
+      organizationId: input.organizationId,
+      params: {
+        organizationId: input.organizationId,
+      },
     });
     this.logger.debug('Updating organization');
     await this.storage.addSlackIntegration({
@@ -51,9 +51,12 @@ export class SlackIntegrationManager {
 
   async unregister(input: OrganizationSelector): Promise<void> {
     this.logger.debug('Removing Slack integration (organization=%s)', input.organizationId);
-    await this.authManager.ensureOrganizationAccess({
-      ...input,
-      scope: OrganizationAccessScope.INTEGRATIONS,
+    await this.session.assertPerformAction({
+      action: 'slackIntegration:modify',
+      organizationId: input.organizationId,
+      params: {
+        organizationId: input.organizationId,
+      },
     });
     this.logger.debug('Updating organization');
     await this.storage.deleteSlackIntegration({
@@ -105,9 +108,12 @@ export class SlackIntegrationManager {
           selector.organizationId,
           selector.context,
         );
-        await this.authManager.ensureOrganizationAccess({
-          ...selector,
-          scope: OrganizationAccessScope.INTEGRATIONS,
+        await this.session.assertPerformAction({
+          action: 'slackIntegration:modify',
+          organizationId: selector.organizationId,
+          params: {
+            organizationId: selector.organizationId,
+          },
         });
         break;
       }
@@ -118,9 +124,13 @@ export class SlackIntegrationManager {
           selector.projectId,
           selector.context,
         );
-        await this.authManager.ensureProjectAccess({
-          ...selector,
-          scope: ProjectAccessScope.ALERTS,
+        await this.session.assertPerformAction({
+          action: 'alert:modify',
+          organizationId: selector.organizationId,
+          params: {
+            organizationId: selector.organizationId,
+            projectId: selector.projectId,
+          },
         });
         break;
       }
@@ -132,9 +142,15 @@ export class SlackIntegrationManager {
           selector.targetId,
           selector.context,
         );
-        await this.authManager.ensureTargetAccess({
-          ...selector,
-          scope: TargetAccessScope.REGISTRY_WRITE,
+        await this.session.assertPerformAction({
+          action: 'schemaVersion:publish',
+          organizationId: selector.organizationId,
+          params: {
+            organizationId: selector.organizationId,
+            projectId: selector.projectId,
+            targetId: selector.targetId,
+            serviceName: null,
+          },
         });
         break;
       }
