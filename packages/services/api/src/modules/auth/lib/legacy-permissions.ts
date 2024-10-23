@@ -58,7 +58,12 @@ export function transformLegacyPolicies(
       case TargetAccessScope.REGISTRY_WRITE: {
         policies.push({
           effect: 'allow',
-          action: ['appDeployment:create', 'appDeployment:publish', 'appDeployment:retire'],
+          action: [
+            'appDeployment:create',
+            'appDeployment:publish',
+            'appDeployment:retire',
+            'accessToken:create',
+          ],
           resource: [`hrn:${organizationId}:*`],
         });
         break;
@@ -66,7 +71,14 @@ export function transformLegacyPolicies(
       case TargetAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',
-          action: ['schemaContract:create', 'schemaContract:disable', 'schemaContract:describe'],
+          action: [
+            'schemaContract:create',
+            'schemaContract:disable',
+            'schemaContract:describe',
+            'accessToken:create',
+            'accessToken:delete',
+            'accessToken:describe',
+          ],
           resource: [`hrn:${organizationId}:*`],
         });
         break;
