@@ -111,8 +111,8 @@ USAGE
 FLAGS
   --artifact=<option>        (required) artifact to fetch (Note: supergraph is only available for federation projects)
                              <options: sdl|supergraph|metadata|services|sdl.graphql|sdl.graphqls>
-  --cdn.accessToken=<value>  CDN access token (alternatively set via `HIVE_CDN_ENDPOINT`)
-  --cdn.endpoint=<value>     CDN endpoint (alternatively set via `HIVE_CDN_ACCESS_TOKEN`)
+  --cdn.accessToken=<value>  CDN access token (alternatively set via env var `HIVE_CDN_ENDPOINT`)
+  --cdn.endpoint=<value>     CDN endpoint (alternatively set via env var `HIVE_CDN_ACCESS_TOKEN`)
   --outputFile=<value>       whether to write to a file instead of stdout
 
 DESCRIPTION
