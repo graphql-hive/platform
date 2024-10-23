@@ -37,6 +37,14 @@ export class TargetAccessTokenSession extends Session {
   ): Promise<Array<AuthorizationPolicyStatement>> | Array<AuthorizationPolicyStatement> {
     return this.policies;
   }
+
+  public getLegacySelector() {
+    return {
+      organizationId: this.organizationId,
+      projectId: this.projectId,
+      targetId: this.targetId,
+    };
+  }
 }
 
 export class TargetAccessTokenStrategy extends AuthNStrategy<TargetAccessTokenSession> {

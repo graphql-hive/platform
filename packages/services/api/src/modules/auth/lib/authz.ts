@@ -55,8 +55,18 @@ export abstract class Session {
     organizationId: string,
   ): Promise<Array<AuthorizationPolicyStatement>> | Array<AuthorizationPolicyStatement>;
 
+  /** Retrieve the current viewer. Implementations of the session need to implement this function */
   public getViewer(): Promise<User> {
     throw new AccessError('Authorization token is missing', 'UNAUTHENTICATED');
+  }
+
+  /** Retrieve the access token of the request. */
+  public getLegacySelector(): {
+    organizationId: string;
+    projectId: string;
+    targetId: string;
+  } {
+    throw new AccessError('Authorization header is missing');
   }
 
   /**
@@ -182,12 +192,15 @@ function defaultTargetIdentity(
 }
 
 function defaultAppDeploymentIdentity(
-  args: { appDeploymentName: string } & Parameters<typeof defaultTargetIdentity>[0],
+  args: { appDeploymentName: string | null } & Parameters<typeof defaultTargetIdentity>[0],
 ) {
-  return [
-    ...defaultTargetIdentity(args),
-    `target/${args.targetId}/appDeployment/${args.appDeploymentName}`,
-  ];
+  const ids = defaultTargetIdentity(args);
+
+  if (args.appDeploymentName !== null) {
+    ids.push(`target/${args.targetId}/appDeployment/${args.appDeploymentName}`);
+  }
+
+  return ids;
 }
 
 function schemaCheckOrPublishIdentity(
@@ -243,8 +256,10 @@ const actionDefinitions = {
   'schemaCheck:create': schemaCheckOrPublishIdentity,
   'schemaCheck:approve': schemaCheckOrPublishIdentity,
   'schemaVersion:publish': schemaCheckOrPublishIdentity,
+  'appDeployment:describe': defaultTargetIdentity,
   'appDeployment:create': defaultAppDeploymentIdentity,
   'appDeployment:publish': defaultAppDeploymentIdentity,
+  'appDeployment:retire': defaultAppDeploymentIdentity,
   'laboratory:describe': defaultTargetIdentity,
   'laboratory:modify': defaultTargetIdentity,
 } satisfies ActionDefinitionMap;

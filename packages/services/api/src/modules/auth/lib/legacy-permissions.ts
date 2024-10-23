@@ -47,6 +47,22 @@ export function transformLegacyPolicies(
         });
         break;
       }
+      case TargetAccessScope.REGISTRY_READ: {
+        policies.push({
+          effect: 'allow',
+          action: ['appDeployment:describe'],
+          resource: [`hrn:${organizationId}:*`],
+        });
+        break;
+      }
+      case TargetAccessScope.REGISTRY_WRITE: {
+        policies.push({
+          effect: 'allow',
+          action: ['appDeployment:create', 'appDeployment:publish', 'appDeployment:retire'],
+          resource: [`hrn:${organizationId}:*`],
+        });
+        break;
+      }
     }
   }
 
