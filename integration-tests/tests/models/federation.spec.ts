@@ -1,4 +1,4 @@
-import { ProjectType, TargetAccessScope } from 'testkit/gql/graphql';
+import { ProjectType } from 'testkit/gql/graphql';
 import { normalizeCliOutput } from '../../../scripts/serializers/cli-output';
 import { createCLI, schemaPublish } from '../../testkit/cli';
 import { prepareProject } from '../../testkit/registry-models';
@@ -641,8 +641,10 @@ describe('other', () => {
       const { createOrg } = await initSeed().createOwner();
       const { inviteAndJoinMember, createProject } = await createOrg();
       await inviteAndJoinMember();
-      const { createToken, createCdnAccess } = await createProject(ProjectType.Federation);
-      const { secret } = await createToken({});
+      const { createTargetAccessToken, createCdnAccess } = await createProject(
+        ProjectType.Federation,
+      );
+      const { secret } = await createTargetAccessToken({});
       const { fetchSupergraphFromCDN } = await createCdnAccess();
 
       await schemaPublish([
@@ -673,12 +675,8 @@ describe('other', () => {
           await setFeatureFlag(name, enabled);
         }
 
-        const { createToken } = await createProject(ProjectType.Federation);
-        const readWriteToken = await createToken({
-          targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-          projectScopes: [],
-          organizationScopes: [],
-        });
+        const { createTargetAccessToken } = await createProject(ProjectType.Federation);
+        const readWriteToken = await createTargetAccessToken({});
 
         await readWriteToken.publishSchema({
           service: 'products',
@@ -738,12 +736,8 @@ describe('other', () => {
           await setFeatureFlag(name, enabled);
         }
 
-        const { createToken } = await createProject(ProjectType.Federation);
-        const readWriteToken = await createToken({
-          targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-          projectScopes: [],
-          organizationScopes: [],
-        });
+        const { createTargetAccessToken } = await createProject(ProjectType.Federation);
+        const readWriteToken = await createTargetAccessToken({});
 
         await readWriteToken.publishSchema({
           service: 'reviews',

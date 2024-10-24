@@ -420,19 +420,19 @@ export function initSeed() {
 
                   return result.updateOperationInDocumentCollection;
                 },
-                async createToken({
-                  targetScopes = [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-                  projectScopes = [],
-                  organizationScopes = [],
+                /**
+                 * Create a access token for a given target.
+                 * This token can be used for usage reporting and all actions that would be performed by the CLI.
+                 */
+                async createTargetAccessToken({
+                  mode = 'readWrite',
                   target: forTarget = {
                     slug: target.slug,
                     id: target.id,
                   },
                   actorToken = ownerToken,
                 }: {
-                  targetScopes?: TargetAccessScope[];
-                  projectScopes?: ProjectAccessScope[];
-                  organizationScopes?: OrganizationAccessScope[];
+                  mode?: 'readWrite' | 'readOnly' | 'noAccess';
                   target?: {
                     slug: string;
                     id: string;
@@ -447,9 +447,14 @@ export function initSeed() {
                       organizationSlug: organization.slug,
                       projectSlug: project.slug,
                       targetSlug: target.slug,
-                      organizationScopes: organizationScopes,
-                      projectScopes: projectScopes,
-                      targetScopes: targetScopes,
+                      organizationScopes: [],
+                      projectScopes: [],
+                      targetScopes:
+                        mode === 'noAccess'
+                          ? []
+                          : mode === 'readWrite'
+                            ? [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite]
+                            : [TargetAccessScope.RegistryRead],
                     },
                     actorToken,
                   ).then(r => r.expectNoGraphQLErrors());
@@ -460,35 +465,6 @@ export function initSeed() {
                   return {
                     token,
                     secret,
-                    async readOperationBody(hash: string) {
-                      const operationBodyResult = await readOperationBody(
-                        {
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                          hash,
-                        },
-                        secret,
-                      ).then(r => r.expectNoGraphQLErrors());
-
-                      return operationBodyResult?.target?.operation?.body;
-                    },
-                    async readOperationsStats(from: string, to: string) {
-                      const statsResult = await readOperationsStats(
-                        {
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                          period: {
-                            from,
-                            to,
-                          },
-                        },
-                        secret,
-                      ).then(r => r.expectNoGraphQLErrors());
-
-                      return statsResult.operationsStats;
-                    },
                     async collectLegacyOperations(
                       operations: CollectedOperation[],
                       headerName: 'x-api-token' | 'authorization' = 'authorization',
@@ -519,45 +495,7 @@ export function initSeed() {
                         secret,
                       );
                     },
-                    async toggleTargetValidation(enabled: boolean) {
-                      const result = await setTargetValidation(
-                        {
-                          enabled,
-                          targetSlug: target.slug,
-                          projectSlug: project.slug,
-                          organizationSlug: organization.slug,
-                        },
-                        {
-                          token: secret,
-                        },
-                      ).then(r => r.expectNoGraphQLErrors());
 
-                      return result;
-                    },
-                    async updateTargetValidationSettings({
-                      excludedClients,
-                      percentage,
-                    }: {
-                      excludedClients?: string[];
-                      percentage: number;
-                    }) {
-                      const result = await updateTargetValidationSettings(
-                        {
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                          excludedClients,
-                          percentage,
-                          period: 2,
-                          targetIds: [target.id],
-                        },
-                        {
-                          token: secret,
-                        },
-                      ).then(r => r.expectNoGraphQLErrors());
-
-                      return result.updateTargetValidationSettings;
-                    },
                     async updateSchemaVersionStatus(versionId: string, valid: boolean) {
                       return await updateSchemaVersionStatus(
                         {
@@ -617,19 +555,7 @@ export function initSeed() {
                     async fetchLatestValidSchema() {
                       return (await fetchLatestValidSchema(secret)).expectNoGraphQLErrors();
                     },
-                    async compareToPreviousVersion(version: string) {
-                      return (
-                        await compareToPreviousVersion(
-                          {
-                            organizationSlug: organization.slug,
-                            projectSlug: project.slug,
-                            targetSlug: target.slug,
-                            version,
-                          },
-                          secret,
-                        )
-                      ).expectNoGraphQLErrors();
-                    },
+
                     async updateBaseSchema(newBase: string) {
                       const result = await updateBaseSchema(
                         {
@@ -669,16 +595,15 @@ export function initSeed() {
                     },
                   };
                 },
-                async createCdnAccess(
-                  selector: TargetSelectorInput = {
-                    organizationSlug: organization.slug,
-                    projectSlug: project.slug,
-                    targetSlug: target.slug,
-                  },
-                ) {
-                  const result = await createCdnAccess(selector, ownerToken).then(r =>
-                    r.expectNoGraphQLErrors(),
-                  );
+                async createCdnAccess(ttarget: TargetOverwrite = target) {
+                  const result = await createCdnAccess(
+                    {
+                      organizationSlug: organization.slug,
+                      projectSlug: project.slug,
+                      targetSlug: ttarget.slug,
+                    },
+                    ownerToken,
+                  ).then(r => r.expectNoGraphQLErrors());
                   expect(result.createCdnAccessToken.ok).not.toBeNull();
 
                   const data = result.createCdnAccessToken.ok!;
@@ -696,6 +621,93 @@ export function initSeed() {
                       return fetchSupergraphFromCDN(data.cdnUrl, data.secretAccessToken);
                     },
                   };
+                },
+                async toggleTargetValidation(enabled: boolean, ttarget: TargetOverwrite = target) {
+                  const result = await setTargetValidation(
+                    {
+                      enabled,
+                      organizationSlug: organization.slug,
+                      projectSlug: project.slug,
+                      targetSlug: ttarget.slug,
+                    },
+                    {
+                      token: ownerToken,
+                    },
+                  ).then(r => r.expectNoGraphQLErrors());
+
+                  return result;
+                },
+                async updateTargetValidationSettings({
+                  excludedClients,
+                  percentage,
+                  target: ttarget = target,
+                }: {
+                  excludedClients?: string[];
+                  percentage: number;
+                  target?: TargetOverwrite;
+                }) {
+                  const result = await updateTargetValidationSettings(
+                    {
+                      organizationSlug: organization.slug,
+                      projectSlug: project.slug,
+                      targetSlug: ttarget.slug,
+                      excludedClients,
+                      percentage,
+                      period: 2,
+                      targetIds: [target.id],
+                    },
+                    {
+                      token: ownerToken,
+                    },
+                  ).then(r => r.expectNoGraphQLErrors());
+
+                  return result.updateTargetValidationSettings;
+                },
+                async compareToPreviousVersion(version: string, ttarget: TargetOverwrite = target) {
+                  return (
+                    await compareToPreviousVersion(
+                      {
+                        organizationSlug: organization.slug,
+                        projectSlug: project.slug,
+                        targetSlug: ttarget.slug,
+                        version,
+                      },
+                      ownerToken,
+                    )
+                  ).expectNoGraphQLErrors();
+                },
+                async readOperationBody(hash: string, ttarget: TargetOverwrite = target) {
+                  const operationBodyResult = await readOperationBody(
+                    {
+                      organizationSlug: organization.slug,
+                      projectSlug: project.slug,
+                      targetSlug: ttarget.slug,
+                      hash,
+                    },
+                    ownerToken,
+                  ).then(r => r.expectNoGraphQLErrors());
+
+                  return operationBodyResult?.target?.operation?.body;
+                },
+                async readOperationsStats(
+                  from: string,
+                  to: string,
+                  ttarget: TargetOverwrite = target,
+                ) {
+                  const statsResult = await readOperationsStats(
+                    {
+                      organizationSlug: organization.slug,
+                      projectSlug: project.slug,
+                      targetSlug: ttarget.slug,
+                      period: {
+                        from,
+                        to,
+                      },
+                    },
+                    ownerToken,
+                  ).then(r => r.expectNoGraphQLErrors());
+
+                  return statsResult.operationsStats;
                 },
               };
             },
@@ -896,3 +908,9 @@ export function initSeed() {
     },
   };
 }
+
+type TargetOverwrite = {
+  __typename?: 'Target';
+  id: string;
+  slug: string;
+};
