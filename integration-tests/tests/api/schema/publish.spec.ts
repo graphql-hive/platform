@@ -328,7 +328,7 @@ test.concurrent('share publication of schema using redis', async ({ expect }) =>
 test.concurrent('CDN data can not be fetched with an invalid access token', async ({ expect }) => {
   const { createOrg } = await initSeed().createOwner();
   const { createProject } = await createOrg();
-  const { createToken } = await createProject(ProjectType.Single);
+  const { createToken, createCdnAccess } = await createProject(ProjectType.Single);
   const readWriteToken = await createToken({
     targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
     projectScopes: [],
@@ -347,7 +347,7 @@ test.concurrent('CDN data can not be fetched with an invalid access token', asyn
 
   expect(result.schemaPublish.__typename).toBe('SchemaPublishSuccess');
 
-  const cdn = await readWriteToken.createCdnAccess();
+  const cdn = await createCdnAccess();
   const res = await fetch(cdn.cdnUrl + '/sdl', {
     method: 'GET',
     headers: {
@@ -361,7 +361,7 @@ test.concurrent('CDN data can not be fetched with an invalid access token', asyn
 test.concurrent('CDN data can be fetched with an valid access token', async ({ expect }) => {
   const { createOrg } = await initSeed().createOwner();
   const { createProject } = await createOrg();
-  const { createToken } = await createProject(ProjectType.Single);
+  const { createToken, createCdnAccess } = await createProject(ProjectType.Single);
   const readWriteToken = await createToken({
     targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
     projectScopes: [],
@@ -380,7 +380,7 @@ test.concurrent('CDN data can be fetched with an valid access token', async ({ e
 
   expect(result.schemaPublish.__typename).toBe('SchemaPublishSuccess');
 
-  const cdn = await readWriteToken.createCdnAccess();
+  const cdn = await createCdnAccess();
   const artifactUrl = cdn.cdnUrl + '/sdl';
 
   const cdnResult = await fetch(artifactUrl, {
@@ -3628,7 +3628,7 @@ test.concurrent(
 test.concurrent('CDN services are published in alphanumeric order', async ({ expect }) => {
   const { createOrg } = await initSeed().createOwner();
   const { createProject } = await createOrg();
-  const { createToken } = await createProject(ProjectType.Stitching);
+  const { createToken, createCdnAccess } = await createProject(ProjectType.Stitching);
   const readWriteToken = await createToken({
     targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
     projectScopes: [],
@@ -3671,7 +3671,7 @@ test.concurrent('CDN services are published in alphanumeric order', async ({ exp
     })
     .then(r => r.expectNoGraphQLErrors());
 
-  const cdn = await readWriteToken.createCdnAccess();
+  const cdn = await createCdnAccess();
   const res = await fetch(cdn.cdnUrl + '/services', {
     method: 'GET',
     headers: {

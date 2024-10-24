@@ -805,7 +805,7 @@ test.concurrent(
   async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject, setFeatureFlag } = await createOrg();
-    const { createToken, target, setNativeFederation } = await createProject(
+    const { createToken, createCdnAccess, target, setNativeFederation } = await createProject(
       ProjectType.Federation,
     );
     await setFeatureFlag('compareToPreviousComposableVersion', true);
@@ -835,7 +835,7 @@ test.concurrent(
 
     expect(createContractResult.createContract.error).toBeNull();
 
-    const cdnAccessToken = await writeToken.createCdnAccess();
+    const cdnAccessToken = await createCdnAccess();
 
     // Publish schema with write rights
     let publishResult = await writeToken
@@ -876,7 +876,7 @@ test.concurrent(
   async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject, setFeatureFlag } = await createOrg();
-    const { createToken, target, setNativeFederation } = await createProject(
+    const { createToken, createCdnAccess, target, setNativeFederation } = await createProject(
       ProjectType.Federation,
     );
     await setFeatureFlag('compareToPreviousComposableVersion', true);
@@ -906,7 +906,7 @@ test.concurrent(
 
     expect(createContractResult.createContract.error).toBeNull();
 
-    const cdnAccessToken = await writeToken.createCdnAccess();
+    const cdnAccessToken = await createCdnAccess();
 
     // Publish schema with write rights
     let publishResult = await writeToken
@@ -955,7 +955,9 @@ const DisabledContractMutation = graphql(`
 test.concurrent('disable contract results in CDN artifacts being removed', async ({ expect }) => {
   const { createOrg } = await initSeed().createOwner();
   const { createProject, setFeatureFlag } = await createOrg();
-  const { createToken, target, setNativeFederation } = await createProject(ProjectType.Federation);
+  const { createToken, createCdnAccess, target, setNativeFederation } = await createProject(
+    ProjectType.Federation,
+  );
   await setFeatureFlag('compareToPreviousComposableVersion', true);
   await setNativeFederation(true);
 
@@ -989,7 +991,7 @@ test.concurrent('disable contract results in CDN artifacts being removed', async
     throw new Error('Missing contract id.');
   }
 
-  const cdnAccessToken = await writeToken.createCdnAccess();
+  const cdnAccessToken = await createCdnAccess();
 
   // Publish schema with write rights
   let publishResult = await writeToken
@@ -1049,7 +1051,7 @@ test.concurrent(
   async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject, setFeatureFlag } = await createOrg();
-    const { createToken, target, setNativeFederation } = await createProject(
+    const { createToken, createCdnAccess, target, setNativeFederation } = await createProject(
       ProjectType.Federation,
     );
     await setFeatureFlag('compareToPreviousComposableVersion', true);
@@ -1085,7 +1087,7 @@ test.concurrent(
       throw new Error('Missing contract id.');
     }
 
-    const cdnAccessToken = await writeToken.createCdnAccess();
+    const cdnAccessToken = await createCdnAccess();
 
     const result = await execute({
       document: DisabledContractMutation,

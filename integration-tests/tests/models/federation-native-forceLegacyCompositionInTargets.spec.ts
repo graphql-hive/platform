@@ -633,8 +633,9 @@ describe('other', () => {
       const { createOrg } = await initSeed().createOwner();
       const { inviteAndJoinMember, createProject } = await createOrg();
       await inviteAndJoinMember();
-      const { createToken } = await createProject(ProjectType.Federation);
-      const { secret, fetchSupergraph } = await createToken({});
+      const { createToken, createCdnAccess } = await createProject(ProjectType.Federation);
+      const { secret } = await createToken({});
+      const { fetchSupergraphFromCDN } = await createCdnAccess();
 
       await schemaPublish([
         '--token',
@@ -650,8 +651,9 @@ describe('other', () => {
         'fixtures/federation-init.graphql',
       ]);
 
-      const supergraph = await fetchSupergraph();
-      expect(supergraph).toMatch('(name: "users", url: "https://api.com/users-subgraph")');
+      const supergraph = await fetchSupergraphFromCDN();
+      expect(supergraph.status).toEqual(200);
+      expect(supergraph.body).toMatch('(name: "users", url: "https://api.com/users-subgraph")');
     });
 
     test.concurrent(
@@ -901,7 +903,7 @@ async function prepare(targetPick: TargetOption) {
 async function prepareProject(projectType: ProjectType) {
   const { createOrg } = await initSeed().createOwner();
   const { organization, createProject } = await createOrg();
-  const { project, createToken, targets } = await createProject(projectType, {
+  const { project, createToken, createCdnAccess, targets } = await createProject(projectType, {
     useLegacyRegistryModels: false,
   });
 
@@ -937,7 +939,7 @@ async function prepareProject(projectType: ProjectType) {
     });
 
     // Create CDN token
-    const { secretAccessToken: cdnToken, cdnUrl } = await readWriteToken.createCdnAccess();
+    const { secretAccessToken: cdnToken, cdnUrl, fetchMetadataFromCDN } = await createCdnAccess();
 
     return {
       id: target.id,
@@ -956,7 +958,7 @@ async function prepareProject(projectType: ProjectType) {
         token: cdnToken,
         url: cdnUrl,
         fetchMetadata() {
-          return readWriteToken.fetchMetadataFromCDN();
+          return fetchMetadataFromCDN();
         },
       },
     };

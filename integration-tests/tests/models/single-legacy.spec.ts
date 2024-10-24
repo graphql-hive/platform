@@ -395,20 +395,15 @@ describe('other', () => {
     async () => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken } = await createProject(ProjectType.Single, {
+      const { createToken, createCdnAccess } = await createProject(ProjectType.Single, {
         useLegacyRegistryModels: true,
       });
-      const {
-        publishSchema,
-        fetchVersions,
-        updateSchemaVersionStatus,
-        fetchSchemaFromCDN,
-        fetchMetadataFromCDN,
-      } = await createToken({
+      const { publishSchema, fetchVersions, updateSchemaVersionStatus } = await createToken({
         organizationScopes: [],
         projectScopes: [],
         targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
       });
+      const { fetchSchemaFromCDN, fetchMetadataFromCDN } = await createCdnAccess();
 
       // Initial schema
       let result = await publishSchema({

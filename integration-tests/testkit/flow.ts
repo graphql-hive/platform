@@ -1245,16 +1245,10 @@ export function createCdnAccess(selector: TargetSelectorInput, token: string) {
   });
 }
 
-export async function fetchSchemaFromCDN(selector: TargetSelectorInput, token: string) {
-  const cdnAccessResult = await createCdnAccess(selector, token).then(r =>
-    r.expectNoGraphQLErrors(),
-  );
-
-  const cdn = cdnAccessResult.createCdnAccessToken.ok!;
-
-  const res = await fetch(cdn.cdnUrl + '/sdl', {
+export async function fetchSchemaFromCDN(cdnUrl: string, secretAccessToken: string) {
+  const res = await fetch(cdnUrl + '/sdl', {
     headers: {
-      'X-Hive-CDN-Key': cdn.secretAccessToken,
+      'X-Hive-CDN-Key': secretAccessToken,
     },
   });
 
@@ -1264,16 +1258,10 @@ export async function fetchSchemaFromCDN(selector: TargetSelectorInput, token: s
   };
 }
 
-export async function fetchSupergraphFromCDN(selector: TargetSelectorInput, token: string) {
-  const cdnAccessResult = await createCdnAccess(selector, token).then(r =>
-    r.expectNoGraphQLErrors(),
-  );
-
-  const cdn = cdnAccessResult.createCdnAccessToken.ok!;
-
-  const res = await fetch(cdn.cdnUrl + '/supergraph', {
+export async function fetchSupergraphFromCDN(cdnUrl: string, secretAccessToken: string) {
+  const res = await fetch(cdnUrl + '/supergraph', {
     headers: {
-      'X-Hive-CDN-Key': cdn.secretAccessToken,
+      'X-Hive-CDN-Key': secretAccessToken,
     },
   });
 
@@ -1285,17 +1273,11 @@ export async function fetchSupergraphFromCDN(selector: TargetSelectorInput, toke
   };
 }
 
-export async function fetchMetadataFromCDN(selector: TargetSelectorInput, token: string) {
-  const cdnAccessResult = await createCdnAccess(selector, token).then(r =>
-    r.expectNoGraphQLErrors(),
-  );
-
-  const cdn = cdnAccessResult.createCdnAccessToken.ok!;
-
-  const res = await fetch(cdn.cdnUrl + '/metadata', {
+export async function fetchMetadataFromCDN(cdnUrl: string, secretAccessToken: string) {
+  const res = await fetch(cdnUrl + '/metadata', {
     headers: {
       Accept: 'application/json',
-      'X-Hive-CDN-Key': cdn.secretAccessToken,
+      'X-Hive-CDN-Key': secretAccessToken,
     },
   });
 
