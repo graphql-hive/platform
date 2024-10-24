@@ -1,21 +1,22 @@
-import { ReactElement, ReactNode, Suspense, useRef } from 'react';
+import { FC, ReactNode, Suspense, useState } from 'react';
+import { env } from '@/env/frontend';
 import { Elements as ElementsProvider } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { getStripePublicKey } from './stripe-public-key';
 
-export const HiveStripeWrapper = ({ children }: { children: ReactNode }): ReactElement => {
-  const stripeRef = useRef<ReturnType<typeof loadStripe> | null>(null);
-
-  if (!stripeRef.current) {
+export const HiveStripeWrapper: FC<{ children: ReactNode }> = ({ children }) => {
+  // eslint-disable-next-line react/hook-use-state -- we don't need setter
+  const [stripe] = useState<ReturnType<typeof loadStripe> | void>(() => {
+    if (env.nodeEnv !== 'production') {
+      return;
+    }
     const stripePublicKey = getStripePublicKey();
     if (stripePublicKey) {
-      stripeRef.current = loadStripe(stripePublicKey);
+      return loadStripe(stripePublicKey);
     }
-  }
+  });
 
-  const stripe = stripeRef.current;
-
-  if (stripe === null) {
+  if (!stripe) {
     return children as any;
   }
 
