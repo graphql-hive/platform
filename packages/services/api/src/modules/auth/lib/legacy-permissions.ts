@@ -51,7 +51,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['appDeployment:describe', 'schema:check'],
-          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+          resource: [`hrn:${organizationId}:target/${targetId}`],
         });
         break;
       }
@@ -59,23 +59,25 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: [
+            'appDeployment:describe',
             'appDeployment:create',
             'appDeployment:publish',
             'appDeployment:retire',
-            'accessToken:create',
+            'cdnAccessToken:describe',
+            'cdnAccessToken:create',
             'schema:publish',
             'schema:deleteService',
             'schema:check',
             'schema:approve',
           ],
-          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+          resource: [`hrn:${organizationId}:target/${targetId}`],
         });
         break;
       }
       case TargetAccessScope.TOKENS_READ: {
         policies.push({
           effect: 'allow',
-          action: ['accessToken:create', 'accessToken:describe'],
+          action: ['cdnAccessToken:describe', 'targetAccessToken:describe'],
           resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;
@@ -83,7 +85,14 @@ export function transformLegacyPolicies(
       case TargetAccessScope.TOKENS_WRITE: {
         policies.push({
           effect: 'allow',
-          action: ['accessToken:create', 'accessToken:delete'],
+          action: [
+            'targetAccessToken:create',
+            'targetAccessToken:delete',
+            'targetAccessToken:describe',
+            'cdnAccessToken:create',
+            'cdnAccessToken:delete',
+            'cdnAccessToken:describe',
+          ],
           resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;
@@ -91,14 +100,7 @@ export function transformLegacyPolicies(
       case TargetAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',
-          action: [
-            'schemaContract:create',
-            'schemaContract:disable',
-            'schemaContract:describe',
-            'accessToken:create',
-            'accessToken:delete',
-            'accessToken:describe',
-          ],
+          action: ['schemaContract:create', 'schemaContract:disable', 'schemaContract:describe'],
           resource: [`hrn:${organizationId}:organization/${organizationId}`],
         });
         break;

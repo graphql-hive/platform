@@ -47,7 +47,7 @@ export class AppDeploymentsManager {
       params: {
         organizationId: target.orgId,
         projectId: target.projectId,
-        targetId: target.orgId,
+        targetId: target.id,
       },
     });
 

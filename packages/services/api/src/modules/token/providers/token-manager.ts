@@ -42,10 +42,12 @@ export class TokenManager {
 
   async createToken(input: CreateTokenInput): Promise<CreateTokenResult> {
     await this.session.assertPerformAction({
-      action: 'accessToken:create',
+      action: 'targetAccessToken:create',
       organizationId: input.organizationId,
       params: {
         organizationId: input.organizationId,
+        projectId: input.projectId,
+        targetId: input.targetId,
       },
     });
 
@@ -96,10 +98,12 @@ export class TokenManager {
     targetId: string;
   }): Promise<readonly string[]> {
     await this.session.assertPerformAction({
-      action: 'accessToken:delete',
+      action: 'targetAccessToken:delete',
       organizationId: input.organizationId,
       params: {
         organizationId: input.organizationId,
+        projectId: input.projectId,
+        targetId: input.targetId,
       },
     });
 
@@ -108,10 +112,12 @@ export class TokenManager {
 
   async getTokens(selector: TargetSelector): Promise<readonly Token[]> {
     await this.session.assertPerformAction({
-      action: 'accessToken:describe',
+      action: 'targetAccessToken:describe',
       organizationId: selector.organizationId,
       params: {
         organizationId: selector.organizationId,
+        projectId: selector.projectId,
+        targetId: selector.targetId,
       },
     });
     return this.tokenStorage.getTokens(selector);
