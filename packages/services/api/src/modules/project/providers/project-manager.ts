@@ -1,6 +1,7 @@
 import { Injectable, Scope } from 'graphql-modules';
 import type { Project, ProjectType } from '../../../shared/entities';
 import { share } from '../../../shared/helpers';
+import { AuditLogManager } from '../../audit-logs/providers/audit-logs-manager';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { OrganizationAccessScope } from '../../auth/providers/organization-access';
 import { ProjectAccessScope } from '../../auth/providers/project-access';
@@ -28,6 +29,7 @@ export class ProjectManager {
     private authManager: AuthManager,
     private tokenStorage: TokenStorage,
     private activityManager: ActivityManager,
+    private auditLogManager: AuditLogManager,
   ) {
     this.logger = logger.child({ source: 'ProjectManager' });
   }
@@ -61,6 +63,7 @@ export class ProjectManager {
     });
 
     if (result.ok) {
+      const currentUser = await this.authManager.getCurrentUser();
       await Promise.all([
         this.storage.completeGetStartedStep({
           organizationId: organization,
@@ -76,6 +79,22 @@ export class ProjectManager {
             projectType: type,
           },
         }),
+        this.auditLogManager.createLogAuditEvent(
+          {
+            eventType: 'PROJECT_CREATED',
+            projectCreatedAuditLogSchema: {
+              projectId: result.project.id,
+              projectType: type,
+              projectName: result.project.name,
+            },
+          },
+          {
+            user: currentUser,
+            organizationId: organization,
+            userId: currentUser.id,
+            userEmail: currentUser.email,
+          },
+        ),
       ]);
     }
 
@@ -97,6 +116,22 @@ export class ProjectManager {
       projectId: project,
       organizationId: organization,
     });
+    const currentUser = await this.authManager.getCurrentUser();
+    this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'PROJECT_DELETED',
+        projectDeletedAuditLogSchema: {
+          projectId: deletedProject.id,
+          projectName: deletedProject.name,
+        },
+      },
+      {
+        user: currentUser,
+        organizationId: organization,
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+      },
+    );
 
     await this.tokenStorage.invalidateTokens(deletedProject.tokens);
 
@@ -186,6 +221,24 @@ export class ProjectManager {
           value: slug,
         },
       });
+      const currentUser = await this.authManager.getCurrentUser();
+      this.auditLogManager.createLogAuditEvent(
+        {
+          eventType: 'PROJECT_SETTINGS_UPDATED',
+          projectSettingsUpdatedAuditLogSchema: {
+            projectId: result.project.id,
+            updatedFields: JSON.stringify({
+              newSlug: input.slug,
+            }),
+          },
+        },
+        {
+          organizationId: result.project.orgId,
+          userEmail: currentUser.email,
+          userId: currentUser.id,
+          user: currentUser,
+        },
+      );
     }
 
     return result;

@@ -1,6 +1,7 @@
 import { Injectable, Scope } from 'graphql-modules';
 import { batch } from '@theguild/buddy';
 import { Target } from '../../../shared/entities';
+import { AuditLogManager } from '../../audit-logs/providers/audit-logs-manager';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { TargetAccessScope } from '../../auth/providers/scopes';
 import { Logger } from '../../shared/providers/logger';
@@ -23,6 +24,7 @@ export class AppDeploymentsManager {
     private tokenStorage: TokenStorage,
     private targetManager: TargetManager,
     private appDeployments: AppDeployments,
+    private auditLogManager: AuditLogManager,
   ) {
     this.logger = logger.child({ source: 'AppDeploymentsManager' });
   }
@@ -82,11 +84,31 @@ export class AppDeploymentsManager {
       scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
-    return await this.appDeployments.createAppDeployment({
+    const result = await this.appDeployments.createAppDeployment({
       organizationId: tokenRecord.organization,
       targetId: tokenRecord.target,
       appDeployment: args.appDeployment,
     });
+
+    const currentUser = await this.auth.getCurrentUser();
+    await this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'APP_DEPLOYMENT_CREATED',
+        appDeploymentCreatedAuditLogSchema: {
+          deploymentId: result.appDeployment ? result.appDeployment.id : null,
+          deploymentName: result.appDeployment ? result.appDeployment.name : null,
+          deploymentVersion: result.appDeployment ? result.appDeployment.version : null,
+        },
+      },
+      {
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+        organizationId: tokenRecord.organization,
+        user: currentUser,
+      },
+    );
+
+    return result;
   }
 
   async addDocumentsToAppDeployment(args: {
@@ -109,13 +131,36 @@ export class AppDeploymentsManager {
       scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
-    return await this.appDeployments.addDocumentsToAppDeployment({
+    const result = await this.appDeployments.addDocumentsToAppDeployment({
       organizationId: tokenRecord.organization,
       projectId: tokenRecord.project,
       targetId: tokenRecord.target,
       appDeployment: args.appDeployment,
       operations: args.documents,
     });
+
+    const currentUser = await this.auth.getCurrentUser();
+    await this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'APP_DEPLOYMENT_UPDATED',
+        appDeploymentUpdatedAuditLogSchema: {
+          deploymentId: result.appDeployment ? result.appDeployment.id : null,
+          updatedFields: JSON.stringify({
+            name: result.appDeployment?.name,
+            version: result.appDeployment?.version,
+            documents: args.documents,
+          }),
+        },
+      },
+      {
+        organizationId: tokenRecord.organization,
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+        user: currentUser,
+      },
+    );
+
+    return result;
   }
 
   async activateAppDeployment(args: {
@@ -134,11 +179,34 @@ export class AppDeploymentsManager {
       scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
-    return await this.appDeployments.activateAppDeployment({
+    const result = await this.appDeployments.activateAppDeployment({
       organizationId: tokenRecord.organization,
       targetId: tokenRecord.target,
       appDeployment: args.appDeployment,
     });
+
+    const currentUser = await this.auth.getCurrentUser();
+    await this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'APP_DEPLOYMENT_UPDATED',
+        appDeploymentUpdatedAuditLogSchema: {
+          deploymentId: result.appDeployment ? result.appDeployment.id : null,
+          updatedFields: JSON.stringify({
+            name: args.appDeployment.name,
+            version: args.appDeployment.version,
+            status: 'ACTIVATED',
+          }),
+        },
+      },
+      {
+        organizationId: tokenRecord.organization,
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+        user: currentUser,
+      },
+    );
+
+    return;
   }
 
   async retireAppDeployment(args: {
@@ -157,11 +225,34 @@ export class AppDeploymentsManager {
       scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
-    return await this.appDeployments.retireAppDeployment({
+    const result = await this.appDeployments.retireAppDeployment({
       organizationId: target.orgId,
       targetId: target.id,
       appDeployment: args.appDeployment,
     });
+
+    const currentUser = await this.auth.getCurrentUser();
+    await this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'APP_DEPLOYMENT_UPDATED',
+        appDeploymentUpdatedAuditLogSchema: {
+          deploymentId: result.appDeployment?.id,
+          updatedFields: JSON.stringify({
+            name: result.appDeployment?.name,
+            version: result.appDeployment?.version,
+            status: 'RETIRED',
+          }),
+        },
+      },
+      {
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+        organizationId: target.orgId,
+        user: currentUser,
+      },
+    );
+
+    return result;
   }
 
   async getPaginatedDocumentsForAppDeployment(

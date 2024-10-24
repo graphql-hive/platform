@@ -1,4 +1,5 @@
 import { Injectable, Scope } from 'graphql-modules';
+import { AuditLogManager } from '../../audit-logs/providers/audit-logs-manager';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { Logger } from '../../shared/providers/logger';
 import { Storage } from '../../shared/providers/storage';
@@ -15,6 +16,7 @@ export class CollectionProvider {
     logger: Logger,
     private storage: Storage,
     private authManager: AuthManager,
+    private auditLogManager: AuditLogManager,
   ) {
     this.logger = logger.child({ source: 'CollectionProvider' });
   }
@@ -52,12 +54,14 @@ export class CollectionProvider {
   ) {
     const currentUser = await this.authManager.getCurrentUser();
 
-    return this.storage.createDocumentCollection({
+    const result = await this.storage.createDocumentCollection({
       createdByUserId: currentUser.id,
       title: name,
       description: description || '',
       targetId,
     });
+
+    return result;
   }
 
   deleteCollection(id: string) {

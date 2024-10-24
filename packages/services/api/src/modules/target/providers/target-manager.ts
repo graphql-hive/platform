@@ -2,6 +2,7 @@ import { Injectable, Scope } from 'graphql-modules';
 import * as zod from 'zod';
 import type { Target, TargetSettings } from '../../../shared/entities';
 import { share } from '../../../shared/helpers';
+import { AuditLogManager } from '../../audit-logs/providers/audit-logs-manager';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { ProjectAccessScope } from '../../auth/providers/project-access';
 import { TargetAccessScope } from '../../auth/providers/target-access';
@@ -32,6 +33,7 @@ export class TargetManager {
     private authManager: AuthManager,
     private activityManager: ActivityManager,
     private idTranslator: IdTranslator,
+    private auditLogManager: AuditLogManager,
   ) {
     this.logger = logger.child({ source: 'TargetManager' });
   }
@@ -87,6 +89,25 @@ export class TargetManager {
           targetId: result.target.id,
         },
       });
+
+      const currentUser = await this.authManager.getCurrentUser();
+
+      this.auditLogManager.createLogAuditEvent(
+        {
+          eventType: 'TARGET_CREATED',
+          targetCreatedAuditLogSchema: {
+            projectId: result.target.projectId,
+            targetId: result.target.id,
+            targetName: result.target.name,
+          },
+        },
+        {
+          organizationId: result.target.orgId,
+          userEmail: currentUser.email,
+          userId: currentUser.id,
+          user: currentUser,
+        },
+      );
     }
 
     return result;
@@ -128,6 +149,24 @@ export class TargetManager {
         cleanId: deletedTarget.slug,
       },
     });
+
+    const currentUser = await this.authManager.getCurrentUser();
+    this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'TARGET_DELETED',
+        targetDeletedAuditLogSchema: {
+          targetId: target,
+          targetName: deletedTarget.name,
+          projectId: project,
+        },
+      },
+      {
+        organizationId: organization,
+        userEmail: currentUser.email,
+        userId: currentUser.id,
+        user: currentUser,
+      },
+    );
 
     return deletedTarget;
   }

@@ -2,6 +2,8 @@ import { Inject, Injectable, Scope } from 'graphql-modules';
 import type { StripeBillingApi, StripeBillingApiInput } from '@hive/stripe-billing';
 import { createTRPCProxyClient, httpLink } from '@trpc/client';
 import { OrganizationBilling } from '../../../shared/entities';
+import { AuditLogManager } from '../../audit-logs/providers/audit-logs-manager';
+import { AuthManager } from '../../auth/providers/auth-manager';
 import { Logger } from '../../shared/providers/logger';
 import { Storage } from '../../shared/providers/storage';
 import type { BillingConfig } from './tokens';
@@ -9,7 +11,7 @@ import { BILLING_CONFIG } from './tokens';
 
 @Injectable({
   global: true,
-  scope: Scope.Singleton,
+  scope: Scope.Operation,
 })
 export class BillingProvider {
   private logger: Logger;
@@ -19,6 +21,8 @@ export class BillingProvider {
 
   constructor(
     logger: Logger,
+    private authManager: AuthManager,
+    private auditLogManager: AuditLogManager,
     private storage: Storage,
     @Inject(BILLING_CONFIG) billingConfig: BillingConfig,
   ) {
@@ -34,13 +38,34 @@ export class BillingProvider {
     }
   }
 
-  upgradeToPro(input: StripeBillingApiInput['createSubscriptionForOrganization']) {
+  async upgradeToPro(input: StripeBillingApiInput['createSubscriptionForOrganization']) {
     this.logger.debug('Upgrading to PRO (input=%o)', input);
     if (!this.billingService) {
       throw new Error(`Billing service is not configured!`);
     }
 
-    return this.billingService.createSubscriptionForOrganization.mutate(input);
+    const result = this.billingService.createSubscriptionForOrganization.mutate(input);
+
+    const currentUser = await this.authManager.getCurrentUser();
+    this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'SUBSCRIPTION_CREATED',
+        subscriptionCreatedAuditLogSchema: {
+          operations: input.reserved.operations,
+          paymentMethodId: input.paymentMethodId,
+          newPlan: 'PRO',
+          previousPlan: 'HOBBY',
+        },
+      },
+      {
+        organizationId: input.organizationId,
+        userEmail: currentUser.email,
+        userId: currentUser.id,
+        user: currentUser,
+      },
+    );
+
+    return result;
   }
 
   syncOrganization(input: StripeBillingApiInput['syncOrganizationToStripe']) {
@@ -102,6 +127,23 @@ export class BillingProvider {
     if (!this.billingService) {
       throw new Error(`Billing service is not configured!`);
     }
+
+    const currentUser = await this.authManager.getCurrentUser();
+    this.auditLogManager.createLogAuditEvent(
+      {
+        eventType: 'SUBSCRIPTION_CANCELED',
+        subscriptionCanceledAuditLogSchema: {
+          newPlan: 'HOBBY',
+          previousPlan: 'PRO',
+        },
+      },
+      {
+        organizationId: input.organizationId,
+        userEmail: currentUser.email,
+        userId: currentUser.id,
+        user: currentUser,
+      },
+    );
 
     return await this.billingService.cancelSubscriptionForOrganization.mutate(input);
   }
