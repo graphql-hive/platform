@@ -19,6 +19,7 @@ export const createOIDCIntegration: NonNullable<
     const organization = await injector
       .get(OrganizationManager)
       .getOrganization({ organizationId: input.organizationId });
+
     return {
       ok: {
         createdOIDCIntegration: result.oidcIntegration,

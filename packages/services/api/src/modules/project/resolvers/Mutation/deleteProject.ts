@@ -21,7 +21,6 @@ export const deleteProject: NonNullable<MutationResolvers['deleteProject']> = as
     organizationId: organizationId,
     projectId: projectId,
   });
-
   return {
     selector: {
       organizationSlug: selector.organizationSlug,
