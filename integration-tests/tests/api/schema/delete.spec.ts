@@ -178,9 +178,9 @@ test.concurrent(
       expect(deleteServiceResult.schemaDelete.__typename).toBe('SchemaDeleteSuccess');
 
       const latestVersion = await storage.getLatestVersion({
-        target: target.id,
-        project: project.id,
-        organization: organization.id,
+        targetId: target.id,
+        projectId: project.id,
+        organizationId: organization.id,
       });
 
       expect(latestVersion.compositeSchemaSDL).toMatchInlineSnapshot(`
@@ -249,8 +249,8 @@ test.concurrent(
           endpoint: `http://${await getServiceHost('composition_federation_2', 3069, false)}/compose`,
           // eslint-disable-next-line no-process-env
           secret: process.env.EXTERNAL_COMPOSITION_SECRET!,
-          project: project.cleanId,
-          organization: organization.cleanId,
+          projectSlug: project.slug,
+          organizationSlug: organization.slug,
         },
         readToken.secret,
       ).then(r => r.expectNoGraphQLErrors());
@@ -310,9 +310,9 @@ test.concurrent(
       expect(deleteServiceResult.schemaDelete.__typename).toBe('SchemaDeleteSuccess');
 
       const latestVersion = await storage.getLatestVersion({
-        target: target.id,
-        project: project.id,
-        organization: organization.id,
+        targetId: target.id,
+        projectId: project.id,
+        organizationId: organization.id,
       });
 
       expect(latestVersion.compositeSchemaSDL).toEqual(null);

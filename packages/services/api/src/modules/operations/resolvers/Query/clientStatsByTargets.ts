@@ -19,15 +19,15 @@ export const clientStatsByTargets: NonNullable<QueryResolvers['clientStatsByTarg
 
   const [rows, total] = await Promise.all([
     injector.get(OperationsManager).readUniqueClientNames({
-      target: targets,
-      project,
-      organization,
+      targetId: targets,
+      projectId: project,
+      organizationId: organization,
       period,
     }),
     injector.get(OperationsManager).countRequests({
-      organization,
-      project,
-      target: targets,
+      organizationId: organization,
+      projectId: project,
+      targetId: targets,
       period,
     }),
   ]);

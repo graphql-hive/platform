@@ -10,9 +10,9 @@ export const SchemaCoordinateUsage: SchemaCoordinateUsageResolvers = {
     return injector
       .get(OperationsManager)
       .getTopOperationForCoordinate({
-        organizationId: source.organization,
-        projectId: source.project,
-        targetId: source.target,
+        organizationId: source.organizationId,
+        projectId: source.projectId,
+        targetId: source.targetId,
         coordinate: source.coordinate,
         period: source.period,
         limit,

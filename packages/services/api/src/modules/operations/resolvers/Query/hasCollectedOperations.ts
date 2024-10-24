@@ -15,8 +15,8 @@ export const hasCollectedOperations: NonNullable<QueryResolvers['hasCollectedOpe
   ]);
 
   return injector.get(OperationsManager).hasCollectedOperations({
-    organization,
-    project,
-    target,
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
   });
 };

@@ -9,11 +9,11 @@ export const deleteSlackIntegration: NonNullable<
   const organizationId = await injector.get(IdTranslator).translateOrganizationId(input);
 
   await injector.get(SlackIntegrationManager).unregister({
-    organization: organizationId,
+    organizationId: organizationId,
   });
 
   const organization = await injector.get(OrganizationManager).getOrganization({
-    organization: organizationId,
+    organizationId: organizationId,
   });
   return { organization };
 };

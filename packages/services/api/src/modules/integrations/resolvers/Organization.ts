@@ -8,7 +8,7 @@ export const Organization: Pick<
 > = {
   gitHubIntegration: async (organization, _, { injector }) => {
     const repositories = await injector.get(GitHubIntegrationManager).getRepositories({
-      organization: organization.id,
+      organizationId: organization.id,
     });
 
     if (repositories == null) {
@@ -21,12 +21,12 @@ export const Organization: Pick<
   },
   hasGitHubIntegration: (organization, _, { injector }) => {
     return injector.get(GitHubIntegrationManager).isAvailable({
-      organization: organization.id,
+      organizationId: organization.id,
     });
   },
   hasSlackIntegration: (organization, _, { injector }) => {
     return injector.get(SlackIntegrationManager).isAvailable({
-      organization: organization.id,
+      organizationId: organization.id,
     });
   },
 };

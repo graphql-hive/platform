@@ -1,8 +1,7 @@
 import { Injectable, Scope } from 'graphql-modules';
-import { paramCase } from 'param-case';
 import * as zod from 'zod';
 import type { Target, TargetSettings } from '../../../shared/entities';
-import { share, uuid } from '../../../shared/helpers';
+import { share } from '../../../shared/helpers';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { ProjectAccessScope } from '../../auth/providers/project-access';
 import { TargetAccessScope } from '../../auth/providers/target-access';
@@ -12,6 +11,8 @@ import { Logger } from '../../shared/providers/logger';
 import { ProjectSelector, Storage, TargetSelector } from '../../shared/providers/storage';
 import { TokenStorage } from '../../token/providers/token-storage';
 import { HiveError } from './../../../shared/errors';
+
+const reservedSlugs = ['view', 'new'];
 
 /**
  * Responsible for auth checks.
@@ -36,55 +37,66 @@ export class TargetManager {
   }
 
   async createTarget({
-    name,
-    project,
-    organization,
+    slug,
+    projectId: project,
+    organizationId: organization,
   }: {
-    name: string;
-  } & ProjectSelector): Promise<Target> {
+    slug: string;
+  } & ProjectSelector): Promise<
+    | {
+        ok: true;
+        target: Target;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  > {
     this.logger.info(
-      'Creating a target (name=%s, project=%s, organization=%s)',
-      name,
+      'Creating a target (slug=%s, project=%s, organization=%s)',
+      slug,
       project,
       organization,
     );
     await this.authManager.ensureProjectAccess({
-      project,
-      organization,
+      projectId: project,
+      organizationId: organization,
       scope: ProjectAccessScope.READ,
     });
 
-    let cleanId = paramCase(name);
-
-    if (
-      // packages/web/app uses the "view" prefix, let's avoid the collision
-      name.toLowerCase() === 'view' ||
-      (await this.storage.getTargetByCleanId({ cleanId, project, organization }))
-    ) {
-      cleanId = paramCase(`${name}-${uuid(4)}`);
+    if (reservedSlugs.includes(slug)) {
+      return {
+        ok: false,
+        message: 'Slug is reserved',
+      };
     }
 
     // create target
-    const target = await this.storage.createTarget({
-      name,
-      cleanId,
-      project,
-      organization,
+    const result = await this.storage.createTarget({
+      slug,
+      projectId: project,
+      organizationId: organization,
     });
 
-    await this.activityManager.create({
-      type: 'TARGET_CREATED',
-      selector: {
-        organization,
-        project,
-        target: target.id,
-      },
-    });
+    if (result.ok) {
+      await this.activityManager.create({
+        type: 'TARGET_CREATED',
+        selector: {
+          organizationId: organization,
+          projectId: project,
+          targetId: result.target.id,
+        },
+      });
+    }
 
-    return target;
+    return result;
   }
 
-  async deleteTarget({ organization, project, target }: TargetSelector): Promise<Target> {
+  async deleteTarget({
+    organizationId: organization,
+    projectId: project,
+    targetId: target,
+  }: TargetSelector): Promise<Target> {
     this.logger.info(
       'Deleting a target (target=%s, project=%s, organization=%s)',
       target,
@@ -92,28 +104,28 @@ export class TargetManager {
       organization,
     );
     await this.authManager.ensureTargetAccess({
-      project,
-      organization,
-      target,
+      projectId: project,
+      organizationId: organization,
+      targetId: target,
       scope: TargetAccessScope.DELETE,
     });
 
     const deletedTarget = await this.storage.deleteTarget({
-      target,
-      project,
-      organization,
+      targetId: target,
+      projectId: project,
+      organizationId: organization,
     });
     await this.tokenStorage.invalidateTokens(deletedTarget.tokens);
 
     await this.activityManager.create({
       type: 'TARGET_DELETED',
       selector: {
-        organization,
-        project,
+        organizationId: organization,
+        projectId: project,
       },
       meta: {
         name: deletedTarget.name,
-        cleanId: deletedTarget.cleanId,
+        cleanId: deletedTarget.slug,
       },
     });
 
@@ -152,16 +164,16 @@ export class TargetManager {
     });
 
     await this.authManager.ensureTargetAccess({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       scope: TargetAccessScope.READ,
     });
 
     return this.storage.getTarget({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
     });
   });
 
@@ -187,7 +199,7 @@ export class TargetManager {
     });
 
     await this.storage.completeGetStartedStep({
-      organization: input.organization,
+      organizationId: input.organizationId,
       step: 'enablingUsageBasedBreakingChanges',
     });
 
@@ -210,45 +222,56 @@ export class TargetManager {
     return this.storage.updateTargetValidationSettings(input);
   }
 
-  async updateName(
+  async updateSlug(
     input: {
-      name: string;
+      slug: string;
     } & TargetSelector,
-  ): Promise<Target> {
-    const { name, organization, project, target } = input;
-    this.logger.info('Updating a target name (input=%o)', input);
+  ): Promise<
+    | {
+        ok: true;
+        target: Target;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  > {
+    const { slug, organizationId: organization, projectId: project, targetId: target } = input;
+    this.logger.info('Updating a target slug (input=%o)', input);
     await this.authManager.ensureTargetAccess({
       ...input,
       scope: TargetAccessScope.SETTINGS,
     });
     const user = await this.authManager.getCurrentUser();
 
-    let cleanId = paramCase(name);
-
-    if (await this.storage.getTargetByCleanId({ cleanId, organization, project })) {
-      cleanId = paramCase(`${name}-${uuid(4)}`);
+    if (reservedSlugs.includes(slug)) {
+      return {
+        ok: false,
+        message: 'Slug is reserved',
+      };
     }
 
-    const result = await this.storage.updateTargetName({
-      name,
-      cleanId,
-      organization,
-      project,
-      target,
-      user: user.id,
+    const result = await this.storage.updateTargetSlug({
+      slug,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
+      userId: user.id,
     });
 
-    await this.activityManager.create({
-      type: 'TARGET_NAME_UPDATED',
-      selector: {
-        organization,
-        project,
-        target,
-      },
-      meta: {
-        value: name,
-      },
-    });
+    if (result.ok) {
+      await this.activityManager.create({
+        type: 'TARGET_ID_UPDATED',
+        selector: {
+          organizationId: organization,
+          projectId: project,
+          targetId: target,
+        },
+        meta: {
+          value: slug,
+        },
+      });
+    }
 
     return result;
   }
@@ -260,9 +283,9 @@ export class TargetManager {
     graphqlEndpointUrl: string | null;
   }) {
     await this.authManager.ensureTargetAccess({
-      organization: args.organizationId,
-      project: args.projectId,
-      target: args.targetId,
+      organizationId: args.organizationId,
+      projectId: args.projectId,
+      targetId: args.targetId,
       scope: TargetAccessScope.SETTINGS,
     });
 
@@ -309,9 +332,9 @@ export class TargetManager {
     ]);
 
     return this.storage.getTarget({
-      organization: organizationId,
-      project: projectId,
-      target: args.targetId,
+      organizationId: organizationId,
+      projectId: projectId,
+      targetId: args.targetId,
     });
   }
 
@@ -325,9 +348,9 @@ export class TargetManager {
     nativeComposition: boolean;
   }) {
     await this.authManager.ensureTargetAccess({
-      organization: args.organizationId,
-      project: args.projectId,
-      target: args.targetId,
+      organizationId: args.organizationId,
+      projectId: args.projectId,
+      targetId: args.targetId,
       scope: TargetAccessScope.SETTINGS,
     });
 

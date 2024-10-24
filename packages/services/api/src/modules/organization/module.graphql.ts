@@ -23,7 +23,6 @@ export default gql`
     deleteOrganizationInvitation(
       input: DeleteOrganizationInvitationInput!
     ): DeleteOrganizationInvitationResult!
-    updateOrganizationName(input: UpdateOrganizationNameInput!): UpdateOrganizationNameResult!
     updateOrganizationSlug(input: UpdateOrganizationSlugInput!): UpdateOrganizationSlugResult!
     updateOrganizationMemberAccess(input: OrganizationMemberAccessInput!): OrganizationPayload!
     requestOrganizationTransfer(
@@ -40,19 +39,6 @@ export default gql`
     Remove this mutation after migration is complete.
     """
     migrateUnassignedMembers(input: MigrateUnassignedMembersInput!): MigrateUnassignedMembersResult!
-  }
-
-  type UpdateOrganizationNameResult {
-    ok: UpdateOrganizationNameOk
-    error: UpdateOrganizationNameError
-  }
-
-  type UpdateOrganizationNameOk {
-    updatedOrganizationPayload: OrganizationPayload!
-  }
-
-  type UpdateOrganizationNameError implements Error {
-    message: String!
   }
 
   type UpdateOrganizationSlugResult {
@@ -73,7 +59,7 @@ export default gql`
   }
 
   type CreateOrganizationInputErrors {
-    name: String
+    slug: String
   }
 
   type CreateOrganizationError implements Error {
@@ -98,12 +84,12 @@ export default gql`
   }
 
   input OrganizationTransferRequestSelector {
-    organization: ID!
+    organizationSlug: String!
     code: String!
   }
 
   input AnswerOrganizationTransferRequestInput {
-    organization: ID!
+    organizationSlug: String!
     accept: Boolean!
     code: String!
   }
@@ -150,53 +136,48 @@ export default gql`
   }
 
   input OrganizationSelectorInput {
-    organization: ID!
+    organizationSlug: String!
   }
 
   type OrganizationSelector {
-    organization: ID!
+    organizationSlug: String!
   }
 
   input OrganizationMemberInput {
-    organization: ID!
-    user: ID!
+    organizationSlug: String!
+    userId: ID!
   }
 
   input OrganizationMemberAccessInput {
-    organization: ID!
-    user: ID!
+    organizationSlug: String!
+    userId: ID!
     organizationScopes: [OrganizationAccessScope!]!
     projectScopes: [ProjectAccessScope!]!
     targetScopes: [TargetAccessScope!]!
   }
 
   input RequestOrganizationTransferInput {
-    organization: ID!
-    user: ID!
+    organizationSlug: String!
+    userId: ID!
   }
 
   input CreateOrganizationInput {
-    name: String!
-  }
-
-  input UpdateOrganizationNameInput {
-    organization: ID!
-    name: String!
+    slug: String!
   }
 
   input UpdateOrganizationSlugInput {
-    organization: ID!
+    organizationSlug: String!
     slug: String!
   }
 
   input InviteToOrganizationByEmailInput {
-    organization: ID!
-    role: ID
+    organizationSlug: String!
+    roleId: ID
     email: String!
   }
 
   input DeleteOrganizationInvitationInput {
-    organization: ID!
+    organizationSlug: String!
     email: String!
   }
 
@@ -226,8 +207,9 @@ export default gql`
 
   type Organization {
     id: ID!
-    cleanId: ID!
-    name: String!
+    slug: String!
+    cleanId: ID! @deprecated(reason: "Use the 'slug' field instead.")
+    name: String! @deprecated(reason: "Use the 'slug' field instead.")
     owner: Member!
     me: Member!
     members: MemberConnection!
@@ -332,7 +314,7 @@ export default gql`
   }
 
   input CreateMemberRoleInput {
-    organization: ID!
+    organizationSlug: String!
     name: String!
     description: String!
     organizationAccessScopes: [OrganizationAccessScope!]!
@@ -366,8 +348,8 @@ export default gql`
   }
 
   input UpdateMemberRoleInput {
-    organization: ID!
-    role: ID!
+    organizationSlug: String!
+    roleId: ID!
     name: String!
     description: String!
     organizationAccessScopes: [OrganizationAccessScope!]!
@@ -401,8 +383,8 @@ export default gql`
   }
 
   input DeleteMemberRoleInput {
-    organization: ID!
-    role: ID!
+    organizationSlug: String!
+    roleId: ID!
   }
 
   type DeleteMemberRoleOk {
@@ -422,9 +404,9 @@ export default gql`
   }
 
   input AssignMemberRoleInput {
-    organization: ID!
-    user: ID!
-    role: ID!
+    organizationSlug: String!
+    userId: ID!
+    roleId: ID!
   }
 
   type AssignMemberRoleOk {
@@ -461,19 +443,19 @@ export default gql`
   }
 
   input AssignMemberRoleMigrationInput {
-    organization: ID!
-    role: ID!
-    users: [ID!]!
+    organizationSlug: String!
+    roleId: ID!
+    userIds: [ID!]!
   }
 
   input CreateMemberRoleMigrationInput {
-    organization: ID!
+    organizationSlug: String!
     name: String!
     description: String!
     organizationScopes: [OrganizationAccessScope!]!
     projectScopes: [ProjectAccessScope!]!
     targetScopes: [TargetAccessScope!]!
-    users: [ID!]!
+    userIds: [ID!]!
   }
 
   type MigrateUnassignedMembersResult {

@@ -17,9 +17,11 @@ export const updateSchemaPolicyForProject: NonNullable<
     ]);
     const organizationPolicy = await injector
       .get(SchemaPolicyProvider)
-      .getOrganizationPolicy({ organization: organization });
+      .getOrganizationPolicy({ organizationId: organization });
     const allowOverrides = organizationPolicy === null || organizationPolicy.allowOverrides;
-    const projectObject = await injector.get(ProjectManager).getProject({ organization, project });
+    const projectObject = await injector
+      .get(ProjectManager)
+      .getProject({ organizationId: organization, projectId: project });
 
     if (projectObject.legacyRegistryModel) {
       throw new Error(
@@ -37,12 +39,14 @@ export const updateSchemaPolicyForProject: NonNullable<
     await injector.get(SchemaPolicyApiProvider).validateConfig({ config });
     const updatedPolicy = await injector
       .get(SchemaPolicyProvider)
-      .setProjectPolicy({ organization, project }, config);
+      .setProjectPolicy({ organizationId: organization, projectId: project }, config);
 
     return {
       ok: {
         updatedPolicy,
-        project: await injector.get(ProjectManager).getProject({ organization, project }),
+        project: await injector
+          .get(ProjectManager)
+          .getProject({ organizationId: organization, projectId: project }),
       },
     };
   } catch (e) {

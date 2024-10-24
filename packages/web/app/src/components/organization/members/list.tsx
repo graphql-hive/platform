@@ -76,7 +76,7 @@ const OrganizationMemberRoleSwitcher_AssignRoleMutation = graphql(`
 const OrganizationMemberRoleSwitcher_OrganizationFragment = graphql(`
   fragment OrganizationMemberRoleSwitcher_OrganizationFragment on Organization {
     id
-    cleanId
+    slug
     me {
       id
       isAdmin
@@ -161,9 +161,9 @@ function OrganizationMemberRoleSwitcher(props: {
           try {
             const result = await assignRole({
               input: {
-                organization: organization.cleanId,
-                role: role.id,
-                user: member.user.id,
+                organizationSlug: organization.slug,
+                roleId: role.id,
+                userId: member.user.id,
               },
             });
 
@@ -384,8 +384,8 @@ function OrganizationMemberRow(props: {
                   try {
                     const result = await deleteMember({
                       input: {
-                        organization: organization.cleanId,
-                        user: member.user.id,
+                        organizationSlug: organization.slug,
+                        userId: member.user.id,
                       },
                     });
 
@@ -466,7 +466,7 @@ function OrganizationMemberRow(props: {
 const OrganizationMembers_OrganizationFragment = graphql(`
   fragment OrganizationMembers_OrganizationFragment on Organization {
     id
-    cleanId
+    slug
     owner {
       id
     }

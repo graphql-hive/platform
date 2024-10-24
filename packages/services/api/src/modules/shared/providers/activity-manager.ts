@@ -27,10 +27,10 @@ export class ActivityManager {
       const user = activity.user ? activity.user.id : (await this.authManager.getCurrentUser()).id;
 
       await this.storage.createActivity({
-        organization: activity.selector.organization,
-        project: 'project' in activity.selector ? activity.selector.project : undefined,
-        target: 'target' in activity.selector ? activity.selector.target : undefined,
-        user,
+        organizationId: activity.selector.organizationId,
+        projectId: 'projectId' in activity.selector ? activity.selector.projectId : undefined,
+        targetId: 'targetId' in activity.selector ? activity.selector.targetId : undefined,
+        userId: user,
         type: activity.type,
         meta: 'meta' in activity ? activity.meta : {},
       });
@@ -54,25 +54,25 @@ interface BaseActivity {
 }
 
 interface UserSelector {
-  user: string;
+  userId: string;
 }
 
 interface OrganizationSelector {
-  organization: string;
+  organizationId: string;
 }
 
 interface ProjectSelector extends OrganizationSelector {
-  project: string;
+  projectId: string;
 }
 
 interface PersistedOperationSelector extends ProjectSelector {
-  organization: string;
-  project: string;
+  organizationId: string;
+  projectId: string;
   operation: string;
 }
 
 interface TargetSelector extends ProjectSelector {
-  target: string;
+  targetId: string;
 }
 
 interface OrganizationCreatedActivity extends BaseActivity {
@@ -131,6 +131,11 @@ interface ProjectDeletedActivity extends BaseActivity {
   selector: OrganizationSelector;
   meta: {
     name: string;
+    /**
+     * We moved away from cleanId and replaced it with slug,
+     * but we need to keep it for backwards compatibility,
+     * as it's persisted in the database.
+     */
     cleanId: string;
   };
 }
@@ -171,6 +176,11 @@ interface TargetDeletedActivity extends BaseActivity {
   selector: ProjectSelector;
   meta: {
     name: string;
+    /**
+     * We moved away from cleanId and replaced it with slug,
+     * but we need to keep it for backwards compatibility,
+     * as it's persisted in the database.
+     */
     cleanId: string;
   };
 }

@@ -140,9 +140,9 @@ function DisableContractDialog(props: { contractId: string; onClose: () => void 
 }
 
 export function SchemaContracts(props: {
-  organizationId: string;
-  projectId: string;
-  targetId: string;
+  organizationSlug: string;
+  projectSlug: string;
+  targetSlug: string;
 }) {
   const [disabledContractId, setDisabledContractId] = useState<string | null>(null);
 
@@ -150,9 +150,9 @@ export function SchemaContracts(props: {
     query: SchemaContractsQuery,
     variables: {
       selector: {
-        organization: props.organizationId,
-        project: props.projectId,
-        target: props.targetId,
+        organizationSlug: props.organizationSlug,
+        projectSlug: props.projectSlug,
+        targetSlug: props.targetSlug,
       },
     },
   });
@@ -435,7 +435,7 @@ function CreateContractDialogContent(props: {
           <div className="flex flex-col gap-5">
             <Heading className="text-center">Create Schema Contract</Heading>
             <div className="flex flex-col gap-4">
-              <label className="text-sm font-semibold" htmlFor="buildUrl">
+              <label className="text-sm font-semibold" htmlFor="contractName">
                 Contract Name
               </label>
               <Input
@@ -454,7 +454,7 @@ function CreateContractDialogContent(props: {
             </div>
 
             <div className="flex flex-col gap-4">
-              <label className="text-sm font-semibold" htmlFor="includedTagsInput">
+              <label className="text-sm font-semibold" htmlFor="includeTagsInput">
                 Included Tags
               </label>
               <div className="flex">
@@ -567,7 +567,7 @@ function CreateContractDialogContent(props: {
             </div>
 
             <div className="flex flex-col gap-4">
-              <label className="text-sm font-semibold" htmlFor="buildUrl">
+              <label className="text-sm font-semibold" htmlFor="excludeTagsInput">
                 Excluded Tags
               </label>
               <div className="flex">
@@ -680,7 +680,10 @@ function CreateContractDialogContent(props: {
             </div>
 
             <div className="flex flex-col gap-4">
-              <label className="text-sm font-semibold" htmlFor="buildUrl">
+              <label
+                className="text-sm font-semibold"
+                htmlFor="removeUnreachableTypesFromPublicApiSchema"
+              >
                 Remove unreachable Types
               </label>
               <div className="flex items-center pl-1 pt-2">

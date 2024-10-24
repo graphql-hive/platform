@@ -220,17 +220,11 @@ function PreflightScriptContent() {
   const { setScript, setDisabled, setEnv } = usePreflightScriptActions();
 
   const params = useParams({
-    from: '/authenticated/$organizationId/$projectId/$targetId',
+    from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
   });
-
-  const selector = {
-    organization: params.organizationId,
-    project: params.projectId,
-    target: params.targetId,
-  };
   const [query, refetchQuery] = useQuery({
     query: TargetQuery,
-    variables: { selector },
+    variables: { selector: params },
   });
   const [, mutateCreate] = useMutation(CreatePreflightScriptMutation);
   const [, mutateUpdate] = useMutation(UpdatePreflightScriptMutation);
@@ -243,11 +237,11 @@ function PreflightScriptContent() {
       const preflightId = preflightScript?.id;
       const { data, error } = preflightId
         ? await mutateUpdate({
-            selector,
+            selector: params,
             input: { sourceCode: newValue, id: preflightId },
           })
         : await mutateCreate({
-            selector,
+            selector: params,
             input: { sourceCode: newValue },
           });
       const err = error || data?.data?.error;

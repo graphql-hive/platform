@@ -42,9 +42,9 @@ export class TokenManager {
 
   async createToken(input: CreateTokenInput): Promise<CreateTokenResult> {
     await this.authManager.ensureTargetAccess({
-      project: input.project,
-      organization: input.organization,
-      target: input.target,
+      projectId: input.projectId,
+      organizationId: input.organizationId,
+      targetId: input.targetId,
       scope: TargetAccessScope.TOKENS_WRITE,
     });
 
@@ -52,8 +52,8 @@ export class TokenManager {
 
     const currentUser = await this.authManager.getCurrentUser();
     const currentMember = await this.storage.getOrganizationMember({
-      organization: input.organization,
-      user: currentUser.id,
+      organizationId: input.organizationId,
+      userId: currentUser.id,
     });
 
     if (!currentMember) {
@@ -80,23 +80,24 @@ export class TokenManager {
     pushIfMissing(scopes, OrganizationAccessScope.READ);
 
     return this.tokenStorage.createToken({
-      organization: input.organization,
-      project: input.project,
-      target: input.target,
+      organizationId: input.organizationId,
+      projectId: input.projectId,
+      targetId: input.targetId,
       name: input.name,
       scopes,
     });
   }
 
-  async deleteTokens(
-    input: {
-      tokens: readonly string[];
-    } & TargetSelector,
-  ): Promise<readonly string[]> {
+  async deleteTokens(input: {
+    tokenIds: readonly string[];
+    organizationId: string;
+    projectId: string;
+    targetId: string;
+  }): Promise<readonly string[]> {
     await this.authManager.ensureTargetAccess({
-      project: input.project,
-      organization: input.organization,
-      target: input.target,
+      projectId: input.projectId,
+      organizationId: input.organizationId,
+      targetId: input.targetId,
       scope: TargetAccessScope.TOKENS_WRITE,
     });
 

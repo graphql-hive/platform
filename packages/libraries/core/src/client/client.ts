@@ -75,17 +75,14 @@ export function createHive(options: HivePluginOptions): HiveClient {
                     name
                   }
                   organization {
-                    name
-                    cleanId
+                    slug
                   }
                   project {
-                    name
                     type
-                    cleanId
+                    slug
                   }
                   target {
-                    name
-                    cleanId
+                    slug
                   }
                   canReportSchema: hasTargetScope(scope: REGISTRY_WRITE)
                   canCollectUsage: hasTargetScope(scope: REGISTRY_WRITE)
@@ -144,9 +141,9 @@ export function createHive(options: HivePluginOptions): HiveClient {
               const appUrl =
                 options.selfHosting?.applicationUrl?.replace(/\/$/, '') ??
                 'https://app.graphql-hive.com';
-              const organizationUrl = `${appUrl}/${organization.cleanId}`;
-              const projectUrl = `${organizationUrl}/${project.cleanId}`;
-              const targetUrl = `${projectUrl}/${target.cleanId}`;
+              const organizationUrl = `${appUrl}/${organization.slug}`;
+              const projectUrl = `${organizationUrl}/${project.slug}`;
+              const targetUrl = `${projectUrl}/${target.slug}`;
 
               infoLogger.info(
                 [

@@ -12,8 +12,7 @@ export const AlertsTable_AlertFragment = graphql(`
     }
     target {
       id
-      cleanId
-      name
+      slug
     }
   }
 `);
@@ -42,7 +41,7 @@ export function AlertsTable(props: {
               <span className="capitalize">{alert.type.replaceAll('_', ' ').toLowerCase()}</span>
             </Td>
             <Td>Channel: {alert.channel.name}</Td>
-            <Td>Target: {alert.target.name}</Td>
+            <Td>Target: {alert.target.slug}</Td>
           </Tr>
         ))}
       </TBody>

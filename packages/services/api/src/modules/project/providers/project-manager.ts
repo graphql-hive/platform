@@ -1,7 +1,6 @@
 import { Injectable, Scope } from 'graphql-modules';
-import { paramCase } from 'param-case';
 import type { Project, ProjectType } from '../../../shared/entities';
-import { share, uuid } from '../../../shared/helpers';
+import { share } from '../../../shared/helpers';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { OrganizationAccessScope } from '../../auth/providers/organization-access';
 import { ProjectAccessScope } from '../../auth/providers/project-access';
@@ -9,6 +8,8 @@ import { ActivityManager } from '../../shared/providers/activity-manager';
 import { Logger } from '../../shared/providers/logger';
 import { OrganizationSelector, ProjectSelector, Storage } from '../../shared/providers/storage';
 import { TokenStorage } from '../../token/providers/token-storage';
+
+const reservedSlugs = ['view', 'new'];
 
 /**
  * Responsible for auth checks.
@@ -33,66 +34,68 @@ export class ProjectManager {
 
   async createProject(
     input: {
-      name: string;
+      slug: string;
       type: ProjectType;
     } & OrganizationSelector,
-  ): Promise<Project> {
-    const { name, type, organization } = input;
+  ) {
+    const { slug, type, organizationId: organization } = input;
     this.logger.info('Creating a project (input=%o)', input);
-    let cleanId = paramCase(name);
 
     await this.authManager.ensureOrganizationAccess({
-      organization: input.organization,
+      organizationId: input.organizationId,
       scope: OrganizationAccessScope.READ,
     });
 
-    if (
-      // packages/web/app uses the "view" prefix, let's avoid the collision
-      name.toLowerCase() === 'view' ||
-      (await this.storage.getProjectByCleanId({ cleanId, organization }))
-    ) {
-      cleanId = paramCase(`${name}-${uuid(4)}`);
+    if (reservedSlugs.includes(slug)) {
+      return {
+        ok: false,
+        message: 'Slug is reserved',
+      };
     }
 
     // create project
-    const project = await this.storage.createProject({
-      name,
-      cleanId,
+    const result = await this.storage.createProject({
+      slug,
       type,
-      organization,
+      organizationId: organization,
     });
 
-    await Promise.all([
-      this.storage.completeGetStartedStep({
-        organization,
-        step: 'creatingProject',
-      }),
-      this.activityManager.create({
-        type: 'PROJECT_CREATED',
-        selector: {
-          organization,
-          project: project.id,
-        },
-        meta: {
-          projectType: type,
-        },
-      }),
-    ]);
+    if (result.ok) {
+      await Promise.all([
+        this.storage.completeGetStartedStep({
+          organizationId: organization,
+          step: 'creatingProject',
+        }),
+        this.activityManager.create({
+          type: 'PROJECT_CREATED',
+          selector: {
+            organizationId: organization,
+            projectId: result.project.id,
+          },
+          meta: {
+            projectType: type,
+          },
+        }),
+      ]);
+    }
 
-    return project;
+    return result;
   }
 
-  async deleteProject({ organization, project }: ProjectSelector): Promise<Project> {
+  async deleteProject({
+    organizationId: organization,
+    projectId: project,
+  }: ProjectSelector): Promise<Project> {
     this.logger.info('Deleting a project (project=%s, organization=%s)', project, organization);
     await this.authManager.ensureProjectAccess({
-      project,
-      organization,
+      projectId: project,
+      organizationId: organization,
       scope: ProjectAccessScope.DELETE,
     });
 
     const deletedProject = await this.storage.deleteProject({
-      project,
-      organization,
+      projectId: project,
+      organizationId: organization,
     });
 
     await this.tokenStorage.invalidateTokens(deletedProject.tokens);
@@ -100,11 +103,11 @@ export class ProjectManager {
     await this.activityManager.create({
       type: 'PROJECT_DELETED',
       selector: {
-        organization,
+        organizationId: organization,
       },
       meta: {
         name: deletedProject.name,
-        cleanId: deletedProject.cleanId,
+        cleanId: deletedProject.slug,
       },
     });
 
@@ -136,43 +139,54 @@ export class ProjectManager {
     return this.storage.getProjects(selector);
   }
 
-  async updateName(
+  async updateSlug(
     input: {
-      name: string;
+      slug: string;
     } & ProjectSelector,
-  ): Promise<Project> {
-    const { name, organization, project } = input;
-    this.logger.info('Updating a project name (input=%o)', input);
+  ): Promise<
+    | {
+        ok: true;
+        project: Project;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  > {
+    const { slug, organizationId: organization, projectId: project } = input;
+    this.logger.info('Updating a project slug (input=%o)', input);
     await this.authManager.ensureProjectAccess({
       ...input,
       scope: ProjectAccessScope.SETTINGS,
     });
     const user = await this.authManager.getCurrentUser();
 
-    let cleanId = paramCase(name);
-
-    if (await this.storage.getProjectByCleanId({ cleanId, organization })) {
-      cleanId = paramCase(`${name}-${uuid(4)}`);
+    if (reservedSlugs.includes(slug)) {
+      return {
+        ok: false,
+        message: 'Slug is reserved',
+      };
     }
 
-    const result = await this.storage.updateProjectName({
-      name,
-      organization,
-      project,
-      user: user.id,
-      cleanId,
+    const result = await this.storage.updateProjectSlug({
+      organizationId: organization,
+      projectId: project,
+      userId: user.id,
+      slug,
     });
 
-    await this.activityManager.create({
-      type: 'PROJECT_NAME_UPDATED',
-      selector: {
-        organization,
-        project,
-      },
-      meta: {
-        value: name,
-      },
-    });
+    if (result.ok) {
+      await this.activityManager.create({
+        type: 'PROJECT_ID_UPDATED',
+        selector: {
+          organizationId: organization,
+          projectId: project,
+        },
+        meta: {
+          value: slug,
+        },
+      });
+    }
 
     return result;
   }

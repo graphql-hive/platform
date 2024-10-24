@@ -63,29 +63,29 @@ const ExternalCompositionForm_EnableMutation = graphql(`
 
 const ExternalCompositionForm_OrganizationFragment = graphql(`
   fragment ExternalCompositionForm_OrganizationFragment on Organization {
-    cleanId
+    slug
   }
 `);
 
 const ExternalCompositionForm_ProjectFragment = graphql(`
   fragment ExternalCompositionForm_ProjectFragment on Project {
-    cleanId
+    slug
   }
 `);
 
 const ExternalCompositionStatus = ({
-  projectId,
-  organizationId,
+  projectSlug,
+  organizationSlug,
 }: {
-  projectId: string;
-  organizationId: string;
+  projectSlug: string;
+  organizationSlug: string;
 }) => {
   const [query] = useQuery({
     query: ExternalCompositionStatus_TestQuery,
     variables: {
       selector: {
-        project: projectId,
-        organization: organizationId,
+        projectSlug,
+        organizationSlug,
       },
     },
     requestPolicy: 'network-only',
@@ -169,8 +169,8 @@ const ExternalCompositionForm = ({
   function onSubmit(values: FormValues) {
     void enable({
       input: {
-        project: project.cleanId,
-        organization: organization.cleanId,
+        projectSlug: project.slug,
+        organizationSlug: organization.slug,
         endpoint: values.endpoint,
         secret: values.secret,
       },
@@ -245,8 +245,8 @@ const ExternalCompositionForm = ({
                     mutation.data?.enableExternalSchemaComposition.ok?.externalSchemaComposition
                       ?.endpoint) ? (
                     <ExternalCompositionStatus
-                      projectId={project.cleanId}
-                      organizationId={organization.cleanId}
+                      projectSlug={project.slug}
+                      organizationSlug={organization.slug}
                     />
                   ) : null}
                 </div>
@@ -309,7 +309,7 @@ const ExternalComposition_ProjectConfigurationQuery = graphql(`
   query ExternalComposition_ProjectConfigurationQuery($selector: ProjectSelectorInput!) {
     project(selector: $selector) {
       id
-      cleanId
+      slug
       isNativeFederationEnabled
       externalSchemaComposition {
         endpoint
@@ -320,14 +320,14 @@ const ExternalComposition_ProjectConfigurationQuery = graphql(`
 
 const ExternalCompositionSettings_OrganizationFragment = graphql(`
   fragment ExternalCompositionSettings_OrganizationFragment on Organization {
-    cleanId
+    slug
     ...ExternalCompositionForm_OrganizationFragment
   }
 `);
 
 const ExternalCompositionSettings_ProjectFragment = graphql(`
   fragment ExternalCompositionSettings_ProjectFragment on Project {
-    cleanId
+    slug
     isNativeFederationEnabled
     ...ExternalCompositionForm_ProjectFragment
   }
@@ -349,8 +349,8 @@ export const ExternalCompositionSettings = (props: {
     query: ExternalComposition_ProjectConfigurationQuery,
     variables: {
       selector: {
-        organization: organization.cleanId,
-        project: project.cleanId,
+        organizationSlug: organization.slug,
+        projectSlug: project.slug,
       },
     },
   });
@@ -363,8 +363,8 @@ export const ExternalCompositionSettings = (props: {
         setEnabled(false);
         const result = await disableComposition({
           input: {
-            project: project.cleanId,
-            organization: organization.cleanId,
+            projectSlug: project.slug,
+            organizationSlug: organization.slug,
           },
         });
         const error = result.error?.message || result.data?.disableExternalSchemaComposition.error;

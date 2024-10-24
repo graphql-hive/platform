@@ -79,14 +79,12 @@ const DeleteGitHubIntegrationMutation = graphql(`
   }
 `);
 
-function Integrations(props: { organizationId: string }) {
-  const orgId = props.organizationId;
-
+function Integrations(props: { organizationSlug: string }) {
   const [checkIntegrations] = useQuery({
     query: Integrations_CheckIntegrationsQuery,
     variables: {
       selector: {
-        organization: orgId,
+        organizationSlug: props.organizationSlug,
       },
     },
   });
@@ -116,7 +114,7 @@ function Integrations(props: { organizationId: string }) {
               onClick={async () => {
                 await deleteSlack({
                   input: {
-                    organization: orgId,
+                    organizationSlug: props.organizationSlug,
                   },
                 });
               }}
@@ -126,7 +124,7 @@ function Integrations(props: { organizationId: string }) {
             </Button>
           ) : (
             <Button variant="secondary" asChild>
-              <a href={`/api/slack/connect/${props.organizationId}`}>
+              <a href={`/api/slack/connect/${props.organizationSlug}`}>
                 <SlackIcon className="mr-2" />
                 Connect Slack
               </a>
@@ -146,7 +144,7 @@ function Integrations(props: { organizationId: string }) {
                   onClick={async () => {
                     await deleteGitHub({
                       input: {
-                        organization: orgId,
+                        organizationSlug: props.organizationSlug,
                       },
                     });
                   }}
@@ -155,12 +153,12 @@ function Integrations(props: { organizationId: string }) {
                   Disconnect GitHub
                 </Button>
                 <Button variant="link" asChild>
-                  <a href={`/api/github/connect/${props.organizationId}`}>Adjust permissions</a>
+                  <a href={`/api/github/connect/${props.organizationSlug}`}>Adjust permissions</a>
                 </Button>
               </>
             ) : (
               <Button variant="secondary" asChild>
-                <a href={`/api/github/connect/${props.organizationId}`}>
+                <a href={`/api/github/connect/${props.organizationSlug}`}>
                   <GitHubIcon className="mr-2" />
                   Connect GitHub
                 </a>
@@ -177,39 +175,17 @@ function Integrations(props: { organizationId: string }) {
   );
 }
 
-const UpdateOrganizationNameMutation = graphql(`
-  mutation Settings_UpdateOrganizationName($input: UpdateOrganizationNameInput!) {
-    updateOrganizationName(input: $input) {
-      ok {
-        updatedOrganizationPayload {
-          selector {
-            organization
-          }
-          organization {
-            id
-            cleanId
-            name
-          }
-        }
-      }
-      error {
-        message
-      }
-    }
-  }
-`);
-
 const UpdateOrganizationSlugMutation = graphql(`
   mutation Settings_UpdateOrganizationSlug($input: UpdateOrganizationSlugInput!) {
     updateOrganizationSlug(input: $input) {
       ok {
         updatedOrganizationPayload {
           selector {
-            organization
+            organizationSlug
           }
           organization {
             id
-            cleanId
+            slug
           }
         }
       }
@@ -223,8 +199,7 @@ const UpdateOrganizationSlugMutation = graphql(`
 const SettingsPageRenderer_OrganizationFragment = graphql(`
   fragment SettingsPageRenderer_OrganizationFragment on Organization {
     id
-    cleanId
-    name
+    slug
     me {
       ...CanAccessOrganization_MemberFragment
       isOwner
@@ -245,82 +220,29 @@ const SlugFormSchema = z.object({
 
 type SlugFormValues = z.infer<typeof SlugFormSchema>;
 
-const NameFormSchema = z.object({
-  name: z
-    .string({
-      required_error: 'Name is required',
-    })
-    .min(1, 'Name is required')
-    .max(50, 'Name must be less than 50 characters'),
-});
-
-type NameFormValues = z.infer<typeof NameFormSchema>;
-
 const SettingsPageRenderer = (props: {
   organization: FragmentType<typeof SettingsPageRenderer_OrganizationFragment>;
-  organizationId: string;
+  organizationSlug: string;
 }) => {
   const organization = useFragment(SettingsPageRenderer_OrganizationFragment, props.organization);
   const hasAccess = useOrganizationAccess({
     scope: OrganizationAccessScope.Settings,
     member: organization.me,
     redirect: true,
-    organizationId: props.organizationId,
+    organizationSlug: props.organizationSlug,
   });
   const router = useRouter();
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useToggle();
   const [isTransferModalOpen, toggleTransferModalOpen] = useToggle();
   const { toast } = useToast();
 
-  const [_nameMutation, nameMutate] = useMutation(UpdateOrganizationNameMutation);
   const [_slugMutation, slugMutate] = useMutation(UpdateOrganizationSlugMutation);
-
-  const nameForm = useForm({
-    mode: 'all',
-    resolver: zodResolver(NameFormSchema),
-    defaultValues: {
-      name: organization.name,
-    },
-  });
-
-  const onNameFormSubmit = useCallback(
-    async (data: NameFormValues) => {
-      try {
-        const result = await nameMutate({
-          input: {
-            organization: props.organizationId,
-            name: data.name,
-          },
-        });
-
-        const error = result.error || result.data?.updateOrganizationName.error;
-
-        if (result.data?.updateOrganizationName?.ok) {
-          toast({
-            variant: 'default',
-            title: 'Success',
-            description: 'Organization name updated',
-          });
-        } else if (error) {
-          nameForm.setError('name', error);
-        }
-      } catch (error) {
-        console.error('error', error);
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Failed to update organization name',
-        });
-      }
-    },
-    [nameMutate, props.organizationId],
-  );
 
   const slugForm = useForm({
     mode: 'all',
     resolver: zodResolver(SlugFormSchema),
     defaultValues: {
-      slug: organization.cleanId,
+      slug: organization.slug,
     },
   });
 
@@ -329,7 +251,7 @@ const SettingsPageRenderer = (props: {
       try {
         const result = await slugMutate({
           input: {
-            organization: props.organizationId,
+            organizationSlug: props.organizationSlug,
             slug: data.slug,
           },
         });
@@ -343,11 +265,10 @@ const SettingsPageRenderer = (props: {
             description: 'Organization slug updated',
           });
           void router.navigate({
-            to: '/$organizationId/view/settings',
+            to: '/$organizationSlug/view/settings',
             params: {
-              organizationId:
-                result.data.updateOrganizationSlug.ok.updatedOrganizationPayload.organization
-                  .cleanId,
+              organizationSlug:
+                result.data.updateOrganizationSlug.ok.updatedOrganizationPayload.organization.slug,
             },
           });
         } else if (error) {
@@ -362,7 +283,7 @@ const SettingsPageRenderer = (props: {
         });
       }
     },
-    [slugMutate, props.organizationId],
+    [slugMutate, props.organizationSlug],
   );
 
   return (
@@ -374,52 +295,6 @@ const SettingsPageRenderer = (props: {
 
       {hasAccess ? (
         <div className="flex flex-col gap-y-4">
-          <Form {...nameForm}>
-            <form onSubmit={nameForm.handleSubmit(onNameFormSubmit)}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Organization Name</CardTitle>
-                  <CardDescription>
-                    Changing the name of your organization will{' '}
-                    <span className="font-bold">not</span> change the slug of your organization URL,
-                    and will <span className="font-bold">not</span> invalidate any existing links to
-                    your organization.
-                    <br />
-                    <DocsLink
-                      className="text-muted-foreground text-sm"
-                      href="/management/organizations#rename-an-organization"
-                    >
-                      You can read more about it in the documentation
-                    </DocsLink>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  <FormField
-                    control={nameForm.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input placeholder="Name" className="w-80" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    disabled={nameForm.formState.isSubmitting}
-                    className="px-10"
-                    type="submit"
-                  >
-                    Save
-                  </Button>
-                </CardFooter>
-              </Card>
-            </form>
-          </Form>
-
           <Form {...slugForm}>
             <form onSubmit={slugForm.handleSubmit(onSlugFormSubmit)}>
               <Card>
@@ -489,7 +364,7 @@ const SettingsPageRenderer = (props: {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col gap-y-4 text-gray-500">
-                  <Integrations organizationId={props.organizationId} />
+                  <Integrations organizationSlug={props.organizationSlug} />
                 </div>
               </CardContent>
             </Card>
@@ -554,7 +429,7 @@ const SettingsPageRenderer = (props: {
                   Delete Organization
                 </Button>
                 <DeleteOrganizationModal
-                  organizationId={props.organizationId}
+                  organizationSlug={props.organizationSlug}
                   isOpen={isDeleteModalOpen}
                   toggleModalOpen={toggleDeleteModalOpen}
                 />
@@ -577,18 +452,18 @@ const OrganizationSettingsPageQuery = graphql(`
   }
 `);
 
-function SettingsPageContent(props: { organizationId: string }) {
+function SettingsPageContent(props: { organizationSlug: string }) {
   const [query] = useQuery({
     query: OrganizationSettingsPageQuery,
     variables: {
       selector: {
-        organization: props.organizationId,
+        organizationSlug: props.organizationSlug,
       },
     },
   });
 
   if (query.error) {
-    return <QueryError organizationId={props.organizationId} error={query.error} />;
+    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
   }
 
   const currentOrganization = query.data?.organization?.organization;
@@ -596,12 +471,12 @@ function SettingsPageContent(props: { organizationId: string }) {
   return (
     <OrganizationLayout
       page={Page.Settings}
-      organizationId={props.organizationId}
+      organizationSlug={props.organizationSlug}
       className="flex flex-col gap-y-10"
     >
       {currentOrganization ? (
         <SettingsPageRenderer
-          organizationId={props.organizationId}
+          organizationSlug={props.organizationSlug}
           organization={currentOrganization}
         />
       ) : null}
@@ -609,11 +484,11 @@ function SettingsPageContent(props: { organizationId: string }) {
   );
 }
 
-export function OrganizationSettingsPage(props: { organizationId: string }) {
+export function OrganizationSettingsPage(props: { organizationSlug: string }) {
   return (
     <>
       <Meta title="Organization settings" />
-      <SettingsPageContent organizationId={props.organizationId} />
+      <SettingsPageContent organizationSlug={props.organizationSlug} />
     </>
   );
 }
@@ -622,7 +497,7 @@ export const DeleteOrganizationDocument = graphql(`
   mutation deleteOrganization($selector: OrganizationSelectorInput!) {
     deleteOrganization(selector: $selector) {
       selector {
-        organization
+        organizationSlug
       }
       organization {
         __typename
@@ -635,9 +510,9 @@ export const DeleteOrganizationDocument = graphql(`
 export function DeleteOrganizationModal(props: {
   isOpen: boolean;
   toggleModalOpen: () => void;
-  organizationId: string;
+  organizationSlug: string;
 }) {
-  const { organizationId } = props;
+  const { organizationSlug } = props;
   const [, mutate] = useMutation(DeleteOrganizationDocument);
   const { toast } = useToast();
   const router = useRouter();
@@ -645,7 +520,7 @@ export function DeleteOrganizationModal(props: {
   const handleDelete = async () => {
     const { error } = await mutate({
       selector: {
-        organization: organizationId,
+        organizationSlug,
       },
     });
     if (error) {

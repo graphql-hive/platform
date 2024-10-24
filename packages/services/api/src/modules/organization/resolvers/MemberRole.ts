@@ -35,8 +35,8 @@ export const MemberRole: MemberRoleResolvers = {
 
     const currentUser = await injector.get(AuthManager).getCurrentUser();
     const currentUserAsMember = await injector.get(OrganizationManager).getOrganizationMember({
-      organization: role.organizationId,
-      user: currentUser.id,
+      organizationId: role.organizationId,
+      userId: currentUser.id,
     });
 
     const result = await injector
@@ -51,8 +51,8 @@ export const MemberRole: MemberRoleResolvers = {
     }
     const currentUser = await injector.get(AuthManager).getCurrentUser();
     const currentUserAsMember = await injector.get(OrganizationManager).getOrganizationMember({
-      organization: role.organizationId,
-      user: currentUser.id,
+      organizationId: role.organizationId,
+      userId: currentUser.id,
     });
 
     const result = injector
@@ -64,8 +64,8 @@ export const MemberRole: MemberRoleResolvers = {
   canInvite: async (role, _, { injector }) => {
     const currentUser = await injector.get(AuthManager).getCurrentUser();
     const currentUserAsMember = await injector.get(OrganizationManager).getOrganizationMember({
-      organization: role.organizationId,
-      user: currentUser.id,
+      organizationId: role.organizationId,
+      userId: currentUser.id,
     });
 
     const result = injector

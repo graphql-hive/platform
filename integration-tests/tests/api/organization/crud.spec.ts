@@ -1,59 +1,17 @@
 import { randomUUID } from 'node:crypto';
-import { changeOrganizationSlug, renameOrganization } from '../../../testkit/flow';
+import { updateOrganizationSlug } from '../../../testkit/flow';
 import { initSeed } from '../../../testkit/seed';
 
-test.concurrent('renaming an organization should NOT affect its cleanId', async ({ expect }) => {
-  const { ownerToken, createOrg } = await initSeed().createOwner();
-  const { organization } = await createOrg();
-
-  const newName = randomUUID();
-  const renamedOrganizationResult = await renameOrganization(
-    {
-      organization: organization.cleanId,
-      name: newName,
-    },
-    ownerToken,
-  ).then(r => r.expectNoGraphQLErrors());
-
-  const result = renamedOrganizationResult.updateOrganizationName.ok?.updatedOrganizationPayload;
-  expect(renamedOrganizationResult.updateOrganizationName.error).toBeNull();
-  expect(result?.organization.name).toBe(newName);
-  expect(result?.organization.cleanId).toEqual(organization.cleanId);
-  expect(result?.selector.organization).toEqual(organization.cleanId);
-});
-
 test.concurrent(
-  'renaming an organization to the same name should be possible',
+  'modifying a slug of an organization to the same value should not change the slug',
   async ({ expect }) => {
     const { ownerToken, createOrg } = await initSeed().createOwner();
     const { organization } = await createOrg();
 
-    const renamedOrganizationResult = await renameOrganization(
+    const changeOrganizationSlugResult = await updateOrganizationSlug(
       {
-        organization: organization.cleanId,
-        name: organization.name,
-      },
-      ownerToken,
-    ).then(r => r.expectNoGraphQLErrors());
-
-    const result = renamedOrganizationResult.updateOrganizationName.ok?.updatedOrganizationPayload;
-    expect(renamedOrganizationResult.updateOrganizationName.error).toBeNull();
-    expect(result?.organization.name).toBe(organization.name);
-    expect(result?.organization.cleanId).toEqual(organization.cleanId);
-    expect(result?.selector.organization).toEqual(organization.cleanId);
-  },
-);
-
-test.concurrent(
-  'modifying a clean id of an organization to the same value should not change the clean id',
-  async ({ expect }) => {
-    const { ownerToken, createOrg } = await initSeed().createOwner();
-    const { organization } = await createOrg();
-
-    const changeOrganizationSlugResult = await changeOrganizationSlug(
-      {
-        organization: organization.cleanId,
-        slug: organization.cleanId,
+        organizationSlug: organization.slug,
+        slug: organization.slug,
       },
       ownerToken,
     ).then(r => r.expectNoGraphQLErrors());
@@ -61,9 +19,9 @@ test.concurrent(
     const result =
       changeOrganizationSlugResult.updateOrganizationSlug.ok?.updatedOrganizationPayload;
     expect(changeOrganizationSlugResult.updateOrganizationSlug.error).toBeNull();
-    expect(result?.organization.name).toBe(organization.name);
-    expect(result?.organization.cleanId).toEqual(organization.cleanId);
-    expect(result?.selector.organization).toEqual(organization.cleanId);
+    expect(result?.organization.name).toBe(organization.slug);
+    expect(result?.organization.slug).toEqual(organization.slug);
+    expect(result?.selector.organizationSlug).toEqual(organization.slug);
   },
 );
 
@@ -73,11 +31,11 @@ test.concurrent(
     const { ownerToken, createOrg } = await initSeed().createOwner();
     const { organization } = await createOrg();
 
-    const newCleanId = randomUUID();
-    const changeOrganizationSlugResult = await changeOrganizationSlug(
+    const newSlug = randomUUID();
+    const changeOrganizationSlugResult = await updateOrganizationSlug(
       {
-        organization: organization.cleanId,
-        slug: newCleanId,
+        organizationSlug: organization.slug,
+        slug: newSlug,
       },
       ownerToken,
     ).then(r => r.expectNoGraphQLErrors());
@@ -85,9 +43,35 @@ test.concurrent(
     const result =
       changeOrganizationSlugResult.updateOrganizationSlug.ok?.updatedOrganizationPayload;
     expect(changeOrganizationSlugResult.updateOrganizationSlug.error).toBeNull();
-    expect(result?.organization.name).toBe(organization.name);
-    expect(result?.organization.cleanId).toEqual(newCleanId);
-    expect(result?.selector.organization).toEqual(newCleanId);
+    expect(result?.organization.name).toBe(newSlug);
+    expect(result?.organization.slug).toEqual(newSlug);
+    expect(result?.selector.organizationSlug).toEqual(newSlug);
+  },
+);
+
+test.concurrent(
+  'modifying a clean id of an organization should change the organization name',
+  async ({ expect }) => {
+    const { ownerToken, createOrg } = await initSeed().createOwner();
+    const { organization } = await createOrg();
+
+    const newSlug = randomUUID();
+    const changeOrganizationSlugResult = await updateOrganizationSlug(
+      {
+        organizationSlug: organization.slug,
+        slug: newSlug,
+      },
+      ownerToken,
+    ).then(r => r.expectNoGraphQLErrors());
+
+    const result =
+      changeOrganizationSlugResult.updateOrganizationSlug.ok?.updatedOrganizationPayload;
+    expect(changeOrganizationSlugResult.updateOrganizationSlug.error).toBeNull();
+    // We keep the organization name the same as the clean id (slug)
+    // We do it for legacy reasons, as some queries still use the name.
+    expect(result?.organization.name).toBe(newSlug);
+    expect(result?.organization.slug).toEqual(newSlug);
+    expect(result?.selector.organizationSlug).toEqual(newSlug);
   },
 );
 
@@ -97,11 +81,11 @@ test.concurrent(
     const { ownerToken, createOrg } = await initSeed().createOwner();
     const { organization } = await createOrg();
 
-    const newCleanId = 'graphql';
-    const changeOrganizationSlugResult = await changeOrganizationSlug(
+    const newSlug = 'graphql';
+    const changeOrganizationSlugResult = await updateOrganizationSlug(
       {
-        organization: organization.cleanId,
-        slug: newCleanId,
+        organizationSlug: organization.slug,
+        slug: newSlug,
       },
       ownerToken,
     ).then(r => r.expectNoGraphQLErrors());
@@ -118,10 +102,10 @@ test.concurrent(
     const { organization } = await createOrg();
     const { organization: anotherOrganization } = await createOrg();
 
-    const changeOrganizationSlugResult = await changeOrganizationSlug(
+    const changeOrganizationSlugResult = await updateOrganizationSlug(
       {
-        organization: organization.cleanId,
-        slug: anotherOrganization.cleanId,
+        organizationSlug: organization.slug,
+        slug: anotherOrganization.slug,
       },
       ownerToken,
     ).then(r => r.expectNoGraphQLErrors());

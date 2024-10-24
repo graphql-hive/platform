@@ -19,12 +19,12 @@ export class PreflightScriptProvider {
     this.logger = logger.child({ source: 'PreflightScriptProvider' });
   }
 
-  getPreflightScript(targetId: string) {
-    return this.storage.getPreflightScript({ targetId });
+  getPreflightScript(targetSlug: string) {
+    return this.storage.getPreflightScript({ targetSlug });
   }
 
   async createPreflightScript(
-    targetId: string,
+    targetSlug: string,
     { sourceCode }: PreflightScriptModule.CreatePreflightScriptInput,
   ) {
     const currentUser = await this.authManager.getCurrentUser();
@@ -32,7 +32,7 @@ export class PreflightScriptProvider {
     return this.storage.createPreflightScript({
       createdByUserId: currentUser.id,
       sourceCode,
-      targetId,
+      targetSlug,
     });
   }
 

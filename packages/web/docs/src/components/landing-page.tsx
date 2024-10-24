@@ -29,9 +29,13 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 
 export function IndexPage(): ReactElement {
   useIsomorphicLayoutEffect(() => {
-    // TODO: Accept a className for sidebar in the theme config?
-    const sidebarContainer = document.querySelector('.nextra-sidebar-container');
-    sidebarContainer?.parentElement?.classList.add('light');
+    // We add .light class to body to style the Headless UI
+    // portal containing search results.
+    document.body.classList.add('light');
+
+    return () => {
+      document.body.classList.remove('light');
+    };
   }, []);
 
   return (
@@ -43,8 +47,6 @@ export function IndexPage(): ReactElement {
           }
           body {
             background: #fff;
-          }
-          #__next {
             --nextra-primary-hue: 191deg;
             --nextra-primary-saturation: 40%;
             --nextra-bg: 255, 255, 255;
@@ -81,8 +83,8 @@ export function IndexPage(): ReactElement {
             <CallToAction variant="primary-inverted" href="https://app.graphql-hive.com">
               Get started for free
             </CallToAction>
-            <CallToAction variant="secondary" href="/#pricing">
-              View Pricing
+            <CallToAction variant="secondary" href="/docs">
+              Documentation
             </CallToAction>
           </HeroLinks>
         </Hero>
