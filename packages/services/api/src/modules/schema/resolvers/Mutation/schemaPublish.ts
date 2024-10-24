@@ -1,6 +1,4 @@
 import { parseResolveInfo } from 'graphql-parse-resolve-info';
-import { AuditLogManager } from '../../../audit-logs/providers/audit-logs-manager';
-import { AuthManager } from '../../../auth/providers/auth-manager';
 import { OrganizationManager } from '../../../organization/providers/organization-manager';
 import { ProjectManager } from '../../../project/providers/project-manager';
 import { TargetManager } from '../../../target/providers/target-manager';
@@ -43,25 +41,6 @@ export const schemaPublish: NonNullable<MutationResolvers['schemaPublish']> = as
       changes: result.changes,
     };
   }
-
-  const currentUser = await injector.get(AuthManager).getCurrentUser();
-  await injector.get(AuditLogManager).createLogAuditEvent(
-    {
-      eventType: 'SCHEMA_PUBLISH',
-      schemaPublishAuditLogSchema: {
-        isSchemaPublishMissingUrlErrorSelected: isSchemaPublishMissingUrlErrorSelected,
-        projectId: project,
-        targetId: target,
-        serviceName: input.service?.toLowerCase(),
-      },
-    },
-    {
-      userId: currentUser.id,
-      userEmail: currentUser.email,
-      organizationId: organization,
-      user: currentUser,
-    },
-  );
 
   return result;
 };

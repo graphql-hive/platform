@@ -168,9 +168,8 @@ export class AuditLogManager {
 
   async resolveRecordAuditLog(event: AuditLogType, injector: Injector) {
     const currentOrganization = await injector.get(OrganizationManager).getOrganization({
-      organization: event.organization_id,
+      organizationId: event.organization_id,
     });
-    console.log('event', event);
     return {
       userEmail: event.user_email,
       userId: event.user_id,

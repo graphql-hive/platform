@@ -1,40 +1,64 @@
-import { AuditLogManager } from '../../../audit-logs/providers/audit-logs-manager';
-import { AuthManager } from '../../../auth/providers/auth-manager';
+import { z } from 'zod';
 import { IdTranslator } from '../../../shared/providers/id-translator';
 import { TargetManager } from '../../providers/target-manager';
+import { TargetSlugModel } from '../../validation';
 import type { MutationResolvers } from './../../../../__generated__/types.next';
 
-export const deleteTarget: NonNullable<MutationResolvers['deleteTarget']> = async (
+const CreateTargetModel = z.object({
+  slug: TargetSlugModel,
+});
+
+export const createTarget: NonNullable<MutationResolvers['createTarget']> = async (
   _,
-  { selector },
+  { input },
   { injector },
 ) => {
+  const inputParseResult = CreateTargetModel.safeParse(input);
+  if (!inputParseResult.success) {
+    return {
+      error: {
+        message: 'Check your input.',
+        inputErrors: {
+          slug: inputParseResult.error.formErrors.fieldErrors.slug?.[0],
+        },
+      },
+    };
+  }
+
   const translator = injector.get(IdTranslator);
-  const [organizationId, projectId, targetId] = await Promise.all([
+  const [organizationId, projectId] = await Promise.all([
     translator.translateOrganizationId({
-      organizationSlug: selector.organizationSlug,
+      organizationSlug: input.organizationSlug,
     }),
     translator.translateProjectId({
-      organizationSlug: selector.organizationSlug,
-      projectSlug: selector.projectSlug,
-    }),
-    translator.translateTargetId({
-      organizationSlug: selector.organizationSlug,
-      projectSlug: selector.projectSlug,
-      targetSlug: selector.targetSlug,
+      organizationSlug: input.organizationSlug,
+      projectSlug: input.projectSlug,
     }),
   ]);
-  const target = await injector.get(TargetManager).deleteTarget({
+  const result = await injector.get(TargetManager).createTarget({
     organizationId: organizationId,
     projectId: projectId,
-    targetId: targetId,
+    slug: inputParseResult.data.slug,
   });
+
+  if (result.ok) {
+    return {
+      ok: {
+        selector: {
+          organizationSlug: input.organizationSlug,
+          projectSlug: input.projectSlug,
+          targetSlug: result.target.slug,
+        },
+        createdTarget: result.target,
+      },
+    };
+  }
+
   return {
-    selector: {
-      organizationSlug: selector.organizationSlug,
-      projectSlug: selector.projectSlug,
-      targetSlug: selector.targetSlug,
+    ok: null,
+    error: {
+      message: result.message,
+      inputErrors: {},
     },
-    deletedTarget: target,
   };
 };

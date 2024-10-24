@@ -1,5 +1,3 @@
-import { AuditLogManager } from '../../../audit-logs/providers/audit-logs-manager';
-import { AuthManager } from '../../../auth/providers/auth-manager';
 import { IdTranslator } from '../../../shared/providers/id-translator';
 import { TokenManager } from '../../providers/token-manager';
 import type { MutationResolvers } from './../../../../__generated__/types.next';
@@ -15,7 +13,7 @@ export const deleteTokens: NonNullable<MutationResolvers['deleteTokens']> = asyn
     translator.translateProjectId(input),
     translator.translateTargetId(input),
   ]);
-  const result = {
+  return {
     selector: {
       organizationSlug: input.organizationSlug,
       projectSlug: input.projectSlug,
@@ -28,27 +26,4 @@ export const deleteTokens: NonNullable<MutationResolvers['deleteTokens']> = asyn
       tokenIds: input.tokenIds,
     }),
   };
-
-  const currentUser = await injector.get(AuthManager).getCurrentUser();
-  injector.get(AuditLogManager).createLogAuditEvent(
-    {
-      eventType: 'TARGET_SETTINGS_UPDATED',
-      targetSettingsUpdatedAuditLogSchema: {
-        targetId: target,
-        projectId: project,
-        updatedFields: JSON.stringify({
-          deleteTokens: true,
-          tokens: input.tokens,
-        }),
-      },
-    },
-    {
-      organizationId: organization,
-      userEmail: currentUser.email,
-      userId: currentUser.id,
-      user: currentUser,
-    },
-  );
-
-  return result;
 };

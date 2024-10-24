@@ -1,6 +1,4 @@
 import { z } from 'zod';
-import { AuditLogManager } from '../../../audit-logs/providers/audit-logs-manager';
-import { AuthManager } from '../../../auth/providers/auth-manager';
 import { OrganizationManager } from '../../../organization/providers/organization-manager';
 import { IdTranslator } from '../../../shared/providers/id-translator';
 import { TargetManager } from '../../providers/target-manager';
@@ -52,31 +50,6 @@ export const updateTargetValidationSettings: NonNullable<
     targets: result.data.targetIds,
     excludedClients: result.data.excludedClients ?? [],
   });
-
-  const currentUser = await injector.get(AuthManager).getCurrentUser();
-  injector.get(AuditLogManager).createLogAuditEvent(
-    {
-      eventType: 'TARGET_SETTINGS_UPDATED',
-      targetSettingsUpdatedAuditLogSchema: {
-        projectId: project,
-        targetId: target,
-        updatedFields: JSON.stringify({
-          validationSettings: {
-            period: input.period,
-            percentage: input.percentage,
-            targets: result.data.targets,
-            excludedClients: result.data.excludedClients,
-          },
-        }),
-      },
-    },
-    {
-      organizationId: organization,
-      userEmail: currentUser.email,
-      userId: currentUser.id,
-      user: currentUser,
-    },
-  );
 
   return {
     ok: {
