@@ -224,7 +224,7 @@ function runArtifactsCDNTests(
     test.concurrent('access SDL artifact with valid credentials', async ({ expect }) => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken, target } = await createProject(ProjectType.Single);
+      const { createToken, createCdnAccess, target } = await createProject(ProjectType.Single);
       const writeToken = await createToken({
         targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
       });
@@ -239,7 +239,7 @@ function runArtifactsCDNTests(
         .then(r => r.expectNoGraphQLErrors());
 
       expect(publishSchemaResult.schemaPublish.__typename).toBe('SchemaPublishSuccess');
-      const cdnAccessResult = await writeToken.createCdnAccess();
+      const cdnAccessResult = await createCdnAccess();
       const endpointBaseUrl = await getBaseEndpoint();
       const url = buildEndpointUrl(endpointBaseUrl, target.id, 'sdl');
       const response = await fetch(url, {
@@ -272,7 +272,7 @@ function runArtifactsCDNTests(
     test.concurrent('access services artifact with valid credentials', async ({ expect }) => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken, target } = await createProject(ProjectType.Federation);
+      const { createToken, createCdnAccess, target } = await createProject(ProjectType.Federation);
       const writeToken = await createToken({
         targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
       });
@@ -299,7 +299,7 @@ function runArtifactsCDNTests(
         '[{"name":"ping","sdl":"type Query { ping: String }","url":"http://ping.com"}]',
       );
 
-      const cdnAccessResult = await writeToken.createCdnAccess();
+      const cdnAccessResult = await createCdnAccess();
       const endpointBaseUrl = await getBaseEndpoint();
       const url = buildEndpointUrl(endpointBaseUrl, target.id, 'services');
       let response = await fetch(url, {
@@ -320,7 +320,7 @@ function runArtifactsCDNTests(
     test.concurrent('access services artifact with if-none-match header', async ({ expect }) => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken, target } = await createProject(ProjectType.Federation);
+      const { createToken, createCdnAccess, target } = await createProject(ProjectType.Federation);
       const writeToken = await createToken({
         targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
       });
@@ -348,7 +348,7 @@ function runArtifactsCDNTests(
         '[{"name":"ping","sdl":"type Query { ping: String }","url":"http://ping.com"}]',
       );
 
-      const cdnAccessResult = await writeToken.createCdnAccess();
+      const cdnAccessResult = await createCdnAccess();
       const endpointBaseUrl = await getBaseEndpoint();
       const url = buildEndpointUrl(endpointBaseUrl, target.id, 'services');
       const response = await fetch(url, {
@@ -367,7 +367,7 @@ function runArtifactsCDNTests(
       const endpointBaseUrl = await getBaseEndpoint();
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken, target } = await createProject(ProjectType.Federation);
+      const { createToken, createCdnAccess, target } = await createProject(ProjectType.Federation);
       const writeToken = await createToken({
         targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
       });
@@ -384,7 +384,7 @@ function runArtifactsCDNTests(
         .then(r => r.expectNoGraphQLErrors());
 
       expect(publishSchemaResult.schemaPublish.__typename).toBe('SchemaPublishSuccess');
-      const cdnAccessResult = await writeToken.createCdnAccess();
+      const cdnAccessResult = await createCdnAccess();
 
       const gateway = new ApolloGateway({
         supergraphSdl: createSupergraphManager({
@@ -471,15 +471,13 @@ describe('CDN token', () => {
   `);
 
   it('connection pagination', async () => {
-    const { createOrg } = await initSeed().createOwner();
+    const { createOrg, ownerToken } = await initSeed().createOwner();
     const { organization, createProject } = await createOrg();
-    const { project, target, createToken } = await createProject(ProjectType.Federation);
+    const { project, target, createCdnAccess, createToken } = await createProject(
+      ProjectType.Federation,
+    );
 
-    const token = await createToken({
-      targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.Settings],
-    });
-
-    await Promise.all(new Array(5).fill(0).map(() => token.createCdnAccess()));
+    await Promise.all(new Array(5).fill(0).map(() => createCdnAccess()));
 
     let result = await execute({
       document: TargetCDNAccessTokensQuery,
@@ -490,7 +488,7 @@ describe('CDN token', () => {
           targetSlug: target.slug,
         },
       },
-      authToken: token.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
 
     expect(result.target!.cdnAccessTokens.edges).toHaveLength(2);
@@ -507,7 +505,7 @@ describe('CDN token', () => {
         },
         after: endCursor,
       },
-      authToken: token.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
 
     expect(result.target!.cdnAccessTokens.edges).toHaveLength(2);
@@ -524,7 +522,7 @@ describe('CDN token', () => {
         },
         after: endCursor,
       },
-      authToken: token.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
 
     expect(result.target!.cdnAccessTokens.edges).toHaveLength(1);
@@ -534,13 +532,9 @@ describe('CDN token', () => {
   it('new created access tokens are added at the beginning of the connection', async () => {
     const { createOrg, ownerToken } = await initSeed().createOwner();
     const { organization, createProject } = await createOrg();
-    const { project, target, createToken } = await createProject(ProjectType.Federation);
+    const { project, target, createCdnAccess } = await createProject(ProjectType.Federation);
 
-    const token = await createToken({
-      targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.Settings],
-    });
-
-    await token.createCdnAccess();
+    await createCdnAccess();
 
     const firstResult = await execute({
       document: TargetCDNAccessTokensQuery,
@@ -558,7 +552,7 @@ describe('CDN token', () => {
     const firstId = firstResult.target!.cdnAccessTokens.edges[0].node.id;
     expect(firstResult.target!.cdnAccessTokens.edges).toHaveLength(1);
 
-    await token.createCdnAccess();
+    await createCdnAccess();
 
     const secondResult = await execute({
       document: TargetCDNAccessTokensQuery,
@@ -579,13 +573,9 @@ describe('CDN token', () => {
   it('delete cdn access token', async () => {
     const { createOrg, ownerToken } = await initSeed().createOwner();
     const { organization, createProject } = await createOrg();
-    const { project, target, createToken } = await createProject(ProjectType.Federation);
+    const { project, target, createCdnAccess } = await createProject(ProjectType.Federation);
 
-    const token = await createToken({
-      targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.Settings],
-    });
-
-    await token.createCdnAccess();
+    await createCdnAccess();
 
     let paginatedResult = await execute({
       document: TargetCDNAccessTokensQuery,
@@ -638,14 +628,10 @@ describe('CDN token', () => {
   });
 
   it('delete cdn access token without access', async () => {
-    const { createOrg } = await initSeed().createOwner();
+    const { createOrg, ownerToken } = await initSeed().createOwner();
     const { createProject, organization } = await createOrg();
-    const { target, project, createToken } = await createProject(ProjectType.Federation);
-    const token = await createToken({
-      targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.Settings],
-    });
-
-    await token.createCdnAccess();
+    const { target, project, createCdnAccess } = await createProject(ProjectType.Federation);
+    await createCdnAccess();
 
     const paginatedResult = await execute({
       document: TargetCDNAccessTokensQuery,
@@ -657,11 +643,11 @@ describe('CDN token', () => {
         },
         first: 1,
       },
-      authToken: token.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
     expect(paginatedResult.target!.cdnAccessTokens.edges).toHaveLength(1);
 
-    const { ownerToken } = await initSeed().createOwner();
+    const { ownerToken: otherOwnerToken } = await initSeed().createOwner();
     const deleteResult = await execute({
       document: DeleteCDNAccessTokenMutation,
       variables: {
@@ -674,7 +660,7 @@ describe('CDN token', () => {
           cdnAccessTokenId: paginatedResult.target!.cdnAccessTokens.edges[0].node.id,
         },
       },
-      authToken: ownerToken,
+      authToken: otherOwnerToken,
     }).then(r => r.expectGraphQLErrors());
 
     expect(deleteResult).toEqual(

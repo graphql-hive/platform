@@ -76,19 +76,8 @@ test.concurrent('cdn token yields correct error message when used for registry',
   const { createOrg } = await initSeed().createOwner();
   const { inviteAndJoinMember, createProject } = await createOrg();
   await inviteAndJoinMember();
-  const { createToken } = await createProject(ProjectType.Single);
-  const token = await createToken({
-    targetScopes: [
-      TargetAccessScope.Delete,
-      TargetAccessScope.Read,
-      TargetAccessScope.RegistryRead,
-      TargetAccessScope.RegistryWrite,
-      TargetAccessScope.Settings,
-      TargetAccessScope.TokensRead,
-      TargetAccessScope.TokensWrite,
-    ],
-  });
-  const cdnAccessToken = await token.createCdnAccess();
+  const { createCdnAccess } = await createProject(ProjectType.Single);
+  const cdnAccessToken = await createCdnAccess();
 
   const result = await readTokenInfo(cdnAccessToken.secretAccessToken).then(res =>
     res.expectGraphQLErrors(),

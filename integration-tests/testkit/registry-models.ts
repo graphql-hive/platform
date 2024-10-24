@@ -8,17 +8,20 @@ export async function prepareProject(
   const { createOrg } = await initSeed().createOwner();
   const { organization, createProject, setFeatureFlag, setOrganizationSchemaPolicy } =
     await createOrg();
-  const { project, createToken, target, targets, setProjectSchemaPolicy, setNativeFederation } =
-    await createProject(projectType, {
-      useLegacyRegistryModels: model === RegistryModel.Legacy,
-    });
+  const {
+    project,
+    createToken,
+    createCdnAccess,
+    target,
+    targets,
+    setProjectSchemaPolicy,
+    setNativeFederation,
+  } = await createProject(projectType, {
+    useLegacyRegistryModels: model === RegistryModel.Legacy,
+  });
 
   // Create a token with write rights
-  const {
-    secret: readwriteToken,
-    createCdnAccess,
-    fetchMetadataFromCDN,
-  } = await createToken({
+  const { secret: readwriteToken } = await createToken({
     organizationScopes: [],
     projectScopes: [],
     targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
@@ -32,7 +35,7 @@ export async function prepareProject(
   });
 
   // Create CDN token
-  const { secretAccessToken: cdnToken, cdnUrl } = await createCdnAccess();
+  const { secretAccessToken: cdnToken, cdnUrl, fetchMetadataFromCDN } = await createCdnAccess();
 
   return {
     organization,

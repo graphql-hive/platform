@@ -137,7 +137,7 @@ test('create app deployment, add operations, publish, access via CDN (happy path
   const { createOrg } = await initSeed().createOwner();
   const { createProject, setFeatureFlag } = await createOrg();
   await setFeatureFlag('appDeployments', true);
-  const { createToken } = await createProject();
+  const { createToken, createCdnAccess } = await createProject();
   const token = await createToken({
     targetScopes: [TargetAccessScope.RegistryWrite, TargetAccessScope.RegistryRead],
   });
@@ -150,7 +150,7 @@ test('create app deployment, add operations, publish, access via CDN (happy path
     `,
   });
 
-  const cdnAccess = await token.createCdnAccess();
+  const cdnAccess = await createCdnAccess();
 
   const { createAppDeployment } = await execute({
     document: CreateAppDeployment,
@@ -1343,7 +1343,7 @@ test('retire app deployments makes the persisted operations unavailable via CDN'
   const { createOrg } = await initSeed().createOwner();
   const { createProject, setFeatureFlag } = await createOrg();
   await setFeatureFlag('appDeployments', true);
-  const { createToken, target } = await createProject();
+  const { createToken, createCdnAccess, target } = await createProject();
   const token = await createToken({
     targetScopes: [TargetAccessScope.RegistryWrite, TargetAccessScope.RegistryRead],
   });
@@ -1356,7 +1356,7 @@ test('retire app deployments makes the persisted operations unavailable via CDN'
     `,
   });
 
-  const cdnAccess = await token.createCdnAccess();
+  const cdnAccess = await createCdnAccess();
 
   await execute({
     document: CreateAppDeployment,

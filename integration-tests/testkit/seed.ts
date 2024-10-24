@@ -7,6 +7,7 @@ import {
   RegistryModel,
   SchemaPolicyInput,
   TargetAccessScope,
+  TargetSelectorInput,
 } from 'testkit/gql/graphql';
 import { authenticate, userEmail } from './auth';
 import {
@@ -557,16 +558,6 @@ export function initSeed() {
 
                       return result.updateTargetValidationSettings;
                     },
-                    async fetchMetadataFromCDN() {
-                      return fetchMetadataFromCDN(
-                        {
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                        },
-                        secret,
-                      );
-                    },
                     async updateSchemaVersionStatus(versionId: string, valid: boolean) {
                       return await updateSchemaVersionStatus(
                         {
@@ -578,30 +569,6 @@ export function initSeed() {
                         },
                         secret,
                       ).then(r => r.expectNoGraphQLErrors());
-                    },
-                    async fetchSchemaFromCDN() {
-                      return fetchSchemaFromCDN(
-                        {
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                        },
-                        secret,
-                      );
-                    },
-                    async createCdnAccess() {
-                      const result = await createCdnAccess(
-                        {
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                        },
-                        secret,
-                      ).then(r => r.expectNoGraphQLErrors());
-
-                      expect(result.createCdnAccessToken.ok).not.toBeNull();
-
-                      return result.createCdnAccessToken.ok!;
                     },
                     async publishSchema(options: {
                       sdl: string;
@@ -700,23 +667,33 @@ export function initSeed() {
 
                       return tokenInfoResult.tokenInfo;
                     },
-                    async fetchSupergraph() {
-                      const supergraphResponse = await fetchSupergraphFromCDN(
-                        {
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                        },
-                        secret,
-                      );
+                  };
+                },
+                async createCdnAccess(
+                  selector: TargetSelectorInput = {
+                    organizationSlug: organization.slug,
+                    projectSlug: project.slug,
+                    targetSlug: target.slug,
+                  },
+                ) {
+                  const result = await createCdnAccess(selector, ownerToken).then(r =>
+                    r.expectNoGraphQLErrors(),
+                  );
+                  expect(result.createCdnAccessToken.ok).not.toBeNull();
 
-                      if (supergraphResponse.status !== 200) {
-                        throw new Error(
-                          `Could not fetch supergraph for org ${organization.slug} project ${project.slug} target ${target.slug}`,
-                        );
-                      }
+                  const data = result.createCdnAccessToken.ok!;
 
-                      return supergraphResponse.body;
+                  return {
+                    secretAccessToken: data.secretAccessToken,
+                    cdnUrl: data.cdnUrl,
+                    fetchSchemaFromCDN() {
+                      return fetchSchemaFromCDN(data.cdnUrl, data.secretAccessToken);
+                    },
+                    fetchMetadataFromCDN() {
+                      return fetchMetadataFromCDN(data.cdnUrl, data.secretAccessToken);
+                    },
+                    fetchSupergraphFromCDN() {
+                      return fetchSupergraphFromCDN(data.cdnUrl, data.secretAccessToken);
                     },
                   };
                 },

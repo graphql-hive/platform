@@ -641,8 +641,9 @@ describe('other', () => {
       const { createOrg } = await initSeed().createOwner();
       const { inviteAndJoinMember, createProject } = await createOrg();
       await inviteAndJoinMember();
-      const { createToken } = await createProject(ProjectType.Federation);
-      const { secret, fetchSupergraph } = await createToken({});
+      const { createToken, createCdnAccess } = await createProject(ProjectType.Federation);
+      const { secret } = await createToken({});
+      const { fetchSupergraphFromCDN } = await createCdnAccess();
 
       await schemaPublish([
         '--token',
@@ -658,8 +659,8 @@ describe('other', () => {
         'fixtures/federation-init.graphql',
       ]);
 
-      const supergraph = await fetchSupergraph();
-      expect(supergraph).toMatch('(name: "users", url: "https://api.com/users-subgraph")');
+      const supergraph = await fetchSupergraphFromCDN();
+      expect(supergraph.body).toMatch('(name: "users", url: "https://api.com/users-subgraph")');
     });
 
     test.concurrent(
