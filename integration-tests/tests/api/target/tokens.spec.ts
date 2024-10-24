@@ -1,4 +1,4 @@
-import { ProjectType, TargetAccessScope } from 'testkit/gql/graphql';
+import { ProjectType } from 'testkit/gql/graphql';
 import { initSeed } from '../../../testkit/seed';
 
 test.concurrent(
@@ -6,13 +6,11 @@ test.concurrent(
   async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createToken } = await createProject(ProjectType.Single);
+    const { createTargetAccessToken } = await createProject(ProjectType.Single);
 
     // member should not have access to target:registry:write
-    const token = await createToken({
-      targetScopes: [],
-      projectScopes: [],
-      organizationScopes: [],
+    const token = await createTargetAccessToken({
+      mode: 'noAccess',
     });
     const tokenInfo = await token.fetchTokenInfo();
     if (tokenInfo.__typename === 'TokenNotFoundError') {
@@ -48,14 +46,12 @@ test.concurrent(
   async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject, inviteAndJoinMember } = await createOrg();
-    const { createToken, target } = await createProject(ProjectType.Single);
+    const { createTargetAccessToken, target } = await createProject(ProjectType.Single);
     const { memberToken } = await inviteAndJoinMember();
 
     // member should not have access to target:registry:write (as it's only a Viewer)
-    const tokenResult = createToken({
-      targetScopes: [TargetAccessScope.RegistryWrite],
-      projectScopes: [],
-      organizationScopes: [],
+    const tokenResult = createTargetAccessToken({
+      mode: 'readWrite',
       target,
       actorToken: memberToken,
     });
