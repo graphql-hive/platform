@@ -37,7 +37,7 @@ const meta: Meta<typeof CreateOperationModalContent> = {
         type: 'boolean',
       },
     },
-    close: {
+    onClose: {
       action: 'close',
     },
     collections: {
