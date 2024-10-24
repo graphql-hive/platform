@@ -1,4 +1,4 @@
-import { createApplication, Scope } from 'graphql-modules';
+import { CONTEXT, createApplication, Provider, Scope } from 'graphql-modules';
 import { Redis } from 'ioredis';
 import { adminModule } from './modules/admin';
 import { alertsModule } from './modules/alerts';
@@ -6,6 +6,7 @@ import { WEBHOOKS_CONFIG, WebhooksConfig } from './modules/alerts/providers/toke
 import { appDeploymentsModule } from './modules/app-deployments';
 import { APP_DEPLOYMENTS_ENABLED } from './modules/app-deployments/providers/app-deployments-enabled-token';
 import { authModule } from './modules/auth';
+import { Session } from './modules/auth/lib/authz';
 import { billingModule } from './modules/billing';
 import { BILLING_CONFIG, BillingConfig } from './modules/billing/providers/tokens';
 import { cdnModule } from './modules/cdn';
@@ -189,7 +190,7 @@ export function createRegistry({
 
   const artifactStorageWriter = new ArtifactStorageWriter(s3Config, logger);
 
-  const providers = [
+  const providers: Provider[] = [
     ActivityManager,
     HttpClient,
     IdTranslator,
@@ -304,6 +305,15 @@ export function createRegistry({
     { provide: PUB_SUB_CONFIG, scope: Scope.Singleton, useValue: pubSub },
     encryptionSecretProvider(encryptionSecret),
     provideSchemaModuleConfig(schemaConfig),
+    {
+      // @ts-expect-error Session is an abstract type and missing in type definitions. See https://github.com/Urigo/graphql-modules/pull/2503
+      provide: Session,
+      useFactory(context: { session: Session }) {
+        return context.session;
+      },
+      scope: Scope.Operation,
+      deps: [CONTEXT],
+    },
   ];
 
   if (emailsEndpoint) {

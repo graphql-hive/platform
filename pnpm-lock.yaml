@@ -1142,9 +1142,6 @@ importers:
       '@envelop/core':
         specifier: 5.0.2
         version: 5.0.2
-      '@envelop/generic-auth':
-        specifier: 7.0.0
-        version: 7.0.0(@envelop/core@5.0.2)(graphql@16.9.0)
       '@envelop/graphql-jit':
         specifier: 8.0.3
         version: 8.0.3(@envelop/core@5.0.2)(graphql@16.9.0)
@@ -1847,7 +1844,7 @@ importers:
         version: 4.3.1(vite@5.4.6(@types/node@20.16.1)(less@4.2.0)(terser@5.31.1))
       autoprefixer:
         specifier: 10.4.20
-        version: 10.4.20(postcss@8.4.47)
+        version: 10.4.20(postcss@8.4.41)
       class-variance-authority:
         specifier: 0.7.0
         version: 0.7.0
@@ -3651,20 +3648,6 @@ packages:
   '@envelop/core@5.0.2':
     resolution: {integrity: sha512-tVL6OrMe6UjqLosiE+EH9uxh2TQC0469GwF4tE014ugRaDDKKVWwFwZe0TBMlcyHKh5MD4ZxktWo/1hqUxIuhw==}
     engines: {node: '>=18.0.0'}
-
-  '@envelop/extended-validation@4.0.0':
-    resolution: {integrity: sha512-pvJ/OL+C+lpNiiCXezHT+vP3PTq37MQicoOB1l5MdgOOZZWRAp0NDOgvEKcXUY7AWNpvNHgSE0QFSRfGwsfwFQ==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@envelop/core': ^5.0.0
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-
-  '@envelop/generic-auth@7.0.0':
-    resolution: {integrity: sha512-FxGzoSjIXJlv+aiVyhQ8oHoz41ol4gJe8KAzNX7FP3qrhldbrqcC5Q+J/VtNlo5jXYX0YuLHH6ehF80tQDZJ4Q==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@envelop/core': ^5.0.0
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
 
   '@envelop/graphql-jit@8.0.3':
     resolution: {integrity: sha512-IZnKc7dVOQV9jEi5s5RkG8fVKqc6Ss/mBN9PRt2iYFa9o6XkL/haPLJRfWFsS/CSJfFOQuzLyxYuALA8DaoOYw==}
@@ -19813,21 +19796,6 @@ snapshots:
       '@envelop/types': 5.0.0
       tslib: 2.7.0
 
-  '@envelop/extended-validation@4.0.0(@envelop/core@5.0.2)(graphql@16.9.0)':
-    dependencies:
-      '@envelop/core': 5.0.2
-      '@graphql-tools/utils': 10.5.4(graphql@16.9.0)
-      graphql: 16.9.0
-      tslib: 2.7.0
-
-  '@envelop/generic-auth@7.0.0(@envelop/core@5.0.2)(graphql@16.9.0)':
-    dependencies:
-      '@envelop/core': 5.0.2
-      '@envelop/extended-validation': 4.0.0(@envelop/core@5.0.2)(graphql@16.9.0)
-      '@graphql-tools/utils': 10.5.4(graphql@16.9.0)
-      graphql: 16.9.0
-      tslib: 2.7.0
-
   '@envelop/graphql-jit@8.0.3(@envelop/core@5.0.2)(graphql@16.9.0)':
     dependencies:
       '@envelop/core': 5.0.2
@@ -26406,16 +26374,6 @@ snapshots:
       normalize-range: 0.1.2
       picocolors: 1.0.1
       postcss: 8.4.41
-      postcss-value-parser: 4.2.0
-
-  autoprefixer@10.4.20(postcss@8.4.47):
-    dependencies:
-      browserslist: 4.23.3
-      caniuse-lite: 1.0.30001651
-      fraction.js: 4.3.7
-      normalize-range: 0.1.2
-      picocolors: 1.0.1
-      postcss: 8.4.47
       postcss-value-parser: 4.2.0
 
   available-typed-arrays@1.0.5: {}

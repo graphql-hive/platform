@@ -2,7 +2,7 @@ import { Injectable, Scope } from 'graphql-modules';
 import type { Token } from '../../../shared/entities';
 import { HiveError } from '../../../shared/errors';
 import { diffArrays, pushIfMissing } from '../../../shared/helpers';
-import { AuthManager } from '../../auth/providers/auth-manager';
+import { Session } from '../../auth/lib/authz';
 import { OrganizationAccessScope } from '../../auth/providers/organization-access';
 import { ProjectAccessScope } from '../../auth/providers/project-access';
 import { TargetAccessScope } from '../../auth/providers/target-access';
@@ -30,7 +30,7 @@ export class TokenManager {
   private logger: Logger;
 
   constructor(
-    private authManager: AuthManager,
+    private session: Session,
     private tokenStorage: TokenStorage,
     private storage: Storage,
     logger: Logger,
@@ -41,16 +41,19 @@ export class TokenManager {
   }
 
   async createToken(input: CreateTokenInput): Promise<CreateTokenResult> {
-    await this.authManager.ensureTargetAccess({
-      project: input.project,
-      organization: input.organization,
-      target: input.target,
-      scope: TargetAccessScope.TOKENS_WRITE,
+    await this.session.assertPerformAction({
+      action: 'targetAccessToken:create',
+      organizationId: input.organization,
+      params: {
+        organizationId: input.organization,
+        projectId: input.project,
+        targetId: input.target,
+      },
     });
 
     const scopes = [...input.organizationScopes, ...input.projectScopes, ...input.targetScopes];
 
-    const currentUser = await this.authManager.getCurrentUser();
+    const currentUser = await this.session.getViewer();
     const currentMember = await this.storage.getOrganizationMember({
       organization: input.organization,
       user: currentUser.id,
@@ -93,26 +96,34 @@ export class TokenManager {
       tokens: readonly string[];
     } & TargetSelector,
   ): Promise<readonly string[]> {
-    await this.authManager.ensureTargetAccess({
-      project: input.project,
-      organization: input.organization,
-      target: input.target,
-      scope: TargetAccessScope.TOKENS_WRITE,
+    await this.session.assertPerformAction({
+      action: 'targetAccessToken:delete',
+      organizationId: input.organization,
+      params: {
+        organizationId: input.organization,
+        projectId: input.project,
+        targetId: input.target,
+      },
     });
 
     return this.tokenStorage.deleteTokens(input);
   }
 
   async getTokens(selector: TargetSelector): Promise<readonly Token[]> {
-    await this.authManager.ensureTargetAccess({
-      ...selector,
-      scope: TargetAccessScope.TOKENS_READ,
+    await this.session.assertPerformAction({
+      action: 'targetAccessToken:describe',
+      organizationId: selector.organization,
+      params: {
+        organizationId: selector.organization,
+        projectId: selector.project,
+        targetId: selector.target,
+      },
     });
     return this.tokenStorage.getTokens(selector);
   }
 
   async getCurrentToken(): Promise<Token> {
-    const token = this.authManager.ensureApiToken();
-    return this.tokenStorage.getToken({ token });
+    const token = this.session.getLegacySelector();
+    return this.tokenStorage.getToken({ token: token.token });
   }
 }

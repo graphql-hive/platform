@@ -1,6 +1,7 @@
-import { AuthManager } from '../../providers/auth-manager';
+import { Session } from '../../lib/authz';
 import type { QueryResolvers } from './../../../../__generated__/types.next';
 
 export const me: NonNullable<QueryResolvers['me']> = (_, __, { injector }) => {
-  return injector.get(AuthManager).getCurrentUser();
+  // @ts-expect-error AbstractType<T> is missing here.
+  return injector.get(Session).getViewer();
 };

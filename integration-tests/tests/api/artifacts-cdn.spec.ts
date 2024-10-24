@@ -680,7 +680,7 @@ describe('CDN token', () => {
     expect(deleteResult).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          message: `No access (reason: "Missing target:settings permission")`,
+          message: `No access (reason: "Missing permission for performing 'accessToken:delete' on resource")`,
         }),
       ]),
     );

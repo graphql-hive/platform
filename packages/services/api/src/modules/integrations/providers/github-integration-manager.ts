@@ -4,9 +4,7 @@ import { Octokit } from '@octokit/core';
 import { RequestError } from '@octokit/request-error';
 import type { IntegrationsModule } from '../__generated__/types';
 import { HiveError } from '../../../shared/errors';
-import { AuthManager } from '../../auth/providers/auth-manager';
-import { OrganizationAccessScope } from '../../auth/providers/organization-access';
-import { ProjectAccessScope } from '../../auth/providers/scopes';
+import { Session } from '../../auth/lib/authz';
 import { Logger } from '../../shared/providers/logger';
 import { OrganizationSelector, ProjectSelector, Storage } from '../../shared/providers/storage';
 
@@ -29,7 +27,7 @@ export class GitHubIntegrationManager {
 
   constructor(
     logger: Logger,
-    private authManager: AuthManager,
+    private session: Session,
     private storage: Storage,
     @Inject(GITHUB_APP_CONFIG) private config: GitHubApplicationConfig | null,
   ) {
@@ -65,9 +63,12 @@ export class GitHubIntegrationManager {
       input.organization,
       input.installationId,
     );
-    await this.authManager.ensureOrganizationAccess({
-      ...input,
-      scope: OrganizationAccessScope.INTEGRATIONS,
+    await this.session.assertPerformAction({
+      action: 'gitHubIntegration:modify',
+      organizationId: input.organization,
+      params: {
+        organizationId: input.organization,
+      },
     });
     this.logger.debug('Updating organization');
     await this.storage.addGitHubIntegration({
@@ -78,9 +79,12 @@ export class GitHubIntegrationManager {
 
   async unregister(input: OrganizationSelector): Promise<void> {
     this.logger.debug('Removing GitHub integration (organization=%s)', input.organization);
-    await this.authManager.ensureOrganizationAccess({
-      ...input,
-      scope: OrganizationAccessScope.INTEGRATIONS,
+    await this.session.assertPerformAction({
+      action: 'gitHubIntegration:modify',
+      organizationId: input.organization,
+      params: {
+        organizationId: input.organization,
+      },
     });
     this.logger.debug('Updating organization');
     await this.storage.deleteGitHubIntegration({
@@ -190,9 +194,12 @@ export class GitHubIntegrationManager {
       return null;
     }
 
-    await this.authManager.ensureOrganizationAccess({
-      organization: organization.id,
-      scope: OrganizationAccessScope.INTEGRATIONS,
+    await this.session.assertPerformAction({
+      action: 'gitHubIntegration:modify',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
     });
 
     return organization;
@@ -416,9 +423,12 @@ export class GitHubIntegrationManager {
   }
 
   async enableProjectNameInGithubCheck(input: ProjectSelector) {
-    await this.authManager.ensureProjectAccess({
-      ...input,
-      scope: ProjectAccessScope.SETTINGS,
+    await this.session.assertPerformAction({
+      action: 'gitHubIntegration:modify',
+      organizationId: input.organization,
+      params: {
+        organizationId: input.organization,
+      },
     });
 
     const project = await this.storage.getProject(input);
