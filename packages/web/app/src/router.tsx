@@ -571,16 +571,7 @@ const targetSettingsRoute = createRoute({
 const targetLaboratoryRoute = createRoute({
   getParentRoute: () => targetRoute,
   path: 'laboratory',
-  component: function TargetLaboratoryRoute() {
-    const { organizationSlug, projectSlug, targetSlug } = targetLaboratoryRoute.useParams();
-    return (
-      <TargetLaboratoryPage
-        organizationSlug={organizationSlug}
-        projectSlug={projectSlug}
-        targetSlug={targetSlug}
-      />
-    );
-  },
+  component: TargetLaboratoryPage,
 });
 
 const targetAppsRoute = createRoute({

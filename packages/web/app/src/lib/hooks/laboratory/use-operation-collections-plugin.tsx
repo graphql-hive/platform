@@ -125,7 +125,7 @@ export const operationCollectionsPlugin: GraphiQLPlugin = {
 export function Content() {
   const { organizationSlug, projectSlug, targetSlug } = useParams({
     from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
-  })
+  });
   const [query] = useQuery({
     query: TargetLaboratoryPageQuery,
     variables: {
@@ -444,6 +444,7 @@ export function Content() {
                   }
                   toggleCollectionModal();
                 }}
+                data-cy="create-collection"
               >
                 <PlusIcon className="size-4 shrink-0" />
                 <span className="truncate">New collection</span>
@@ -480,7 +481,6 @@ export function Content() {
                   }
                   toggleCollectionModal();
                 }}
-                data-cy="create-collection"
                 className="mt-3"
               >
                 Create your first Collection.

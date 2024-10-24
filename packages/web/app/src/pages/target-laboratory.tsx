@@ -45,7 +45,7 @@ import {
 import { createGraphiQLFetcher, Fetcher, isAsyncIterable } from '@graphiql/toolkit';
 import { EnterFullScreenIcon, ExitFullScreenIcon } from '@radix-ui/react-icons';
 import { Repeater } from '@repeaterjs/repeater';
-import { Link as RouterLink, useRouter } from '@tanstack/react-router';
+import { Link as RouterLink, useParams, useRouter } from '@tanstack/react-router';
 import 'graphiql/style.css';
 import '@graphiql/plugin-explorer/style.css';
 
@@ -98,30 +98,29 @@ const UpdateOperationMutation = graphql(`
   }
 `);
 
-function Save(props: {
-  organizationSlug: string;
-  projectSlug: string;
-  targetSlug: string;
-}): ReactElement {
+function Save(): ReactElement {
   const router = useRouter();
   const [operationModalOpen, toggleOperationModal] = useToggle();
+  const { organizationSlug, projectSlug, targetSlug } = useParams({
+    from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
+  });
   const { collections } = useCollections({
-    organizationSlug: props.organizationSlug,
-    projectSlug: props.projectSlug,
-    targetSlug: props.targetSlug,
+    organizationSlug,
+    projectSlug,
+    targetSlug,
   });
   const notify = useNotifications();
   const currentOperation = useCurrentOperation({
-    organizationSlug: props.organizationSlug,
-    projectSlug: props.projectSlug,
-    targetSlug: props.targetSlug,
+    organizationSlug,
+    projectSlug,
+    targetSlug,
   });
   const [, mutateUpdate] = useMutation(UpdateOperationMutation);
   const { queryEditor, variableEditor, headerEditor, updateActiveTabValues } = useEditorContext()!;
   const { clearOperation } = useSyncOperationState({
-    organizationSlug: props.organizationSlug,
-    projectSlug: props.projectSlug,
-    targetSlug: props.targetSlug,
+    organizationSlug,
+    projectSlug,
+    targetSlug,
   });
   const operationFromQueryString = useOperationFromQueryString();
 
@@ -134,9 +133,9 @@ function Save(props: {
         void router.navigate({
           to: '/$organizationSlug/$projectSlug/$targetSlug/laboratory',
           params: {
-            organizationSlug: props.organizationSlug,
-            projectSlug: props.projectSlug,
-            targetSlug: props.targetSlug,
+            organizationSlug,
+            projectSlug,
+            targetSlug,
           },
           search: { operation: id },
         });
@@ -163,6 +162,7 @@ function Save(props: {
               currentOperation && !isSame && 'hive-badge-is-changed relative after:top-1',
             )}
             aria-label={label}
+            data-cy="save-operation"
           >
             <SaveIcon className="graphiql-toolbar-icon h-5" />
           </GraphiQLButton>
@@ -195,9 +195,9 @@ function Save(props: {
             }
             const { error, data } = await mutateUpdate({
               selector: {
-                targetSlug: props.targetSlug,
-                organizationSlug: props.organizationSlug,
-                projectSlug: props.projectSlug,
+                targetSlug,
+                organizationSlug,
+                projectSlug,
               },
               input: {
                 name: currentOperation.name,
@@ -227,16 +227,14 @@ function Save(props: {
             }
             toggleOperationModal();
           }}
+          data-cy="save-operation-as"
         >
           Save as
         </DropdownMenuItem>
       </DropdownMenuContent>
       <CreateOperationModal
-        organizationSlug={props.organizationSlug}
-        projectSlug={props.projectSlug}
-        targetSlug={props.targetSlug}
         isOpen={operationModalOpen}
-        close={toggleOperationModal}
+        onClose={toggleOperationModal}
         onSaveSuccess={onSaveSuccess}
       />
     </DropdownMenu>
@@ -277,26 +275,25 @@ const onModifyHeaders: ComponentProps<typeof GraphiQL>['onModifyHeaders'] = asyn
   );
 };
 
-function LaboratoryPageContent(props: {
-  organizationSlug: string;
-  projectSlug: string;
-  targetSlug: string;
-}) {
+function LaboratoryPageContent() {
+  const { organizationSlug, projectSlug, targetSlug } = useParams({
+    from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
+  });
   const [query] = useQuery({
     query: TargetLaboratoryPageQuery,
     variables: {
-      organizationSlug: props.organizationSlug,
-      projectSlug: props.projectSlug,
-      targetSlug: props.targetSlug,
+      organizationSlug,
+      projectSlug,
+      targetSlug,
     },
   });
   const router = useRouter();
   const [isConnectLabModalOpen, toggleConnectLabModal] = useToggle();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const { collections } = useCollections({
-    organizationSlug: props.organizationSlug,
-    projectSlug: props.projectSlug,
-    targetSlug: props.targetSlug,
+    organizationSlug,
+    projectSlug,
+    targetSlug,
   });
   const userOperations = useMemo(() => {
     const operations = collections.flatMap(collection =>
@@ -312,7 +309,7 @@ function LaboratoryPageContent(props: {
     query.data?.target?.graphqlEndpointUrl ?? null,
   );
 
-  const mockEndpoint = `${location.origin}/api/lab/${props.organizationSlug}/${props.projectSlug}/${props.targetSlug}`;
+  const mockEndpoint = `${location.origin}/api/lab/${organizationSlug}/${projectSlug}/${targetSlug}`;
 
   const fetcher = useMemo<Fetcher>(() => {
     return async (params, opts) => {
@@ -350,7 +347,7 @@ function LaboratoryPageContent(props: {
   }, [query.data?.target?.graphqlEndpointUrl, actualSelectedApiEndpoint]);
 
   if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
+    return <QueryError organizationSlug={organizationSlug} error={query.error} />;
   }
 
   const FullScreenIcon = isFullScreen ? ExitFullScreenIcon : EnterFullScreenIcon;
@@ -362,9 +359,9 @@ function LaboratoryPageContent(props: {
       void router.navigate({
         to: '/$organizationSlug/$projectSlug/$targetSlug/laboratory',
         params: {
-          organizationSlug: props.organizationSlug,
-          projectSlug: props.projectSlug,
-          targetSlug: props.targetSlug,
+          organizationSlug,
+          projectSlug,
+          targetSlug,
         },
         search: userOperations.has(activeTab.id) ? { operation: activeTab.id } : {},
       });
@@ -374,9 +371,9 @@ function LaboratoryPageContent(props: {
 
   return (
     <TargetLayout
-      organizationSlug={props.organizationSlug}
-      projectSlug={props.projectSlug}
-      targetSlug={props.targetSlug}
+      organizationSlug={organizationSlug}
+      projectSlug={projectSlug}
+      targetSlug={targetSlug}
       page={Page.Laboratory}
       className="flex h-[--content-height] flex-col pb-0"
     >
@@ -396,9 +393,9 @@ function LaboratoryPageContent(props: {
               <RouterLink
                 to="/$organizationSlug/$projectSlug/$targetSlug/settings"
                 params={{
-                  organizationSlug: props.organizationSlug,
-                  projectSlug: props.projectSlug,
-                  targetSlug: props.targetSlug,
+                  organizationSlug,
+                  projectSlug,
+                  targetSlug,
                 }}
                 search={{ page: 'general' }}
               >
@@ -504,11 +501,7 @@ function LaboratoryPageContent(props: {
           <GraphiQL.Toolbar>
             {({ prettify }) => (
               <>
-                <Save
-                  organizationSlug={props.organizationSlug}
-                  projectSlug={props.projectSlug}
-                  targetSlug={props.targetSlug}
-                />
+                <Save />
                 <Share />
                 {prettify}
               </>
@@ -526,15 +519,11 @@ function LaboratoryPageContent(props: {
   );
 }
 
-export function TargetLaboratoryPage(props: {
-  organizationSlug: string;
-  projectSlug: string;
-  targetSlug: string;
-}) {
+export function TargetLaboratoryPage() {
   return (
     <>
       <Meta title="Schema laboratory" />
-      <LaboratoryPageContent {...props} />
+      <LaboratoryPageContent />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { FC } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { useMutation } from 'urql';
 import { z } from 'zod';
@@ -29,6 +29,7 @@ import {
 } from '@/lib/hooks/laboratory/use-collections';
 import { useEditorContext } from '@graphiql/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useParams } from '@tanstack/react-router';
 
 const CreateOperationMutation = graphql(`
   mutation CreateOperation(
@@ -88,22 +89,22 @@ const createOperationModalFormSchema = z.object({
 
 export type CreateOperationModalFormValues = z.infer<typeof createOperationModalFormSchema>;
 
-export function CreateOperationModal(props: {
+export const CreateOperationModal: FC<{
   isOpen: boolean;
-  close: () => void;
+  onClose: () => void;
   onSaveSuccess: (args: { id: string; name: string }) => void;
-  organizationSlug: string;
-  projectSlug: string;
-  targetSlug: string;
-}): ReactElement {
+}> = ({ isOpen, onClose, onSaveSuccess }) => {
   const { toast } = useToast();
-  const { isOpen, close, onSaveSuccess } = props;
   const [, mutateCreate] = useMutation(CreateOperationMutation);
 
+  const { organizationSlug, projectSlug, targetSlug } = useParams({
+    from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
+  });
+
   const { collections, fetching } = useCollections({
-    organizationSlug: props.organizationSlug,
-    projectSlug: props.projectSlug,
-    targetSlug: props.targetSlug,
+    organizationSlug,
+    projectSlug,
+    targetSlug,
   });
   const { queryEditor, variableEditor, headerEditor } = useEditorContext({
     nonNull: true,
@@ -122,9 +123,9 @@ export function CreateOperationModal(props: {
   async function onSubmit(values: CreateOperationModalFormValues) {
     const result = await mutateCreate({
       selector: {
-        targetSlug: props.targetSlug,
-        organizationSlug: props.organizationSlug,
-        projectSlug: props.projectSlug,
+        targetSlug,
+        organizationSlug,
+        projectSlug,
       },
       input: {
         name: values.name,
@@ -148,7 +149,7 @@ export function CreateOperationModal(props: {
         onSaveSuccess({ id: operation.id, name: operation.name });
       }
       form.reset();
-      close();
+      onClose();
       toast({
         title: 'Operation created',
         description: `Operation "${values.name}" added to collection "${collections.find(c => c.id === values.collectionId)?.name}"`,
@@ -158,42 +159,36 @@ export function CreateOperationModal(props: {
 
   return (
     <CreateOperationModalContent
-      close={close}
+      onClose={onClose}
       onSubmit={onSubmit}
       isOpen={isOpen}
-      organizationSlug={props.organizationSlug}
-      projectSlug={props.projectSlug}
-      targetSlug={props.targetSlug}
       fetching={fetching}
       form={form}
       collections={collections}
     />
   );
-}
+};
 
-export function CreateOperationModalContent(props: {
+export const CreateOperationModalContent: FC<{
   isOpen: boolean;
-  close: () => void;
+  onClose: () => void;
   onSubmit: (values: CreateOperationModalFormValues) => void;
-  organizationSlug: string;
-  projectSlug: string;
   form: UseFormReturn<CreateOperationModalFormValues>;
-  targetSlug: string;
   fetching: boolean;
   collections: DocumentCollectionOperation[];
-}): ReactElement {
+}> = ({ isOpen, onClose, form, fetching, onSubmit, collections }) => {
   return (
     <Dialog
-      open={props.isOpen}
+      open={isOpen}
       onOpenChange={() => {
-        props.close();
-        props.form.reset();
+        onClose();
+        form.reset();
       }}
     >
       <DialogContent className="container w-4/5 max-w-[600px] md:w-3/5">
-        {!props.fetching && (
-          <Form {...props.form}>
-            <form className="space-y-8" onSubmit={props.form.handleSubmit(props.onSubmit)}>
+        {!fetching && (
+          <Form {...form}>
+            <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
               <DialogHeader>
                 <DialogTitle>Create Operation</DialogTitle>
                 <DialogDescription>
@@ -202,20 +197,25 @@ export function CreateOperationModalContent(props: {
               </DialogHeader>
               <div className="space-y-8">
                 <FormField
-                  control={props.form.control}
+                  control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Operation Name</FormLabel>
                       <FormControl>
-                        <Input autoComplete="off" {...field} placeholder="Your Operation Name" />
+                        <Input
+                          autoComplete="off"
+                          {...field}
+                          placeholder="Your Operation Name"
+                          data-cy="operation-name"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
-                  control={props.form.control}
+                  control={form.control}
                   name="collectionId"
                   render={({ field }) => (
                     <FormItem>
@@ -224,13 +224,13 @@ export function CreateOperationModalContent(props: {
                       </FormLabel>
                       <FormControl>
                         <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger>
-                            {props.collections.find(c => c.id === field.value)?.name ??
+                          <SelectTrigger data-cy="collections-select">
+                            {collections.find(c => c.id === field.value)?.name ??
                               'Select a Collection'}
                           </SelectTrigger>
                           <SelectContent className="w-[--radix-select-trigger-width]">
-                            {props.collections.map(c => (
-                              <SelectItem key={c.id} value={c.id}>
+                            {collections.map(c => (
+                              <SelectItem key={c.id} value={c.id} data-cy="collections-select-item">
                                 {c.name}
                                 <div className="mt-1 line-clamp-1 text-xs opacity-50">
                                   {c.description}
@@ -250,10 +250,10 @@ export function CreateOperationModalContent(props: {
                   type="button"
                   size="lg"
                   className="w-full justify-center"
-                  onClick={ev => {
-                    ev.preventDefault();
-                    props.close();
-                    props.form.reset();
+                  onClick={event => {
+                    event.preventDefault();
+                    onClose();
+                    form.reset();
                   }}
                 >
                   Cancel
@@ -264,9 +264,9 @@ export function CreateOperationModalContent(props: {
                   className="w-full justify-center"
                   variant="primary"
                   disabled={
-                    props.form.formState.isSubmitting ||
-                    !props.form.formState.isValid ||
-                    !props.form.getValues('collectionId')
+                    form.formState.isSubmitting ||
+                    !form.formState.isValid ||
+                    !form.getValues('collectionId')
                   }
                   data-cy="confirm"
                 >
@@ -279,4 +279,4 @@ export function CreateOperationModalContent(props: {
       </DialogContent>
     </Dialog>
   );
-}
+};

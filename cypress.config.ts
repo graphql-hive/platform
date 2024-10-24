@@ -205,6 +205,47 @@ COMMIT;
           }
           return data;
         },
+        async createCollection(token) {
+          const response = await fetch('http://localhost:3001/graphql', {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${token}`,
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+              operationName: 'CreateCollection',
+              query: /* GraphQL */ `
+                mutation CreateCollection($selector: TargetSelectorInput!, $input: CreateDocumentCollectionInput!) {
+                  createDocumentCollection(selector: $selector, input: $input) {
+                    error {
+                      message
+                    }
+                  }
+                }
+              `,
+              variables: {
+                input: {
+                  description: 'Test Description',
+                  name: 'Test Collection',
+                },
+                selector: {
+                  organizationSlug: 'foo',
+                  projectSlug: 'my-new-project',
+                  targetSlug: 'development',
+                },
+              },
+            }),
+          });
+          const { data, errors = [] } = await response.json();
+          const error = data?.createDocumentCollection.error;
+          if (error) {
+            errors.push(error);
+          }
+          if (!data || errors.length) {
+            throw new Error((errors as Error[]).map(error => error.message).join('\n'));
+          }
+          return data;
+        },
       });
 
       on('after:spec', (_, results) => {
