@@ -580,10 +580,13 @@ describe('other', () => {
     const { createOrg } = await initSeed().createOwner();
     const { inviteAndJoinMember, createProject } = await createOrg();
     await inviteAndJoinMember();
-    const { createToken, createCdnAccess } = await createProject(ProjectType.Federation, {
-      useLegacyRegistryModels: true,
-    });
-    const { secret } = await createToken({});
+    const { createTargetAccessToken, createCdnAccess } = await createProject(
+      ProjectType.Federation,
+      {
+        useLegacyRegistryModels: true,
+      },
+    );
+    const { secret } = await createTargetAccessToken({});
     const { fetchSupergraphFromCDN } = await createCdnAccess();
 
     await schemaPublish([

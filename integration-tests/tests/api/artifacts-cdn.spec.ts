@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import { ProjectType, TargetAccessScope } from 'testkit/gql/graphql';
+import { ProjectType } from 'testkit/gql/graphql';
 import { ApolloGateway } from '@apollo/gateway';
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
@@ -97,10 +97,8 @@ function runArtifactsCDNTests(
         const endpointBaseUrl = await getBaseEndpoint();
         const { createOrg } = await initSeed().createOwner();
         const { createProject } = await createOrg();
-        const { target, createToken } = await createProject(ProjectType.Single);
-        const token = await createToken({
-          targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-        });
+        const { target, createTargetAccessToken } = await createProject(ProjectType.Single);
+        const token = await createTargetAccessToken({});
 
         await token
           .publishSchema({
@@ -137,10 +135,8 @@ function runArtifactsCDNTests(
       async ({ expect }) => {
         const { createOrg } = await initSeed().createOwner();
         const { createProject } = await createOrg();
-        const { createToken, target } = await createProject(ProjectType.Single);
-        const writeToken = await createToken({
-          targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-        });
+        const { createTargetAccessToken, target } = await createProject(ProjectType.Single);
+        const writeToken = await createTargetAccessToken({});
 
         await writeToken
           .publishSchema({
@@ -224,10 +220,10 @@ function runArtifactsCDNTests(
     test.concurrent('access SDL artifact with valid credentials', async ({ expect }) => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken, createCdnAccess, target } = await createProject(ProjectType.Single);
-      const writeToken = await createToken({
-        targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-      });
+      const { createTargetAccessToken, createCdnAccess, target } = await createProject(
+        ProjectType.Single,
+      );
+      const writeToken = await createTargetAccessToken({});
 
       // Publish Schema
       const publishSchemaResult = await writeToken
@@ -272,10 +268,10 @@ function runArtifactsCDNTests(
     test.concurrent('access services artifact with valid credentials', async ({ expect }) => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken, createCdnAccess, target } = await createProject(ProjectType.Federation);
-      const writeToken = await createToken({
-        targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-      });
+      const { createTargetAccessToken, createCdnAccess, target } = await createProject(
+        ProjectType.Federation,
+      );
+      const writeToken = await createTargetAccessToken({});
 
       // Publish Schema
       const publishSchemaResult = await writeToken
@@ -320,10 +316,10 @@ function runArtifactsCDNTests(
     test.concurrent('access services artifact with if-none-match header', async ({ expect }) => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken, createCdnAccess, target } = await createProject(ProjectType.Federation);
-      const writeToken = await createToken({
-        targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-      });
+      const { createTargetAccessToken, createCdnAccess, target } = await createProject(
+        ProjectType.Federation,
+      );
+      const writeToken = await createTargetAccessToken({});
 
       // Publish Schema
 
@@ -367,10 +363,10 @@ function runArtifactsCDNTests(
       const endpointBaseUrl = await getBaseEndpoint();
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken, createCdnAccess, target } = await createProject(ProjectType.Federation);
-      const writeToken = await createToken({
-        targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-      });
+      const { createTargetAccessToken, createCdnAccess, target } = await createProject(
+        ProjectType.Federation,
+      );
+      const writeToken = await createTargetAccessToken({});
 
       // Publish Schema
       const publishSchemaResult = await writeToken
@@ -473,7 +469,7 @@ describe('CDN token', () => {
   it('connection pagination', async () => {
     const { createOrg, ownerToken } = await initSeed().createOwner();
     const { organization, createProject } = await createOrg();
-    const { project, target, createCdnAccess, createToken } = await createProject(
+    const { project, target, createCdnAccess, createTargetAccessToken } = await createProject(
       ProjectType.Federation,
     );
 

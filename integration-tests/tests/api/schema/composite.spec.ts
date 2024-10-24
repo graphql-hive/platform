@@ -1,4 +1,4 @@
-import { ProjectType, TargetAccessScope } from 'testkit/gql/graphql';
+import { ProjectType } from 'testkit/gql/graphql';
 import { initSeed } from '../../../testkit/seed';
 
 describe.each`
@@ -11,14 +11,11 @@ describe.each`
   test.concurrent('should insert lowercase service name to DB', async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createToken } = await createProject(projectType, {
+    const { createTargetAccessToken } = await createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
-    const { publishSchema, checkSchema, deleteSchema, fetchVersions } = await createToken({
-      targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-      projectScopes: [],
-      organizationScopes: [],
-    });
+    const { publishSchema, checkSchema, deleteSchema, fetchVersions } =
+      await createTargetAccessToken({});
 
     const firstSdl = /* GraphQL */ `
       type Query {
@@ -144,13 +141,9 @@ describe.each`
     async ({ expect }) => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createToken } = await createProject(projectType);
+      const { createTargetAccessToken } = await createProject(projectType);
       const { publishSchema, deleteSchema, fetchVersions, fetchLatestValidSchema } =
-        await createToken({
-          targetScopes: [TargetAccessScope.RegistryRead, TargetAccessScope.RegistryWrite],
-          projectScopes: [],
-          organizationScopes: [],
-        });
+        await createTargetAccessToken({});
 
       const serviceA = /* GraphQL */ `
         type Query {
