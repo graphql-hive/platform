@@ -7,9 +7,10 @@ import type { AuthorizationPolicyStatement } from './authz';
 
 /** Transform the legacy access scopes to policy statements */
 export function transformLegacyPolicies(
-  organizationId: string,
-  projectId: string,
-  targetId: string,
+  args: {
+    organizationId: string;
+    targetId: string | null;
+  },
   scopes: Array<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>,
 ): Array<AuthorizationPolicyStatement> {
   const policies: Array<AuthorizationPolicyStatement> = [];
@@ -19,7 +20,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['support:manageTickets'],
-          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
       }
@@ -27,7 +28,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['organization:updateSlug'],
-          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
       }
@@ -35,7 +36,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['oidc:modify', 'gitHubIntegration:modify', 'slackIntegration:modify'],
-          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
       }
@@ -43,7 +44,15 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['alert:modify', 'alert:describe'],
-          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case ProjectAccessScope.READ: {
+        policies.push({
+          effect: 'allow',
+          action: ['project:describe'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
       }
@@ -51,7 +60,11 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['appDeployment:describe', 'schema:check'],
-          resource: [`hrn:${organizationId}:target/${targetId}`],
+          resource: [
+            args.targetId
+              ? `hrn:${args.organizationId}:target/${args.targetId}`
+              : `hrn:${args.organizationId}:organization/${args.organizationId}`,
+          ],
         });
         break;
       }
@@ -70,7 +83,11 @@ export function transformLegacyPolicies(
             'schema:check',
             'schema:approve',
           ],
-          resource: [`hrn:${organizationId}:target/${targetId}`],
+          resource: [
+            args.targetId
+              ? `hrn:${args.organizationId}:target/${args.targetId}`
+              : `hrn:${args.organizationId}:organization/${args.organizationId}`,
+          ],
         });
         break;
       }
@@ -78,7 +95,7 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['cdnAccessToken:describe', 'targetAccessToken:describe'],
-          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
       }
@@ -93,7 +110,7 @@ export function transformLegacyPolicies(
             'cdnAccessToken:delete',
             'cdnAccessToken:describe',
           ],
-          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
       }
@@ -101,8 +118,9 @@ export function transformLegacyPolicies(
         policies.push({
           effect: 'allow',
           action: ['schemaContract:create', 'schemaContract:disable', 'schemaContract:describe'],
-          resource: [`hrn:${organizationId}:organization/${organizationId}`],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
+
         break;
       }
     }

@@ -122,9 +122,10 @@ export class TargetAccessTokenStrategy extends AuthNStrategy<TargetAccessTokenSe
       targetId: result.target,
       token: accessToken,
       policies: transformLegacyPolicies(
-        result.organization,
-        result.project,
-        result.target,
+        {
+          organizationId: result.organization,
+          targetId: result.target,
+        },
         result.scopes as Array<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>,
       ),
     });
