@@ -86,10 +86,12 @@ export class CdnProvider {
     }
 
     await this.session.assertPerformAction({
-      action: 'accessToken:create',
+      action: 'cdnAccessToken:create',
       organizationId: args.organizationId,
       params: {
         organizationId: args.organizationId,
+        projectId: args.projectId,
+        targetId: args.targetId,
       },
     });
 
@@ -242,10 +244,12 @@ export class CdnProvider {
     );
 
     await this.session.assertPerformAction({
-      action: 'accessToken:delete',
+      action: 'cdnAccessToken:delete',
       organizationId: args.organizationId,
       params: {
         organizationId: args.organizationId,
+        projectId: args.projectId,
+        targetId: args.targetId,
       },
     });
 
@@ -328,10 +332,12 @@ export class CdnProvider {
     cursor: string | null;
   }) {
     await this.session.assertPerformAction({
-      action: 'accessToken:describe',
+      action: 'cdnAccessToken:describe',
       organizationId: args.organizationId,
       params: {
         organizationId: args.organizationId,
+        projectId: args.projectId,
+        targetId: args.targetId,
       },
     });
 
