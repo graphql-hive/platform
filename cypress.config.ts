@@ -132,7 +132,7 @@ COMMIT;
             },
             body: JSON.stringify({
               operationName: 'CreateOrganizationMutation',
-              variables: { input: { name: 'Foo' } },
+              variables: { input: { slug: 'foo' } },
               query: /* GraphQL */ `
                 mutation CreateOrganizationMutation($input: CreateOrganizationInput!) {
                   createOrganization(input: $input) {
@@ -140,9 +140,12 @@ COMMIT;
                       createdOrganizationPayload {
                         organization {
                           id
-                          cleanId
+                          slug
                         }
                       }
+                    }
+                    error {
+                      message
                     }
                   }
                 }
@@ -150,6 +153,10 @@ COMMIT;
             }),
           });
           const { data, errors = [] } = await response.json();
+          const error = data?.createOrganization.error;
+          if (error) {
+            errors.push(error);
+          }
           if (!data || errors.length) {
             throw new Error((errors as Error[]).map(error => error.message).join('\n'));
           }
@@ -170,23 +177,29 @@ COMMIT;
                     ok {
                       createdProject {
                         id
-                        name
-                        cleanId
+                        slug
                       }
+                    }
+                    error {
+                      message
                     }
                   }
                 }
               `,
               variables: {
                 input: {
-                  name: 'My new Project',
-                  organization: 'foo',
+                  slug: 'my-new-project',
+                  organizationSlug: 'foo',
                   type: 'SINGLE',
                 },
               },
             }),
           });
           const { data, errors = [] } = await response.json();
+          const error = data?.createProject.error;
+          if (error) {
+            errors.push(error);
+          }
           if (!data || errors.length) {
             throw new Error((errors as Error[]).map(error => error.message).join('\n'));
           }

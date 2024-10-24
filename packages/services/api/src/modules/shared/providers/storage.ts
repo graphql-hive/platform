@@ -749,10 +749,10 @@ export interface Storage {
     createdByUserId: string | null;
   }): Promise<DocumentCollection>;
 
-  getPreflightScript(_: { targetId: string }): Promise<PreflightScript | null>;
+  getPreflightScript(_: { targetSlug: string }): Promise<PreflightScript | null>;
 
   createPreflightScript(_: {
-    targetId: string;
+    targetSlug: string;
     sourceCode: string;
     createdByUserId: string | null;
   }): Promise<PreflightScript>;

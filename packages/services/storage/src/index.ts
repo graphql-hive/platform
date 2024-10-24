@@ -3984,7 +3984,7 @@ export async function createStorage(
            , to_json("created_at") as "createdAt"
            , to_json("updated_at") as "updatedAt"
       FROM "document_preflight_scripts"
-      WHERE "target_id" = ${args.targetId}
+      WHERE "target_id" = ${args.targetSlug}
       `);
 
       return result && PreflightScriptModel.parse(result);
@@ -3996,7 +3996,7 @@ export async function createStorage(
                                                , "target_id"
                                                , "created_by_user_id")
       VALUES (${args.sourceCode},
-              ${args.targetId},
+              ${args.targetSlug},
               ${args.createdByUserId})
       RETURNING
           "id"
