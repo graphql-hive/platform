@@ -9,11 +9,9 @@ export const assignMemberRole: NonNullable<MutationResolvers['assignMemberRole']
 ) => {
   const organizationId = await injector.get(IdTranslator).translateOrganizationId(input);
 
-  const result = await injector.get(OrganizationManager).assignMemberRole({
+  return injector.get(OrganizationManager).assignMemberRole({
     organizationId,
-    userId: input.user,
-    roleId: input.role,
+    userId: input.userId,
+    roleId: input.roleId,
   });
-
-  return result;
 };

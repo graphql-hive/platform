@@ -30,12 +30,9 @@ export const inviteToOrganizationByEmail: NonNullable<
     };
   }
   const organization = await injector.get(IdTranslator).translateOrganizationId(input);
-
-  const response = await injector.get(OrganizationManager).inviteByEmail({
+  return await injector.get(OrganizationManager).inviteByEmail({
     organization,
     email: input.email,
-    role: input.role,
+    role: input.roleId,
   });
-
-  return response;
 };

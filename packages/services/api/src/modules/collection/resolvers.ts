@@ -2,7 +2,6 @@ import { Injector } from 'graphql-modules';
 import * as zod from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { TargetSelectorInput } from '../../__generated__/types';
-import { AuditLogManager } from '../audit-logs/providers/audit-logs-manager';
 import { AuthManager } from '../auth/providers/auth-manager';
 import { TargetAccessScope } from '../auth/providers/scopes';
 import { IdTranslator } from '../shared/providers/id-translator';
@@ -123,26 +122,6 @@ export const resolvers: CollectionModule.Resolvers = {
       );
       const result = await injector.get(CollectionProvider).updateCollection(input);
 
-      const currentUser = await injector.get(AuthManager).getCurrentUser();
-      injector.get(AuditLogManager).createLogAuditEvent(
-        {
-          eventType: 'COLLECTION_UPDATED',
-          collectionUpdatedAuditLogSchema: {
-            collectionId: input.collectionId,
-            collectionName: input.name,
-            updatedFields: JSON.stringify({
-              description: input.description,
-            }),
-          },
-        },
-        {
-          organizationId: target.orgId,
-          userEmail: currentUser.email,
-          userId: currentUser.id,
-          user: currentUser,
-        },
-      );
-
       if (!result) {
         return {
           error: {
@@ -167,23 +146,6 @@ export const resolvers: CollectionModule.Resolvers = {
         TargetAccessScope.REGISTRY_WRITE,
       );
       await injector.get(CollectionProvider).deleteCollection(id);
-
-      const currentUser = await injector.get(AuthManager).getCurrentUser();
-      injector.get(AuditLogManager).createLogAuditEvent(
-        {
-          eventType: 'COLLECTION_DELETED',
-          collectionDeletedAuditLogSchema: {
-            collectionId: id,
-            collectionName: target.name,
-          },
-        },
-        {
-          organizationId: target.orgId,
-          userEmail: currentUser.email,
-          userId: currentUser.id,
-          user: currentUser,
-        },
-      );
 
       return {
         ok: {
@@ -214,26 +176,6 @@ export const resolvers: CollectionModule.Resolvers = {
             },
           };
         }
-
-        const currentUser = await injector.get(AuthManager).getCurrentUser();
-        injector.get(AuditLogManager).createLogAuditEvent(
-          {
-            eventType: 'OPERATION_IN_DOCUMENT_COLLECTION_CREATED',
-            operationInDocumentCollectionCreatedAuditLogSchema: {
-              collectionId: result.documentCollectionId,
-              operationId: result.id,
-              collectionName: collection.title,
-              operationQuery: input.query,
-              targetId: target.id,
-            },
-          },
-          {
-            organizationId: target.orgId,
-            userEmail: currentUser.email,
-            userId: currentUser.id,
-            user: currentUser,
-          },
-        );
 
         return {
           ok: {
@@ -279,30 +221,6 @@ export const resolvers: CollectionModule.Resolvers = {
           .get(CollectionProvider)
           .getCollection(result.documentCollectionId);
 
-        const currentUser = await injector.get(AuthManager).getCurrentUser();
-        injector.get(AuditLogManager).createLogAuditEvent(
-          {
-            eventType: 'OPERATION_IN_DOCUMENT_COLLECTION_UPDATED',
-            operationInDocumentCollectionUpdatedAuditLogSchema: {
-              collectionId: result.documentCollectionId,
-              operationId: result.id,
-              collectionName: collection ? collection.title : '',
-              updatedFields: JSON.stringify({
-                name: input.name,
-                query: input.query,
-                variables: input.variables,
-                headers: input.headers,
-              }),
-            },
-          },
-          {
-            organizationId: target.orgId,
-            userEmail: currentUser.email,
-            userId: currentUser.id,
-            user: currentUser,
-          },
-        );
-
         return {
           ok: {
             __typename: 'ModifyDocumentCollectionOperationOkPayload',
@@ -345,24 +263,6 @@ export const resolvers: CollectionModule.Resolvers = {
         .get(CollectionProvider)
         .getCollection(operation.documentCollectionId);
       await injector.get(CollectionProvider).deleteOperation(id);
-
-      const currentUser = await injector.get(AuthManager).getCurrentUser();
-      injector.get(AuditLogManager).createLogAuditEvent(
-        {
-          eventType: 'OPERATION_IN_DOCUMENT_COLLECTION_DELETED',
-          operationInDocumentCollectionDeletedAuditLogSchema: {
-            collectionId: operation.documentCollectionId,
-            operationId: id,
-            collectionName: collection ? collection.title : '',
-          },
-        },
-        {
-          organizationId: target.orgId,
-          userEmail: currentUser.email,
-          userId: currentUser.id,
-          user: currentUser,
-        },
-      );
 
       return {
         ok: {

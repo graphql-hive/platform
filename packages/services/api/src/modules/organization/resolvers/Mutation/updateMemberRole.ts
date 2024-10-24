@@ -26,15 +26,13 @@ export const updateMemberRole: NonNullable<MutationResolvers['updateMemberRole']
   }
   const organizationId = await injector.get(IdTranslator).translateOrganizationId(input);
 
-  const result = await injector.get(OrganizationManager).updateMemberRole({
+  return injector.get(OrganizationManager).updateMemberRole({
     organizationId,
-    roleId: input.role,
+    roleId: input.roleId,
     name: inputValidation.data.name,
     description: inputValidation.data.description,
     organizationAccessScopes: input.organizationAccessScopes,
     projectAccessScopes: input.projectAccessScopes,
     targetAccessScopes: input.targetAccessScopes,
   });
-
-  return result;
 };

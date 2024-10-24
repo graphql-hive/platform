@@ -1,5 +1,3 @@
-import { AuditLogManager } from '../../../audit-logs/providers/audit-logs-manager';
-import { AuthManager } from '../../../auth/providers/auth-manager';
 import { AppDeploymentsManager } from '../../providers/app-deployments-manager';
 import type { MutationResolvers } from './../../../../__generated__/types.next';
 

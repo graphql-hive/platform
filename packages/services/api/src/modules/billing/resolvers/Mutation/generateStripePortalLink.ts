@@ -17,7 +17,5 @@ export const generateStripePortalLink: NonNullable<
     OrganizationAccessScope.SETTINGS,
   );
 
-  const result = injector.get(BillingProvider).generateStripePortalLink(organization.id);
-
-  return result;
+  return injector.get(BillingProvider).generateStripePortalLink(organization.id);
 };
