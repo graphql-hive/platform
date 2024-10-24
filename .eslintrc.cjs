@@ -85,6 +85,7 @@ module.exports = {
       plugins: ['@graphql-eslint'],
       rules: {
         '@graphql-eslint/require-id-when-available': 'error',
+        '@graphql-eslint/no-deprecated': 'error',
       },
     },
     {
@@ -126,6 +127,8 @@ module.exports = {
           },
         ],
         '@typescript-eslint/no-floating-promises': 'error',
+        'sonarjs/no-unused-collection': 'warn',
+        'sonarjs/no-inverted-boolean-check': 'warn',
         ...rulesToExtends,
         'no-lonely-if': 'off',
         'object-shorthand': 'off',
@@ -222,7 +225,7 @@ module.exports = {
         },
         tailwindcss: {
           callees: tailwindCallees,
-          whitelist: ['light'],
+          whitelist: ['light', 'hive-focus', 'hive-focus-within'],
           config: path.join(__dirname, './packages/web/docs/tailwind.config.cjs'),
         },
       },

@@ -28,21 +28,21 @@ export const updateBaseSchema: NonNullable<MutationResolvers['updateBaseSchema']
 
   const schemaManager = injector.get(SchemaManager);
   const translator = injector.get(IdTranslator);
-  const [organization, project, target] = await Promise.all([
+  const [organizationId, projectId, targetId] = await Promise.all([
     translator.translateOrganizationId(input),
     translator.translateProjectId(input),
     translator.translateTargetId(input),
   ]);
 
-  const selector = { organization, project, target };
+  const selector = { organizationId, projectId, targetId };
   await schemaManager.updateBaseSchema(selector, input.newBase ? input.newBase : null);
 
   return {
     ok: {
       updatedTarget: await injector.get(TargetManager).getTarget({
-        organization,
-        target,
-        project,
+        organizationId,
+        projectId,
+        targetId,
       }),
     },
   };

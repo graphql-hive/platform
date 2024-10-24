@@ -1,8 +1,8 @@
-import { ReactElement } from 'react';
-import { useFormik } from 'formik';
+import { ReactElement, useCallback } from 'react';
 import { ArrowBigDownDashIcon, CheckIcon } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { useMutation, useQuery } from 'urql';
-import * as Yup from 'yup';
+import { z } from 'zod';
 import { Page, ProjectLayout } from '@/components/layouts/project';
 import { ExternalCompositionSettings } from '@/components/project/settings/external-composition';
 import { ModelMigrationSettings } from '@/components/project/settings/model-migration';
@@ -25,17 +25,20 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { DocsLink } from '@/components/ui/docs-note';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { HiveLogo } from '@/components/ui/icon';
+import { Input } from '@/components/ui/input';
 import { Meta } from '@/components/ui/meta';
 import { Subtitle, Title } from '@/components/ui/page';
 import { QueryError } from '@/components/ui/query-error';
 import { useToast } from '@/components/ui/use-toast';
-import { Input } from '@/components/v2/input';
+import { env } from '@/env/frontend';
 import { graphql, useFragment } from '@/gql';
 import { ProjectType } from '@/gql/graphql';
 import { canAccessProject, ProjectAccessScope, useProjectAccess } from '@/lib/access/project';
 import { getDocsUrl } from '@/lib/docs-url';
 import { useNotifications, useToggle } from '@/lib/hooks';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from '@tanstack/react-router';
 
 const GithubIntegration_GithubIntegrationDetailsQuery = graphql(`
@@ -57,17 +60,15 @@ const GithubIntegration_EnableProjectNameInGitHubCheckMutation = graphql(`
   mutation GithubIntegration_EnableProjectNameInGitHubCheckMutation($input: ProjectSelectorInput!) {
     enableProjectNameInGithubCheck(input: $input) {
       id
-      cleanId
+      slug
       isProjectNameInGitHubCheckEnabled
     }
   }
 `);
 
 function GitHubIntegration(props: {
-  organizationId: string;
-  organizationName: string;
-  projectId: string;
-  projectName: string;
+  organizationSlug: string;
+  projectSlug: string;
 }): ReactElement | null {
   const docksLink = getDocsUrl('integrations/ci-cd#github-workflow-for-ci');
   const notify = useNotifications();
@@ -75,7 +76,7 @@ function GitHubIntegration(props: {
     query: GithubIntegration_GithubIntegrationDetailsQuery,
     variables: {
       selector: {
-        organization: props.organizationId,
+        organizationSlug: props.organizationSlug,
       },
     },
   });
@@ -120,7 +121,7 @@ function GitHubIntegration(props: {
                 </div>
 
                 <div className="font-semibold text-[#adbac7]">
-                  {props.organizationName} &gt; schema:check &gt; staging
+                  {props.organizationSlug} &gt; schema:check &gt; staging
                 </div>
                 <div className="text-gray-500">— No changes</div>
               </div>
@@ -136,7 +137,7 @@ function GitHubIntegration(props: {
                 </div>
 
                 <div className="font-semibold text-[#adbac7]">
-                  {props.organizationName} &gt; schema:check &gt; {props.projectName} &gt; staging
+                  {props.organizationSlug} &gt; schema:check &gt; {props.projectSlug} &gt; staging
                 </div>
                 <div className="text-gray-500">— No changes</div>
               </div>
@@ -148,8 +149,8 @@ function GitHubIntegration(props: {
               onClick={() => {
                 void ghCheckMutate({
                   input: {
-                    organization: props.organizationId,
-                    project: props.projectId,
+                    organizationSlug: props.organizationSlug,
+                    projectSlug: props.projectSlug,
                   },
                 }).then(
                   result => {
@@ -174,18 +175,17 @@ function GitHubIntegration(props: {
   );
 }
 
-const ProjectSettingsPage_UpdateProjectNameMutation = graphql(`
-  mutation ProjectSettingsPage_UpdateProjectName($input: UpdateProjectNameInput!) {
-    updateProjectName(input: $input) {
+const ProjectSettingsPage_UpdateProjectSlugMutation = graphql(`
+  mutation ProjectSettingsPage_UpdateProjectSlugMutation($input: UpdateProjectSlugInput!) {
+    updateProjectSlug(input: $input) {
       ok {
         selector {
-          organization
-          project
+          organizationSlug
+          projectSlug
         }
-        updatedProject {
+        project {
           id
-          cleanId
-          name
+          slug
         }
       }
       error {
@@ -195,11 +195,124 @@ const ProjectSettingsPage_UpdateProjectNameMutation = graphql(`
   }
 `);
 
+const SlugFormSchema = z.object({
+  slug: z
+    .string({
+      required_error: 'Project slug is required',
+    })
+    .min(1, 'Project slug is required')
+    .max(50, 'Slug must be less than 50 characters')
+    .regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers and dashes'),
+});
+
+type SlugFormValues = z.infer<typeof SlugFormSchema>;
+
+function ProjectSettingsPage_SlugForm(props: { organizationSlug: string; projectSlug: string }) {
+  const { toast } = useToast();
+  const router = useRouter();
+  const [_slugMutation, slugMutate] = useMutation(ProjectSettingsPage_UpdateProjectSlugMutation);
+
+  const slugForm = useForm({
+    mode: 'all',
+    resolver: zodResolver(SlugFormSchema),
+    defaultValues: {
+      slug: props.projectSlug,
+    },
+  });
+
+  const onSlugFormSubmit = useCallback(
+    async (data: SlugFormValues) => {
+      try {
+        const result = await slugMutate({
+          input: {
+            organizationSlug: props.organizationSlug,
+            projectSlug: props.projectSlug,
+            slug: data.slug,
+          },
+        });
+
+        const error = result.error || result.data?.updateProjectSlug.error;
+
+        if (result.data?.updateProjectSlug?.ok) {
+          toast({
+            variant: 'default',
+            title: 'Success',
+            description: 'Project slug updated',
+          });
+          void router.navigate({
+            to: '/$organizationSlug/$projectSlug/view/settings',
+            params: {
+              organizationSlug: props.organizationSlug,
+              projectSlug: result.data.updateProjectSlug.ok.project.slug,
+            },
+          });
+        } else if (error) {
+          slugForm.setError('slug', error);
+        }
+      } catch (error) {
+        console.error('error', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to update project slug',
+        });
+      }
+    },
+    [slugMutate],
+  );
+
+  return (
+    <Form {...slugForm}>
+      <form onSubmit={slugForm.handleSubmit(onSlugFormSubmit)}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Project Slug</CardTitle>
+            <CardDescription>
+              This is your project's URL namespace on Hive. Changing it{' '}
+              <span className="font-bold">will</span> invalidate any existing links to your project.
+              <br />
+              <DocsLink
+                className="text-muted-foreground text-sm"
+                href="/management/projects#change-slug-of-a-project"
+              >
+                You can read more about it in the documentation
+              </DocsLink>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <FormField
+              control={slugForm.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="flex items-center">
+                      <div className="border-input text-muted-foreground h-10 rounded-md rounded-r-none border-y border-l bg-gray-900 px-3 py-2 text-sm">
+                        {env.appBaseUrl.replace(/https?:\/\//i, '')}/{props.organizationSlug}/
+                      </div>
+                      <Input placeholder="slug" className="w-48 rounded-l-none" {...field} />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button disabled={slugForm.formState.isSubmitting} className="px-10" type="submit">
+              Save
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
+  );
+}
+
 const ProjectSettingsPage_OrganizationFragment = graphql(`
   fragment ProjectSettingsPage_OrganizationFragment on Organization {
     id
-    cleanId
-    name
+    slug
     me {
       id
       ...CanAccessProject_MemberFragment
@@ -211,7 +324,7 @@ const ProjectSettingsPage_OrganizationFragment = graphql(`
 
 const ProjectSettingsPage_ProjectFragment = graphql(`
   fragment ProjectSettingsPage_ProjectFragment on Project {
-    name
+    slug
     type
     isProjectNameInGitHubCheckEnabled
     ...ModelMigrationSettings_ProjectFragment
@@ -221,27 +334,26 @@ const ProjectSettingsPage_ProjectFragment = graphql(`
 `);
 
 const ProjectSettingsPageQuery = graphql(`
-  query ProjectSettingsPageQuery($organizationId: ID!, $projectId: ID!) {
-    organization(selector: { organization: $organizationId }) {
+  query ProjectSettingsPageQuery($organizationSlug: String!, $projectSlug: String!) {
+    organization(selector: { organizationSlug: $organizationSlug }) {
       organization {
         ...ProjectSettingsPage_OrganizationFragment
       }
     }
-    project(selector: { organization: $organizationId, project: $projectId }) {
+    project(selector: { organizationSlug: $organizationSlug, projectSlug: $projectSlug }) {
       ...ProjectSettingsPage_ProjectFragment
     }
     isGitHubIntegrationFeatureEnabled
   }
 `);
 
-function ProjectSettingsContent(props: { organizationId: string; projectId: string }) {
-  const router = useRouter();
+function ProjectSettingsContent(props: { organizationSlug: string; projectSlug: string }) {
   const [isModalOpen, toggleModalOpen] = useToggle();
   const [query] = useQuery({
     query: ProjectSettingsPageQuery,
     variables: {
-      organizationId: props.organizationId,
-      projectId: props.projectId,
+      organizationSlug: props.organizationSlug,
+      projectSlug: props.projectSlug,
     },
     requestPolicy: 'cache-and-network',
   });
@@ -255,63 +367,18 @@ function ProjectSettingsContent(props: { organizationId: string; projectId: stri
     scope: ProjectAccessScope.Settings,
     member: organization?.me ?? null,
     redirect: true,
-    organizationId: props.organizationId,
-    projectId: props.projectId,
+    organizationSlug: props.organizationSlug,
+    projectSlug: props.projectSlug,
   });
-  const { toast } = useToast();
-
-  const [mutation, mutate] = useMutation(ProjectSettingsPage_UpdateProjectNameMutation);
-
-  const { handleSubmit, values, handleChange, handleBlur, isSubmitting, errors, touched } =
-    useFormik({
-      enableReinitialize: true,
-      initialValues: {
-        name: project?.name ?? '',
-      },
-      validationSchema: Yup.object({
-        name: Yup.string().required('Project name is required'),
-      }),
-      onSubmit: values =>
-        mutate({
-          input: {
-            organization: props.organizationId,
-            project: props.projectId,
-            name: values.name,
-          },
-        }).then(result => {
-          if (result?.data?.updateProjectName?.ok) {
-            toast({
-              variant: 'default',
-              title: 'Success',
-              description: 'Project name updated successfully',
-            });
-
-            const newProjectId = result.data.updateProjectName.ok.updatedProject.cleanId;
-            void router.navigate({
-              to: '/$organizationId/$projectId/view/settings',
-              params: {
-                organizationId: props.organizationId,
-                projectId: newProjectId,
-              },
-            });
-          } else if (result.error || result.data?.updateProjectName.error) {
-            toast({
-              variant: 'destructive',
-              title: 'Error',
-              description: result.error?.message || result.data?.updateProjectName.error?.message,
-            });
-          }
-        }),
-    });
 
   if (query.error) {
-    return <QueryError organizationId={props.organizationId} error={query.error} />;
+    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
   }
 
   return (
     <ProjectLayout
-      organizationId={props.organizationId}
-      projectId={props.projectId}
+      organizationSlug={props.organizationSlug}
+      projectSlug={props.projectSlug}
       page={Page.Settings}
       className="flex flex-col gap-y-10"
     >
@@ -324,62 +391,16 @@ function ProjectSettingsContent(props: { organizationId: string; projectId: stri
           <div className="flex flex-col gap-y-4">
             {project && organization ? (
               <>
-                <ModelMigrationSettings project={project} organizationId={organization.cleanId} />
-                <form onSubmit={handleSubmit}>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Project Name</CardTitle>
-                      <CardDescription>
-                        Changing the name of your project will also change the slug of your project
-                        URL, and will invalidate any existing links to your project.
-                        <br />
-                        <DocsLink
-                          className="text-muted-foreground text-sm"
-                          href="/management/projects#rename-a-project"
-                        >
-                          You can read more about it in the documentation
-                        </DocsLink>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Input
-                        placeholder="Project name"
-                        name="name"
-                        value={values.name}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        disabled={isSubmitting}
-                        isInvalid={touched.name && !!errors.name}
-                        className="w-96"
-                      />
-                      {touched.name && (errors.name || mutation.error) && (
-                        <div className="mt-2 text-red-500">
-                          {errors.name ??
-                            mutation.error?.graphQLErrors[0]?.message ??
-                            mutation.error?.message}
-                        </div>
-                      )}
-                      {mutation.data?.updateProjectName.error && (
-                        <div className="mt-2 text-red-500">
-                          {mutation.data.updateProjectName.error.message}
-                        </div>
-                      )}
-                    </CardContent>
-                    <CardFooter>
-                      <Button type="submit" disabled={isSubmitting}>
-                        Save
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </form>
-
+                <ModelMigrationSettings project={project} organizationSlug={organization.slug} />
+                <ProjectSettingsPage_SlugForm
+                  organizationSlug={props.organizationSlug}
+                  projectSlug={props.projectSlug}
+                />
                 {query.data?.isGitHubIntegrationFeatureEnabled &&
                 !project.isProjectNameInGitHubCheckEnabled ? (
                   <GitHubIntegration
-                    organizationId={props.organizationId}
-                    organizationName={organization.name}
-                    projectId={props.projectId}
-                    projectName={project.name}
+                    organizationSlug={organization.slug}
+                    projectSlug={project.slug}
                   />
                 ) : null}
 
@@ -416,8 +437,8 @@ function ProjectSettingsContent(props: { organizationId: string; projectId: stri
                   </Card>
                 )}
                 <DeleteProjectModal
-                  projectId={props.projectId}
-                  organizationId={props.organizationId}
+                  projectSlug={props.projectSlug}
+                  organizationSlug={props.organizationSlug}
                   isOpen={isModalOpen}
                   toggleModalOpen={toggleModalOpen}
                 />
@@ -430,11 +451,14 @@ function ProjectSettingsContent(props: { organizationId: string; projectId: stri
   );
 }
 
-export function ProjectSettingsPage(props: { organizationId: string; projectId: string }) {
+export function ProjectSettingsPage(props: { organizationSlug: string; projectSlug: string }) {
   return (
     <>
       <Meta title="Project settings" />
-      <ProjectSettingsContent organizationId={props.organizationId} projectId={props.projectId} />
+      <ProjectSettingsContent
+        organizationSlug={props.organizationSlug}
+        projectSlug={props.projectSlug}
+      />
     </>
   );
 }
@@ -443,8 +467,8 @@ export const DeleteProjectMutation = graphql(`
   mutation deleteProject($selector: ProjectSelectorInput!) {
     deleteProject(selector: $selector) {
       selector {
-        organization
-        project
+        organizationSlug
+        projectSlug
       }
       deletedProject {
         __typename
@@ -457,10 +481,10 @@ export const DeleteProjectMutation = graphql(`
 export function DeleteProjectModal(props: {
   isOpen: boolean;
   toggleModalOpen: () => void;
-  organizationId: string;
-  projectId: string;
+  organizationSlug: string;
+  projectSlug: string;
 }) {
-  const { organizationId, projectId } = props;
+  const { organizationSlug, projectSlug } = props;
   const [, mutate] = useMutation(DeleteProjectMutation);
   const { toast } = useToast();
   const router = useRouter();
@@ -468,8 +492,8 @@ export function DeleteProjectModal(props: {
   const handleDelete = async () => {
     const { error } = await mutate({
       selector: {
-        organization: organizationId,
-        project: projectId,
+        organizationSlug,
+        projectSlug,
       },
     });
 
@@ -486,9 +510,9 @@ export function DeleteProjectModal(props: {
       });
       props.toggleModalOpen();
       void router.navigate({
-        to: '/$organizationId',
+        to: '/$organizationSlug',
         params: {
-          organizationId,
+          organizationSlug,
         },
       });
     }

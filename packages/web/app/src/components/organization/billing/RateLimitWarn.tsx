@@ -6,8 +6,7 @@ import { BillingPlanType } from '@/gql/graphql';
 const RateLimitWarn_OrganizationFragment = graphql(`
   fragment RateLimitWarn_OrganizationFragment on Organization {
     id
-    cleanId
-    name
+    slug
     plan
     rateLimit {
       limitedForOperations

@@ -53,8 +53,7 @@ const UserMenu_OrganizationConnectionFragment = graphql(`
   fragment UserMenu_OrganizationConnectionFragment on OrganizationConnection {
     nodes {
       id
-      cleanId
-      name
+      slug
       me {
         ...UserMenu_MemberFragment
       }
@@ -86,7 +85,7 @@ const UserMenu_MemberFragment = graphql(`
 export function UserMenu(props: {
   me: FragmentType<typeof UserMenu_MeFragment> | null;
   organizations: FragmentType<typeof UserMenu_OrganizationConnectionFragment> | null;
-  currentOrganizationCleanId: string;
+  currentOrganizationSlug: string;
 }) {
   const docsUrl = getDocsUrl();
   const me = useFragment(UserMenu_MeFragment, props.me);
@@ -97,7 +96,7 @@ export function UserMenu(props: {
   const [isUserSettingsModalOpen, toggleUserSettingsModalOpen] = useToggle();
   const [isLeaveOrganizationModalOpen, toggleLeaveOrganizationModalOpen] = useToggle();
   const currentOrganization = organizations?.find(
-    org => org.cleanId === props.currentOrganizationCleanId,
+    org => org.slug === props.currentOrganizationSlug,
   );
   const meInOrg = useFragment(UserMenu_MemberFragment, currentOrganization?.me);
 
@@ -113,8 +112,7 @@ export function UserMenu(props: {
         <LeaveOrganizationModal
           toggleModalOpen={toggleLeaveOrganizationModalOpen}
           isOpen={isLeaveOrganizationModalOpen}
-          organizationId={currentOrganization.cleanId}
-          organizationName={currentOrganization.name}
+          organizationSlug={currentOrganization.slug}
         />
       ) : null}
       <div className="flex flex-row items-center gap-8">
@@ -166,16 +164,16 @@ export function UserMenu(props: {
                   {organizations.map(org => (
                     <DropdownMenuItem
                       asChild
-                      key={org.cleanId}
-                      active={currentOrganization?.cleanId === org.cleanId}
+                      key={org.slug}
+                      active={currentOrganization?.slug === org.slug}
                     >
                       <Link
-                        to="/$organizationId"
+                        to="/$organizationSlug"
                         params={{
-                          organizationId: org.cleanId,
+                          organizationSlug: org.slug,
                         }}
                       >
-                        {org.name}
+                        {org.slug}
                       </Link>
                     </DropdownMenuItem>
                   ))}
@@ -217,9 +215,9 @@ export function UserMenu(props: {
               {currentOrganization && env.zendeskSupport ? (
                 <DropdownMenuItem asChild>
                   <Link
-                    to="/$organizationId/view/support"
+                    to="/$organizationSlug/view/support"
                     params={{
-                      organizationId: currentOrganization.cleanId,
+                      organizationSlug: currentOrganization.slug,
                     }}
                   >
                     <LifeBuoyIcon className="mr-2 size-4" />
@@ -290,17 +288,16 @@ const LeaveOrganizationModal_LeaveOrganizationMutation = graphql(`
 export function LeaveOrganizationModal(props: {
   isOpen: boolean;
   toggleModalOpen: () => void;
-  organizationId: string;
-  organizationName: string;
+  organizationSlug: string;
 }) {
-  const { organizationId, organizationName } = props;
+  const { organizationSlug } = props;
   const [, mutate] = useMutation(LeaveOrganizationModal_LeaveOrganizationMutation);
   const notify = useNotifications();
 
   async function onSubmit() {
     const result = await mutate({
       input: {
-        organization: organizationId,
+        organizationSlug,
       },
     });
 
@@ -323,7 +320,7 @@ export function LeaveOrganizationModal(props: {
     <LeaveOrganizationModalContent
       isOpen={props.isOpen}
       toggleModalOpen={props.toggleModalOpen}
-      organizationName={organizationName}
+      organizationSlug={organizationSlug}
       onSubmit={onSubmit}
     />
   );
@@ -332,19 +329,19 @@ export function LeaveOrganizationModal(props: {
 export function LeaveOrganizationModalContent(props: {
   isOpen: boolean;
   toggleModalOpen: () => void;
-  organizationName: string;
+  organizationSlug: string;
   onSubmit: () => void;
 }) {
   return (
     <Dialog open={props.isOpen} onOpenChange={props.toggleModalOpen}>
       <DialogContent className="w-4/5 max-w-[520px] md:w-3/5">
         <DialogHeader>
-          <DialogTitle>Leave {props.organizationName}?</DialogTitle>
+          <DialogTitle>Leave {props.organizationSlug}?</DialogTitle>
           <DialogDescription>
             Are you sure you want to leave this organization?
             <br />
             You will lose access to{' '}
-            <span className="font-semibold text-white">{props.organizationName}</span>.
+            <span className="font-semibold text-white">{props.organizationSlug}</span>.
           </DialogDescription>
           <DialogDescription className="font-bold">This action is irreversible!</DialogDescription>
         </DialogHeader>

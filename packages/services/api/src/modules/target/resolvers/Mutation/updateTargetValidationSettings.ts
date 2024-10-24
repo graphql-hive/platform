@@ -15,12 +15,14 @@ export const updateTargetValidationSettings: NonNullable<
     translator.translateTargetId(input),
   ]);
 
-  const org = await injector.get(OrganizationManager).getOrganization({ organization });
+  const org = await injector
+    .get(OrganizationManager)
+    .getOrganization({ organizationId: organization });
 
   const UpdateTargetValidationSettingsModel = z.object({
     percentage: PercentageModel,
     period: z.number().min(1).max(org.monthlyRateLimit.retentionInDays).int(),
-    targets: z.array(z.string()).min(1),
+    targetIds: z.array(z.string()).min(1),
     excludedClients: z.optional(z.array(z.string())),
   });
 
@@ -42,19 +44,19 @@ export const updateTargetValidationSettings: NonNullable<
   await targetManager.updateTargetValidationSettings({
     period: input.period,
     percentage: input.percentage,
-    target,
-    project,
-    organization,
-    targets: result.data.targets,
+    targetId: target,
+    projectId: project,
+    organizationId: organization,
+    targets: result.data.targetIds,
     excludedClients: result.data.excludedClients ?? [],
   });
 
   return {
     ok: {
       target: await targetManager.getTarget({
-        organization,
-        project,
-        target,
+        organizationId: organization,
+        projectId: project,
+        targetId: target,
       }),
     },
   };

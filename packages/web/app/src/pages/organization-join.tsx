@@ -17,12 +17,11 @@ const JoinOrganizationPage_JoinOrganizationMutation = graphql(`
       __typename
       ... on OrganizationPayload {
         selector {
-          organization
+          organizationSlug
         }
         organization {
           id
-          name
-          cleanId
+          slug
         }
       }
       ... on OrganizationInvitationError {
@@ -68,11 +67,11 @@ export function JoinOrganizationPage(props: { inviteCode: string }) {
         const org = result.data.joinOrganization.organization;
         toast({
           title: 'Joined organization',
-          description: `You are now a member of ${org.name}`,
+          description: `You are now a member of ${org.slug}`,
         });
         void router.navigate({
-          to: '/$organizationId',
-          params: { organizationId: org.cleanId },
+          to: '/$organizationSlug',
+          params: { organizationSlug: org.slug },
         });
       }
     }
@@ -104,7 +103,7 @@ export function JoinOrganizationPage(props: { inviteCode: string }) {
           <HiveLogo className="size-10" />
         </Link>
         <div className="container md:w-3/5 lg:w-1/2">
-          <DataWrapper query={query} organizationId={null}>
+          <DataWrapper query={query} organizationSlug={null}>
             {({ data }) => {
               if (data.organizationByInviteCode == null) {
                 return null;

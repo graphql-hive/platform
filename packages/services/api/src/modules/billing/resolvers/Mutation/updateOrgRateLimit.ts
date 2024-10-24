@@ -9,11 +9,11 @@ export const updateOrgRateLimit: NonNullable<MutationResolvers['updateOrgRateLim
   { injector },
 ) => {
   const organizationId = await injector.get(IdTranslator).translateOrganizationId({
-    organization: args.selector.organization,
+    organizationSlug: args.selector.organizationSlug,
   });
 
   return injector.get(OrganizationManager).updateRateLimits({
-    organization: organizationId,
+    organizationId: organizationId,
     monthlyRateLimit: {
       retentionInDays: USAGE_DEFAULT_LIMITATIONS.PRO.retention,
       operations: args.monthlyLimits.operations,

@@ -11,17 +11,17 @@ export const OperationsStats: OperationsStatsResolvers = {
     const operationsManager = injector.get(OperationsManager);
     const [operations, durations] = await Promise.all([
       operationsManager.readOperationsStats({
-        organization,
-        project,
-        target,
+        organizationId: organization,
+        projectId: project,
+        targetId: target,
         period,
         operations: operationsFilter,
         clients,
       }),
       operationsManager.readDetailedDurationPercentiles({
-        organization,
-        project,
-        target,
+        organizationId: organization,
+        projectId: project,
+        targetId: target,
         period,
         operations: operationsFilter,
         clients,
@@ -49,9 +49,9 @@ export const OperationsStats: OperationsStatsResolvers = {
     { injector },
   ) => {
     return injector.get(OperationsManager).countRequestsAndFailures({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       period,
       operations,
       clients,
@@ -63,9 +63,9 @@ export const OperationsStats: OperationsStatsResolvers = {
     { injector },
   ) => {
     return injector.get(OperationsManager).countFailures({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       period,
       operations: operationsFilter,
       clients,
@@ -77,9 +77,9 @@ export const OperationsStats: OperationsStatsResolvers = {
     { injector },
   ) => {
     return injector.get(OperationsManager).countUniqueOperations({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       period,
       operations: operationsFilter,
       clients,
@@ -91,9 +91,9 @@ export const OperationsStats: OperationsStatsResolvers = {
     { injector },
   ) => {
     return injector.get(OperationsManager).readRequestsOverTime({
-      target,
-      project,
-      organization,
+      targetId: target,
+      projectId: project,
+      organizationId: organization,
       period,
       resolution,
       operations: operationsFilter,
@@ -106,9 +106,9 @@ export const OperationsStats: OperationsStatsResolvers = {
     { injector },
   ) => {
     return injector.get(OperationsManager).readFailuresOverTime({
-      target,
-      project,
-      organization,
+      targetId: target,
+      projectId: project,
+      organizationId: organization,
       period,
       resolution,
       operations: operationsFilter,
@@ -121,9 +121,9 @@ export const OperationsStats: OperationsStatsResolvers = {
     { injector },
   ) => {
     return injector.get(OperationsManager).readDurationOverTime({
-      target,
-      project,
-      organization,
+      targetId: target,
+      projectId: project,
+      organizationId: organization,
       period,
       resolution,
       operations: operationsFilter,
@@ -136,9 +136,9 @@ export const OperationsStats: OperationsStatsResolvers = {
     { injector },
   ) => {
     return injector.get(OperationsManager).readUniqueClients({
-      target,
-      project,
-      organization,
+      targetId: target,
+      projectId: project,
+      organizationId: organization,
       period,
       operations: operationsFilter,
       clients,
@@ -150,9 +150,9 @@ export const OperationsStats: OperationsStatsResolvers = {
     { injector },
   ) => {
     return injector.get(OperationsManager).readGeneralDurationPercentiles({
-      organization,
-      project,
-      target,
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
       period,
       operations: operationsFilter,
       clients,

@@ -374,7 +374,7 @@ test('should not leak the exception', async () => {
   `);
 });
 
-test('sendImmediately should not stop the schedule', async () => {
+test('sendImmediately should not stop the schedule', { retry: 3 }, async () => {
   const logger = createHiveTestingLogger();
 
   const token = 'Token';

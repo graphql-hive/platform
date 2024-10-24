@@ -52,9 +52,9 @@ export class ContractsManager {
     ]);
 
     await this.authManager.ensureTargetAccess({
-      organization: organizationId,
-      project: projectId,
-      target: targetId,
+      organizationId: organizationId,
+      projectId: projectId,
+      targetId: targetId,
       scope: TargetAccessScope.SETTINGS,
     });
 
@@ -87,9 +87,9 @@ export class ContractsManager {
     ]);
 
     await this.authManager.ensureTargetAccess({
-      organization: organizationId,
-      project: projectId,
-      target: targetId,
+      organizationId: organizationId,
+      projectId: projectId,
+      targetId: targetId,
       scope: TargetAccessScope.SETTINGS,
     });
 
@@ -118,9 +118,9 @@ export class ContractsManager {
 
     return await this.authManager
       .ensureTargetAccess({
-        organization: organizationId,
-        project: projectId,
-        target: targetId,
+        organizationId: organizationId,
+        projectId: projectId,
+        targetId: targetId,
         scope: TargetAccessScope.SETTINGS,
       })
       .then(() => true)
@@ -133,9 +133,9 @@ export class ContractsManager {
     first: number | null;
   }) {
     await this.authManager.ensureTargetAccess({
-      organization: args.target.orgId,
-      project: args.target.projectId,
-      target: args.target.id,
+      organizationId: args.target.orgId,
+      projectId: args.target.projectId,
+      targetId: args.target.id,
       scope: TargetAccessScope.SETTINGS,
     });
 
@@ -153,9 +153,9 @@ export class ContractsManager {
     first: number | null;
   }) {
     await this.authManager.ensureTargetAccess({
-      organization: args.target.orgId,
-      project: args.target.projectId,
-      target: args.target.id,
+      organizationId: args.target.orgId,
+      projectId: args.target.projectId,
+      targetId: args.target.id,
       scope: TargetAccessScope.READ,
     });
 

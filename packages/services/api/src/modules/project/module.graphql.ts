@@ -8,7 +8,7 @@ export default gql`
 
   extend type Mutation {
     createProject(input: CreateProjectInput!): CreateProjectResult!
-    updateProjectName(input: UpdateProjectNameInput!): UpdateProjectNameResult!
+    updateProjectSlug(input: UpdateProjectSlugInput!): UpdateProjectSlugResult!
     deleteProject(selector: ProjectSelectorInput!): DeleteProjectPayload!
   }
 
@@ -26,17 +26,23 @@ export default gql`
     updatedProject: Project!
   }
 
-  type UpdateProjectNameResult {
-    ok: UpdateProjectNameOk
-    error: UpdateProjectNameError
+  input UpdateProjectSlugInput {
+    slug: String!
+    organizationSlug: String!
+    projectSlug: String!
   }
 
-  type UpdateProjectNameOk {
+  type UpdateProjectSlugResult {
+    ok: UpdateProjectSlugOk
+    error: UpdateProjectSlugError
+  }
+
+  type UpdateProjectSlugOk {
     selector: ProjectSelector!
-    updatedProject: Project!
+    project: Project!
   }
 
-  type UpdateProjectNameError implements Error {
+  type UpdateProjectSlugError implements Error {
     message: String!
   }
 
@@ -51,9 +57,7 @@ export default gql`
   }
 
   type CreateProjectInputErrors {
-    name: String
-    buildUrl: String
-    validationUrl: String
+    slug: String
   }
 
   type CreateProjectError implements Error {
@@ -62,13 +66,13 @@ export default gql`
   }
 
   input ProjectSelectorInput {
-    organization: ID!
-    project: ID!
+    organizationSlug: String!
+    projectSlug: String!
   }
 
   type ProjectSelector {
-    organization: ID!
-    project: ID!
+    organizationSlug: String!
+    projectSlug: String!
   }
 
   enum ProjectType {
@@ -83,8 +87,9 @@ export default gql`
 
   type Project {
     id: ID!
-    cleanId: ID!
-    name: String!
+    slug: String!
+    cleanId: ID! @deprecated(reason: "Use the 'slug' field instead.")
+    name: String! @deprecated(reason: "Use the 'slug' field instead.")
     type: ProjectType!
     buildUrl: String
     validationUrl: String
@@ -97,23 +102,15 @@ export default gql`
   }
 
   input CreateProjectInput {
-    name: String!
+    slug: String!
     type: ProjectType!
-    organization: ID!
-    buildUrl: String
-    validationUrl: String
-  }
-
-  input UpdateProjectNameInput {
-    name: String!
-    organization: ID!
-    project: ID!
+    organizationSlug: String!
   }
 
   input UpdateProjectGitRepositoryInput {
     gitRepository: String
-    organization: ID!
-    project: ID!
+    organizationSlug: String!
+    projectSlug: String!
   }
 
   type UpdateProjectPayload {

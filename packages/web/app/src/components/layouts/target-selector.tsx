@@ -6,18 +6,15 @@ const TargetSelector_OrganizationConnectionFragment = graphql(`
   fragment TargetSelector_OrganizationConnectionFragment on OrganizationConnection {
     nodes {
       id
-      name
-      cleanId
+      slug
       projects {
         nodes {
           id
-          name
-          cleanId
+          slug
           targets {
             nodes {
               id
-              name
-              cleanId
+              slug
             }
           }
         }
@@ -27,9 +24,9 @@ const TargetSelector_OrganizationConnectionFragment = graphql(`
 `);
 
 export function TargetSelector(props: {
-  currentOrganizationCleanId: string;
-  currentProjectCleanId: string;
-  currentTargetCleanId: string;
+  currentOrganizationSlug: string;
+  currentProjectSlug: string;
+  currentTargetSlug: string;
   organizations: FragmentType<typeof TargetSelector_OrganizationConnectionFragment> | null;
 }) {
   const router = useRouter();
@@ -40,26 +37,26 @@ export function TargetSelector(props: {
   )?.nodes;
 
   const currentOrganization = organizations?.find(
-    node => node.cleanId === props.currentOrganizationCleanId,
+    node => node.slug === props.currentOrganizationSlug,
   );
 
   const projects = currentOrganization?.projects.nodes;
-  const currentProject = projects?.find(node => node.cleanId === props.currentProjectCleanId);
+  const currentProject = projects?.find(node => node.slug === props.currentProjectSlug);
 
   const targets = currentProject?.targets.nodes;
-  const currentTarget = targets?.find(node => node.cleanId === props.currentTargetCleanId);
+  const currentTarget = targets?.find(node => node.slug === props.currentTargetSlug);
 
   return (
     <>
       {currentOrganization ? (
         <Link
-          to="/$organizationId"
+          to="/$organizationSlug"
           params={{
-            organizationId: currentOrganization.cleanId,
+            organizationSlug: currentOrganization.slug,
           }}
           className="max-w-[200px] shrink-0 truncate font-medium"
         >
-          {currentOrganization.name}
+          {currentOrganization.slug}
         </Link>
       ) : (
         <div className="h-5 w-48 max-w-[200px] animate-pulse rounded-full bg-gray-800" />
@@ -67,14 +64,14 @@ export function TargetSelector(props: {
       <div className="italic text-gray-500">/</div>
       {currentOrganization && currentProject ? (
         <Link
-          to="/$organizationId/$projectId"
+          to="/$organizationSlug/$projectSlug"
           params={{
-            organizationId: props.currentOrganizationCleanId,
-            projectId: props.currentProjectCleanId,
+            organizationSlug: props.currentOrganizationSlug,
+            projectSlug: props.currentProjectSlug,
           }}
           className="max-w-[200px] shrink-0 truncate font-medium"
         >
-          {currentProject.name}
+          {currentProject.slug}
         </Link>
       ) : (
         <div className="h-5 w-48 max-w-[200px] animate-pulse rounded-full bg-gray-800" />
@@ -83,25 +80,25 @@ export function TargetSelector(props: {
       {targets?.length && currentOrganization && currentProject && currentTarget ? (
         <>
           <Select
-            value={props.currentTargetCleanId}
+            value={props.currentTargetSlug}
             onValueChange={id => {
               void router.navigate({
-                to: '/$organizationId/$projectId/$targetId',
+                to: '/$organizationSlug/$projectSlug/$targetSlug',
                 params: {
-                  organizationId: props.currentOrganizationCleanId,
-                  projectId: props.currentProjectCleanId,
-                  targetId: id,
+                  organizationSlug: props.currentOrganizationSlug,
+                  projectSlug: props.currentProjectSlug,
+                  targetSlug: id,
                 },
               });
             }}
           >
             <SelectTrigger variant="default">
-              <div className="font-medium">{currentTarget.name}</div>
+              <div className="font-medium">{currentTarget.slug}</div>
             </SelectTrigger>
             <SelectContent>
               {targets.map(target => (
-                <SelectItem key={target.cleanId} value={target.cleanId}>
-                  {target.name}
+                <SelectItem key={target.slug} value={target.slug}>
+                  {target.slug}
                 </SelectItem>
               ))}
             </SelectContent>

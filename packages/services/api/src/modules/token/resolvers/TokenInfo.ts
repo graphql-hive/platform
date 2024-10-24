@@ -12,20 +12,20 @@ export const TokenInfo: TokenInfoResolvers = {
   },
   organization(token, _, { injector }) {
     return injector.get(OrganizationManager).getOrganization({
-      organization: token.organization,
+      organizationId: token.organization,
     });
   },
   project(token, _, { injector }) {
     return injector.get(ProjectManager).getProject({
-      organization: token.organization,
-      project: token.project,
+      organizationId: token.organization,
+      projectId: token.project,
     });
   },
   target(token, _, { injector }) {
     return injector.get(TargetManager).getTarget({
-      organization: token.organization,
-      project: token.project,
-      target: token.target,
+      organizationId: token.organization,
+      projectId: token.project,
+      targetId: token.target,
     });
   },
   hasOrganizationScope(token, { scope }) {

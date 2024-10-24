@@ -8,21 +8,21 @@ import { ProjectAccessScope } from './scopes';
 export { ProjectAccessScope } from './scopes';
 
 export interface ProjectUserAccessSelector {
-  user: string;
-  organization: string;
-  project: string;
+  userId: string;
+  organizationId: string;
+  projectId: string;
   scope: ProjectAccessScope;
 }
 
 export interface ProjectUserScopesSelector {
-  user: string;
-  organization: string;
+  userId: string;
+  organizationId: string;
 }
 
 interface ProjectTokenAccessSelector {
   token: string;
-  organization: string;
-  project: string;
+  organizationId: string;
+  projectId: string;
   scope: ProjectAccessScope;
 }
 
@@ -71,9 +71,9 @@ export class ProjectAccess {
         cacheKeyFn(selector) {
           return JSON.stringify({
             type: 'ProjectAccess:user',
-            organization: selector.organization,
-            project: selector.project,
-            user: selector.user,
+            organization: selector.organizationId,
+            project: selector.projectId,
+            user: selector.userId,
             scope: selector.scope,
           });
         },
@@ -86,8 +86,8 @@ export class ProjectAccess {
             const tokenInfo = await this.organizationAccess.tokenInfo.load(selector);
 
             if (
-              tokenInfo?.organization === selector.organization &&
-              tokenInfo?.project === selector.project
+              tokenInfo?.organization === selector.organizationId &&
+              tokenInfo?.project === selector.projectId
             ) {
               return tokenInfo.scopes.includes(selector.scope);
             }
@@ -99,8 +99,8 @@ export class ProjectAccess {
         cacheKeyFn(selector) {
           return JSON.stringify({
             type: 'ProjectAccess:token',
-            organization: selector.organization,
-            project: selector.project,
+            organization: selector.organizationId,
+            project: selector.projectId,
             token: selector.token,
             scope: selector.scope,
           });
@@ -130,8 +130,8 @@ export class ProjectAccess {
         cacheKeyFn(selector) {
           return JSON.stringify({
             type: 'ProjectAccess:scopes',
-            organization: selector.organization,
-            user: selector.user,
+            organization: selector.organizationId,
+            user: selector.userId,
           });
         },
       },

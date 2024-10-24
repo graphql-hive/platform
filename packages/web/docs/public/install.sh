@@ -80,7 +80,11 @@
             ARCH=arm
           fi
         elif starts_with "aarch" "\$ARCH"; then
-          ARCH=arm
+          if [ "\$ARCH" = "aarch64" ]; then
+            ARCH=arm64
+          else
+            ARCH=arm
+          fi
         else
          unsupported_arch "\$OS / \$ARCH"
         fi

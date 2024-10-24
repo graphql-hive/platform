@@ -35,9 +35,8 @@ type RouteSearchProps = z.infer<typeof OrganizationIndexRouteSearch>;
 
 const ProjectCard_ProjectFragment = graphql(`
   fragment ProjectCard_ProjectFragment on Project {
-    cleanId
     id
-    name
+    slug
     type
   }
 `);
@@ -83,10 +82,10 @@ const ProjectCard = (props: {
   return (
     <Card className="h-full self-start bg-gray-900/50 p-5 px-0 pt-4 hover:bg-gray-800/40 hover:shadow-md hover:shadow-gray-800/50">
       <Link
-        to="/$organizationId/$projectId"
+        to="/$organizationSlug/$projectSlug"
         params={{
-          organizationId: props.cleanOrganizationId ?? 'unknown-yet',
-          projectId: project?.cleanId ?? 'unknown-yet',
+          organizationSlug: props.cleanOrganizationId ?? 'unknown-yet',
+          projectSlug: project?.slug ?? 'unknown-yet',
         }}
       >
         <TooltipProvider>
@@ -167,7 +166,7 @@ const ProjectCard = (props: {
               <div className="flex flex-row items-center justify-between gap-y-3 px-4 pt-4">
                 {project ? (
                   <div>
-                    <h4 className="line-clamp-2 text-lg font-bold">{project.name}</h4>
+                    <h4 className="line-clamp-2 text-lg font-bold">{project.slug}</h4>
                     <p className="text-xs text-gray-300">{projectTypeFullNames[project.type]}</p>
                   </div>
                 ) : (
@@ -226,21 +225,21 @@ const ProjectCard = (props: {
 
 const OrganizationProjectsPageQuery = graphql(`
   query OrganizationProjectsPageQuery(
-    $organizationId: ID!
+    $organizationSlug: String!
     $chartResolution: Int!
     $period: DateRangeInput!
   ) {
-    organization(selector: { organization: $organizationId }) {
+    organization(selector: { organizationSlug: $organizationSlug }) {
       organization {
         id
-        cleanId
+        slug
       }
     }
-    projects(selector: { organization: $organizationId }) {
+    projects(selector: { organizationSlug: $organizationSlug }) {
       total
       nodes {
         id
-        name
+        slug
         ...ProjectCard_ProjectFragment
         totalRequests(period: $period)
         requestsOverTime(resolution: $chartResolution, period: $period) {
@@ -255,7 +254,7 @@ const OrganizationProjectsPageQuery = graphql(`
 
 function OrganizationPageContent(
   props: {
-    organizationId: string;
+    organizationSlug: string;
   } & RouteSearchProps,
 ) {
   const days = 14;
@@ -289,7 +288,7 @@ function OrganizationPageContent(
   const [query] = useQuery({
     query: OrganizationProjectsPageQuery,
     variables: {
-      organizationId: props.organizationId,
+      organizationSlug: props.organizationSlug,
       chartResolution: days, // 14 days = 14 data points
       period: period.current,
     },
@@ -323,7 +322,7 @@ function OrganizationPageContent(
     const searchPhrase = props.search;
     const newProjects = searchPhrase
       ? projectsConnection.nodes.filter(project =>
-          project.name.toLowerCase().includes(searchPhrase.toLowerCase()),
+          project.slug.toLowerCase().includes(searchPhrase.toLowerCase()),
         )
       : projectsConnection.nodes.slice();
 
@@ -340,22 +339,22 @@ function OrganizationPageContent(
       }
 
       if (sortKey === 'name') {
-        return a.name.localeCompare(b.name) * sortOrder * -1;
+        return a.slug.localeCompare(b.slug) * sortOrder * -1;
       }
 
       // falls back to sort by name in ascending order
-      return a.name.localeCompare(b.name);
+      return a.slug.localeCompare(b.slug);
     });
   }, [projectsConnection, props.search, sortKey, sortOrder]);
 
   if (query.error) {
-    return <QueryError organizationId={props.organizationId} error={query.error} />;
+    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
   }
 
   return (
     <OrganizationLayout
       page={Page.Overview}
-      organizationId={props.organizationId}
+      organizationSlug={props.organizationSlug}
       className="flex justify-between gap-12"
     >
       <>
@@ -462,7 +461,7 @@ function OrganizationPageContent(
                 {projects.map(project => (
                   <ProjectCard
                     key={project.id}
-                    cleanOrganizationId={currentOrganization.cleanId}
+                    cleanOrganizationId={currentOrganization.slug}
                     days={days}
                     highestNumberOfRequests={highestNumberOfRequests}
                     project={project}
@@ -495,14 +494,14 @@ function OrganizationPageContent(
 
 export function OrganizationPage(
   props: {
-    organizationId: string;
+    organizationSlug: string;
   } & RouteSearchProps,
 ) {
   return (
     <>
       <Meta title="Organization" />
       <OrganizationPageContent
-        organizationId={props.organizationId}
+        organizationSlug={props.organizationSlug}
         search={props.search}
         sortBy={props.sortBy}
         sortOrder={props.sortOrder}

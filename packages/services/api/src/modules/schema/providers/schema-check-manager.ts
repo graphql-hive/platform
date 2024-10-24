@@ -56,10 +56,10 @@ export class SchemaCheckManager {
       return null;
     }
     return this.schemaManager.getSchemaVersion({
-      organization: schemaCheck.selector.organizationId,
-      project: schemaCheck.selector.projectId,
-      target: schemaCheck.targetId,
-      version: schemaCheck.schemaVersionId,
+      organizationId: schemaCheck.selector.organizationId,
+      projectId: schemaCheck.selector.projectId,
+      targetId: schemaCheck.targetId,
+      versionId: schemaCheck.schemaVersionId,
     });
   }
 

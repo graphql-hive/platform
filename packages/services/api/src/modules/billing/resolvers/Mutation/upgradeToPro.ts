@@ -14,15 +14,15 @@ export const upgradeToPro: NonNullable<MutationResolvers['upgradeToPro']> = asyn
   { injector },
 ) => {
   const organizationId = await injector.get(IdTranslator).translateOrganizationId({
-    organization: args.input.organization.organization,
+    organizationSlug: args.input.organization.organizationSlug,
   });
   await injector.get(AuthManager).ensureOrganizationAccess({
-    organization: organizationId,
+    organizationId: organizationId,
     scope: OrganizationAccessScope.SETTINGS,
   });
 
   let organization = await injector.get(OrganizationManager).getOrganization({
-    organization: organizationId,
+    organizationId: organizationId,
   });
 
   if (organization.billingPlan === 'HOBBY') {
@@ -47,11 +47,11 @@ export const upgradeToPro: NonNullable<MutationResolvers['upgradeToPro']> = asyn
     // Upgrade the actual org plan to PRO
     organization = await injector
       .get(OrganizationManager)
-      .updatePlan({ plan: 'PRO', organization: organizationId });
+      .updatePlan({ plan: 'PRO', organizationId: organizationId });
 
     // Upgrade the limits
     organization = await injector.get(OrganizationManager).updateRateLimits({
-      organization: organizationId,
+      organizationId: organizationId,
       monthlyRateLimit: {
         retentionInDays: USAGE_DEFAULT_LIMITATIONS.PRO.retention,
         operations: args.input.monthlyLimits.operations || USAGE_DEFAULT_LIMITATIONS.PRO.operations,

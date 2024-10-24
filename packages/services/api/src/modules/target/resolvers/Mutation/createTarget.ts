@@ -1,53 +1,64 @@
 import { z } from 'zod';
 import { IdTranslator } from '../../../shared/providers/id-translator';
 import { TargetManager } from '../../providers/target-manager';
-import { TargetNameModel } from '../../validation';
+import { TargetSlugModel } from '../../validation';
 import type { MutationResolvers } from './../../../../__generated__/types.next';
+
+const CreateTargetModel = z.object({
+  slug: TargetSlugModel,
+});
 
 export const createTarget: NonNullable<MutationResolvers['createTarget']> = async (
   _,
   { input },
   { injector },
 ) => {
-  const CreateTargetModel = z.object({
-    name: TargetNameModel,
-  });
-
-  const result = CreateTargetModel.safeParse(input);
-  if (!result.success) {
+  const inputParseResult = CreateTargetModel.safeParse(input);
+  if (!inputParseResult.success) {
     return {
       error: {
         message: 'Check your input.',
         inputErrors: {
-          name: result.error.formErrors.fieldErrors.name?.[0],
+          slug: inputParseResult.error.formErrors.fieldErrors.slug?.[0],
         },
       },
     };
   }
 
   const translator = injector.get(IdTranslator);
-  const [organization, project] = await Promise.all([
+  const [organizationId, projectId] = await Promise.all([
     translator.translateOrganizationId({
-      organization: input.organization,
+      organizationSlug: input.organizationSlug,
     }),
     translator.translateProjectId({
-      organization: input.organization,
-      project: input.project,
+      organizationSlug: input.organizationSlug,
+      projectSlug: input.projectSlug,
     }),
   ]);
-  const target = await injector.get(TargetManager).createTarget({
-    organization,
-    project,
-    name: input.name,
+  const result = await injector.get(TargetManager).createTarget({
+    organizationId: organizationId,
+    projectId: projectId,
+    slug: inputParseResult.data.slug,
   });
-  return {
-    ok: {
-      selector: {
-        organization: input.organization,
-        project: input.project,
-        target: target.cleanId,
+
+  if (result.ok) {
+    return {
+      ok: {
+        selector: {
+          organizationSlug: input.organizationSlug,
+          projectSlug: input.projectSlug,
+          targetSlug: result.target.slug,
+        },
+        createdTarget: result.target,
       },
-      createdTarget: target,
+    };
+  }
+
+  return {
+    ok: null,
+    error: {
+      message: result.message,
+      inputErrors: {},
     },
   };
 };

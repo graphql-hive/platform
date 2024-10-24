@@ -13,17 +13,14 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
           name
         }
         organization {
-          name
-          cleanId
+          slug
         }
         project {
-          name
           type
-          cleanId
+          slug
         }
         target {
-          name
-          cleanId
+          slug
         }
         canPublishSchema: hasTargetScope(scope: REGISTRY_WRITE)
         canCheckSchema: hasTargetScope(scope: REGISTRY_READ)
@@ -91,9 +88,9 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       const { tokenInfo } = result;
       const { organization, project, target } = tokenInfo;
 
-      const organizationUrl = `https://app.graphql-hive.com/${organization.cleanId}`;
-      const projectUrl = `${organizationUrl}/${project.cleanId}`;
-      const targetUrl = `${projectUrl}/${target.cleanId}`;
+      const organizationUrl = `https://app.graphql-hive.com/${organization.slug}`;
+      const projectUrl = `${organizationUrl}/${project.slug}`;
+      const targetUrl = `${projectUrl}/${target.slug}`;
 
       const access = {
         yes: colors.green('Yes'),
@@ -103,9 +100,9 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       const print = createPrinter({
         'Token name:': [colors.bold(tokenInfo.token.name)],
         ' ': [''],
-        'Organization:': [colors.bold(organization.name), colors.dim(organizationUrl)],
-        'Project:': [colors.bold(project.name), colors.dim(projectUrl)],
-        'Target:': [colors.bold(target.name), colors.dim(targetUrl)],
+        'Organization:': [colors.bold(organization.slug), colors.dim(organizationUrl)],
+        'Project:': [colors.bold(project.slug), colors.dim(projectUrl)],
+        'Target:': [colors.bold(target.slug), colors.dim(targetUrl)],
         '  ': [''],
         'Access to schema:publish': [tokenInfo.canPublishSchema ? access.yes : access.not],
         'Access to schema:check': [tokenInfo.canCheckSchema ? access.yes : access.not],

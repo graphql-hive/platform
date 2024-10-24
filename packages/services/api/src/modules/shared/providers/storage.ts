@@ -11,12 +11,7 @@ import type {
   SchemaVersion,
   TargetBreadcrumb,
 } from '@hive/storage';
-import type {
-  AddAlertChannelInput,
-  AddAlertInput,
-  RegistryModel,
-  SchemaChecksFilter,
-} from '../../../__generated__/types';
+import type { RegistryModel, SchemaChecksFilter } from '../../../__generated__/types';
 import type {
   Alert,
   AlertChannel,
@@ -48,15 +43,15 @@ import type { Contracts } from '../../schema/providers/contracts';
 import type { SchemaCoordinatesDiffResult } from '../../schema/providers/inspector';
 
 export interface OrganizationSelector {
-  organization: string;
+  organizationId: string;
 }
 
 export interface ProjectSelector extends OrganizationSelector {
-  project: string;
+  projectId: string;
 }
 
 export interface TargetSelector extends ProjectSelector {
-  target: string;
+  targetId: string;
 }
 
 type CreateContractVersionInput = {
@@ -90,23 +85,32 @@ export interface Storage {
 
   updateUser(_: { id: string; fullName: string; displayName: string }): Promise<User | never>;
 
-  getOrganizationId(_: OrganizationSelector): Promise<string | null>;
+  getOrganizationId(_: { organizationSlug: string }): Promise<string | null>;
   getOrganizationByInviteCode(_: { inviteCode: string }): Promise<Organization | null>;
-  getOrganizationByCleanId(_: { cleanId: string }): Promise<Organization | null>;
+  getOrganizationBySlug(_: { slug: string }): Promise<Organization | null>;
   getOrganizationByGitHubInstallationId(_: {
     installationId: string;
   }): Promise<Organization | null>;
-  getOrganization(_: { organization: string }): Promise<Organization | never>;
-  getMyOrganization(_: { user: string }): Promise<Organization | null>;
-  getOrganizations(_: { user: string }): Promise<readonly Organization[] | never>;
+  getOrganization(_: { organizationId: string }): Promise<Organization | never>;
+  getMyOrganization(_: { userId: string }): Promise<Organization | null>;
+  getOrganizations(_: { userId: string }): Promise<readonly Organization[] | never>;
   createOrganization(
-    _: Pick<Organization, 'cleanId' | 'name'> & {
-      user: string;
+    _: Pick<Organization, 'slug'> & {
+      userId: string;
       adminScopes: ReadonlyArray<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>;
       viewerScopes: ReadonlyArray<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>;
-      reservedNames: string[];
+      reservedSlugs: string[];
     },
-  ): Promise<Organization | never>;
+  ): Promise<
+    | {
+        ok: true;
+        organization: Organization;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
   deleteOrganization(_: OrganizationSelector): Promise<
     | (Organization & {
@@ -115,12 +119,9 @@ export interface Storage {
     | never
   >;
 
-  updateOrganizationName(
-    _: OrganizationSelector & Pick<Organization, 'name'> & { user: string },
-  ): Promise<Organization | never>;
-  updateOrganizationCleanId(
+  updateOrganizationSlug(
     _: OrganizationSelector &
-      Pick<Organization, 'cleanId'> & { user: string; reservedNames: string[] },
+      Pick<Organization, 'slug'> & { userId: string; reservedSlugs: string[] },
   ): Promise<
     | {
         ok: true;
@@ -150,7 +151,7 @@ export interface Storage {
 
   createOrganizationTransferRequest(
     _: OrganizationSelector & {
-      user: string;
+      userId: string;
     },
   ): Promise<{
     code: string;
@@ -159,7 +160,7 @@ export interface Storage {
   getOrganizationTransferRequest(
     _: OrganizationSelector & {
       code: string;
-      user: string;
+      userId: string;
     },
   ): Promise<{
     code: string;
@@ -168,7 +169,7 @@ export interface Storage {
   answerOrganizationTransferRequest(
     _: OrganizationSelector & {
       code: string;
-      user: string;
+      userId: string;
       accept: boolean;
     },
   ): Promise<void>;
@@ -182,34 +183,34 @@ export interface Storage {
 
   getOrganizationOwner(_: OrganizationSelector): Promise<Member | never>;
 
-  getOrganizationMember(_: OrganizationSelector & { user: string }): Promise<Member | null>;
+  getOrganizationMember(_: OrganizationSelector & { userId: string }): Promise<Member | null>;
 
   getOrganizationMemberAccessPairs(
-    _: readonly (OrganizationSelector & { user: string })[],
+    _: readonly (OrganizationSelector & { userId: string })[],
   ): Promise<
     ReadonlyArray<ReadonlyArray<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>>
   >;
 
   hasOrganizationMemberPairs(
-    _: readonly (OrganizationSelector & { user: string })[],
+    _: readonly (OrganizationSelector & { userId: string })[],
   ): Promise<readonly boolean[]>;
 
   hasOrganizationProjectMemberPairs(
-    _: readonly (ProjectSelector & { user: string })[],
+    _: readonly (ProjectSelector & { userId: string })[],
   ): Promise<readonly boolean[]>;
 
   addOrganizationMemberViaInvitationCode(
     _: OrganizationSelector & {
       code: string;
-      user: string;
+      userId: string;
     },
   ): Promise<void>;
 
-  deleteOrganizationMember(_: OrganizationSelector & { user: string }): Promise<void>;
+  deleteOrganizationMember(_: OrganizationSelector & { userId: string }): Promise<void>;
 
   updateOrganizationMemberAccess(
     _: OrganizationSelector & {
-      user: string;
+      userId: string;
       scopes: ReadonlyArray<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>;
     },
   ): Promise<void>;
@@ -261,15 +262,22 @@ export interface Storage {
 
   getProject(_: ProjectSelector): Promise<Project | never>;
 
-  getProjectId(_: ProjectSelector): Promise<string | never>;
+  getProjectId(_: { organizationSlug: string; projectSlug: string }): Promise<string | never>;
 
-  getProjectByCleanId(_: { cleanId: string } & OrganizationSelector): Promise<Project | null>;
+  getProjectBySlug(_: { slug: string } & OrganizationSelector): Promise<Project | null>;
 
   getProjects(_: OrganizationSelector): Promise<Project[] | never>;
 
-  createProject(
-    _: Pick<Project, 'name' | 'cleanId' | 'type'> & OrganizationSelector,
-  ): Promise<Project | never>;
+  createProject(_: Pick<Project, 'type'> & { slug: string } & OrganizationSelector): Promise<
+    | {
+        ok: true;
+        project: Project;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
   deleteProject(_: ProjectSelector): Promise<
     | (Project & {
@@ -278,9 +286,16 @@ export interface Storage {
     | never
   >;
 
-  updateProjectName(
-    _: ProjectSelector & Pick<Project, 'name' | 'cleanId'> & { user: string },
-  ): Promise<Project | never>;
+  updateProjectSlug(_: ProjectSelector & { slug: string; userId: string }): Promise<
+    | {
+        ok: true;
+        project: Project;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
   updateNativeSchemaComposition(
     _: ProjectSelector & {
@@ -305,19 +320,39 @@ export interface Storage {
     },
   ): Promise<Project>;
 
-  getTargetId(_: TargetSelector & { useIds?: boolean }): Promise<string | never>;
+  getTargetId(_: {
+    organizationSlug: string;
+    projectSlug: string;
+    targetSlug: string;
+  }): Promise<string | never>;
 
-  getTargetByCleanId(
+  getTargetBySlug(
     _: {
-      cleanId: string;
+      slug: string;
     } & ProjectSelector,
   ): Promise<Target | null>;
 
-  createTarget(_: Pick<Target, 'cleanId' | 'name'> & ProjectSelector): Promise<Target | never>;
+  createTarget(_: { slug: string } & ProjectSelector): Promise<
+    | {
+        ok: true;
+        target: Target;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
-  updateTargetName(
-    _: TargetSelector & Pick<Project, 'name' | 'cleanId'> & { user: string },
-  ): Promise<Target | never>;
+  updateTargetSlug(_: TargetSelector & { slug: string; userId: string }): Promise<
+    | {
+        ok: true;
+        target: Target;
+      }
+    | {
+        ok: false;
+        message: string;
+      }
+  >;
 
   updateTargetGraphQLEndpointUrl(_: {
     targetId: string;
@@ -373,13 +408,13 @@ export interface Storage {
     } & TargetSelector,
   ): Promise<{
     schemas: Schema[];
-    version: string;
+    versionId: string;
     valid: boolean;
   } | null>;
 
-  getLatestValidVersion(_: { target: string }): Promise<SchemaVersion | never>;
+  getLatestValidVersion(_: { targetId: string }): Promise<SchemaVersion | never>;
 
-  getMaybeLatestValidVersion(_: { target: string }): Promise<SchemaVersion | null | never>;
+  getMaybeLatestValidVersion(_: { targetId: string }): Promise<SchemaVersion | null | never>;
 
   getLatestVersion(_: TargetSelector): Promise<SchemaVersion | never>;
 
@@ -387,7 +422,7 @@ export interface Storage {
 
   /** Find the version before a schema version */
   getVersionBeforeVersionId(_: {
-    target: string;
+    targetId: string;
     beforeVersionId: string;
     beforeVersionCreatedAt: string;
     onlyComposable: boolean;
@@ -411,11 +446,11 @@ export interface Storage {
     before: string | null;
     after: string | null;
   }>;
-  getSchemasOfVersion(_: { version: string; includeMetadata?: boolean }): Promise<Schema[]>;
+  getSchemasOfVersion(_: { versionId: string; includeMetadata?: boolean }): Promise<Schema[]>;
   getSchemaByNameOfVersion(_: { versionId: string; serviceName: string }): Promise<Schema | null>;
   getSchemasOfPreviousVersion(
     _: {
-      version: string;
+      versionId: string;
       onlyComposable: boolean;
     } & TargetSelector,
   ): Promise<
@@ -434,7 +469,7 @@ export interface Storage {
     first: number | null;
     cursor: null | string;
   }): Promise<PaginatedSchemaVersionConnection>;
-  getVersion(_: TargetSelector & { version: string }): Promise<SchemaVersion | never>;
+  getVersion(_: TargetSelector & { versionId: string }): Promise<SchemaVersion | never>;
   deleteSchema(
     _: {
       serviceName: string;
@@ -511,19 +546,19 @@ export interface Storage {
   updateVersionStatus(
     _: {
       valid: boolean;
-      version: string;
+      versionId: string;
     } & TargetSelector,
   ): Promise<SchemaVersion | never>;
 
-  getSchemaLog(_: { commit: string; target: string }): Promise<SchemaLog>;
+  getSchemaLog(_: { commit: string; targetId: string }): Promise<SchemaLog>;
 
   createActivity(
     _: {
-      user: string;
+      userId: string;
       type: string;
       meta: object;
     } & OrganizationSelector &
-      Partial<Pick<TargetSelector, 'project' | 'target'>>,
+      Partial<Pick<TargetSelector, 'projectId' | 'targetId'>>,
   ): Promise<void>;
 
   addSlackIntegration(_: OrganizationSelector & { token: string }): Promise<void>;
@@ -538,21 +573,34 @@ export interface Storage {
 
   getGitHubIntegrationInstallationId(_: OrganizationSelector): Promise<string | null | undefined>;
 
-  addAlertChannel(_: AddAlertChannelInput): Promise<AlertChannel>;
+  addAlertChannel(_: {
+    name: string;
+    organizationId: string;
+    projectId: string;
+    type: AlertChannel['type'];
+    slackChannel?: string | null;
+    webhookEndpoint?: string | null;
+  }): Promise<AlertChannel>;
 
-  deleteAlertChannels(
-    _: ProjectSelector & {
-      channels: readonly string[];
-    },
-  ): Promise<readonly AlertChannel[]>;
+  deleteAlertChannels(_: {
+    channelIds: readonly string[];
+    projectId: string;
+    organizationId: string;
+  }): Promise<readonly AlertChannel[]>;
 
   getAlertChannels(_: ProjectSelector): Promise<readonly AlertChannel[]>;
 
-  addAlert(_: AddAlertInput): Promise<Alert>;
+  addAlert(_: {
+    channelId: string;
+    organizationId: string;
+    projectId: string;
+    targetId: string;
+    type: Alert['type'];
+  }): Promise<Alert>;
 
   deleteAlerts(
     _: ProjectSelector & {
-      alerts: readonly string[];
+      alertIds: readonly string[];
     },
   ): Promise<readonly Alert[]>;
 
@@ -612,7 +660,7 @@ export interface Storage {
   ): Promise<void>;
 
   getOIDCIntegrationForOrganization(_: { organizationId: string }): Promise<OIDCIntegration | null>;
-  getOIDCIntegrationIdForOrganizationCleanId(_: { cleanId: string }): Promise<string | null>;
+  getOIDCIntegrationIdForOrganizationSlug(_: { slug: string }): Promise<string | null>;
 
   getOIDCIntegrationById(_: { oidcIntegrationId: string }): Promise<OIDCIntegration | null>;
 

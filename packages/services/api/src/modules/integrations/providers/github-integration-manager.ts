@@ -62,7 +62,7 @@ export class GitHubIntegrationManager {
   ): Promise<void> {
     this.logger.debug(
       'Registering GitHub integration (organization=%s, installationId:%s)',
-      input.organization,
+      input.organizationId,
       input.installationId,
     );
     await this.authManager.ensureOrganizationAccess({
@@ -71,25 +71,25 @@ export class GitHubIntegrationManager {
     });
     this.logger.debug('Updating organization');
     await this.storage.addGitHubIntegration({
-      organization: input.organization,
+      organizationId: input.organizationId,
       installationId: input.installationId,
     });
   }
 
   async unregister(input: OrganizationSelector): Promise<void> {
-    this.logger.debug('Removing GitHub integration (organization=%s)', input.organization);
+    this.logger.debug('Removing GitHub integration (organization=%s)', input.organizationId);
     await this.authManager.ensureOrganizationAccess({
       ...input,
       scope: OrganizationAccessScope.INTEGRATIONS,
     });
     this.logger.debug('Updating organization');
     await this.storage.deleteGitHubIntegration({
-      organization: input.organization,
+      organizationId: input.organizationId,
     });
   }
 
   async isAvailable(selector: OrganizationSelector): Promise<boolean> {
-    this.logger.debug('Checking GitHub integration (organization=%s)', selector.organization);
+    this.logger.debug('Checking GitHub integration (organization=%s)', selector.organizationId);
 
     if (!this.isEnabled()) {
       this.logger.debug('GitHub integration is disabled.');
@@ -97,28 +97,31 @@ export class GitHubIntegrationManager {
     }
 
     const installationId = await this.getInstallationId({
-      organization: selector.organization,
+      organizationId: selector.organizationId,
     });
 
     return installationId !== null;
   }
 
   private async getInstallationId(selector: OrganizationSelector): Promise<number | null> {
-    this.logger.debug('Fetching GitHub integration token (organization=%s)', selector.organization);
+    this.logger.debug(
+      'Fetching GitHub integration token (organization=%s)',
+      selector.organizationId,
+    );
 
     const rawInstallationId = await this.storage.getGitHubIntegrationInstallationId({
-      organization: selector.organization,
+      organizationId: selector.organizationId,
     });
 
     if (!rawInstallationId) {
-      this.logger.debug('No installation found. (organization=%s)', selector.organization);
+      this.logger.debug('No installation found. (organization=%s)', selector.organizationId);
 
       return null;
     }
 
     this.logger.debug(
       'GitHub installation found. (organization=%s, installationId=%s)',
-      selector.organization,
+      selector.organizationId,
       rawInstallationId,
     );
 
@@ -127,7 +130,7 @@ export class GitHubIntegrationManager {
     if (Number.isNaN(installationId)) {
       this.logger.error(
         "GitHub installation ID can't be parsed. (organization=%s, installationId=%s)",
-        selector.organization,
+        selector.organizationId,
         rawInstallationId,
       );
       throw new Error("GitHub installation ID can't be parsed.");
@@ -191,7 +194,7 @@ export class GitHubIntegrationManager {
     }
 
     await this.authManager.ensureOrganizationAccess({
-      organization: organization.id,
+      organizationId: organization.id,
       scope: OrganizationAccessScope.INTEGRATIONS,
     });
 
@@ -321,7 +324,7 @@ export class GitHubIntegrationManager {
       args.githubCheckRun.id,
     );
 
-    const octokit = await this.getOctokitForOrganization({ organization: args.organizationId });
+    const octokit = await this.getOctokitForOrganization({ organizationId: args.organizationId });
 
     if (!octokit) {
       throw new HiveError(
@@ -362,7 +365,7 @@ export class GitHubIntegrationManager {
       args.checkRun.checkRunId,
     );
     const octokit = await this.getOctokitForOrganization({
-      organization: args.organizationId,
+      organizationId: args.organizationId,
     });
 
     if (!octokit) {

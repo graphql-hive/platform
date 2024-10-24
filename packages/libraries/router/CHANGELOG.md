@@ -1,6 +1,6 @@
-# Unreleased
+# 16.10.2024
 
-- Report enum values when an enum is used as an output type
+- Report enum values when an enum is used as an output type and align with JS implementation
 
 # 19.07.2024
 

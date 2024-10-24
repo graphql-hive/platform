@@ -11,7 +11,7 @@ export const enableProjectNameInGithubCheck: NonNullable<
     translator.translateProjectId(input),
   ]);
   return injector.get(GitHubIntegrationManager).enableProjectNameInGithubCheck({
-    organization,
-    project,
+    organizationId: organization,
+    projectId: project,
   });
 };
