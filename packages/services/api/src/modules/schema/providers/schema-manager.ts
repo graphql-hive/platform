@@ -18,6 +18,7 @@ import {
   Organization,
   Project,
   ProjectType,
+  Target,
 } from '../../../shared/entities';
 import { HiveError } from '../../../shared/errors';
 import { atomic, cache, stringifySelector } from '../../../shared/helpers';
@@ -257,14 +258,11 @@ export class SchemaManager {
     return this.storage.getMatchingServiceSchemaOfVersions(versions);
   }
 
-  async getMaybeLatestValidVersion(selector: TargetSelector) {
-    this.logger.debug('Fetching maybe latest valid version (selector=%o)', selector);
-    await this.authManager.ensureTargetAccess({
-      ...selector,
-      scope: TargetAccessScope.REGISTRY_READ,
+  async getMaybeLatestValidVersion(target: Target) {
+    this.logger.debug('Fetching maybe latest valid version (targetId=%o)', target.id);
+    const version = await this.storage.getMaybeLatestValidVersion({
+      targetId: target.id,
     });
-
-    const version = await this.storage.getMaybeLatestValidVersion(selector);
 
     if (!version) {
       return null;
@@ -272,9 +270,9 @@ export class SchemaManager {
 
     return {
       ...version,
-      projectId: selector.projectId,
-      targetId: selector.targetId,
-      organizationId: selector.organizationId,
+      projectId: target.projectId,
+      targetId: target.id,
+      organizationId: target.orgId,
     };
   }
 
@@ -306,14 +304,13 @@ export class SchemaManager {
     };
   }
 
-  async getMaybeLatestVersion(selector: TargetSelector) {
-    this.logger.debug('Fetching maybe latest version (selector=%o)', selector);
-    await this.authManager.ensureTargetAccess({
-      ...selector,
-      scope: TargetAccessScope.REGISTRY_READ,
+  async getMaybeLatestVersion(target: Target) {
+    this.logger.debug('Fetching maybe latest version (targetId=%o)', target.id);
+    const latest = await this.storage.getMaybeLatestVersion({
+      targetId: target.id,
+      projectId: target.projectId,
+      organizationId: target.orgId,
     });
-
-    const latest = await this.storage.getMaybeLatestVersion(selector);
 
     if (!latest) {
       return null;
@@ -321,18 +318,14 @@ export class SchemaManager {
 
     return {
       ...latest,
-      projectId: selector.projectId,
-      targetId: selector.targetId,
-      organizationId: selector.organizationId,
+      projectId: target.projectId,
+      targetId: target.id,
+      organizationId: target.orgId,
     };
   }
 
   async getSchemaVersion(selector: TargetSelector & { versionId: string }) {
     this.logger.debug('Fetching single schema version (selector=%o)', selector);
-    await this.authManager.ensureTargetAccess({
-      ...selector,
-      scope: TargetAccessScope.REGISTRY_READ,
-    });
     const result = await this.storage.getVersion(selector);
 
     return {
@@ -1179,13 +1172,7 @@ export class SchemaManager {
     });
 
     const possibleVersions = await Promise.all(
-      targets.map(t =>
-        this.getMaybeLatestValidVersion({
-          organizationId: project.orgId,
-          projectId: project.id,
-          targetId: t.id,
-        }),
-      ),
+      targets.map(target => this.getMaybeLatestValidVersion(target)),
     );
 
     const versions = possibleVersions.filter((v): v is SchemaVersion => !!v);

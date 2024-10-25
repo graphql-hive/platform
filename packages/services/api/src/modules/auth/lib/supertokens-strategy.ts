@@ -6,8 +6,12 @@ import type { User } from '../../../shared/entities';
 import { AccessError, HiveError } from '../../../shared/errors';
 import { isUUID } from '../../../shared/is-uuid';
 import type { Storage } from '../../shared/providers/storage';
+import {
+  OrganizationAccessScope,
+  ProjectAccessScope,
+  TargetAccessScope,
+} from '../providers/scopes';
 import { AuthNStrategy, AuthorizationPolicyStatement, Session } from './authz';
-import { transformLegacyPolicies } from './legacy-permissions';
 
 export class SuperTokensCookieBasedSession extends Session {
   public superTokensUserId: string;
@@ -29,12 +33,12 @@ export class SuperTokensCookieBasedSession extends Session {
     }
 
     const member = await this.storage.getOrganizationMember({
-      organization: organizationId,
-      user: user.id,
+      organizationId,
+      userId: user.id,
     });
 
     if (Array.isArray(member?.scopes)) {
-      return transformLegacyPolicies(organizationId, '*', '*', member.scopes);
+      return transformOrganizationMemberLegacyScopes({ organizationId, scopes: member.scopes });
     }
 
     return [];
@@ -162,3 +166,117 @@ const SuperTokenAccessTokenModel = zod.object({
   externalUserId: zod.optional(zod.union([zod.string(), zod.null()])),
   email: zod.string(),
 });
+
+function transformOrganizationMemberLegacyScopes(args: {
+  organizationId: string;
+  scopes: Array<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>;
+}) {
+  const policies: Array<AuthorizationPolicyStatement> = [];
+  for (const scope of args.scopes) {
+    switch (scope) {
+      case OrganizationAccessScope.READ: {
+        policies.push({
+          effect: 'allow',
+          action: ['support:manageTickets', 'project:create', 'project:describe'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case OrganizationAccessScope.SETTINGS: {
+        policies.push({
+          effect: 'allow',
+          action: ['organization:updateSlug'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case OrganizationAccessScope.INTEGRATIONS: {
+        policies.push({
+          effect: 'allow',
+          action: ['oidc:modify', 'gitHubIntegration:modify', 'slackIntegration:modify'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case ProjectAccessScope.ALERTS: {
+        policies.push({
+          effect: 'allow',
+          action: ['alert:modify', 'alert:describe'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case ProjectAccessScope.READ: {
+        policies.push({
+          effect: 'allow',
+          action: ['project:describe'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case ProjectAccessScope.DELETE: {
+        policies.push({
+          effect: 'allow',
+          action: ['project:delete'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case ProjectAccessScope.SETTINGS: {
+        policies.push({
+          effect: 'allow',
+          action: ['project:modifySlug', 'project:delete'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case TargetAccessScope.READ: {
+        policies.push({
+          effect: 'allow',
+          action: ['project:modifySlug', 'project:delete', 'appDeployment:describe'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case TargetAccessScope.TOKENS_READ: {
+        policies.push({
+          effect: 'allow',
+          action: ['cdnAccessToken:describe', 'targetAccessToken:describe', 'target:create'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case TargetAccessScope.TOKENS_WRITE: {
+        policies.push({
+          effect: 'allow',
+          action: [
+            'targetAccessToken:create',
+            'targetAccessToken:delete',
+            'targetAccessToken:describe',
+            'cdnAccessToken:create',
+            'cdnAccessToken:delete',
+            'cdnAccessToken:describe',
+          ],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case TargetAccessScope.SETTINGS: {
+        policies.push({
+          effect: 'allow',
+          action: [
+            'schemaContract:create',
+            'schemaContract:disable',
+            'schemaContract:describe',
+            'target:delete',
+            'target:modifySettings',
+          ],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+    }
+  }
+
+  return policies;
+}

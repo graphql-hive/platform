@@ -1,6 +1,8 @@
+import stringify from 'fast-json-stable-stringify';
 import { FastifyReply, FastifyRequest } from '@hive/service-common';
 import type { User } from '../../../shared/entities';
 import { AccessError } from '../../../shared/errors';
+import { cache } from '../../../shared/helpers';
 import { isUUID } from '../../../shared/is-uuid';
 
 export type AuthorizationPolicyStatement = {
@@ -70,16 +72,22 @@ export abstract class Session {
     throw new AccessError('Authorization header is missing');
   }
 
+  @cache<string>(organizationId => organizationId)
+  private async _loadPolicyStatementsForOrganization(organizationId: string) {
+    return await this.loadPolicyStatementsForOrganization(organizationId);
+  }
+
   /**
    * Check whether a session is allowed to perform a specific action.
    * Throws a AccessError if the action is not allowed.
    */
+  @cache<object>(args => stringify(args))
   public async assertPerformAction<TAction extends keyof typeof actionDefinitions>(args: {
     action: TAction;
     organizationId: string;
     params: Parameters<(typeof actionDefinitions)[TAction]>[0];
   }): Promise<void> {
-    const permissions = await this.loadPolicyStatementsForOrganization(args.organizationId);
+    const permissions = await this._loadPolicyStatementsForOrganization(args.organizationId);
 
     const resourceIdsForAction = actionDefinitions[args.action](args.params as any);
     let isAllowed = false;
@@ -255,11 +263,12 @@ const actionDefinitions = {
   'project:delete': defaultProjectIdentity,
   'alert:describe': defaultProjectIdentity,
   'alert:modify': defaultProjectIdentity,
-  'project:updateSlug': defaultProjectIdentity,
+  'project:modifySlug': defaultProjectIdentity,
   'schemaLinting:manageOrganization': defaultProjectIdentity,
   'schemaLinting:manageProject': defaultProjectIdentity,
   'target:create': defaultProjectIdentity,
   'target:delete': defaultTargetIdentity,
+  'target:modifySettings': defaultTargetIdentity,
   'schema:check': schemaCheckOrPublishIdentity,
   'schema:approve': schemaCheckOrPublishIdentity,
   'schema:publish': schemaCheckOrPublishIdentity,

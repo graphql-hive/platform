@@ -2350,7 +2350,7 @@ test.concurrent(
 test.concurrent(
   'subscription operation is used for conditional breaking change detection',
   async ({ expect }) => {
-    const { createOrg } = await initSeed().createOwner();
+    const { createOrg, ownerToken } = await initSeed().createOwner();
     const { organization, createProject } = await createOrg();
     const {
       project,
@@ -2496,7 +2496,7 @@ test.concurrent(
           targetSlug: target.slug,
         },
       },
-      authToken: token.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
 
     const node = firstSchemaCheck.target?.schemaCheck?.breakingSchemaChanges?.nodes[0];

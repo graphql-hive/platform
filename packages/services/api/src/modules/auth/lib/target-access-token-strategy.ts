@@ -6,8 +6,7 @@ import {
   ProjectAccessScope,
   TargetAccessScope,
 } from '../providers/scopes';
-import { AuthNStrategy, AuthorizationPolicyStatement, Session } from './authz';
-import { transformLegacyPolicies } from './legacy-permissions';
+import { AuthNStrategy, Session, type AuthorizationPolicyStatement } from './authz';
 
 export class TargetAccessTokenSession extends Session {
   public readonly organizationId: string;
@@ -121,12 +120,13 @@ export class TargetAccessTokenStrategy extends AuthNStrategy<TargetAccessTokenSe
       projectId: result.project,
       targetId: result.target,
       token: accessToken,
-      policies: transformLegacyPolicies(
-        result.organization,
-        result.project,
-        result.target,
-        result.scopes as Array<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>,
-      ),
+      policies: transformAccessTokenLegacyScopes({
+        organizationId: result.organization,
+        targetId: result.target,
+        scopes: result.scopes as Array<
+          OrganizationAccessScope | ProjectAccessScope | TargetAccessScope
+        >,
+      }),
     });
   }
 }
@@ -137,4 +137,43 @@ function maskToken(token: string) {
   }
 
   return '*'.repeat(token.length);
+}
+
+function transformAccessTokenLegacyScopes(args: {
+  organizationId: string;
+  targetId: string;
+  scopes: Array<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>;
+}): Array<AuthorizationPolicyStatement> {
+  const policies: Array<AuthorizationPolicyStatement> = [];
+  for (const policy of args.scopes) {
+    switch (policy) {
+      case TargetAccessScope.REGISTRY_READ: {
+        policies.push({
+          effect: 'allow',
+          action: ['schema:check'],
+          resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
+        });
+        break;
+      }
+      case TargetAccessScope.REGISTRY_WRITE: {
+        policies.push({
+          effect: 'allow',
+          action: [
+            'appDeployment:describe',
+            'appDeployment:create',
+            'appDeployment:publish',
+            'appDeployment:retire',
+            'schema:publish',
+            'schema:deleteService',
+            'schema:check',
+            'schema:approve',
+          ],
+          resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
+        });
+        break;
+      }
+    }
+  }
+
+  return policies;
 }

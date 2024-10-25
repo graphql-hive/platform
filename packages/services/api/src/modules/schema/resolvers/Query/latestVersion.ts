@@ -8,10 +8,5 @@ export const latestVersion: NonNullable<QueryResolvers['latestVersion']> = async
   { injector },
 ) => {
   const target = await injector.get(TargetManager).getTargetFromToken();
-
-  return injector.get(SchemaManager).getMaybeLatestVersion({
-    organizationId: target.orgId,
-    projectId: target.projectId,
-    targetId: target.id,
-  });
+  return injector.get(SchemaManager).getMaybeLatestVersion(target);
 };

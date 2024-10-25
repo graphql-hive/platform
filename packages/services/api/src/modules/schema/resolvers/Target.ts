@@ -50,18 +50,10 @@ export const Target: Pick<
     };
   },
   latestSchemaVersion: (target, _, { injector }) => {
-    return injector.get(SchemaManager).getMaybeLatestVersion({
-      targetId: target.id,
-      projectId: target.projectId,
-      organizationId: target.orgId,
-    });
+    return injector.get(SchemaManager).getMaybeLatestVersion(target);
   },
   latestValidSchemaVersion: async (target, __, { injector }) => {
-    return injector.get(SchemaManager).getMaybeLatestValidVersion({
-      organizationId: target.orgId,
-      projectId: target.projectId,
-      targetId: target.id,
-    });
+    return injector.get(SchemaManager).getMaybeLatestValidVersion(target);
   },
   baseSchema: (target, _, { injector }) => {
     return injector.get(SchemaManager).getBaseSchema({
