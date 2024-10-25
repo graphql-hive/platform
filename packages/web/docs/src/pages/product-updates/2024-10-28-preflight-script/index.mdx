@@ -24,12 +24,12 @@ GraphiQL sidebar section.
 
 ![Command line icon](./command-line-icon.png)
 
-<Caption>
-  {'The preflight script is accessible by clicking on the Command line icon in the GraphiQL sidebar'}
-</Caption>
+{/* prettier-ignore */}
+<Caption>The preflight script is accessible by clicking on the Command line icon in the GraphiQL sidebar</Caption>
 
-You will see Script editor (JavaScript language) which is read-only and present for a quick view of your saved script
-and Environment variables editor (JSON language) which is persistent in localStorage.
+You will see Script editor (JavaScript language) which is read-only and present for a quick view of
+your saved script and Environment variables editor (JSON language) which is persistent in
+localStorage.
 
 ![Preflight script plugin view](./preflight-script-plugin.png)
 
@@ -42,12 +42,13 @@ database.
 
 <Callout type="warning">
   **Note**: Your script will stored as plain text in our database, don't put any secrets there, use
-  Environment variables editor for it! The preflight script is accessible to all members of your organization, but only
-  users with access to target Settings can edit the script code.
+  Environment variables editor for it! The preflight script is accessible to all members of your
+  organization, but only users with access to target Settings can edit the script code.
 </Callout>
 
 You can use any JavaScript syntax (including top-level `await`) in the Script editor. Getting and
-Setting environment variables is done by accessing the `environment` property on the `lab` global variable.
+Setting environment variables is done by accessing the `environment` property on the `lab` global
+variable.
 
 ```js
 // get myKey variable from the Environment variables editor
@@ -62,8 +63,8 @@ lab.environment.set('myKey', myValue)
 
 ## CryptoJS
 
-Additionally, you can access the CryptoJS library by accessing the `CryptoJS` property on the `lab` global
-variable.
+Additionally, you can access the CryptoJS library by accessing the `CryptoJS` property on the `lab`
+global variable.
 
 ![CryptoJS](./crypto-js.png)
 
@@ -80,8 +81,8 @@ will throw from a script will be visible in Console Output.
 
 ## Using Environment Variables in Headers Editor
 
-To use your environment variables in GraphiQL headers editor wraps environment keys with double-curly
-braces, e.g.:
+To use your environment variables in GraphiQL headers editor wraps environment keys with
+double-curly braces, e.g.:
 
 ```json filename="Headers" /{{myEnvVar}}/
 {
@@ -91,4 +92,4 @@ braces, e.g.:
 
 ![Replace syntax in action](./replace-syntax.png)
 
-<Caption>Replace syntax is done via double open/closed curly braces, e.g. `{{myEnvVar}}`</Caption>
+<Caption>Replace syntax is done via double open/closed curly braces, e.g. {'{{myEnvVar}}'}</Caption>
