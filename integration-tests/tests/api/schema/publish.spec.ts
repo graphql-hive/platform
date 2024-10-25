@@ -42,7 +42,7 @@ test.concurrent(
 test.concurrent('can publish a schema with target:registry:write access', async ({ expect }) => {
   const { createOrg } = await initSeed().createOwner();
   const { createProject } = await createOrg();
-  const { createTargetAccessToken } = await createProject(ProjectType.Single);
+  const { createTargetAccessToken, fetchVersions } = await createProject(ProjectType.Single);
   const readWriteToken = await createTargetAccessToken({});
 
   const result1 = await readWriteToken
@@ -70,7 +70,7 @@ test.concurrent('can publish a schema with target:registry:write access', async 
 
   expect(result2.schemaPublish.__typename).toBe('SchemaPublishSuccess');
 
-  const versionsResult = await readWriteToken.fetchVersions(3);
+  const versionsResult = await fetchVersions(3);
   expect(versionsResult).toHaveLength(2);
 });
 
@@ -79,7 +79,9 @@ test.concurrent(
   async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Single);
+    const { createTargetAccessToken, updateBaseSchema, fetchVersions } = await createProject(
+      ProjectType.Single,
+    );
     const readWriteToken = await createTargetAccessToken({});
 
     // Publish schema with write rights
@@ -93,7 +95,7 @@ test.concurrent(
     // Schema publish should be successful
     expect(publishResult.schemaPublish.__typename).toBe('SchemaPublishSuccess');
 
-    await readWriteToken.updateBaseSchema(`
+    await updateBaseSchema(`
     directive @auth on OBJECT | FIELD_DEFINITION
   `);
 
@@ -105,7 +107,7 @@ test.concurrent(
       .then(r => r.expectNoGraphQLErrors());
     expect(extendedPublishResult.schemaPublish.__typename).toBe('SchemaPublishSuccess');
 
-    const versionsResult = await readWriteToken.fetchVersions(5);
+    const versionsResult = await fetchVersions(5);
     expect(versionsResult).toHaveLength(2);
 
     const latestResult = await readWriteToken.latestSchema();
@@ -136,7 +138,7 @@ test.concurrent.each(['legacy', 'modern'])(
   async mode => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Federation, {
+    const { createTargetAccessToken, fetchVersions } = await createProject(ProjectType.Federation, {
       useLegacyRegistryModels: mode === 'legacy',
     });
     const readWriteToken = await createTargetAccessToken({});
@@ -153,7 +155,7 @@ test.concurrent.each(['legacy', 'modern'])(
 
     // Schema publish should be successful
     expect(publishResult.schemaPublish.__typename).toBe('SchemaPublishSuccess');
-    const versionsResult = await readWriteToken.fetchVersions(5);
+    const versionsResult = await fetchVersions(5);
     expect(versionsResult).toHaveLength(1);
 
     const latestResult = await readWriteToken.latestSchema();
@@ -175,7 +177,7 @@ test.concurrent.each(['legacy', 'modern'])(
   async mode => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Stitching, {
+    const { createTargetAccessToken, fetchVersions } = await createProject(ProjectType.Stitching, {
       useLegacyRegistryModels: mode === 'legacy',
     });
     const readWriteToken = await createTargetAccessToken({});
@@ -194,7 +196,7 @@ test.concurrent.each(['legacy', 'modern'])(
     // Schema publish should be successful
     expect(publishResult.schemaPublish.__typename).toBe('SchemaPublishSuccess');
 
-    const versionsResult = await readWriteToken.fetchVersions(5);
+    const versionsResult = await fetchVersions(5);
     expect(versionsResult).toHaveLength(1);
 
     const latestResult = await readWriteToken.latestSchema();
@@ -216,7 +218,7 @@ test.concurrent.each(['legacy', 'modern'])(
   async mode => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Single, {
+    const { createTargetAccessToken, fetchVersions } = await createProject(ProjectType.Single, {
       useLegacyRegistryModels: mode === 'legacy',
     });
     const readWriteToken = await createTargetAccessToken({});
@@ -234,7 +236,7 @@ test.concurrent.each(['legacy', 'modern'])(
     // Schema publish should be successful
     expect(publishResult.schemaPublish.__typename).toBe('SchemaPublishSuccess');
 
-    const versionsResult = await readWriteToken.fetchVersions(5);
+    const versionsResult = await fetchVersions(5);
     expect(versionsResult).toHaveLength(1);
 
     const latestResult = await readWriteToken.latestSchema();
@@ -254,7 +256,7 @@ test.concurrent.each(['legacy', 'modern'])(
 test.concurrent('share publication of schema using redis', async ({ expect }) => {
   const { createOrg } = await initSeed().createOwner();
   const { createProject } = await createOrg();
-  const { createTargetAccessToken } = await createProject(ProjectType.Federation);
+  const { createTargetAccessToken, fetchVersions } = await createProject(ProjectType.Federation);
   const readWriteToken = await createTargetAccessToken({});
 
   // Publish schema with write rights
@@ -271,7 +273,7 @@ test.concurrent('share publication of schema using redis', async ({ expect }) =>
   // Schema publish should be successful
   expect(publishResult.schemaPublish.__typename).toBe('SchemaPublishSuccess');
 
-  await expect(readWriteToken.fetchVersions(2)).resolves.toHaveLength(1);
+  await expect(fetchVersions(2)).resolves.toHaveLength(1);
 
   const [publishResult1, publishResult2] = await Promise.all([
     readWriteToken
@@ -296,7 +298,7 @@ test.concurrent('share publication of schema using redis', async ({ expect }) =>
   expect(publishResult1.schemaPublish.__typename).toBe('SchemaPublishSuccess');
   expect(publishResult2.schemaPublish.__typename).toBe('SchemaPublishSuccess');
 
-  await expect(readWriteToken.fetchVersions(3)).resolves.toHaveLength(2);
+  await expect(fetchVersions(3)).resolves.toHaveLength(2);
 });
 
 test.concurrent('CDN data can not be fetched with an invalid access token', async ({ expect }) => {
@@ -383,7 +385,7 @@ test.concurrent(
   async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Single);
+    const { createTargetAccessToken, fetchVersions } = await createProject(ProjectType.Single);
     const readWriteToken = await createTargetAccessToken({});
 
     const commits = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6'];
@@ -402,7 +404,7 @@ test.concurrent(
       publishes.every(({ schemaPublish }) => schemaPublish.__typename === 'SchemaPublishSuccess'),
     ).toBeTruthy();
 
-    const versionsResult = await readWriteToken.fetchVersions(commits.length);
+    const versionsResult = await fetchVersions(commits.length);
     expect(versionsResult.length).toBe(1); // all publishes have same schema
   },
 );

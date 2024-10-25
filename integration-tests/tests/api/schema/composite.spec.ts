@@ -11,11 +11,10 @@ describe.each`
   test.concurrent('should insert lowercase service name to DB', async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(projectType, {
+    const { createTargetAccessToken, fetchVersions } = await createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
-    const { publishSchema, checkSchema, deleteSchema, fetchVersions } =
-      await createTargetAccessToken({});
+    const { publishSchema, checkSchema, deleteSchema } = await createTargetAccessToken({});
 
     const firstSdl = /* GraphQL */ `
       type Query {
@@ -141,9 +140,10 @@ describe.each`
     async ({ expect }) => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createTargetAccessToken } = await createProject(projectType);
-      const { publishSchema, deleteSchema, fetchVersions, fetchLatestValidSchema } =
-        await createTargetAccessToken({});
+      const { createTargetAccessToken, fetchVersions } = await createProject(projectType);
+      const { publishSchema, deleteSchema, fetchLatestValidSchema } = await createTargetAccessToken(
+        {},
+      );
 
       const serviceA = /* GraphQL */ `
         type Query {

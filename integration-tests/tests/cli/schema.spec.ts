@@ -216,13 +216,11 @@ describe.each`
       const { createOrg } = await initSeed().createOwner();
       const { inviteAndJoinMember, createProject } = await createOrg();
       await inviteAndJoinMember();
-      const { createTargetAccessToken, compareToPreviousVersion } = await createProject(
-        projectType,
-        {
+      const { createTargetAccessToken, compareToPreviousVersion, fetchVersions } =
+        await createProject(projectType, {
           useLegacyRegistryModels: model === 'legacy',
-        },
-      );
-      const { secret, fetchVersions } = await createTargetAccessToken({});
+        });
+      const { secret } = await createTargetAccessToken({});
       const cli = createCLI({
         readonly: secret,
         readwrite: secret,

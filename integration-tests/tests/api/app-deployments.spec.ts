@@ -1410,7 +1410,7 @@ test('retire app deployments fails without feature flag enabled for organization
 });
 
 test('get app deployment documents via GraphQL API', async () => {
-  const { createOrg } = await initSeed().createOwner();
+  const { createOrg, ownerToken } = await initSeed().createOwner();
   const { createProject, setFeatureFlag, organization } = await createOrg();
   await setFeatureFlag('appDeployments', true);
   const { createTargetAccessToken, project, target } = await createProject();
@@ -1480,7 +1480,7 @@ test('get app deployment documents via GraphQL API', async () => {
       appDeploymentName: 'app-name',
       appDeploymentVersion: 'app-version',
     },
-    authToken: token.secret,
+    authToken: ownerToken,
   }).then(res => res.expectNoGraphQLErrors());
   expect(result.target).toMatchObject({
     appDeployment: {
@@ -1525,7 +1525,7 @@ test('get app deployment documents via GraphQL API', async () => {
 });
 
 test('paginate app deployment documents via GraphQL API', async () => {
-  const { createOrg } = await initSeed().createOwner();
+  const { createOrg, ownerToken } = await initSeed().createOwner();
   const { createProject, setFeatureFlag, organization } = await createOrg();
   await setFeatureFlag('appDeployments', true);
   const { createTargetAccessToken, project, target } = await createProject();
@@ -1596,7 +1596,7 @@ test('paginate app deployment documents via GraphQL API', async () => {
       appDeploymentVersion: 'app-version',
       first: 1,
     },
-    authToken: token.secret,
+    authToken: ownerToken,
   }).then(res => res.expectNoGraphQLErrors());
   expect(result.target).toMatchObject({
     appDeployment: {
@@ -1630,7 +1630,7 @@ test('paginate app deployment documents via GraphQL API', async () => {
       first: 1,
       cursor: 'YWFh',
     },
-    authToken: token.secret,
+    authToken: ownerToken,
   }).then(res => res.expectNoGraphQLErrors());
   expect(result.target).toMatchObject({
     appDeployment: {
@@ -1663,7 +1663,7 @@ test('paginate app deployment documents via GraphQL API', async () => {
       appDeploymentVersion: 'app-version',
       cursor: 'YmJi',
     },
-    authToken: token.secret,
+    authToken: ownerToken,
   }).then(res => res.expectNoGraphQLErrors());
   expect(result.target).toMatchObject({
     appDeployment: {
@@ -1694,7 +1694,7 @@ test('paginate app deployment documents via GraphQL API', async () => {
 });
 
 test('app deployment usage reporting', async () => {
-  const { createOrg } = await initSeed().createOwner();
+  const { createOrg, ownerToken } = await initSeed().createOwner();
   const { createProject, setFeatureFlag, organization } = await createOrg();
   await setFeatureFlag('appDeployments', true);
   const { createTargetAccessToken, project, target } = await createProject();
@@ -1766,7 +1766,7 @@ test('app deployment usage reporting', async () => {
       appDeploymentName: 'app-name',
       appDeploymentVersion: 'app-version',
     },
-    authToken: token.secret,
+    authToken: ownerToken,
   }).then(res => res.expectNoGraphQLErrors());
   expect(data.target?.appDeployment?.lastUsed).toEqual(null);
 
@@ -1819,7 +1819,7 @@ test('app deployment usage reporting', async () => {
       appDeploymentName: 'app-name',
       appDeploymentVersion: 'app-version',
     },
-    authToken: token.secret,
+    authToken: ownerToken,
   }).then(res => res.expectNoGraphQLErrors());
   expect(data.target?.appDeployment?.lastUsed).toEqual(expect.any(String));
 });

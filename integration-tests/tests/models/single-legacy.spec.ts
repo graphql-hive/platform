@@ -322,10 +322,10 @@ describe('other', () => {
   test.concurrent('marking versions as valid', async () => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Single, {
+    const { createTargetAccessToken, fetchVersions } = await createProject(ProjectType.Single, {
       useLegacyRegistryModels: true,
     });
-    const { publishSchema, fetchVersions, fetchLatestValidSchema, updateSchemaVersionStatus } =
+    const { publishSchema, fetchLatestValidSchema, updateSchemaVersionStatus } =
       await createTargetAccessToken({});
 
     // Initial schema
@@ -391,11 +391,13 @@ describe('other', () => {
     async () => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createTargetAccessToken, createCdnAccess } = await createProject(ProjectType.Single, {
-        useLegacyRegistryModels: true,
-      });
-      const { publishSchema, fetchVersions, updateSchemaVersionStatus } =
-        await createTargetAccessToken({});
+      const { createTargetAccessToken, createCdnAccess, fetchVersions } = await createProject(
+        ProjectType.Single,
+        {
+          useLegacyRegistryModels: true,
+        },
+      );
+      const { publishSchema, updateSchemaVersionStatus } = await createTargetAccessToken({});
       const { fetchSchemaFromCDN, fetchMetadataFromCDN } = await createCdnAccess();
 
       // Initial schema

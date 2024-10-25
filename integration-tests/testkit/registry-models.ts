@@ -16,13 +16,14 @@ export async function prepareProject(
     targets,
     setProjectSchemaPolicy,
     setNativeFederation,
+    fetchVersions,
   } = await createProject(projectType, {
     useLegacyRegistryModels: model === RegistryModel.Legacy,
   });
 
   const { secret: readwriteToken } = await createTargetAccessToken({});
 
-  const { secret: readonlyToken, fetchVersions } = await createTargetAccessToken({
+  const { secret: readonlyToken } = await createTargetAccessToken({
     mode: 'readOnly',
   });
 

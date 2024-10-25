@@ -555,37 +555,6 @@ export function initSeed() {
                     async fetchLatestValidSchema() {
                       return (await fetchLatestValidSchema(secret)).expectNoGraphQLErrors();
                     },
-
-                    async updateBaseSchema(newBase: string) {
-                      const result = await updateBaseSchema(
-                        {
-                          newBase,
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                        },
-                        secret,
-                      ).then(r => r.expectNoGraphQLErrors());
-
-                      return result.updateBaseSchema;
-                    },
-                    async fetchVersions(count: number) {
-                      const result = await fetchVersions(
-                        {
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                        },
-                        count,
-                        secret,
-                      ).then(r => r.expectNoGraphQLErrors());
-
-                      if (!result.target) {
-                        throw new Error('Could not find target');
-                      }
-
-                      return result.target?.schemaVersions.edges.map(edge => edge.node);
-                    },
                     async fetchTokenInfo() {
                       const tokenInfoResult = await readTokenInfo(secret).then(r =>
                         r.expectNoGraphQLErrors(),
@@ -708,6 +677,36 @@ export function initSeed() {
                   ).then(r => r.expectNoGraphQLErrors());
 
                   return statsResult.operationsStats;
+                },
+                async updateBaseSchema(newBase: string, ttarget: TargetOverwrite = target) {
+                  const result = await updateBaseSchema(
+                    {
+                      newBase,
+                      organizationSlug: organization.slug,
+                      projectSlug: project.slug,
+                      targetSlug: ttarget.slug,
+                    },
+                    ownerToken,
+                  ).then(r => r.expectNoGraphQLErrors());
+
+                  return result.updateBaseSchema;
+                },
+                async fetchVersions(count: number, ttarget: TargetOverwrite = target) {
+                  const result = await fetchVersions(
+                    {
+                      organizationSlug: organization.slug,
+                      projectSlug: project.slug,
+                      targetSlug: ttarget.slug,
+                    },
+                    count,
+                    ownerToken,
+                  ).then(r => r.expectNoGraphQLErrors());
+
+                  if (!result.target) {
+                    throw new Error('Could not find target');
+                  }
+
+                  return result.target?.schemaVersions.edges.map(edge => edge.node);
                 },
               };
             },
