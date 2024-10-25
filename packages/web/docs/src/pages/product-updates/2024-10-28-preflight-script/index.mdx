@@ -6,7 +6,7 @@ date: 2024-10-28
 authors: [dimitri]
 ---
 
-import {Callout} from '@theguild/components'
+import { Callout } from '@theguild/components'
 
 We've added Preflight Scripts to Laboratory! These scripts allow you to automatically run custom
 authentication processes before executing your GraphQL operations. They're especially useful for
@@ -37,14 +37,17 @@ and Environment editor (JSON) which is persistent in localStorage.
 
 ## Editing Preflight Script
 
-Clicking on `Edit` button will open Modal where you could edit, test and save your script in database.
+Clicking on `Edit` button will open Modal where you could edit, test and save your script in
+database.
 
-<Callout type='warning'>
-  **Note**: Your script will stored as plain text in our database, don't put any secrets there, use environment editor for it!
-  Script is accessible for all members of your organization, but only users with access to target Settings are able to edit the script code
+<Callout type="warning">
+  **Note**: Your script will stored as plain text in our database, don't put any secrets there, use
+  environment editor for it! Script is accessible for all members of your organization, but only
+  users with access to target Settings are able to edit the script code
 </Callout>
 
-You can use any JavaScript syntax (including top-level `await`) in Script editor. Getting and Setting environment variables are done by `lab` global variable.
+You can use any JavaScript syntax (including top-level `await`) in Script editor. Getting and
+Setting environment variables are done by `lab` global variable.
 
 ```js
 // get myKey variable from Environment editor
@@ -59,7 +62,8 @@ lab.environment.set('myKey', myValue)
 
 ## CryptoJS
 
-Additionally, you can access CryptoJS library by accessing `CryptoJS` property on `lab` global variable
+Additionally, you can access CryptoJS library by accessing `CryptoJS` property on `lab` global
+variable
 
 ![CryptoJS](./crypto-js.png)
 
@@ -67,7 +71,8 @@ Additionally, you can access CryptoJS library by accessing `CryptoJS` property o
 
 ## Access to Global Variables and Errors
 
-Access to global variables such as `this`, `window` or `globalThis` are restricted, errors which will throw from script will be visible in Console Output.
+Access to global variables such as `this`, `window` or `globalThis` are restricted, errors which
+will throw from script will be visible in Console Output.
 
 ![Unable to access global variables](./unable-to-access-global-variables.png)
 
@@ -75,7 +80,8 @@ Access to global variables such as `this`, `window` or `globalThis` are restrict
 
 ## Using Environment Variables in Headers Editor
 
-To use your environment variables in GraphiQL headers editor wrap environment keys with double curly braces, e.g.:
+To use your environment variables in GraphiQL headers editor wrap environment keys with double curly
+braces, e.g.:
 
 ```json filename="Headers" /{{myEnvVar}}/
 {
