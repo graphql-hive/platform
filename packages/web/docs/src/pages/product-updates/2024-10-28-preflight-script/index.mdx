@@ -37,22 +37,22 @@ and Environment variables editor (JSON language) which is persistent in localSto
 
 ## Editing Preflight Script
 
-Clicking on `Edit` button will open Modal where you could edit, test and save your script in
+Clicking on the `Edit` button will open Modal where you can edit, test and save your script in
 database.
 
 <Callout type="warning">
   **Note**: Your script will stored as plain text in our database, don't put any secrets there, use
-  Environment variables editor for it! Script is accessible for all members of your organization, but only
-  users with access to target Settings are able to edit the script code
+  Environment variables editor for it! The preflight script is accessible to all members of your organization, but only
+  users with access to target Settings can edit the script code.
 </Callout>
 
-You can use any JavaScript syntax (including top-level `await`) in Script editor. Getting and
-Setting environment variables are done by `lab` global variable.
+You can use any JavaScript syntax (including top-level `await`) in the Script editor. Getting and
+Setting environment variables is done by accessing the `environment` property on the `lab` global variable.
 
 ```js
-// get myKey variable from Environment editor
+// get myKey variable from the Environment variables editor
 lab.environment.get('myKey')
-// set myKey variable to Environment editor (persistent in localStorage)
+// set myKey variable to the Environment variables editor (persistent in localStorage)
 lab.environment.set('myKey', myValue)
 ```
 
@@ -62,8 +62,8 @@ lab.environment.set('myKey', myValue)
 
 ## CryptoJS
 
-Additionally, you can access CryptoJS library by accessing `CryptoJS` property on `lab` global
-variable
+Additionally, you can access the CryptoJS library by accessing the `CryptoJS` property on the `lab` global
+variable.
 
 ![CryptoJS](./crypto-js.png)
 
@@ -72,15 +72,15 @@ variable
 ## Access to Global Variables and Errors
 
 Access to global variables such as `this`, `window` or `globalThis` are restricted, errors which
-will throw from script will be visible in Console Output.
+will throw from a script will be visible in Console Output.
 
-![Unable to access global variables](./unable-to-access-global-variables.png)
+![Demo restricted access to global variables](./unable-to-access-global-variables.png)
 
-<Caption>Unable to access global variables</Caption>
+<Caption>Demo restricted access to global variables</Caption>
 
 ## Using Environment Variables in Headers Editor
 
-To use your environment variables in GraphiQL headers editor wrap environment keys with double curly
+To use your environment variables in GraphiQL headers editor wraps environment keys with double-curly
 braces, e.g.:
 
 ```json filename="Headers" /{{myEnvVar}}/
@@ -89,6 +89,6 @@ braces, e.g.:
 }
 ```
 
-![Replace syntax](./replace-syntax.png)
+![Replace syntax in action](./replace-syntax.png)
 
 <Caption>Replace syntax is done via double open/closed curly braces, e.g. `{{myEnvVar}}`</Caption>
