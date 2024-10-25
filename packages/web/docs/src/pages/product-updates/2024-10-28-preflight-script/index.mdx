@@ -1,5 +1,5 @@
 ---
-title: Automatically run custom authentication processes in Laboratory
+title: Automatically run custom authentication processes in the Laboratory
 description:
   Useful for handling authentication flows like OAuth, where you may need to refresh an access token
 date: 2024-10-28
@@ -19,17 +19,17 @@ export function Caption({ children }) {
 
 ## Configuring Your Preflight Script
 
-To create a script click on command line icon (right after Operation Collections plugin icon) in
+To create a script click on the command line icon (right after Operation Collections plugin icon) in
 GraphiQL sidebar section.
 
 ![Command line icon](./command-line-icon.png)
 
 <Caption>
-  {'Preflight script is accessible by clicking on Command line icon in GraphiQL sidebar'}
+  {'The preflight script is accessible by clicking on the Command line icon in the GraphiQL sidebar'}
 </Caption>
 
-You will see Script editor (JavaScript) which is read-only and present for showing your saved script
-and Environment editor (JSON) which is persistent in localStorage.
+You will see Script editor (JavaScript language) which is read-only and present for a quick view of your saved script
+and Environment variables editor (JSON language) which is persistent in localStorage.
 
 ![Preflight script plugin view](./preflight-script-plugin.png)
 
@@ -42,7 +42,7 @@ database.
 
 <Callout type="warning">
   **Note**: Your script will stored as plain text in our database, don't put any secrets there, use
-  environment editor for it! Script is accessible for all members of your organization, but only
+  Environment variables editor for it! Script is accessible for all members of your organization, but only
   users with access to target Settings are able to edit the script code
 </Callout>
 
