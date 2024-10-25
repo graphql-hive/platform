@@ -92,29 +92,38 @@ double-curly braces, e.g.:
 
 ![Replace syntax in action](./replace-syntax.png)
 
-<Caption>Replace syntax is done via double open/closed curly braces, e.g. {'{{myEnvVar}}'}</Caption>
+<Caption>Replace syntax is done via double open/closed curly braces, e.g. `{{ myEnvVar }}`</Caption>
 
 ## Summary
 
-Preflight Scripts in the Laboratory enables the automatic execution of custom authentication processes prior to GraphQL operations. This feature is particularly beneficial for managing authentication flows, such as OAuth, where access tokens may need to be refreshed.
+Preflight Scripts in the Laboratory enables the automatic execution of custom authentication
+processes prior to GraphQL operations. This feature is particularly beneficial for managing
+authentication flows, such as OAuth, where access tokens may need to be refreshed.
 
 ### Key Takeaways
 
 1. Setting Up Preflight Scripts:
 
-    - Access the script editor by clicking the command line icon in the GraphiQL sidebar.
-    - The editor supports modern JavaScript syntax.
+   - Access the script editor by clicking the command line icon in the GraphiQL sidebar.
+   - The editor supports modern JavaScript syntax.
+
 1. Editing Scripts:
 
-    - Users can edit, test, and save scripts through a modal interface.
-    - **Important**: Avoid storing secrets directly in the script; instead, use the Environment Variables editor.
+   - Users can edit, test, and save scripts through a modal interface.
+   - **Important**: Avoid storing secrets directly in the script; instead, use the Environment
+     Variables editor.
+
 1. Environment Variables:
 
-    - Access environment variables with `lab.environment.get()` and `lab.environment.set()`.
-    - These variables can be used in headers by enclosing them in double curly braces (e.g., `{{myEnvVar}}`).
+   - Access environment variables with `lab.environment.get()` and `lab.environment.set()`.
+   - These variables can be used in headers by enclosing them in double curly braces (e.g.,
+     `{{myEnvVar}}`).
+
 1. CryptoJS Library:
 
-    - The CryptoJS library is accessible via the lab global variable for cryptographic functions.
+   - The CryptoJS library is accessible via the lab global variable for cryptographic functions.
+
 1. Global Variables Access:
 
-    - Access to certain global variables like `this` or `window` is restricted, with any errors displayed in the Console Output.
+   - Access to certain global variables like `this` or `window` is restricted, with any errors
+     displayed in the Console Output.
