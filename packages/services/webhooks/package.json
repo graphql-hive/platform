@@ -13,7 +13,7 @@
     "@hive/service-common": "workspace:*",
     "@sentry/node": "7.119.0",
     "@trpc/server": "10.45.2",
-    "bullmq": "5.12.10",
+    "bullmq": "5.21.2",
     "copyfiles": "2.4.1",
     "dotenv": "16.4.5",
     "got": "14.4.3",
