@@ -23,7 +23,7 @@
     "mjml": "4.14.0",
     "nodemailer": "6.9.15",
     "p-timeout": "6.1.2",
-    "pino-pretty": "11.2.2",
+    "pino-pretty": "11.3.0",
     "sendmail": "1.6.1",
     "tslib": "2.7.0",
     "zod": "3.23.8"
