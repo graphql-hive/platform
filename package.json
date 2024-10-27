@@ -83,7 +83,7 @@
     "fs-extra": "11.2.0",
     "graphql": "16.9.0",
     "jest-snapshot-serializer-raw": "2.0.0",
-    "pg": "8.12.0",
+    "pg": "8.13.1",
     "prettier": "3.3.3",
     "prettier-plugin-sql": "0.18.1",
     "prettier-plugin-tailwindcss": "0.6.8",
