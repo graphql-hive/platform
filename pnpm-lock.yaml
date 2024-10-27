@@ -1163,17 +1163,17 @@ importers:
         specifier: 5.0.0
         version: 5.0.0
       '@escape.tech/graphql-armor-max-aliases':
-        specifier: 2.5.0
-        version: 2.5.0
+        specifier: 2.6.0
+        version: 2.6.0
       '@escape.tech/graphql-armor-max-depth':
-        specifier: 2.3.0
-        version: 2.3.0
-      '@escape.tech/graphql-armor-max-directives':
-        specifier: 2.2.0
-        version: 2.2.0
-      '@escape.tech/graphql-armor-max-tokens':
         specifier: 2.4.0
         version: 2.4.0
+      '@escape.tech/graphql-armor-max-directives':
+        specifier: 2.3.0
+        version: 2.3.0
+      '@escape.tech/graphql-armor-max-tokens':
+        specifier: 2.5.0
+        version: 2.5.0
       '@fastify/cors':
         specifier: 9.0.1
         version: 9.0.1
@@ -1978,7 +1978,7 @@ importers:
         version: 1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@22.8.1)(typescript@5.5.4)))
       tailwindcss-radix:
         specifier: 3.0.5
-        version: 3.0.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4)))
+        version: 3.0.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@22.8.1)(typescript@5.5.4)))
       tslib:
         specifier: 2.7.0
         version: 2.7.0
@@ -2059,7 +2059,7 @@ importers:
         version: 1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@22.8.1)(typescript@5.5.4)))
       tailwindcss-radix:
         specifier: 3.0.5
-        version: 3.0.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4)))
+        version: 3.0.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@22.8.1)(typescript@5.5.4)))
     devDependencies:
       '@theguild/tailwind-config':
         specifier: 0.5.0
@@ -3982,24 +3982,24 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@escape.tech/graphql-armor-max-aliases@2.5.0':
-    resolution: {integrity: sha512-deaLZF3ASfJY9jUbBzoZW9IUHWqAVorpDR9Yez4mxk8iFltwCpgtJfVEb57T+R0RyiFrtjdUM5SQpNZJxhie7w==}
+  '@escape.tech/graphql-armor-max-aliases@2.6.0':
+    resolution: {integrity: sha512-9dwRC5+dl986byBD9QRYRUrLALa7awpUe4aIM1j7StZHGJgmYRj3LZaWQM3JyI8j2FXg4rqBC4FJAiVYpRyWqw==}
     engines: {node: '>=18.0.0'}
 
-  '@escape.tech/graphql-armor-max-depth@2.3.0':
-    resolution: {integrity: sha512-EgqJU2yOaKaFeNDqMn18fIOI6UNjboWV950G9I39ebXyxsQmIaAx0Hs9hJoCBEHdLY9SCKWsEZFipHXqvaphdw==}
+  '@escape.tech/graphql-armor-max-depth@2.4.0':
+    resolution: {integrity: sha512-4sQkvPITjkSW4mReGyBT5A4qFkBTzyK9HGOLm8Rrte/JrulVAsokK8HWDr/2Yw0KqSFBMCAmy575YMaYoTHLvQ==}
     engines: {node: '>=18.0.0'}
 
-  '@escape.tech/graphql-armor-max-directives@2.2.0':
-    resolution: {integrity: sha512-DYU2Y2Qiq5Ui+NhDpdN22eU9jvxSnbCborrhdCO1ISzgCyYyCqiYBLBt0KRsEuIr4fpIpA3zBzzT97Y2qcj7Vw==}
+  '@escape.tech/graphql-armor-max-directives@2.3.0':
+    resolution: {integrity: sha512-8tCJ5pymEOp6niKqqyWdiiuY2GDaei02FNj2Vx0dg/1uCnJbUcOZoL7YaAW6W7e3raY2kOWTK2wF4L/KY+fINw==}
     engines: {node: '>=18.0.0'}
 
-  '@escape.tech/graphql-armor-max-tokens@2.4.0':
-    resolution: {integrity: sha512-apKQBcYc6vsrITR+uKGXTC9yWV4zUEP4usb5zO0vebYT6e4KLcS2gwIQOsDLCnD5IyU5sUOzHBWmkFyBPz5keQ==}
+  '@escape.tech/graphql-armor-max-tokens@2.5.0':
+    resolution: {integrity: sha512-XypQs0NELYwmz/Mx9wVjw1riI3bvZyU2Ya4BnV0AIFLd9UYYl0BzuI4BSR46t5V2Sh73ePl6Ru1jj5rb4nfVOw==}
     engines: {node: '>=18.0.0'}
 
-  '@escape.tech/graphql-armor-types@0.6.0':
-    resolution: {integrity: sha512-Y3X6JgkB1N1MMaHNXaE2IeJWIs6wT4XcPvXM8PRWmT2DblZfY4NYiV1mh0GTInKdlnrEr5hquOR9XV+M3Da43w==}
+  '@escape.tech/graphql-armor-types@0.7.0':
+    resolution: {integrity: sha512-RHxyyp6PDgS6NAPnnmB6JdmUJ6oqhpSHFbsglGWeCcnNzceA5AkQFpir7VIDbVyS8LNC1xhipOtk7f9ycrIemQ==}
 
   '@eslint-community/eslint-utils@4.4.0':
     resolution: {integrity: sha512-1/sA4dwrzBAyeUoQ6oxahHKmrZvsnLCg4RfxW3ZFGGmQkSNQPFNLV9CUEFQP1x9EYXHTo5p6xdhZM1Ne9p/AfA==}
@@ -16943,8 +16943,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -17051,11 +17051,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.596.0':
+  '@aws-sdk/client-sso-oidc@3.596.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -17094,6 +17094,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso-oidc@3.679.0(@aws-sdk/client-sts@3.679.0)':
@@ -17227,11 +17228,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)':
+  '@aws-sdk/client-sts@3.596.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -17270,7 +17271,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.7.0
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/client-sts@3.679.0':
@@ -17384,7 +17384,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.596.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -17503,7 +17503,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/types': 3.6.0
@@ -17676,7 +17676,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/shared-ini-file-loader': 3.1.9
@@ -19296,35 +19296,35 @@ snapshots:
   '@esbuild/win32-x64@0.23.1':
     optional: true
 
-  '@escape.tech/graphql-armor-max-aliases@2.5.0':
+  '@escape.tech/graphql-armor-max-aliases@2.6.0':
     dependencies:
       graphql: 16.9.0
     optionalDependencies:
       '@envelop/core': 5.0.2
-      '@escape.tech/graphql-armor-types': 0.6.0
+      '@escape.tech/graphql-armor-types': 0.7.0
 
-  '@escape.tech/graphql-armor-max-depth@2.3.0':
+  '@escape.tech/graphql-armor-max-depth@2.4.0':
     dependencies:
       graphql: 16.9.0
     optionalDependencies:
       '@envelop/core': 5.0.2
-      '@escape.tech/graphql-armor-types': 0.6.0
+      '@escape.tech/graphql-armor-types': 0.7.0
 
-  '@escape.tech/graphql-armor-max-directives@2.2.0':
+  '@escape.tech/graphql-armor-max-directives@2.3.0':
     dependencies:
       graphql: 16.9.0
     optionalDependencies:
       '@envelop/core': 5.0.2
-      '@escape.tech/graphql-armor-types': 0.6.0
+      '@escape.tech/graphql-armor-types': 0.7.0
 
-  '@escape.tech/graphql-armor-max-tokens@2.4.0':
+  '@escape.tech/graphql-armor-max-tokens@2.5.0':
     dependencies:
       graphql: 16.9.0
     optionalDependencies:
       '@envelop/core': 5.0.2
-      '@escape.tech/graphql-armor-types': 0.6.0
+      '@escape.tech/graphql-armor-types': 0.7.0
 
-  '@escape.tech/graphql-armor-types@0.6.0':
+  '@escape.tech/graphql-armor-types@0.7.0':
     dependencies:
       graphql: 16.9.0
     optional: true
@@ -20238,7 +20238,7 @@ snapshots:
     dependencies:
       '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
       '@repeaterjs/repeater': 3.0.6
-      '@whatwg-node/fetch': 0.9.22
+      '@whatwg-node/fetch': 0.9.21
       dset: 3.1.2
       extract-files: 11.0.0
       graphql: 16.9.0
@@ -34060,9 +34060,9 @@ snapshots:
     dependencies:
       tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@22.8.1)(typescript@5.5.4))
 
-  tailwindcss-radix@3.0.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4))):
+  tailwindcss-radix@3.0.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@22.8.1)(typescript@5.5.4))):
     dependencies:
-      tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4))
+      tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@22.8.1)(typescript@5.5.4))
 
   tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4)):
     dependencies:
