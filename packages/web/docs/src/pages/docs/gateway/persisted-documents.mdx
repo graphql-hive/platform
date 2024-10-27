@@ -42,7 +42,7 @@ hive-gateway supergraph "<cdn_endpoint>" \
 
 ```sh filename="Run the Hive Gateway CLI" {3,4}
 docker run --rm --name hive-gateway -p 4000:4000 \
-  ghcr.io/ardatan/hive-gateway supergraph "<cdn_endpoint>" \
+  ghcr.io/graphql-hive/gateway supergraph "<cdn_endpoint>" \
   --hive-persisted-documents-endpoint "<cdn_endpoint>" \
   --hive-persisted-documents-token "<cdn_access_token>"
 ```

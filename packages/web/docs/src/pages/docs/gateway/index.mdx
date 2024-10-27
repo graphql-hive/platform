@@ -62,7 +62,7 @@ curl -sSL https://graphql-hive.com/install-gateway.sh | sh
 You can use the official Docker image to run Hive Gateway.
 
 ```sh
-docker pull ghcr.io/ardatan/hive-gateway
+docker pull ghcr.io/graphql-hive/gateway
 ```
 
 </Tabs.Tab>
@@ -125,7 +125,7 @@ hive-gateway supergraph \
 
 ```sh filename="Run Apollo Federation Gateway with the Hive Gateway Docker Image"
 docker run --rm --name hive-gateway -p 4000:4000 \
-  ghcr.io/ardatan/hive-gateway supergraph \
+  ghcr.io/graphql-hive/gateway supergraph \
   http://cdn.graphql-hive.com/artifacts/v1/12713322-4f6a-459b-9d7c-8aa3cf039c2e/supergraph \
   --hive-cdn-key "YOUR HIVE CDN KEY"
 ```
@@ -178,7 +178,7 @@ hive-gateway proxy https://localhost:3000/graphql \
 
 ```sh filename="Run Proxy Gateway with the Hive Gateway Binary"
 docker run --rm --name hive-gateway -p 4000:4000 \
-  ghcr.io/ardatan/hive-gateway proxy https://localhost:3000/graphql \
+  ghcr.io/graphql-hive/gateway proxy https://localhost:3000/graphql \
   --hive-cdn-endpoint http://cdn.graphql-hive.com/artifacts/v1/12713322-4f6a-459b-9d7c-8aa3cf039c2e/sdl \
   --hive-cdn-key "YOUR HIVE CDN KEY"
 ```
@@ -255,8 +255,8 @@ For docker, we need to mount the configuration file into the container.
 
 ```sh filename="Run Proxy Gateway with the Hive Gateway Binary" {2}
 docker run --rm --name hive-gateway -p 4000:4000 \
-  -v $(pwd)/gateway.config.ts:/serve/gateway.config.ts \
-  ghcr.io/ardatan/hive-gateway supergraph
+  -v $(pwd)/gateway.config.ts:/gateway/gateway.config.ts \
+  ghcr.io/graphql-hive/gateway supergraph
 ```
 
 </Tabs.Tab>
@@ -311,8 +311,8 @@ For docker, we need to mount the configuration file into the container.
 
 ```sh filename="Run Proxy Gateway with the Hive Gateway Binary" {2}
 docker run --rm --name hive-gateway -p 4000:4000 \
-  -v $(pwd)/gateway.config.ts:/serve/gateway.config.ts \
-  ghcr.io/ardatan/hive-gateway proxy https://localhost:3000/graphql \
+  -v $(pwd)/gateway.config.ts:/gateway/gateway.config.ts \
+  ghcr.io/graphql-hive/gateway proxy https://localhost:3000/graphql \
   --hive-cdn-endpoint http://cdn.graphql-hive.com/artifacts/v1/12713322-4f6a-459b-9d7c-8aa3cf039c2e/sdl \
   --hive-cdn-key "YOUR HIVE CDN KEY"
 ```
