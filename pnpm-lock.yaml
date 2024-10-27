@@ -1975,8 +1975,8 @@ importers:
         specifier: 1.0.7
         version: 1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4)))
       tailwindcss-radix:
-        specifier: 3.0.4
-        version: 3.0.4
+        specifier: 3.0.5
+        version: 3.0.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4)))
       tslib:
         specifier: 2.7.0
         version: 2.7.0
@@ -2056,8 +2056,8 @@ importers:
         specifier: 1.0.7
         version: 1.0.7(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4)))
       tailwindcss-radix:
-        specifier: 3.0.3
-        version: 3.0.3
+        specifier: 3.0.5
+        version: 3.0.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4)))
     devDependencies:
       '@theguild/tailwind-config':
         specifier: 0.5.0
@@ -15316,11 +15316,11 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
 
-  tailwindcss-radix@3.0.3:
-    resolution: {integrity: sha512-uueKWJIY98tU4Fip2FTL2eXBqX428e5HBwbu+8rqqJ9H3NuhkcAGS66wNHZjeix56f6nNBhkhMLpQeIrmVxH/w==}
-
-  tailwindcss-radix@3.0.4:
-    resolution: {integrity: sha512-nnMdBWHGBon4OxfRsF0LfOaoW09WeSU5extMUpk8RckYl94nwu9uyJ6IO5eIrRpvrHNm5CVaWz6PaldcEoQ4SQ==}
+  tailwindcss-radix@3.0.5:
+    resolution: {integrity: sha512-dy5bIHixuvrmMzljDoteKD1mcLAm76Z1IPkCr7IWUN89zoxfokVepPlxMQkmWEQokYs3N9BOLsXXvn8fLZWoBg==}
+    engines: {pnpm: '9'}
+    peerDependencies:
+      tailwindcss: ^3.4.1
 
   tailwindcss@3.4.14:
     resolution: {integrity: sha512-IcSvOcTRcUtQQ7ILQL5quRDg7Xs93PdJEk1ZLbhhvJc7uj/OAhYOnruEiwnGgBvUtaUAJ8/mhSw1o8L2jCiENA==}
@@ -33859,9 +33859,9 @@ snapshots:
     dependencies:
       tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4))
 
-  tailwindcss-radix@3.0.3: {}
-
-  tailwindcss-radix@3.0.4: {}
+  tailwindcss-radix@3.0.5(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4))):
+    dependencies:
+      tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4))
 
   tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.39(@swc/helpers@0.5.11))(@types/node@20.17.1)(typescript@5.5.4)):
     dependencies:
