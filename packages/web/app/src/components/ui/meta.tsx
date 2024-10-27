@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
 const defaultDescription =
-  'GraphQL Hive is Open GraphQL Platform to help you prevent breaking changes, monitor performance of your GraphQL API, and manage your API gateway (Federation, Stitching) with the Schema Registry. GraphQL Hive is 100% open source and can be self-hosted.';
+  'Open-source GraphQL platform for managing APIs with federation and stitching, preventing breaking changes, and optimizing performance. Self-host or deploy in the cloud for complete data control.';
 const defaultSuffix = 'GraphQL Hive';
 
 export function Meta({
