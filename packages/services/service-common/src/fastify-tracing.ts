@@ -58,7 +58,7 @@ function defaultFormatSpanName(request: FastifyRequest) {
   if (request.routeOptions) {
     path = request.routeOptions.url;
   } else {
-    path = request.routerPath;
+    path = request.url;
   }
   return path ? `${method} ${path}` : method;
 }

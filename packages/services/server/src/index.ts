@@ -128,7 +128,12 @@ export async function main() {
     },
   );
 
-  server.setErrorHandler(supertokensErrorHandler());
+  let errorHandler = supertokensErrorHandler();
+  server.setErrorHandler((err, req, res) => {
+    // DOTAN: Sorry about "as any" here, but it's the only way to make it work.
+    // Remove this when we do Supertokens upgrade.
+    return errorHandler(err, req, res as any);
+  });
   await server.register(cors, (_: unknown): FastifyCorsOptionsDelegateCallback => {
     return (req, callback) => {
       if (req.headers.origin?.startsWith(env.hiveServices.webApp.url)) {
