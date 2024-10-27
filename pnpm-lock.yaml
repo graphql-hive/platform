@@ -757,8 +757,8 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       graphql-modules:
-        specifier: 2.3.0
-        version: 2.3.0(graphql@16.9.0)
+        specifier: 2.4.0
+        version: 2.4.0(graphql@16.9.0)
       graphql-parse-resolve-info:
         specifier: 4.13.0
         version: 4.13.0(graphql@16.9.0)
@@ -1152,7 +1152,7 @@ importers:
         version: 8.0.3(@envelop/core@5.0.2)(graphql@16.9.0)
       '@envelop/graphql-modules':
         specifier: 6.0.0
-        version: 6.0.0(@envelop/core@5.0.2)(graphql-modules@2.3.0(graphql@16.9.0))(graphql@16.9.0)
+        version: 6.0.0(@envelop/core@5.0.2)(graphql-modules@2.4.0(graphql@16.9.0))(graphql@16.9.0)
       '@envelop/opentelemetry':
         specifier: 6.3.1
         version: 6.3.1(@envelop/core@5.0.2)(graphql@16.9.0)
@@ -4091,7 +4091,6 @@ packages:
 
   '@fastify/vite@6.0.7':
     resolution: {integrity: sha512-+dRo9KUkvmbqdmBskG02SwigWl06Mwkw8SBDK1zTNH6vd4DyXbRvI7RmJEmBkLouSU81KTzy1+OzwHSffqSD6w==}
-    bundledDependencies: []
 
   '@floating-ui/core@1.2.6':
     resolution: {integrity: sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==}
@@ -11081,8 +11080,8 @@ packages:
     peerDependencies:
       graphql: ^15.5.0 || ^16.0.0 || ^17.0.0-alpha.2
 
-  graphql-modules@2.3.0:
-    resolution: {integrity: sha512-CcrjUjMYHy3zelnffldhR3h6t4ndCVJEzdqBAv/mp4ZGEA/izirOKZB2lnRwpXNqOtVwIz2O/E1Cg/UH8dFNaQ==}
+  graphql-modules@2.4.0:
+    resolution: {integrity: sha512-2KgsHC/ivsdiEWX97MA3V0eAo6TE8BhPW9BZgYzhivNDfz+3UUTCxZ0/GpSXXScolfoGyo0m3lVlXXg0zQk5ew==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
 
@@ -19069,11 +19068,11 @@ snapshots:
       tslib: 2.7.0
       value-or-promise: 1.0.12
 
-  '@envelop/graphql-modules@6.0.0(@envelop/core@5.0.2)(graphql-modules@2.3.0(graphql@16.9.0))(graphql@16.9.0)':
+  '@envelop/graphql-modules@6.0.0(@envelop/core@5.0.2)(graphql-modules@2.4.0(graphql@16.9.0))(graphql@16.9.0)':
     dependencies:
       '@envelop/core': 5.0.2
       graphql: 16.9.0
-      graphql-modules: 2.3.0(graphql@16.9.0)
+      graphql-modules: 2.4.0(graphql@16.9.0)
       tslib: 2.7.0
 
   '@envelop/on-resolve@4.1.0(@envelop/core@5.0.2)(graphql@16.9.0)':
@@ -28839,10 +28838,10 @@ snapshots:
       nullthrows: 1.1.1
       vscode-languageserver-types: 3.17.5
 
-  graphql-modules@2.3.0(graphql@16.9.0):
+  graphql-modules@2.4.0(graphql@16.9.0):
     dependencies:
       '@graphql-tools/schema': 10.0.7(graphql@16.9.0)
-      '@graphql-tools/wrap': 10.0.2(graphql@16.9.0)
+      '@graphql-tools/wrap': 10.0.11(graphql@16.9.0)
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.9.0)
       graphql: 16.9.0
       ramda: 0.29.0
