@@ -99,8 +99,11 @@
   },
   "pnpm": {
     "overrides.csstype": "To fix type check error https://github.com/JedWatson/react-select/issues/5952",
+    "overrides.mjml": "Our patch removes html-minifier from mjml-core, we dont need this dependency and its causing false-alarm (CVE https://nvd.nist.gov/vuln/detail/cve-2022-37620)",
     "overrides": {
-      "csstype": "3.1.2"
+      "csstype": "3.1.2",
+      "mjml-core@4.14.0>html-minifier": "-",
+      "mjml-cli@4.14.0>html-minifier": "-"
     },
     "patchedDependencies": {
       "@theguild/buddy@0.1.0": "patches/@theguild__buddy@0.1.0.patch",

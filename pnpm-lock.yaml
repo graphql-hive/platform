@@ -6,6 +6,8 @@ settings:
 
 overrides:
   csstype: 3.1.2
+  mjml-core@4.14.0>html-minifier: '-'
+  mjml-cli@4.14.0>html-minifier: '-'
 
 patchedDependencies:
   '@apollo/federation@0.38.1':
@@ -4085,6 +4087,7 @@ packages:
 
   '@fastify/vite@6.0.7':
     resolution: {integrity: sha512-+dRo9KUkvmbqdmBskG02SwigWl06Mwkw8SBDK1zTNH6vd4DyXbRvI7RmJEmBkLouSU81KTzy1+OzwHSffqSD6w==}
+    bundledDependencies: []
 
   '@floating-ui/core@1.2.6':
     resolution: {integrity: sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==}
@@ -8822,9 +8825,6 @@ packages:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
 
-  camel-case@3.0.0:
-    resolution: {integrity: sha512-+MbKztAYHXPr1jNTSKQF52VpcFjwY5RkR7fxksV8Doo4KAYc5Fl4UJRgthBbTmEx8C54DqahhbLJkDwjI3PI/w==}
-
   camel-case@4.1.2:
     resolution: {integrity: sha512-gxGWBrTT1JuMx6R+o5PTXMmUnhnVzLQ9SNutD4YqKtI6ap897t3tKECYla6gCWEkplXnlNybEkZg9GEGxKFCgw==}
 
@@ -8980,10 +8980,6 @@ packages:
 
   class-variance-authority@0.7.0:
     resolution: {integrity: sha512-jFI8IQw4hczaL4ALINxqLEXQbWcNjoSkloa4IaufXCJr6QawJyw7tuRysRsrE8w2p/4gGaxKIt/hX3qz/IbD1A==}
-
-  clean-css@4.2.4:
-    resolution: {integrity: sha512-EJUDT7nDVFDvaQgAo2G/PJvxmp1o/c6iXLbswsBbUFXi1Nr+AjA2cKmfbKDMjMvzEe75g3P6JkaDDAKk96A85A==}
-    engines: {node: '>= 4.0'}
 
   clean-regexp@1.0.0:
     resolution: {integrity: sha512-GfisEZEJvzKrmGWkvfhgzcz/BllN1USeqD2V6tg14OAOgaCD2Z/PUEuxnAZ/nPvmaHRG7a8y77p1T/IRQ4D1Hw==}
@@ -11136,10 +11132,6 @@ packages:
   hastscript@8.0.0:
     resolution: {integrity: sha512-dMOtzCEd3ABUeSIISmrETiKuyydk1w0pa+gE/uormcTpSYuaNJPbX1NU3JLyscSLjwAQM8bWMhhIlnCqnRvDTw==}
 
-  he@1.2.0:
-    resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
-    hasBin: true
-
   header-case@2.0.4:
     resolution: {integrity: sha512-H/vuk5TEEVZwrR0lp2zed9OCo1uAILMlx0JEMgC26rzyJJ3N1v6XkwHHXJQdR2doSjcGPM6OKPYoJgf0plJ11Q==}
 
@@ -11161,11 +11153,6 @@ packages:
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
-
-  html-minifier@4.0.0:
-    resolution: {integrity: sha512-aoGxanpFPLg7MkIl/DDFYtb0iWz7jMFGqFhvEDZga6/4QTjneiD8I/NXL1x5aaoCp7FSIT6h/OhykDdPsbtMig==}
-    engines: {node: '>=6'}
-    hasBin: true
 
   html-tags@3.2.0:
     resolution: {integrity: sha512-vy7ClnArOZwCnqZgvv+ddgHgJiAFXe3Ge9ML5/mBctVJoUoYPCdxVucOywjDARn6CVoh3dRSFdPHy2sX80L0Wg==}
@@ -12192,9 +12179,6 @@ packages:
   lower-case-first@2.0.2:
     resolution: {integrity: sha512-EVm/rR94FJTZi3zefZ82fLWab+GX14LJN4HrWBcuo6Evmsl9hEfnqxgcHCKb9q+mNf6EVdsjx/qucYFIIB84pg==}
 
-  lower-case@1.1.4:
-    resolution: {integrity: sha512-2Fgx1Ycm599x+WGpIYwJOvsjmXFzTSc34IwDWALRA/8AopUKAVPwfJ+h5+f85BCp0PWmmJcWzEpxOpoXycMpdA==}
-
   lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
 
@@ -12933,9 +12917,6 @@ packages:
   nlcst-to-string@4.0.0:
     resolution: {integrity: sha512-YKLBCcUYKAg0FNlOBT6aI91qFmSiFKiluk655WzPF+DDMA02qIyy8uiRqI8QXtcFpEvll12LpL5MXqEmAZ+dcA==}
 
-  no-case@2.3.2:
-    resolution: {integrity: sha512-rmTZ9kz+f3rCvK2TD1Ue/oZlns7OGoIWP4fc3llxxRXlOkHKoWPPWJOfFYpITabSow43QJbRIoHQXtt10VldyQ==}
-
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
 
@@ -13306,9 +13287,6 @@ packages:
     resolution: {integrity: sha512-cJKrW21VRE8vVTRskJo78c/RCvwJCn1f4qgfxL4w77SOWrTCRcmfkYHlHtS0gqpgjv3zhXflRtgsrUCX5xwNnQ==}
     engines: {node: ^16.14.0 || >=18.0.0}
     hasBin: true
-
-  param-case@2.1.1:
-    resolution: {integrity: sha512-eQE845L6ot89sk2N8liD8HAuH4ca6Vvr7VWAWwt7+kvvG5aBcPmmphQ68JsEG2qa9n1TykS2DLeMt363AAH8/w==}
 
   param-case@3.0.4:
     resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
@@ -14467,10 +14445,6 @@ packages:
 
   rehype-slug@6.0.0:
     resolution: {integrity: sha512-lWyvf/jwu+oS5+hL5eClVd3hNdmwM1kAC0BUvEGD19pajQMIzcNUd/k9GsfQ+FfECvX+JE+e9/btsKH0EjJT6A==}
-
-  relateurl@0.2.7:
-    resolution: {integrity: sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==}
-    engines: {node: '>= 0.10'}
 
   relay-runtime@12.0.0:
     resolution: {integrity: sha512-QU6JKr1tMsry22DXNy9Whsq5rmvwr3LSZiiWV/9+DFpuTWvp+WFhobWMc8TC4OjKFfNhEZy7mOiqUAn5atQtug==}
@@ -15735,11 +15709,6 @@ packages:
   ufo@1.5.4:
     resolution: {integrity: sha512-UsUk3byDzKd04EyoZ7U4DOlxQaD14JUKQl6/P7wiX4FNvUfm3XL246n9W5AmqwW5RSFJ27NAuM0iLscAOYUiGQ==}
 
-  uglify-js@3.17.4:
-    resolution: {integrity: sha512-T9q82TJI9e/C1TAxYvfb16xO120tMVFZrGA3f9/P4424DNu6ypK103y0GPFVa17yotwSyZW5iYXgjYHkGrJW/g==}
-    engines: {node: '>=0.8.0'}
-    hasBin: true
-
   unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
 
@@ -15907,9 +15876,6 @@ packages:
 
   upper-case-first@2.0.2:
     resolution: {integrity: sha512-514ppYHBaKwfJRK/pNC6c/OxfGa0obSnAl106u97Ed0I625Nin96KAjttZF6ZL3e1XLtphxnqrOi9iWgm+u+bg==}
-
-  upper-case@1.1.3:
-    resolution: {integrity: sha512-WRbjgmYzgXkCV7zNVpy5YgrHgbBv126rMALQQMrmzOVC4GM2waQ9x7xtm8VU+1yF2kWyPzI9zbZ48n4vSxwfSA==}
 
   upper-case@2.0.2:
     resolution: {integrity: sha512-KgdgDGJt2TpuwBUIjgG6lzw2GWFRCW9Qkfkiv0DxqHHLYJHmtmdUIKcZd8rHgFSjopVTlw6ggzCm1b8MFQwikg==}
@@ -25772,11 +25738,6 @@ snapshots:
 
   callsites@3.1.0: {}
 
-  camel-case@3.0.0:
-    dependencies:
-      no-case: 2.3.2
-      upper-case: 1.1.3
-
   camel-case@4.1.2:
     dependencies:
       pascal-case: 3.1.2
@@ -25991,10 +25952,6 @@ snapshots:
   class-variance-authority@0.7.0:
     dependencies:
       clsx: 2.0.0
-
-  clean-css@4.2.4:
-    dependencies:
-      source-map: 0.6.1
 
   clean-regexp@1.0.0:
     dependencies:
@@ -28752,8 +28709,6 @@ snapshots:
       property-information: 6.5.0
       space-separated-tokens: 2.0.1
 
-  he@1.2.0: {}
-
   header-case@2.0.4:
     dependencies:
       capital-case: 1.0.4
@@ -28774,16 +28729,6 @@ snapshots:
       lru-cache: 10.2.0
 
   html-escaper@2.0.2: {}
-
-  html-minifier@4.0.0:
-    dependencies:
-      camel-case: 3.0.0
-      clean-css: 4.2.4
-      commander: 2.20.3
-      he: 1.2.0
-      param-case: 2.1.1
-      relateurl: 0.2.7
-      uglify-js: 3.17.4
 
   html-tags@3.2.0: {}
 
@@ -29815,8 +29760,6 @@ snapshots:
     dependencies:
       tslib: 2.7.0
 
-  lower-case@1.1.4: {}
-
   lower-case@2.0.2:
     dependencies:
       tslib: 2.7.0
@@ -30660,7 +30603,6 @@ snapshots:
       '@babel/runtime': 7.24.7
       chokidar: 3.6.0
       glob: 7.2.3
-      html-minifier: 4.0.0
       js-beautify: 1.14.6
       lodash: 4.17.21
       mjml-core: 4.14.0(patch_hash=zxxsxbqejjmcwuzpigutzzq6wa)(encoding@0.1.13)
@@ -30684,7 +30626,6 @@ snapshots:
       '@babel/runtime': 7.24.7
       cheerio: 1.0.0-rc.10
       detect-node: 2.0.4
-      html-minifier: 4.0.0
       js-beautify: 1.14.6
       juice: 9.1.0(encoding@0.1.13)
       lodash: 4.17.21
@@ -31122,10 +31063,6 @@ snapshots:
     dependencies:
       '@types/nlcst': 2.0.3
 
-  no-case@2.3.2:
-    dependencies:
-      lower-case: 1.1.4
-
   no-case@3.0.4:
     dependencies:
       lower-case: 2.0.2
@@ -31556,10 +31493,6 @@ snapshots:
     transitivePeerDependencies:
       - bluebird
       - supports-color
-
-  param-case@2.1.1:
-    dependencies:
-      no-case: 2.3.2
 
   param-case@3.0.4:
     dependencies:
@@ -32733,8 +32666,6 @@ snapshots:
       hast-util-heading-rank: 3.0.0
       hast-util-to-string: 3.0.0
       unist-util-visit: 5.0.0
-
-  relateurl@0.2.7: {}
 
   relay-runtime@12.0.0(encoding@0.1.13):
     dependencies:
@@ -34225,8 +34156,6 @@ snapshots:
 
   ufo@1.5.4: {}
 
-  uglify-js@3.17.4: {}
-
   unbox-primitive@1.0.2:
     dependencies:
       call-bind: 1.0.7
@@ -34455,8 +34384,6 @@ snapshots:
   upper-case-first@2.0.2:
     dependencies:
       tslib: 2.7.0
-
-  upper-case@1.1.3: {}
 
   upper-case@2.0.2:
     dependencies:
