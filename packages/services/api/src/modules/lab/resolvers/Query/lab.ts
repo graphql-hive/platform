@@ -13,7 +13,6 @@ export const lab: NonNullable<QueryResolvers['lab']> = async (_, { selector }, {
     translator.translateTargetId(selector),
   ]);
 
-  // @ts-expect-error AbstractType<T> is missing here.
   await injector.get(Session).assertPerformAction({
     action: 'laboratory:describe',
     organizationId: organization,

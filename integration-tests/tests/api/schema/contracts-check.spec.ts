@@ -503,7 +503,7 @@ test.concurrent(
         },
         id: schemaCheckId,
       },
-      authToken: readToken.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
 
     expect(schemaCheck?.target?.schemaCheck).toMatchObject({
@@ -699,7 +699,7 @@ test.concurrent(
         },
         id: newSchemaCheckId,
       },
-      authToken: readToken.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
 
     expect(newSchemaCheck?.target?.schemaCheck).toMatchObject({
@@ -895,7 +895,7 @@ test.concurrent(
         },
         id: newSchemaCheckId,
       },
-      authToken: readToken.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
 
     expect(newSchemaCheck?.target?.schemaCheck).toMatchObject({
@@ -1084,7 +1084,7 @@ test.concurrent(
         },
         id: newSchemaCheckId,
       },
-      authToken: readToken.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
 
     expect(newSchemaCheck?.target?.schemaCheck).toMatchObject({
@@ -1328,7 +1328,7 @@ test.concurrent(
         },
         id: schemaCheckId,
       },
-      authToken: readToken.secret,
+      authToken: ownerToken,
     }).then(r => r.expectNoGraphQLErrors());
 
     expect(schemaCheck?.target?.schemaCheck).toMatchObject({

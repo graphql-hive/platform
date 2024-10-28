@@ -306,7 +306,6 @@ export function createRegistry({
     encryptionSecretProvider(encryptionSecret),
     provideSchemaModuleConfig(schemaConfig),
     {
-      // @ts-expect-error Session is an abstract type and missing in type definitions. See https://github.com/Urigo/graphql-modules/pull/2503
       provide: Session,
       useFactory(context: { session: Session }) {
         return context.session;
