@@ -8,6 +8,8 @@ overrides:
   csstype: 3.1.2
   mjml-core@4.14.0>html-minifier: '-'
   mjml-cli@4.14.0>html-minifier: '-'
+  ws@^8.0.0: ^8.18.0
+  ws@*: '>=8.18.0 || >=7.5.10 || >=6.2.3 || >=5.2.4'
 
 patchedDependencies:
   '@apollo/federation@0.38.1':
@@ -375,7 +377,7 @@ importers:
         specifier: 2.0.5
         version: 2.0.5(@types/node@22.8.1)(less@4.2.0)(terser@5.36.0)
       ws:
-        specifier: 8.18.0
+        specifier: '>=8.18.0 || >=7.5.10 || >=6.2.3 || >=5.2.4'
         version: 8.18.0
     publishDirectory: dist
 
@@ -581,7 +583,7 @@ importers:
         specifier: 2.0.5
         version: 2.0.5(@types/node@22.8.1)(less@4.2.0)(terser@5.36.0)
       ws:
-        specifier: 8.18.0
+        specifier: '>=8.18.0 || >=7.5.10 || >=6.2.3 || >=5.2.4'
         version: 8.18.0
     publishDirectory: dist
 
@@ -3866,6 +3868,7 @@ packages:
 
   '@fastify/vite@6.0.7':
     resolution: {integrity: sha512-+dRo9KUkvmbqdmBskG02SwigWl06Mwkw8SBDK1zTNH6vd4DyXbRvI7RmJEmBkLouSU81KTzy1+OzwHSffqSD6w==}
+    bundledDependencies: []
 
   '@floating-ui/core@1.2.6':
     resolution: {integrity: sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==}
@@ -4037,7 +4040,7 @@ packages:
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
-      graphql: 16.8.1
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
 
   '@graphql-inspector/code-loader@4.0.2':
     resolution: {integrity: sha512-WNMorwDSknFFnv2GF3FvjuxQy1VMxIVMsTgL3E6amhzSPvKd3SPplw9rpqhQJX9jKXHvu70PgE2FvbPCTapE5A==}
@@ -11323,7 +11326,7 @@ packages:
   isomorphic-ws@5.0.0:
     resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
     peerDependencies:
-      ws: '*'
+      ws: '>=8.18.0 || >=7.5.10 || >=6.2.3 || >=5.2.4'
 
   isstream@0.1.2:
     resolution: {integrity: sha512-Yljz7ffyPbrLpLngrMtZ7NduUgVvi6wG9RJ9IUcyCd59YQ911PBJphODUcbOVbqYfxe1wuYf/LJ8PauMRwsM/g==}
@@ -15766,30 +15769,6 @@ packages:
     resolution: {integrity: sha512-+QU2zd6OTD8XWIJCbffaiQeH9U73qIqafo1x6V1snCWYGJf6cVE0cDR4D8xRzcEnfI21IFrUPzPGtcPf8AC+Rw==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  ws@7.5.10:
-    resolution: {integrity: sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==}
-    engines: {node: '>=8.3.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
-  ws@8.13.0:
-    resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: '>=5.0.2'
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
   ws@8.18.0:
     resolution: {integrity: sha512-8VbfWfHLbbwu3+N6OKsOMpBdT4kXPDDB9cJk2bJ6mh9ucxdlnNvH1e+roYkKmN9Nxw2yjz7VzeO9oOz2zJ04Pw==}
     engines: {node: '>=10.0.0'}
@@ -19112,9 +19091,9 @@ snapshots:
       '@types/ws': 8.5.3
       graphql: 16.9.0
       graphql-ws: 5.12.1(graphql@16.9.0)
-      isomorphic-ws: 5.0.0(ws@8.13.0)
+      isomorphic-ws: 5.0.0(ws@8.18.0)
       tslib: 2.7.0
-      ws: 8.13.0
+      ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -19126,9 +19105,9 @@ snapshots:
       '@types/ws': 8.5.3
       graphql: 16.9.0
       graphql-ws: 5.13.1(graphql@16.9.0)
-      isomorphic-ws: 5.0.0(ws@8.13.0)
+      isomorphic-ws: 5.0.0(ws@8.18.0)
       tslib: 2.7.0
-      ws: 8.13.0
+      ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -19194,9 +19173,9 @@ snapshots:
       '@graphql-tools/utils': 9.2.1(graphql@16.9.0)
       '@types/ws': 8.5.3
       graphql: 16.9.0
-      isomorphic-ws: 5.0.0(ws@8.13.0)
+      isomorphic-ws: 5.0.0(ws@8.18.0)
       tslib: 2.7.0
-      ws: 8.13.0
+      ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -19206,9 +19185,9 @@ snapshots:
       '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
       '@types/ws': 8.5.3
       graphql: 16.9.0
-      isomorphic-ws: 5.0.0(ws@8.13.0)
+      isomorphic-ws: 5.0.0(ws@8.18.0)
       tslib: 2.7.0
-      ws: 8.13.0
+      ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -28193,10 +28172,6 @@ snapshots:
 
   isobject@3.0.1: {}
 
-  isomorphic-ws@5.0.0(ws@8.13.0):
-    dependencies:
-      ws: 8.13.0
-
   isomorphic-ws@5.0.0(ws@8.18.0):
     dependencies:
       ws: 8.18.0
@@ -33609,7 +33584,7 @@ snapshots:
       opener: 1.5.2
       picocolors: 1.1.1
       sirv: 2.0.4
-      ws: 7.5.10
+      ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -33796,10 +33771,6 @@ snapshots:
     dependencies:
       imurmurhash: 0.1.4
       signal-exit: 4.1.0
-
-  ws@7.5.10: {}
-
-  ws@8.13.0: {}
 
   ws@8.18.0: {}
 
