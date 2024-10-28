@@ -31,7 +31,7 @@
     "pg-promise": "11.10.1",
     "slonik": "30.4.4",
     "ts-node": "10.9.2",
-    "tslib": "2.7.0",
+    "tslib": "2.8.0",
     "typescript": "5.5.4",
     "zod": "3.23.8"
   },
