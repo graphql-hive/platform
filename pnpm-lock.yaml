@@ -304,9 +304,6 @@ importers:
       '@types/dockerode':
         specifier: 3.3.31
         version: 3.3.31
-      '@types/ioredis':
-        specifier: 5.0.0
-        version: 5.0.0
       bcryptjs:
         specifier: 2.4.3
         version: 2.4.3
@@ -445,9 +442,6 @@ importers:
       '@types/env-ci':
         specifier: 3.1.4
         version: 3.1.4
-      '@types/mkdirp':
-        specifier: 2.0.0
-        version: 2.0.0
       oclif:
         specifier: 4.13.6
         version: 4.13.6(patch_hash=fkmkpwec6wqhte6g47j3tlprse)
@@ -3866,6 +3860,7 @@ packages:
 
   '@fastify/vite@6.0.7':
     resolution: {integrity: sha512-+dRo9KUkvmbqdmBskG02SwigWl06Mwkw8SBDK1zTNH6vd4DyXbRvI7RmJEmBkLouSU81KTzy1+OzwHSffqSD6w==}
+    bundledDependencies: []
 
   '@floating-ui/core@1.2.6':
     resolution: {integrity: sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==}
@@ -4037,7 +4032,7 @@ packages:
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
-      graphql: 16.8.1
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
 
   '@graphql-inspector/code-loader@4.0.2':
     resolution: {integrity: sha512-WNMorwDSknFFnv2GF3FvjuxQy1VMxIVMsTgL3E6amhzSPvKd3SPplw9rpqhQJX9jKXHvu70PgE2FvbPCTapE5A==}
@@ -7497,10 +7492,6 @@ packages:
   '@types/ioredis-mock@8.2.5':
     resolution: {integrity: sha512-cZyuwC9LGtg7s5G9/w6rpy3IOZ6F/hFR0pQlWYZESMo1xQUYbDpa6haqB4grTePjsGzcB/YLBFCjqRunK5wieg==}
 
-  '@types/ioredis@5.0.0':
-    resolution: {integrity: sha512-zJbJ3FVE17CNl5KXzdeSPtdltc4tMT3TzC6fxQS0sQngkbFZ6h+0uTafsRqu+eSLIugf6Yb0Ea0SUuRr42Nk9g==}
-    deprecated: This is a stub types definition. ioredis provides its own type definitions, so you do not need this installed.
-
   '@types/is-empty@1.2.1':
     resolution: {integrity: sha512-a3xgqnFTuNJDm1fjsTjHocYJ40Cz3t8utYpi5GNaxzrJC2HSD08ym+whIL7fNqiqBCdM9bcqD1H/tORWAFXoZw==}
 
@@ -7569,10 +7560,6 @@ packages:
 
   '@types/mjml@4.7.1':
     resolution: {integrity: sha512-if/IM7j3B1ZQucsakrJI4qaU8MWBS1NzQ9PfMY3Bxj4vY1Bp2jMXmVJhAUU2eLvts0a+bFL6Efk182BB/g492Q==}
-
-  '@types/mkdirp@2.0.0':
-    resolution: {integrity: sha512-c/iUqMymAlxLAyIK3u5SzrwkrkyOdv1XDc91T+b5FsY7Jr6ERhUD19jJHOhPW4GD6tmN6mFEorfSdks525pwdQ==}
-    deprecated: This is a stub types definition. mkdirp provides its own type definitions, so you do not need this installed.
 
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
@@ -16294,8 +16281,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16402,11 +16389,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.596.0':
+  '@aws-sdk/client-sso-oidc@3.596.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16445,6 +16432,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso-oidc@3.679.0(@aws-sdk/client-sts@3.679.0)':
@@ -16578,11 +16566,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)':
+  '@aws-sdk/client-sts@3.596.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16621,7 +16609,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.7.0
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/client-sts@3.679.0':
@@ -16735,7 +16722,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.596.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -16854,7 +16841,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/types': 3.6.0
@@ -17027,7 +17014,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/shared-ini-file-loader': 3.1.9
@@ -23539,12 +23526,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@types/ioredis@5.0.0':
-    dependencies:
-      ioredis: 5.4.1
-    transitivePeerDependencies:
-      - supports-color
-
   '@types/is-empty@1.2.1': {}
 
   '@types/js-cookie@3.0.6': {}
@@ -23604,10 +23585,6 @@ snapshots:
   '@types/mjml@4.7.1':
     dependencies:
       '@types/mjml-core': 4.7.1
-
-  '@types/mkdirp@2.0.0':
-    dependencies:
-      mkdirp: 3.0.1
 
   '@types/ms@0.7.34': {}
 
