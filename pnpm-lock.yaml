@@ -3866,6 +3866,7 @@ packages:
 
   '@fastify/vite@6.0.7':
     resolution: {integrity: sha512-+dRo9KUkvmbqdmBskG02SwigWl06Mwkw8SBDK1zTNH6vd4DyXbRvI7RmJEmBkLouSU81KTzy1+OzwHSffqSD6w==}
+    bundledDependencies: []
 
   '@floating-ui/core@1.2.6':
     resolution: {integrity: sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==}
@@ -4037,7 +4038,7 @@ packages:
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
-      graphql: 16.8.1
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
 
   '@graphql-inspector/code-loader@4.0.2':
     resolution: {integrity: sha512-WNMorwDSknFFnv2GF3FvjuxQy1VMxIVMsTgL3E6amhzSPvKd3SPplw9rpqhQJX9jKXHvu70PgE2FvbPCTapE5A==}
@@ -8232,9 +8233,6 @@ packages:
   axe-core@4.7.0:
     resolution: {integrity: sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==}
     engines: {node: '>=4'}
-
-  axios@0.26.1:
-    resolution: {integrity: sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==}
 
   axios@1.7.4:
     resolution: {integrity: sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==}
@@ -15148,8 +15146,8 @@ packages:
   tweetnacl@0.14.5:
     resolution: {integrity: sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA==}
 
-  twilio@4.7.2:
-    resolution: {integrity: sha512-sTdEwAhkDzoDoXE3i83F/CdZegZ5O1FPDY0hAnJmGr/TjDqGl+Q6WzjC0+9cTmQnjCaDg6H4L97UZeJLFFEh3A==}
+  twilio@4.23.0:
+    resolution: {integrity: sha512-LdNBQfOe0dY2oJH2sAsrxazpgfFQo5yXGxe96QA8UWB5uu+433PrUbkv8gQ5RmrRCqUTPQ0aOrIyAdBr1aB03Q==}
     engines: {node: '>=14.0'}
 
   twoslash-protocol@0.2.9:
@@ -22438,7 +22436,7 @@ snapshots:
       '@slack/types': 2.11.0
       '@types/node': 20.17.1
       '@types/retry': 0.12.0
-      axios: 1.7.4
+      axios: 1.7.4(debug@4.3.7)
       eventemitter3: 5.0.1
       form-data: 4.0.0
       is-electron: 2.2.2
@@ -24350,13 +24348,7 @@ snapshots:
 
   axe-core@4.7.0: {}
 
-  axios@0.26.1(debug@4.3.7):
-    dependencies:
-      follow-redirects: 1.15.6(debug@4.3.7)
-    transitivePeerDependencies:
-      - debug
-
-  axios@1.7.4:
+  axios@1.7.4(debug@4.3.7):
     dependencies:
       follow-redirects: 1.15.6(debug@4.3.7)
       form-data: 4.0.0
@@ -32458,7 +32450,7 @@ snapshots:
       pkce-challenge: 3.1.0
       psl: 1.8.0
       supertokens-js-override: 0.0.4
-      twilio: 4.7.2(debug@4.3.7)
+      twilio: 4.23.0(debug@4.3.7)
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -32940,9 +32932,9 @@ snapshots:
 
   tweetnacl@0.14.5: {}
 
-  twilio@4.7.2(debug@4.3.7):
+  twilio@4.23.0(debug@4.3.7):
     dependencies:
-      axios: 0.26.1(debug@4.3.7)
+      axios: 1.7.4(debug@4.3.7)
       dayjs: 1.11.13
       https-proxy-agent: 5.0.1
       jsonwebtoken: 9.0.0
