@@ -814,8 +814,8 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
       zod-validation-error:
-        specifier: 3.3.1
-        version: 3.3.1(zod@3.23.8)
+        specifier: 3.4.0
+        version: 3.4.0(zod@3.23.8)
 
   packages/services/broker-worker:
     devDependencies:
@@ -1031,8 +1031,8 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
       zod-validation-error:
-        specifier: 3.3.1
-        version: 3.3.1(zod@3.23.8)
+        specifier: 3.4.0
+        version: 3.4.0(zod@3.23.8)
 
   packages/services/rate-limit:
     devDependencies:
@@ -16237,8 +16237,8 @@ packages:
   zen-observable@0.8.15:
     resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
 
-  zod-validation-error@3.3.1:
-    resolution: {integrity: sha512-uFzCZz7FQis256dqw4AhPQgD6f3pzNca/Zh62RNELavlumQB3nDIUFbF5JQfFLcMbO1s02Q7Xg/gpcOBlEnYZA==}
+  zod-validation-error@3.4.0:
+    resolution: {integrity: sha512-ZOPR9SVY6Pb2qqO5XHt+MkkTRxGXb4EVtnjc9JpXUOtUB1T9Ru7mZOT361AN3MsetVe7R0a1KZshJDZdgp9miQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.18.0
@@ -16627,8 +16627,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16735,11 +16735,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.596.0':
+  '@aws-sdk/client-sso-oidc@3.596.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16778,6 +16778,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.7.0
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso-oidc@3.679.0(@aws-sdk/client-sts@3.679.0)':
@@ -16911,11 +16912,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)':
+  '@aws-sdk/client-sts@3.596.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16954,7 +16955,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.7.0
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/client-sts@3.679.0':
@@ -17068,7 +17068,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.596.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -17187,7 +17187,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/types': 3.6.0
@@ -17360,7 +17360,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/shared-ini-file-loader': 3.1.9
@@ -30554,7 +30554,7 @@ snapshots:
       unist-util-visit: 5.0.0
       yaml: 2.5.0
       zod: 3.23.8
-      zod-validation-error: 3.3.1(zod@3.23.8)
+      zod-validation-error: 3.4.0(zod@3.23.8)
     transitivePeerDependencies:
       - '@types/react'
       - supports-color
@@ -34626,7 +34626,7 @@ snapshots:
 
   zen-observable@0.8.15: {}
 
-  zod-validation-error@3.3.1(zod@3.23.8):
+  zod-validation-error@3.4.0(zod@3.23.8):
     dependencies:
       zod: 3.23.8
 
