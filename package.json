@@ -105,7 +105,8 @@
       "mjml-core@4.14.0>html-minifier": "-",
       "mjml-cli@4.14.0>html-minifier": "-",
       "ws@^8.0.0": "^8.18.0",
-      "ws@*": ">=8.18.0 || >=7.5.10 || >=6.2.3 || >=5.2.4"
+      "ws@*": ">=8.18.0 || >=7.5.10 || >=6.2.3 || >=5.2.4",
+      "cookie@<0.7.0": "0.7.2"
     },
     "patchedDependencies": {
       "@theguild/buddy@0.1.0": "patches/@theguild__buddy@0.1.0.patch",
