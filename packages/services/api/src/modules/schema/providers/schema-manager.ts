@@ -891,8 +891,8 @@ export class SchemaManager {
       organizationId: schemaCheck.selector.organizationId,
     });
 
-    if (scopes.includes(TargetAccessScope.REGISTRY_WRITE)) {
-      return true;
+    if (!scopes.includes(TargetAccessScope.REGISTRY_WRITE)) {
+      return false;
     }
 
     return await this.getFailedSchemaCheckCanBeApproved(schemaCheck);

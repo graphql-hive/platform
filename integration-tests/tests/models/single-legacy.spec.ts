@@ -322,11 +322,11 @@ describe('other', () => {
   test.concurrent('marking versions as valid', async () => {
     const { createOrg } = await initSeed().createOwner();
     const { createProject } = await createOrg();
-    const { createTargetAccessToken, fetchVersions } = await createProject(ProjectType.Single, {
-      useLegacyRegistryModels: true,
-    });
-    const { publishSchema, fetchLatestValidSchema, updateSchemaVersionStatus } =
-      await createTargetAccessToken({});
+    const { createTargetAccessToken, fetchVersions, updateSchemaVersionStatus } =
+      await createProject(ProjectType.Single, {
+        useLegacyRegistryModels: true,
+      });
+    const { publishSchema, fetchLatestValidSchema } = await createTargetAccessToken({});
 
     // Initial schema
     let result = await publishSchema({
@@ -391,13 +391,11 @@ describe('other', () => {
     async () => {
       const { createOrg } = await initSeed().createOwner();
       const { createProject } = await createOrg();
-      const { createTargetAccessToken, createCdnAccess, fetchVersions } = await createProject(
-        ProjectType.Single,
-        {
+      const { createTargetAccessToken, createCdnAccess, fetchVersions, updateSchemaVersionStatus } =
+        await createProject(ProjectType.Single, {
           useLegacyRegistryModels: true,
-        },
-      );
-      const { publishSchema, updateSchemaVersionStatus } = await createTargetAccessToken({});
+        });
+      const { publishSchema } = await createTargetAccessToken({});
       const { fetchSchemaFromCDN, fetchMetadataFromCDN } = await createCdnAccess();
 
       // Initial schema

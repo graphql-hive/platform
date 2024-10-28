@@ -495,19 +495,6 @@ export function initSeed() {
                         secret,
                       );
                     },
-
-                    async updateSchemaVersionStatus(versionId: string, valid: boolean) {
-                      return await updateSchemaVersionStatus(
-                        {
-                          organizationSlug: organization.slug,
-                          projectSlug: project.slug,
-                          targetSlug: target.slug,
-                          valid,
-                          versionId,
-                        },
-                        secret,
-                      ).then(r => r.expectNoGraphQLErrors());
-                    },
                     async publishSchema(options: {
                       sdl: string;
                       headerName?: 'x-api-token' | 'authorization';
@@ -707,6 +694,22 @@ export function initSeed() {
                   }
 
                   return result.target?.schemaVersions.edges.map(edge => edge.node);
+                },
+                async updateSchemaVersionStatus(
+                  versionId: string,
+                  valid: boolean,
+                  ttarget: TargetOverwrite = target,
+                ) {
+                  return await updateSchemaVersionStatus(
+                    {
+                      organizationSlug: organization.slug,
+                      projectSlug: project.slug,
+                      targetSlug: ttarget.slug,
+                      valid,
+                      versionId,
+                    },
+                    ownerToken,
+                  ).then(r => r.expectNoGraphQLErrors());
                 },
               };
             },
