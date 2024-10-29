@@ -6,8 +6,11 @@ import type { MutationResolvers } from './../../../../__generated__/types.next';
 export const updateDocumentCollection: NonNullable<
   MutationResolvers['updateDocumentCollection']
 > = async (_, { selector, input }, { injector }) => {
-  const target = await validateTargetAccess(injector, selector, TargetAccessScope.REGISTRY_WRITE);
-  const result = await injector.get(CollectionProvider).updateCollection(input);
+  const result = await injector.get(CollectionProvider).updateCollection(selector, {
+    collectionId: input.collectionId,
+    description: input.description ?? null,
+    name: input.name,
+  });
 
   if (!result) {
     return {
@@ -21,8 +24,8 @@ export const updateDocumentCollection: NonNullable<
   return {
     ok: {
       __typename: 'ModifyDocumentCollectionOkPayload',
-      collection: result,
-      updatedTarget: target,
+      collection: result.collection,
+      updatedTarget: result.target,
     },
   };
 };
