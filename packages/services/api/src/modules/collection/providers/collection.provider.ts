@@ -6,7 +6,6 @@ import { TargetAccessScope } from '../../auth/providers/scopes';
 import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
 import { Storage } from '../../shared/providers/storage';
-import type { CollectionModule } from './../__generated__/types';
 
 @Injectable({
   global: true,
