@@ -1,6 +1,6 @@
 import { Injectable, Scope } from 'graphql-modules';
-import { batch } from '@theguild/buddy';
 import { Target } from '../../../shared/entities';
+import { batch } from '../../../shared/helpers';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { TargetAccessScope } from '../../auth/providers/scopes';
 import { Logger } from '../../shared/providers/logger';

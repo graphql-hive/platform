@@ -24,7 +24,6 @@ import type {
   User,
 } from '@hive/api';
 import { context, SpanKind, SpanStatusCode, trace } from '@hive/service-common';
-import { batch } from '@theguild/buddy';
 import type { SchemaCoordinatesDiffResult } from '../../api/src/modules/schema/providers/inspector';
 import {
   createSDLHash,
@@ -35,6 +34,7 @@ import {
   type SchemaLog,
   type SchemaPolicy,
 } from '../../api/src/shared/entities';
+import { batch } from '../../api/src/shared/helpers';
 import {
   activities,
   alert_channels,
