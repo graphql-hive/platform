@@ -17,9 +17,6 @@ const entryPoints = parseArgs({
 
 interface BuildOptions {
   external?: string[];
-  next?: {
-    header?: string;
-  };
 }
 
 runify(normalize(join(process.cwd(), 'package.json')));
