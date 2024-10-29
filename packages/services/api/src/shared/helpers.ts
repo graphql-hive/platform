@@ -372,7 +372,7 @@ export function share<T>(setter: () => Promise<T>): () => Promise<T> {
 
 export function cache<TInput>(cacheKeyFn: (arg: TInput) => string): MethodDecorator {
   return (_target, _propertyKey, descriptor) => {
-    const cacheSymbol = Symbol.for('@cache');
+    const cacheSymbol = Symbol('@cache');
     const originalMethod = descriptor.value;
 
     function ensureCache(obj: any): Map<string, any> {
