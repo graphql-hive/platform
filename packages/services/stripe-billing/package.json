@@ -20,7 +20,7 @@
     "got": "14.4.3",
     "pino-pretty": "11.3.0",
     "reflect-metadata": "0.2.2",
-    "stripe": "17.2.1",
+    "stripe": "17.3.0",
     "zod": "3.23.8"
   },
   "buildOptions": {
