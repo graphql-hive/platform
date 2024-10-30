@@ -237,7 +237,15 @@ function transformOrganizationMemberLegacyScopes(args: {
       case TargetAccessScope.READ: {
         policies.push({
           effect: 'allow',
-          action: ['project:modifySlug', 'project:delete', 'appDeployment:describe'],
+          action: [
+            'project:modifySlug',
+            'project:delete',
+            'appDeployment:describe',
+            'laboratory:describe',
+            'laboratory:createCollection',
+            'laboratory:deleteCollection',
+            'laboratory:modifyCollection',
+          ],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
@@ -268,13 +276,7 @@ function transformOrganizationMemberLegacyScopes(args: {
       case TargetAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',
-          action: [
-            'schemaContract:create',
-            'schemaContract:disable',
-            'schemaContract:describe',
-            'target:delete',
-            'target:modifySettings',
-          ],
+          action: ['target:delete', 'target:modifySettings'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;

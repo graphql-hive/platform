@@ -140,7 +140,7 @@ describe('Document Collections', () => {
         ).rejects.toEqual(
           expect.objectContaining({
             message: expect.stringContaining(
-              `No access (reason: "Missing target:registry:write permission")`,
+              `No access (reason: "Missing permission for performing 'laboratory:createCollection' on resource")`,
             ),
           }),
         );
@@ -172,7 +172,7 @@ describe('Document Collections', () => {
         ).rejects.toEqual(
           expect.objectContaining({
             message: expect.stringContaining(
-              'No access (reason: "Missing target:registry:write permission")',
+              `No access (reason: "Missing permission for performing 'laboratory:modifyCollection' on resource")`,
             ),
           }),
         );
@@ -202,7 +202,7 @@ describe('Document Collections', () => {
         ).rejects.toEqual(
           expect.objectContaining({
             message: expect.stringContaining(
-              `No access (reason: "Missing target:registry:write permission")`,
+              `No access (reason: "Missing permission for performing 'laboratory:deleteCollection' on resource")`,
             ),
           }),
         );

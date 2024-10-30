@@ -1,8 +1,7 @@
 import { Injectable, Scope } from 'graphql-modules';
 import * as zod from 'zod';
 import { isUUID } from '../../../shared/is-uuid';
-import { AuthManager } from '../../auth/providers/auth-manager';
-import { TargetAccessScope } from '../../auth/providers/scopes';
+import { Session } from '../../auth/lib/authz';
 import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
 import { Storage } from '../../shared/providers/storage';
@@ -17,7 +16,7 @@ export class CollectionProvider {
   constructor(
     logger: Logger,
     private storage: Storage,
-    private authManager: AuthManager,
+    private session: Session,
     private idTranslator: IdTranslator,
   ) {
     this.logger = logger.child({ source: 'CollectionProvider' });
@@ -64,11 +63,14 @@ export class CollectionProvider {
       this.idTranslator.translateTargetId(selector),
     ]);
 
-    await this.authManager.ensureTargetAccess({
+    await this.session.assertPerformAction({
+      action: 'laboratory:createCollection',
       organizationId,
-      projectId,
-      targetId,
-      scope: TargetAccessScope.REGISTRY_WRITE,
+      params: {
+        organizationId,
+        projectId,
+        targetId,
+      },
     });
 
     const target = await this.storage.getTarget({
@@ -76,7 +78,7 @@ export class CollectionProvider {
       projectId,
       targetId,
     });
-    const currentUser = await this.authManager.getCurrentUser();
+    const currentUser = await this.session.getViewer();
 
     const collection = await this.storage.createDocumentCollection({
       createdByUserId: currentUser.id,
@@ -109,11 +111,14 @@ export class CollectionProvider {
       this.idTranslator.translateTargetId(selector),
     ]);
 
-    await this.authManager.ensureTargetAccess({
+    await this.session.assertPerformAction({
+      action: 'laboratory:modifyCollection',
       organizationId,
-      projectId,
-      targetId,
-      scope: TargetAccessScope.REGISTRY_WRITE,
+      params: {
+        organizationId,
+        projectId,
+        targetId,
+      },
     });
 
     let collection = await this.storage.getDocumentCollection({ id: args.collectionId });
@@ -160,11 +165,14 @@ export class CollectionProvider {
       this.idTranslator.translateTargetId(selector),
     ]);
 
-    await this.authManager.ensureTargetAccess({
+    await this.session.assertPerformAction({
+      action: 'laboratory:deleteCollection',
       organizationId,
-      projectId,
-      targetId,
-      scope: TargetAccessScope.REGISTRY_WRITE,
+      params: {
+        organizationId,
+        projectId,
+        targetId,
+      },
     });
 
     const target = await this.storage.getTarget({
@@ -213,11 +221,14 @@ export class CollectionProvider {
       this.idTranslator.translateTargetId(selector),
     ]);
 
-    await this.authManager.ensureTargetAccess({
+    await this.session.assertPerformAction({
+      action: 'laboratory:modifyCollection',
       organizationId,
-      projectId,
-      targetId,
-      scope: TargetAccessScope.REGISTRY_WRITE,
+      params: {
+        organizationId,
+        projectId,
+        targetId,
+      },
     });
 
     if (!isUUID(args.collectionId)) {
@@ -244,7 +255,7 @@ export class CollectionProvider {
       };
     }
 
-    const currentUser = await this.authManager.getCurrentUser();
+    const currentUser = await this.session.getViewer();
 
     const validationResult = OperationCreateModel.safeParse({
       name: args.operation.name,
@@ -297,11 +308,14 @@ export class CollectionProvider {
       this.idTranslator.translateTargetId(selector),
     ]);
 
-    await this.authManager.ensureTargetAccess({
+    await this.session.assertPerformAction({
+      action: 'laboratory:modifyCollection',
       organizationId,
-      projectId,
-      targetId,
-      scope: TargetAccessScope.REGISTRY_WRITE,
+      params: {
+        organizationId,
+        projectId,
+        targetId,
+      },
     });
 
     if (!isUUID(args.collectionDocumentId)) {
@@ -390,11 +404,14 @@ export class CollectionProvider {
       this.idTranslator.translateTargetId(selector),
     ]);
 
-    await this.authManager.ensureTargetAccess({
+    await this.session.assertPerformAction({
+      action: 'laboratory:modifyCollection',
       organizationId,
-      projectId,
-      targetId,
-      scope: TargetAccessScope.REGISTRY_WRITE,
+      params: {
+        organizationId,
+        projectId,
+        targetId,
+      },
     });
 
     if (!isUUID(args.collectionDocumentId)) {

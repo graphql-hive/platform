@@ -138,6 +138,25 @@ export abstract class Session {
       throw new AccessError(`Missing permission for performing '${args.action}' on resource`);
     }
   }
+
+  /**
+   * Check whether a session is allowed to perform a specific action.
+   * Returns a boolean that indicates whether the action is allowed or not allowed.
+   */
+  public async canPerformAction<TAction extends keyof typeof actionDefinitions>(args: {
+    action: TAction;
+    organizationId: string;
+    params: Parameters<(typeof actionDefinitions)[TAction]>[0];
+  }): Promise<boolean> {
+    return await this.assertPerformAction(args)
+      .then(() => true)
+      .catch(err => {
+        if (err instanceof AccessError) {
+          return false;
+        }
+        return Promise.reject(err);
+      });
+  }
 }
 
 /** Check whether a action definition (using wildcards) matches a action */
@@ -262,7 +281,7 @@ const actionDefinitions = {
   'member:modifyRole': defaultOrgIdentity,
   'member:removeMember': defaultOrgIdentity,
   'member:manageInvites': defaultOrgIdentity,
-  'project:create': defaultProjectIdentity,
+  'project:create': defaultOrgIdentity,
   'project:describe': defaultProjectIdentity,
   'project:delete': defaultProjectIdentity,
   'alert:describe': defaultProjectIdentity,
@@ -273,19 +292,15 @@ const actionDefinitions = {
   'target:create': defaultProjectIdentity,
   'target:delete': defaultTargetIdentity,
   'target:modifySettings': defaultTargetIdentity,
+  'laboratory:describe': defaultTargetIdentity,
+  'laboratory:createCollection': defaultTargetIdentity,
+  'laboratory:modifyCollection': defaultTargetIdentity,
+  'laboratory:deleteCollection': defaultTargetIdentity,
   'schema:check': schemaCheckOrPublishIdentity,
   'schema:approve': schemaCheckOrPublishIdentity,
   'schema:publish': schemaCheckOrPublishIdentity,
   'schema:deleteService': schemaCheckOrPublishIdentity,
   'appDeployment:describe': defaultTargetIdentity,
-  'appDeployment:create': defaultAppDeploymentIdentity,
-  'appDeployment:publish': defaultAppDeploymentIdentity,
-  'appDeployment:retire': defaultAppDeploymentIdentity,
-  'laboratory:describe': defaultTargetIdentity,
-  'laboratory:modify': defaultTargetIdentity,
-  'schemaContract:describe': defaultTargetIdentity,
-  'schemaContract:create': defaultTargetIdentity,
-  'schemaContract:disable': defaultTargetIdentity,
 } satisfies ActionDefinitionMap;
 
 type ActionDefinitionMap = {
