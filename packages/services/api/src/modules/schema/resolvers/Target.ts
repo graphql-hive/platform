@@ -3,7 +3,7 @@ import { OperationsManager } from '../../operations/providers/operations-manager
 import { ContractsManager } from '../providers/contracts-manager';
 import { SchemaManager } from '../providers/schema-manager';
 import { toGraphQLSchemaCheck, toGraphQLSchemaCheckCurry } from '../to-graphql-schema-check';
-import type { TargetResolvers } from './../../../__generated__/types.next';
+import type { TargetResolvers } from './../../../__generated__/types';
 
 export const Target: Pick<
   TargetResolvers,

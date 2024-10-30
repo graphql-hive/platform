@@ -10,7 +10,7 @@ import type {
   SchemaCompositionError,
 } from '@hive/storage';
 import { sortSDL } from '@theguild/federation-composition';
-import { RegistryModel, SchemaChecksFilter } from '../../../__generated__/types.next';
+import { RegistryModel, SchemaChecksFilter } from '../../../__generated__/types';
 import {
   DateRange,
   NativeFederationCompatibilityStatus,

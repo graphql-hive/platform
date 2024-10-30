@@ -11,7 +11,7 @@ import type {
   SchemaVersion,
   TargetBreadcrumb,
 } from '@hive/storage';
-import type { RegistryModel, SchemaChecksFilter } from '../../../__generated__/types.next';
+import type { RegistryModel, SchemaChecksFilter } from '../../../__generated__/types';
 import type {
   Alert,
   AlertChannel,

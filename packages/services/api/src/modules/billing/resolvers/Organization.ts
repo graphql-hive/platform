@@ -1,5 +1,5 @@
 import { BillingProvider } from '../providers/billing.provider';
-import type { BillingPlanType, OrganizationResolvers } from './../../../__generated__/types.next';
+import type { BillingPlanType, OrganizationResolvers } from './../../../__generated__/types';
 
 export const Organization: Pick<
   OrganizationResolvers,

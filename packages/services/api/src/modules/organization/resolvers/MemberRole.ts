@@ -3,7 +3,7 @@ import { isOrganizationScope } from '../../auth/providers/organization-access';
 import { isProjectScope } from '../../auth/providers/project-access';
 import { isTargetScope } from '../../auth/providers/target-access';
 import { OrganizationManager } from '../providers/organization-manager';
-import type { MemberRoleResolvers } from './../../../__generated__/types.next';
+import type { MemberRoleResolvers } from './../../../__generated__/types';
 
 export const MemberRole: MemberRoleResolvers = {
   organizationAccessScopes: role => {

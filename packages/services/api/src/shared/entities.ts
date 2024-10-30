@@ -11,7 +11,7 @@ import type {
   OrganizationAccessScope,
   ProjectAccessScope,
   TargetAccessScope,
-} from '../__generated__/types.next';
+} from '../__generated__/types';
 import { parseGraphQLSource, sortDocumentNode } from './schema';
 
 export const NameModel = z

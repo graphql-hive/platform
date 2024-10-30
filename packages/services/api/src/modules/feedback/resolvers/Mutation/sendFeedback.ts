@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/node';
 import { WebClient } from '@slack/web-api';
 import { AuthManager } from '../../../auth/providers/auth-manager';
 import { FEEDBACK_SLACK_CHANNEL, FEEDBACK_SLACK_TOKEN } from '../../providers/tokens';
-import type { MutationResolvers } from './../../../../__generated__/types.next';
+import type { MutationResolvers } from './../../../../__generated__/types';
 
 export const sendFeedback: NonNullable<MutationResolvers['sendFeedback']> = async (
   _,

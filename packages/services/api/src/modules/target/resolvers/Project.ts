@@ -1,5 +1,5 @@
 import { TargetManager } from '../providers/target-manager';
-import type { ProjectResolvers } from './../../../__generated__/types.next';
+import type { ProjectResolvers } from './../../../__generated__/types';
 
 export const Project: Pick<ProjectResolvers, 'targets' | '__isTypeOf'> = {
   targets: (project, _, { injector }) => {

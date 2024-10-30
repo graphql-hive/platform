@@ -1,7 +1,7 @@
 import { AuthManager } from '../../../auth/providers/auth-manager';
 import { OrganizationManager } from '../../providers/organization-manager';
 import { OrganizationSlugModel } from '../../validation';
-import type { MutationResolvers } from './../../../../__generated__/types.next';
+import type { MutationResolvers } from './../../../../__generated__/types';
 
 export const createOrganization: NonNullable<MutationResolvers['createOrganization']> = async (
   _,

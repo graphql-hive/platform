@@ -1,6 +1,6 @@
 import { AuthManager } from '../../../auth/providers/auth-manager';
 import { TokenManager } from '../../providers/token-manager';
-import type { QueryResolvers } from './../../../../__generated__/types.next';
+import type { QueryResolvers } from './../../../../__generated__/types';
 
 export const tokenInfo: NonNullable<QueryResolvers['tokenInfo']> = async (
   _parent,

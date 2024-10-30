@@ -1,5 +1,5 @@
 import { CollectionProvider } from '../../providers/collection.provider';
-import type { MutationResolvers } from './../../../../__generated__/types.next';
+import type { MutationResolvers } from './../../../../__generated__/types';
 
 export const deleteOperationInDocumentCollection: NonNullable<
   MutationResolvers['deleteOperationInDocumentCollection']

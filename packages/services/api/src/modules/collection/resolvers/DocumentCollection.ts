@@ -1,5 +1,5 @@
 import { CollectionProvider } from '../providers/collection.provider';
-import type { DocumentCollectionResolvers } from './../../../__generated__/types.next';
+import type { DocumentCollectionResolvers } from './../../../__generated__/types';
 
 export const DocumentCollection: DocumentCollectionResolvers = {
   id: root => root.id,

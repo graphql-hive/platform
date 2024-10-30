@@ -7,7 +7,7 @@ import { stripUsedSchemaCoordinatesFromDocumentNode } from '../lib/unused-graphq
 import { ContractsManager } from '../providers/contracts-manager';
 import { SchemaManager } from '../providers/schema-manager';
 import { SchemaVersionHelper } from '../providers/schema-version-helper';
-import type { SchemaVersionResolvers } from './../../../__generated__/types.next';
+import type { SchemaVersionResolvers } from './../../../__generated__/types';
 
 export const SchemaVersion: SchemaVersionResolvers = {
   isComposable: version => {

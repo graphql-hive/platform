@@ -3,7 +3,7 @@ import { TargetAccessScope } from '../../../auth/providers/target-access';
 import { SchemaManager } from '../../../schema/providers/schema-manager';
 import { SchemaVersionHelper } from '../../../schema/providers/schema-version-helper';
 import { IdTranslator } from '../../../shared/providers/id-translator';
-import type { QueryResolvers } from './../../../../__generated__/types.next';
+import type { QueryResolvers } from './../../../../__generated__/types';
 
 export const lab: NonNullable<QueryResolvers['lab']> = async (_, { selector }, { injector }) => {
   const translator = injector.get(IdTranslator);

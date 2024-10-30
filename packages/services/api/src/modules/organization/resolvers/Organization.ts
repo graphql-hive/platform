@@ -7,7 +7,7 @@ import {
 import { isProjectScope, ProjectAccessScope } from '../../auth/providers/project-access';
 import { isTargetScope, TargetAccessScope } from '../../auth/providers/target-access';
 import { OrganizationManager } from '../providers/organization-manager';
-import type { OrganizationResolvers } from './../../../__generated__/types.next';
+import type { OrganizationResolvers } from './../../../__generated__/types';
 
 export const Organization: Pick<
   OrganizationResolvers,

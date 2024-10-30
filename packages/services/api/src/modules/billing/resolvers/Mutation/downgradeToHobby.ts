@@ -5,7 +5,7 @@ import { OrganizationManager } from '../../../organization/providers/organizatio
 import { IdTranslator } from '../../../shared/providers/id-translator';
 import { USAGE_DEFAULT_LIMITATIONS } from '../../constants';
 import { BillingProvider } from '../../providers/billing.provider';
-import type { MutationResolvers } from './../../../../__generated__/types.next';
+import type { MutationResolvers } from './../../../../__generated__/types';
 
 export const downgradeToHobby: NonNullable<MutationResolvers['downgradeToHobby']> = async (
   _,

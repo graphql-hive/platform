@@ -1,6 +1,6 @@
 import type { Injector } from 'graphql-modules';
 import * as zod from 'zod';
-import type { TargetSelectorInput } from '../../__generated__/types.next';
+import type { TargetSelectorInput } from '../../__generated__/types';
 import { AuthManager } from '../auth/providers/auth-manager';
 import { TargetAccessScope } from '../auth/providers/scopes';
 import { IdTranslator } from '../shared/providers/id-translator';

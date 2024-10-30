@@ -1,7 +1,7 @@
 import { SchemaPolicyApiProvider } from '../providers/schema-policy-api.provider';
 import { SchemaPolicyProvider } from '../providers/schema-policy.provider';
 import { serializeSeverity } from '../utils';
-import type { TargetResolvers } from './../../../__generated__/types.next';
+import type { TargetResolvers } from './../../../__generated__/types';
 
 export const Target: Pick<TargetResolvers, 'schemaPolicy' | '__isTypeOf'> = {
   schemaPolicy: async (target, _, { injector }) => {

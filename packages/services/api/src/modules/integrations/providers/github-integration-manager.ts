@@ -2,7 +2,7 @@ import { Inject, Injectable, InjectionToken, Scope } from 'graphql-modules';
 import { App } from '@octokit/app';
 import { Octokit } from '@octokit/core';
 import { RequestError } from '@octokit/request-error';
-import type { GitHubIntegration } from '../../../__generated__/types.next';
+import type { GitHubIntegration } from '../../../__generated__/types';
 import { HiveError } from '../../../shared/errors';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { OrganizationAccessScope } from '../../auth/providers/organization-access';

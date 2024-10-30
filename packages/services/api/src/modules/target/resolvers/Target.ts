@@ -1,7 +1,7 @@
 import { OrganizationManager } from '../../organization/providers/organization-manager';
 import { ProjectManager } from '../../project/providers/project-manager';
 import { TargetManager } from '../providers/target-manager';
-import type { TargetResolvers } from './../../../__generated__/types.next';
+import type { TargetResolvers } from './../../../__generated__/types';
 
 export const Target: Pick<
   TargetResolvers,

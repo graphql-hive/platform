@@ -1,5 +1,5 @@
 import { CollectionProvider } from '../providers/collection.provider';
-import type { DocumentCollectionOperationResolvers } from './../../../__generated__/types.next';
+import type { DocumentCollectionOperationResolvers } from './../../../__generated__/types';
 
 export const DocumentCollectionOperation: DocumentCollectionOperationResolvers = {
   name: op => op.title,

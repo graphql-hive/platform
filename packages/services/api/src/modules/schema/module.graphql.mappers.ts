@@ -5,7 +5,7 @@ import type {
   SchemaCheckApprovalMetadata,
   SchemaVersion,
 } from '@hive/storage';
-import type { SchemaError } from '../../__generated__/types.next';
+import type { SchemaError } from '../../__generated__/types';
 import type { DateRange, PushedCompositeSchema, SingleSchema } from '../../shared/entities';
 import type { PromiseOrValue } from '../../shared/helpers';
 import type { SuperGraphInformation } from './lib/federation-super-graph';

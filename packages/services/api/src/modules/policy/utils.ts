@@ -1,6 +1,6 @@
 import type { SchemaPolicyApi } from '@hive/policy';
 import { TRPCClientError } from '@trpc/client';
-import { RuleInstanceSeverityLevel, SchemaPolicyInput } from '../../__generated__/types.next';
+import { RuleInstanceSeverityLevel, SchemaPolicyInput } from '../../__generated__/types';
 
 export function formatTRPCErrors(e: TRPCClientError<SchemaPolicyApi>) {
   if (e.data?.zodError) {

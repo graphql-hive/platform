@@ -1,4 +1,4 @@
-import type { ClientStatsValues, OperationStatsValues } from '../../__generated__/types.next';
+import type { ClientStatsValues, OperationStatsValues } from '../../__generated__/types';
 import type { DateRange } from '../../shared/entities';
 
 export type OperationStatsValuesConnectionMapper = ReadonlyArray<

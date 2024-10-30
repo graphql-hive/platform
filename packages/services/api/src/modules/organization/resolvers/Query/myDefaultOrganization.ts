@@ -2,7 +2,7 @@ import { AuthManager } from '../../../auth/providers/auth-manager';
 import { OIDCIntegrationsProvider } from '../../../oidc-integrations/providers/oidc-integrations.provider';
 import { IdTranslator } from '../../../shared/providers/id-translator';
 import { OrganizationManager } from '../../providers/organization-manager';
-import type { QueryResolvers } from './../../../../__generated__/types.next';
+import type { QueryResolvers } from './../../../../__generated__/types';
 
 export const myDefaultOrganization: NonNullable<QueryResolvers['myDefaultOrganization']> = async (
   _,
