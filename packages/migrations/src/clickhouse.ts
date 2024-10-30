@@ -151,9 +151,11 @@ export async function migrateClickHouse(
 
   console.log('Migrations fetched');
 
-  const completedActions = new Set(
-    MigrationsTableModel.parse(JSON.parse(migrationsResponse.body)).data.map(({ id }) => id),
+  const completedActions = MigrationsTableModel.parse(JSON.parse(migrationsResponse.body)).data.map(
+    ({ id }) => id,
   );
+
+  console.log('Migration history:', completedActions.join(', '));
 
   const actions = await Promise.all<{ action: Action }>([
     import('./clickhouse-actions/001-initial'),
@@ -172,7 +174,7 @@ export async function migrateClickHouse(
     const startedAt = Date.now();
     console.log(` - Running action`, index);
 
-    if (completedActions.has(index)) {
+    if (completedActions.includes(index)) {
       console.log('   Skipping because it was already run');
       return;
     }
