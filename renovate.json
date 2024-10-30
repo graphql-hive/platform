@@ -1,9 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>the-guild-org/shared-config:renovate",
-    ":preserveSemverRanges"
-  ],
+  "extends": ["github>the-guild-org/shared-config:renovate", ":preserveSemverRanges"],
   "prConcurrentLimit": 10,
   "dependencyDashboardTitle": "Dependencies Dashboard",
   "packageRules": [
@@ -17,10 +14,7 @@
     },
     {
       "groupName": "gh-actions/artifact",
-      "matchPackageNames": [
-        "actions/download-artifact",
-        "actions/upload-artifact"
-      ]
+      "matchPackageNames": ["actions/download-artifact", "actions/upload-artifact"]
     },
     {
       "groupName": "graphql-armor",
@@ -28,11 +22,7 @@
     },
     {
       "groupName": "Yoga/Envelop",
-      "matchPackageNames": [
-        "@envelop/{/,}**",
-        "graphql-yoga{/,}**",
-        "@graphql-yoga/{/,}**"
-      ]
+      "matchPackageNames": ["@envelop/{/,}**", "graphql-yoga{/,}**", "@graphql-yoga/{/,}**"]
     },
     {
       "groupName": "radix",
@@ -82,9 +72,7 @@
     {
       "customType": "regex",
       "fileMatch": ["deployment/.*?\\.ts$"],
-      "matchStrings": [
-        "image: (?:'|\")(?<depName>.*?):(?<currentValue>.*?)(?:'|\")"
-      ],
+      "matchStrings": ["image: (?:'|\")(?<depName>.*?):(?<currentValue>.*?)(?:'|\")"],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
     },
