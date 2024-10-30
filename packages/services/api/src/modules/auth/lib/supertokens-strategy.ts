@@ -189,7 +189,12 @@ function transformOrganizationMemberLegacyScopes(args: {
       case OrganizationAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',
-          action: ['organization:modifySettings', 'schemaLinting:modifyOrganizationRules'],
+          action: [
+            'organization:modifySettings',
+            'schemaLinting:modifyOrganizationRules',
+            'billing:describe',
+            'billing:update',
+          ],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
