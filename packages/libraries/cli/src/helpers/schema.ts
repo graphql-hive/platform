@@ -167,9 +167,7 @@ class FederationSubgraphUrlLoader implements Loader {
 
     return [
       {
-        get document() {
-          return parse(sdl);
-        },
+        document: parse(sdl),
         rawSDL: sdl,
       },
     ];
