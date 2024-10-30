@@ -288,7 +288,7 @@ export class SchemaPublisher {
     this.logger.info('Checking schema (input=%o)', lodash.omit(input, ['sdl']));
 
     await this.session.assertPerformAction({
-      action: 'schema:check',
+      action: 'schemaCheck:create',
       organizationId: input.organizationId,
       params: {
         organizationId: input.organizationId,
@@ -454,11 +454,7 @@ export class SchemaPublisher {
       step: 'checkingSchema',
     });
 
-    const baseSchema = await this.schemaManager.getBaseSchema({
-      organizationId: input.organizationId,
-      projectId: input.projectId,
-      targetId: input.targetId,
-    });
+    const baseSchema = await this.schemaManager.getBaseSchemaForTarget(target);
 
     const selector = {
       organizationId: input.organizationId,
@@ -1069,7 +1065,7 @@ export class SchemaPublisher {
         },
         async () => {
           await this.session.assertPerformAction({
-            action: 'schema:publish',
+            action: 'schemaVersion:publish',
             organizationId: input.organizationId,
             params: {
               targetId: input.targetId,
@@ -1188,7 +1184,7 @@ export class SchemaPublisher {
       },
       async () => {
         await this.session.assertPerformAction({
-          action: 'schema:deleteService',
+          action: 'schemaVersion:deleteService',
           organizationId: input.organizationId,
           params: {
             organizationId: input.organizationId,
@@ -1212,18 +1208,18 @@ export class SchemaPublisher {
               projectId: input.projectId,
               targetId: input.target.id,
             }),
-            this.schemaManager.getLatestSchemas({
+            this.storage.getLatestSchemas({
               organizationId: input.organizationId,
               projectId: input.projectId,
               targetId: input.target.id,
             }),
-            this.schemaManager.getLatestSchemas({
+            this.storage.getLatestSchemas({
               organizationId: input.organizationId,
               projectId: input.projectId,
               targetId: input.target.id,
               onlyComposable: true,
             }),
-            this.schemaManager.getBaseSchema({
+            this.storage.getBaseSchema({
               organizationId: input.organizationId,
               projectId: input.projectId,
               targetId: input.target.id,

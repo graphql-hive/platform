@@ -189,7 +189,7 @@ function transformOrganizationMemberLegacyScopes(args: {
       case OrganizationAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',
-          action: ['organization:updateSlug'],
+          action: ['organization:modifySettings'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
@@ -229,7 +229,7 @@ function transformOrganizationMemberLegacyScopes(args: {
       case ProjectAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',
-          action: ['project:modifySlug', 'project:delete'],
+          action: ['project:delete', 'project:modifySettings'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
@@ -238,13 +238,13 @@ function transformOrganizationMemberLegacyScopes(args: {
         policies.push({
           effect: 'allow',
           action: [
-            'project:modifySlug',
-            'project:delete',
             'appDeployment:describe',
             'laboratory:describe',
             'laboratory:createCollection',
             'laboratory:deleteCollection',
             'laboratory:modifyCollection',
+            'schemaCheck:approve',
+            'schemaVersion:approve',
           ],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });

@@ -179,7 +179,7 @@ export class ProjectManager {
     const { slug, organizationId: organization, projectId: project } = input;
     this.logger.info('Updating a project slug (input=%o)', input);
     await this.session.assertPerformAction({
-      action: 'project:modifySlug',
+      action: 'project:modifySettings',
       organizationId: organization,
       params: {
         organizationId: organization,

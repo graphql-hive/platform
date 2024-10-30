@@ -143,7 +143,7 @@ export class SlackIntegrationManager {
           selector.context,
         );
         await this.session.assertPerformAction({
-          action: 'schema:publish',
+          action: 'schemaVersion:publish',
           organizationId: selector.organizationId,
           params: {
             organizationId: selector.organizationId,

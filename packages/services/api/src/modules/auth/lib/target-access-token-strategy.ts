@@ -150,7 +150,7 @@ function transformAccessTokenLegacyScopes(args: {
       case TargetAccessScope.REGISTRY_READ: {
         policies.push({
           effect: 'allow',
-          action: ['schema:check'],
+          action: ['schemaCheck:create'],
           resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
         });
         break;
@@ -163,10 +163,10 @@ function transformAccessTokenLegacyScopes(args: {
             'appDeployment:create',
             'appDeployment:publish',
             'appDeployment:retire',
-            'schema:publish',
-            'schema:deleteService',
-            'schema:check',
-            'schema:approve',
+            'schemaVersion:publish',
+            'schemaVersion:deleteService',
+            'schema:loadFromRegistry',
+            'schemaVersion:publish',
           ],
           resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
         });

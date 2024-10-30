@@ -46,7 +46,7 @@ test.concurrent('can check a schema with target:registry:read access', async ({ 
     .then(r => r.expectGraphQLErrors());
   expect(checkResultErrors).toHaveLength(1);
   expect(checkResultErrors[0].message).toMatch(
-    `No access (reason: "Missing permission for performing 'schema:check' on resource")`,
+    `No access (reason: "Missing permission for performing 'schemaCheck:create' on resource")`,
   );
 
   // Check schema with read rights

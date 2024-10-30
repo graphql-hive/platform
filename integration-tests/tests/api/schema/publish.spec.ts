@@ -36,7 +36,7 @@ test.concurrent(
 
     expect(resultErrors).toHaveLength(1);
     expect(resultErrors[0].message).toMatch(
-      '"Missing permission for performing \'schema:publish\' on resource"',
+      `No access (reason: "Missing permission for performing 'schemaVersion:publish' on resource")`,
     );
   },
 );

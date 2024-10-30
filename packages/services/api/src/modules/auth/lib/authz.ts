@@ -257,7 +257,7 @@ function schemaCheckOrPublishIdentity(
  */
 const actionDefinitions = {
   'organization:describe': defaultOrgIdentity,
-  'organization:updateSlug': defaultOrgIdentity,
+  'organization:modifySettings': defaultOrgIdentity,
   'organization:delete': defaultOrgIdentity,
   'gitHubIntegration:modify': defaultOrgIdentity,
   'slackIntegration:modify': defaultOrgIdentity,
@@ -286,7 +286,7 @@ const actionDefinitions = {
   'project:delete': defaultProjectIdentity,
   'alert:describe': defaultProjectIdentity,
   'alert:modify': defaultProjectIdentity,
-  'project:modifySlug': defaultProjectIdentity,
+  'project:modifySettings': defaultProjectIdentity,
   'schemaLinting:manageOrganization': defaultProjectIdentity,
   'schemaLinting:manageProject': defaultProjectIdentity,
   'target:create': defaultProjectIdentity,
@@ -296,14 +296,17 @@ const actionDefinitions = {
   'laboratory:createCollection': defaultTargetIdentity,
   'laboratory:modifyCollection': defaultTargetIdentity,
   'laboratory:deleteCollection': defaultTargetIdentity,
-  'schema:check': schemaCheckOrPublishIdentity,
-  'schema:approve': schemaCheckOrPublishIdentity,
-  'schema:publish': schemaCheckOrPublishIdentity,
-  'schema:deleteService': schemaCheckOrPublishIdentity,
   'appDeployment:describe': defaultTargetIdentity,
   'appDeployment:create': defaultAppDeploymentIdentity,
   'appDeployment:publish': defaultAppDeploymentIdentity,
   'appDeployment:retire': defaultAppDeploymentIdentity,
+  'schemaCheck:create': schemaCheckOrPublishIdentity,
+  'schemaCheck:approve': schemaCheckOrPublishIdentity,
+  'schemaVersion:publish': schemaCheckOrPublishIdentity,
+  'schemaVersion:approve': defaultTargetIdentity,
+  'schemaVersion:deleteService': schemaCheckOrPublishIdentity,
+  'schema:loadFromRegistry': defaultTargetIdentity,
+  'schema:compose': defaultTargetIdentity,
 } satisfies ActionDefinitionMap;
 
 type ActionDefinitionMap = {
