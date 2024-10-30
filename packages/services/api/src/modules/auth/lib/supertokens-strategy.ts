@@ -189,7 +189,7 @@ function transformOrganizationMemberLegacyScopes(args: {
       case OrganizationAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',
-          action: ['organization:modifySettings'],
+          action: ['organization:modifySettings', 'schemaLinting:modifyOrganizationRules'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
@@ -229,7 +229,7 @@ function transformOrganizationMemberLegacyScopes(args: {
       case ProjectAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',
-          action: ['project:delete', 'project:modifySettings'],
+          action: ['project:delete', 'project:modifySettings', 'schemaLinting:modifyProjectRules'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
