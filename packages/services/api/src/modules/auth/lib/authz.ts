@@ -301,6 +301,9 @@ const actionDefinitions = {
   'schema:publish': schemaCheckOrPublishIdentity,
   'schema:deleteService': schemaCheckOrPublishIdentity,
   'appDeployment:describe': defaultTargetIdentity,
+  'appDeployment:create': defaultAppDeploymentIdentity,
+  'appDeployment:publish': defaultAppDeploymentIdentity,
+  'appDeployment:retire': defaultAppDeploymentIdentity,
 } satisfies ActionDefinitionMap;
 
 type ActionDefinitionMap = {
