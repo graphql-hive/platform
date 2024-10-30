@@ -21,8 +21,8 @@ export type {
 export { createTaskRunner } from './modules/shared/lib/task-runner';
 export { minifySchema } from './shared/schema';
 export { HiveError } from './shared/errors';
-export { ProjectType } from './__generated__/types';
-export type { AuthProvider } from './__generated__/types';
+export { ProjectType } from './__generated__/types.next';
+export type { AuthProvider } from './__generated__/types.next';
 export { HttpClient } from './modules/shared/providers/http-client';
 export { OperationsManager } from './modules/operations/providers/operations-manager';
 export { OperationsReader } from './modules/operations/providers/operations-reader';
@@ -36,4 +36,4 @@ export {
   OrganizationAccessScope,
   ProjectAccessScope,
   TargetAccessScope,
-} from './__generated__/types';
+} from './__generated__/types.next';

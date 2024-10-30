@@ -1,5 +1,5 @@
 import type { SchemaChangeType } from '@hive/storage';
-import type * as Types from '../../../../__generated__/types';
+import type * as Types from '../../../../__generated__/types.next';
 import type {
   Alert,
   AlertChannel,

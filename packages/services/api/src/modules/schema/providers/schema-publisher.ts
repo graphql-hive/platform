@@ -13,7 +13,7 @@ import type {
   SchemaCheck,
 } from '@hive/storage';
 import * as Sentry from '@sentry/node';
-import * as Types from '../../../__generated__/types';
+import * as Types from '../../../__generated__/types.next';
 import { Organization, Project, ProjectType, Schema, Target } from '../../../shared/entities';
 import { HiveError } from '../../../shared/errors';
 import { createPeriod } from '../../../shared/helpers';

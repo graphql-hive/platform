@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import type { SchemaError } from '../__generated__/types';
+import type { SchemaError } from '../__generated__/types.next';
 
 export function toSchemaError(error: unknown): SchemaError {
   if (isGraphQLError(error)) {

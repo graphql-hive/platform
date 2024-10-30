@@ -2,7 +2,7 @@ import { Inject, Injectable, InjectionToken, Scope } from 'graphql-modules';
 import { App } from '@octokit/app';
 import { Octokit } from '@octokit/core';
 import { RequestError } from '@octokit/request-error';
-import type { IntegrationsModule } from '../__generated__/types';
+import type { GitHubIntegration } from '../../../__generated__/types.next';
 import { HiveError } from '../../../shared/errors';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { OrganizationAccessScope } from '../../auth/providers/organization-access';
@@ -160,7 +160,7 @@ export class GitHubIntegrationManager {
    */
   async getRepositories(
     selector: OrganizationSelector,
-  ): Promise<IntegrationsModule.GitHubIntegration['repositories'] | null> {
+  ): Promise<GitHubIntegration['repositories'] | null> {
     this.logger.debug('Fetching repositories');
     const octokit = await this.getOctokitForOrganization(selector);
 
