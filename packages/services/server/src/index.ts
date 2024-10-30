@@ -365,10 +365,6 @@ export async function main() {
           }
         : null,
       encryptionSecret: env.encryptionSecret,
-      feedback: {
-        token: 'noop',
-        channel: 'noop',
-      },
       schemaConfig: env.hiveServices.webApp
         ? {
             schemaPublishLink(input) {
