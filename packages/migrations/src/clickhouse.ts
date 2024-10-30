@@ -149,7 +149,7 @@ export async function migrateClickHouse(
     SELECT id FROM default.migrations ORDER BY id DESC
   `);
 
-  console.log('Migrations fetched');
+  console.log('Migrations fetched (raw):', migrationsResponse.body);
 
   const completedActions = MigrationsTableModel.parse(JSON.parse(migrationsResponse.body)).data.map(
     ({ id }) => id,
