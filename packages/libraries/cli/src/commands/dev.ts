@@ -471,20 +471,16 @@ export default class Dev extends Command<typeof Dev> {
   }
 
   private async resolveSdlFromPath(path: string) {
-    const sdl = await loadSchema(path);
+    const sdl = await loadSchema('introspection', path);
     invariant(typeof sdl === 'string' && sdl.length > 0, `Read empty schema from ${path}`);
 
     return sdl;
   }
 
   private async resolveSdlFromUrl(url: string) {
-    const result = await this.graphql(url)
-      .request({ operation: ServiceIntrospectionQuery })
-      .catch(error => {
-        this.handleFetchError(error);
-      });
-
-    const sdl = result._service.sdl;
+    const sdl = await loadSchema('federation-subgraph', url).catch(error => {
+      this.handleFetchError(error);
+    });
 
     if (!sdl) {
       throw new Error('Failed to introspect service');
