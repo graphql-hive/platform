@@ -1,6 +1,6 @@
 import { Injectable, Scope } from 'graphql-modules';
 import LRU from 'lru-cache';
-import { AccessError, HiveError } from '../../../shared/errors';
+import { HiveError } from '../../../shared/errors';
 import { Session } from '../../auth/lib/authz';
 import { Logger } from '../../shared/providers/logger';
 

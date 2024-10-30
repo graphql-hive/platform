@@ -49,7 +49,6 @@ import {
   projects,
   schema_log as schema_log_in_db,
   schema_policy_config,
-  schema_version_to_log,
   schema_versions,
   target_validation,
   targets,
