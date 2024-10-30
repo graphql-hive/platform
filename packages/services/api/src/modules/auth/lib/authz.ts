@@ -62,6 +62,10 @@ export abstract class Session {
     throw new AccessError('Authorization token is missing', 'UNAUTHENTICATED');
   }
 
+  public isViewer(): boolean {
+    return false;
+  }
+
   /** Retrieve the access token of the request. */
   public getLegacySelector(): {
     token: string;

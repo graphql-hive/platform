@@ -55,6 +55,10 @@ export class SuperTokensCookieBasedSession extends Session {
 
     return user;
   }
+
+  public isViewer() {
+    return true;
+  }
 }
 
 export class SuperTokensUserAuthNStrategy extends AuthNStrategy<SuperTokensCookieBasedSession> {
