@@ -51,7 +51,7 @@ export class ContractsManager {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'schemaContract:create',
+      action: 'target:modifySettings',
       organizationId,
       params: {
         organizationId,
@@ -89,7 +89,7 @@ export class ContractsManager {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'schemaContract:disable',
+      action: 'target:modifySettings',
       organizationId,
       params: {
         organizationId,
@@ -122,18 +122,15 @@ export class ContractsManager {
       this.idTranslator.translateTargetId(breadcrumb),
     ]);
 
-    return await this.session
-      .assertPerformAction({
-        action: 'schemaContract:disable',
+    return await this.session.canPerformAction({
+      action: 'target:modifySettings',
+      organizationId,
+      params: {
         organizationId,
-        params: {
-          organizationId,
-          projectId,
-          targetId,
-        },
-      })
-      .then(() => true)
-      .catch(() => false);
+        projectId,
+        targetId,
+      },
+    });
   }
 
   public async getPaginatedContractsForTarget(args: {
@@ -142,7 +139,7 @@ export class ContractsManager {
     first: number | null;
   }) {
     await this.session.assertPerformAction({
-      action: 'schemaContract:describe',
+      action: 'target:modifySettings',
       organizationId: args.target.orgId,
       params: {
         organizationId: args.target.orgId,
