@@ -1,6 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>the-guild-org/shared-config:renovate", ":preserveSemverRanges"],
+  "extends": [
+    "github>the-guild-org/shared-config:renovate",
+    ":preserveSemverRanges"
+  ],
   "prConcurrentLimit": 10,
   "dependencyDashboardTitle": "Dependencies Dashboard",
   "packageRules": [
@@ -14,37 +17,44 @@
     },
     {
       "groupName": "gh-actions/artifact",
-      "matchPackageNames": ["actions/download-artifact", "actions/upload-artifact"]
+      "matchPackageNames": [
+        "actions/download-artifact",
+        "actions/upload-artifact"
+      ]
     },
     {
       "groupName": "graphql-armor",
-      "matchPackagePrefixes": ["@escape.tech/graphql-armor-"]
+      "matchPackageNames": ["@escape.tech/graphql-armor-{/,}**"]
     },
     {
       "groupName": "Yoga/Envelop",
-      "matchPackagePrefixes": ["@envelop/", "graphql-yoga", "@graphql-yoga/"]
+      "matchPackageNames": [
+        "@envelop/{/,}**",
+        "graphql-yoga{/,}**",
+        "@graphql-yoga/{/,}**"
+      ]
     },
     {
       "groupName": "radix",
-      "matchPackagePrefixes": ["@radix/", "@radix-ui"],
-      "recreateClosed": false
+      "recreateWhen": "auto",
+      "matchPackageNames": ["@radix/{/,}**", "@radix-ui{/,}**"]
     },
     {
       "groupName": "stripe",
-      "matchPackagePrefixes": ["@stripe/", "stripe"]
+      "matchPackageNames": ["@stripe/{/,}**", "stripe{/,}**"]
     },
     {
       "groupName": "urql",
-      "matchPackagePrefixes": ["@urql/", "urql"],
-      "recreateClosed": false
+      "recreateWhen": "auto",
+      "matchPackageNames": ["@urql/{/,}**", "urql{/,}**"]
     },
     {
       "groupName": "sentry",
-      "matchPackagePrefixes": ["@sentry/", "sentry"]
+      "matchPackageNames": ["@sentry/{/,}**", "sentry{/,}**"]
     },
     {
       "groupName": "trpc",
-      "matchPackagePrefixes": ["@trpc/", "trpc"]
+      "matchPackageNames": ["@trpc/{/,}**", "trpc{/,}**"]
     },
     {
       "groupName": "supertokens",
@@ -68,14 +78,18 @@
     "enabled": true,
     "fileMatch": [".*?\\.[dD]ockerfile"]
   },
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": ["deployment/.*?\\.ts$"],
-      "matchStrings": ["image: (?:'|\")(?<depName>.*?):(?<currentValue>.*?)(?:'|\")"],
+      "matchStrings": [
+        "image: (?:'|\")(?<depName>.*?):(?<currentValue>.*?)(?:'|\")"
+      ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
     },
     {
+      "customType": "regex",
       "fileMatch": ["deployment/.*?\\.ts$"],
       "matchStrings": [
         "helmChart\\((?:'|\")(?<registryUrl>.*?)(?:'|\"), (?:'|\")(?<depName>.*?)(?:'|\"), (?:'|\")(?<currentValue>.*?)(?:'|\")\\)"
