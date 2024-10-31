@@ -41,6 +41,17 @@ export class SuperTokensCookieBasedSession extends Session {
       userId: user.id,
     });
 
+    // owner of organization should have full right to do anything.
+    if (member?.isOwner) {
+      return [
+        {
+          action: '*',
+          effect: 'allow',
+          resource: `hrn:${organizationId}:organization/${organizationId}`,
+        },
+      ];
+    }
+
     if (Array.isArray(member?.scopes)) {
       return transformOrganizationMemberLegacyScopes({ organizationId, scopes: member.scopes });
     }

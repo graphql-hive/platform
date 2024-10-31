@@ -7,7 +7,7 @@ import { Logger } from '../../shared/providers/logger';
 
 export type AuthorizationPolicyStatement = {
   effect: 'allow' | 'deny';
-  action: Actions | Actions[];
+  action: ActionStrings | ActionStrings[];
   resource: string | string[];
 };
 
@@ -375,6 +375,8 @@ type ActionDefinitionMap = {
 };
 
 type Actions = keyof typeof actionDefinitions;
+
+type ActionStrings = Actions | '*';
 
 /** Unauthenticated session that is returned by default. */
 class UnauthenticatedSession extends Session {
