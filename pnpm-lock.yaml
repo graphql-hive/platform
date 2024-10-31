@@ -70,8 +70,8 @@ importers:
         specifier: 2.27.9
         version: 2.27.9
       '@eddeee888/gcg-typescript-resolver-files':
-        specifier: 0.10.4
-        version: 0.10.4(encoding@0.1.13)(graphql@16.9.0)
+        specifier: 0.11.0
+        version: 0.11.0(encoding@0.1.13)(graphql@16.9.0)
       '@graphql-codegen/add':
         specifier: 5.0.3
         version: 5.0.3(graphql@16.9.0)
@@ -3043,8 +3043,8 @@ packages:
   '@eddeee888/gcg-server-config@0.2.2':
     resolution: {integrity: sha512-/yOw8sZMObfZ5Esu8QD5RkcbBApD+QRP1r/syS2nAiUoZr5Nj05tNi8mQnR90suY4UIjEIO3KfkkN/vXpZ/1fA==}
 
-  '@eddeee888/gcg-typescript-resolver-files@0.10.4':
-    resolution: {integrity: sha512-y3dBaQq/nb4EQMZ5NpAuwwTwui2rmjig1JTM2zZZn0xLnIBd9XWVCXVF44TTTJDKlrwYl3nIrwrNkQ+RffTM9g==}
+  '@eddeee888/gcg-typescript-resolver-files@0.11.0':
+    resolution: {integrity: sha512-vrZZbsMhkVBPCVNMwJGpvkoMiN4Vk61wimduwywj3CCgc+i1MULZW34mDfCJEl1KzZIyw4QTUhByO89ZBBUaeA==}
     peerDependencies:
       graphql: ^15.0.0 || ^16.0.0
 
@@ -3854,7 +3854,6 @@ packages:
 
   '@fastify/vite@6.0.7':
     resolution: {integrity: sha512-+dRo9KUkvmbqdmBskG02SwigWl06Mwkw8SBDK1zTNH6vd4DyXbRvI7RmJEmBkLouSU81KTzy1+OzwHSffqSD6w==}
-    bundledDependencies: []
 
   '@floating-ui/core@1.2.6':
     resolution: {integrity: sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==}
@@ -17739,11 +17738,11 @@ snapshots:
       - graphql
       - supports-color
 
-  '@eddeee888/gcg-typescript-resolver-files@0.10.4(encoding@0.1.13)(graphql@16.9.0)':
+  '@eddeee888/gcg-typescript-resolver-files@0.11.0(encoding@0.1.13)(graphql@16.9.0)':
     dependencies:
       '@eddeee888/gcg-server-config': 0.2.2(encoding@0.1.13)(graphql@16.9.0)
       '@graphql-codegen/add': 5.0.3(graphql@16.9.0)
-      '@graphql-codegen/plugin-helpers': 5.0.4(graphql@16.9.0)
+      '@graphql-codegen/plugin-helpers': 5.1.0(graphql@16.9.0)
       '@graphql-codegen/schema-ast': 4.1.0(graphql@16.9.0)
       '@graphql-codegen/typescript': 4.1.1(encoding@0.1.13)(graphql@16.9.0)
       '@graphql-codegen/typescript-resolvers': 4.4.0(encoding@0.1.13)(graphql@16.9.0)
@@ -18597,7 +18596,7 @@ snapshots:
 
   '@graphql-codegen/schema-ast@4.1.0(graphql@16.9.0)':
     dependencies:
-      '@graphql-codegen/plugin-helpers': 5.0.4(graphql@16.9.0)
+      '@graphql-codegen/plugin-helpers': 5.1.0(graphql@16.9.0)
       '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
       graphql: 16.9.0
       tslib: 2.6.3
