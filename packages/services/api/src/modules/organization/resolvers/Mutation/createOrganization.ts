@@ -1,4 +1,4 @@
-import { AuthManager } from '../../../auth/providers/auth-manager';
+import { Session } from '../../../auth/lib/authz';
 import { OrganizationManager } from '../../providers/organization-manager';
 import { OrganizationSlugModel } from '../../validation';
 import type { MutationResolvers } from './../../../../__generated__/types';
@@ -20,7 +20,7 @@ export const createOrganization: NonNullable<MutationResolvers['createOrganizati
     };
   }
 
-  const user = await injector.get(AuthManager).getCurrentUser();
+  const user = await injector.get(Session).getViewer();
   const result = await injector.get(OrganizationManager).createOrganization({
     slug: input.slug,
     user,

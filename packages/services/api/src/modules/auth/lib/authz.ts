@@ -2,7 +2,6 @@ import stringify from 'fast-json-stable-stringify';
 import { FastifyReply, FastifyRequest } from '@hive/service-common';
 import type { User } from '../../../shared/entities';
 import { AccessError } from '../../../shared/errors';
-import { cache } from '../../../shared/helpers';
 import { isUUID } from '../../../shared/is-uuid';
 
 export type AuthorizationPolicyStatement = {
@@ -52,6 +51,12 @@ function parseResourceIdentifier(resource: string) {
  * The `Session.loadPolicyStatementsForOrganization` method must be implemented by the subclass.
  */
 export abstract class Session {
+  private policyStatementCache = new Map<
+    string,
+    Promise<AuthorizationPolicyStatement[]> | Array<AuthorizationPolicyStatement>
+  >();
+  private performActionCache = new Map<string, Promise<void>>();
+
   /** Load policy statements for a specific organization. */
   protected abstract loadPolicyStatementsForOrganization(
     organizationId: string,
@@ -76,17 +81,37 @@ export abstract class Session {
     throw new AccessError('Authorization header is missing');
   }
 
-  @cache<string>(organizationId => organizationId)
   private async _loadPolicyStatementsForOrganization(organizationId: string) {
-    return await this.loadPolicyStatementsForOrganization(organizationId);
+    let result = this.policyStatementCache.get(organizationId);
+    if (result !== undefined) {
+      return result;
+    }
+
+    result = this.loadPolicyStatementsForOrganization(organizationId);
+    this.policyStatementCache.set(organizationId, result);
+    return await result;
+  }
+
+  public async assertPerformAction<TAction extends keyof typeof actionDefinitions>(args: {
+    action: TAction;
+    organizationId: string;
+    params: Parameters<(typeof actionDefinitions)[TAction]>[0];
+  }): Promise<void> {
+    const argsStr = stringify(args);
+    let result = this.performActionCache.get(argsStr);
+    if (result !== undefined) {
+      return result;
+    }
+    result = this._assertPerformAction(args);
+    this.performActionCache.set(argsStr, result);
+    return await result;
   }
 
   /**
    * Check whether a session is allowed to perform a specific action.
    * Throws a AccessError if the action is not allowed.
    */
-  @cache<object>(args => stringify(args))
-  public async assertPerformAction<TAction extends keyof typeof actionDefinitions>(args: {
+  private async _assertPerformAction<TAction extends keyof typeof actionDefinitions>(args: {
     action: TAction;
     organizationId: string;
     params: Parameters<(typeof actionDefinitions)[TAction]>[0];
@@ -156,6 +181,12 @@ export abstract class Session {
         }
         return Promise.reject(err);
       });
+  }
+
+  /** Reset the permissions cache. */
+  public reset() {
+    this.performActionCache.clear();
+    this.policyStatementCache.clear();
   }
 }
 
@@ -265,11 +296,6 @@ const actionDefinitions = {
   'support:manageTickets': defaultOrgIdentity,
   'billing:describe': defaultOrgIdentity,
   'billing:update': defaultOrgIdentity,
-  //   'policy:describe': defaultOrgIdentity,
-  //   'policy:modify': defaultOrgIdentity,
-  //   'accessToken:describe': defaultOrgIdentity,
-  //   'accessToken:create': defaultOrgIdentity,
-  //   'accessToken:delete': defaultOrgIdentity,
   'targetAccessToken:describe': defaultTargetIdentity,
   'targetAccessToken:create': defaultTargetIdentity,
   'targetAccessToken:delete': defaultTargetIdentity,

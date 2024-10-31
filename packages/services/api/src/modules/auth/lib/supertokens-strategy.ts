@@ -181,7 +181,12 @@ function transformOrganizationMemberLegacyScopes(args: {
       case OrganizationAccessScope.READ: {
         policies.push({
           effect: 'allow',
-          action: ['support:manageTickets', 'project:create', 'project:describe'],
+          action: [
+            'support:manageTickets',
+            'project:create',
+            'project:describe',
+            'organization:describe',
+          ],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
@@ -199,10 +204,31 @@ function transformOrganizationMemberLegacyScopes(args: {
         });
         break;
       }
+      case OrganizationAccessScope.DELETE: {
+        policies.push({
+          effect: 'allow',
+          action: ['organization:delete'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
       case OrganizationAccessScope.INTEGRATIONS: {
         policies.push({
           effect: 'allow',
           action: ['oidc:modify', 'gitHubIntegration:modify', 'slackIntegration:modify'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case OrganizationAccessScope.MEMBERS: {
+        policies.push({
+          effect: 'allow',
+          action: [
+            'member:manageInvites',
+            'member:removeMember',
+            'member:assignRole',
+            'member:modifyRole',
+          ],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;

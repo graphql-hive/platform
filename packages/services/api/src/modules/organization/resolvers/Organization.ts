@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { AuthManager } from '../../auth/providers/auth-manager';
+import { Session } from '../../auth/lib/authz';
 import {
   isOrganizationScope,
   OrganizationAccessScope,
@@ -33,7 +33,7 @@ export const Organization: Pick<
       .getOrganizationOwner({ organizationId: organization.id });
   },
   me: async (organization, _, { injector }) => {
-    const me = await injector.get(AuthManager).getCurrentUser();
+    const me = await injector.get(Session).getViewer();
     const members = await injector
       .get(OrganizationManager)
       .getOrganizationMembers({ organizationId: organization.id });
