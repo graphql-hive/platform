@@ -2,8 +2,8 @@
 
 set -u
 
-GITHUB_OWNER="ardatan"
-GITHUB_REPO="graphql-mesh"
+GITHUB_OWNER="graphql-hive"
+GITHUB_REPO="gateway"
 BINARY_NAME="hive-gateway"
 
 # Determine the package version
