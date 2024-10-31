@@ -1,10 +1,11 @@
 import { AccessError } from '../../../shared/errors';
+import { NoopLogger } from '../../shared/providers/logger';
 import { AuthorizationPolicyStatement, Session } from './authz';
 
 class TestSession extends Session {
   policyStatements: Array<AuthorizationPolicyStatement>;
   constructor(policyStatements: Array<AuthorizationPolicyStatement>) {
-    super();
+    super({ logger: new NoopLogger() });
     this.policyStatements = policyStatements;
   }
 

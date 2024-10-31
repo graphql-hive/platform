@@ -5,6 +5,7 @@ import { captureException } from '@sentry/node';
 import type { User } from '../../../shared/entities';
 import { AccessError, HiveError } from '../../../shared/errors';
 import { isUUID } from '../../../shared/is-uuid';
+import { Logger } from '../../shared/providers/logger';
 import type { Storage } from '../../shared/providers/storage';
 import {
   OrganizationAccessScope,
@@ -17,8 +18,11 @@ export class SuperTokensCookieBasedSession extends Session {
   public superTokensUserId: string;
   private storage: Storage;
 
-  constructor(args: { superTokensUserId: string; email: string }, deps: { storage: Storage }) {
-    super();
+  constructor(
+    args: { superTokensUserId: string; email: string },
+    deps: { storage: Storage; logger: Logger },
+  ) {
+    super({ logger: deps.logger });
     this.superTokensUserId = args.superTokensUserId;
     this.storage = deps.storage;
   }
@@ -156,6 +160,7 @@ export class SuperTokensUserAuthNStrategy extends AuthNStrategy<SuperTokensCooki
       },
       {
         storage: this.storage,
+        logger: args.req.log,
       },
     );
   }

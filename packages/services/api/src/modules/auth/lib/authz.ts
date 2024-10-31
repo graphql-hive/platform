@@ -3,6 +3,7 @@ import { FastifyReply, FastifyRequest } from '@hive/service-common';
 import type { User } from '../../../shared/entities';
 import { AccessError } from '../../../shared/errors';
 import { isUUID } from '../../../shared/is-uuid';
+import { Logger } from '../../shared/providers/logger';
 
 export type AuthorizationPolicyStatement = {
   effect: 'allow' | 'deny';
@@ -56,6 +57,13 @@ export abstract class Session {
     Promise<AuthorizationPolicyStatement[]> | Array<AuthorizationPolicyStatement>
   >();
   private performActionCache = new Map<string, Promise<void>>();
+  protected logger: Logger;
+
+  constructor(args: { logger: Logger }) {
+    this.logger = args.logger.child({
+      module: this.constructor.name,
+    });
+  }
 
   /** Load policy statements for a specific organization. */
   protected abstract loadPolicyStatementsForOrganization(
@@ -97,9 +105,22 @@ export abstract class Session {
     organizationId: string;
     params: Parameters<(typeof actionDefinitions)[TAction]>[0];
   }): Promise<void> {
+    this.logger.debug(
+      'Assert performing action (action=%s, organizationId=%s, params=%o)',
+      args.action,
+      args.organizationId,
+      args.params,
+    );
+
     const argsStr = stringify(args);
     let result = this.performActionCache.get(argsStr);
     if (result !== undefined) {
+      this.logger.debug(
+        'Serve result from cache (action=%s, organizationId=%s, params=%o)',
+        args.action,
+        args.organizationId,
+        args.params,
+      );
       return result;
     }
     result = this._assertPerformAction(args);
@@ -151,6 +172,12 @@ export abstract class Session {
       for (const action of actions) {
         if (isActionMatch(action, args.action)) {
           if (permission.effect === 'deny') {
+            this.logger.debug(
+              'Session not authorized to perform action. Action explicitly denied. (action=%s, organizationId=%s, params=%o)',
+              args.action,
+              args.organizationId,
+              args.params,
+            );
             throw new AccessError(`Missing permission for performing '${args.action}' on resource`);
           } else {
             isAllowed = true;
@@ -160,6 +187,13 @@ export abstract class Session {
     }
 
     if (!isAllowed) {
+      this.logger.debug(
+        'Session not authorized to perform action. Action not allowed. (action=%s, organizationId=%s, params=%o)',
+        args.action,
+        args.organizationId,
+        args.params,
+      );
+
       throw new AccessError(`Missing permission for performing '${args.action}' on resource`);
     }
   }
@@ -185,6 +219,7 @@ export abstract class Session {
 
   /** Reset the permissions cache. */
   public reset() {
+    this.logger.debug('Reset cache.');
     this.performActionCache.clear();
     this.policyStatementCache.clear();
   }
@@ -390,6 +425,8 @@ export class AuthN {
       }
     }
 
-    return new UnauthenticatedSession();
+    return new UnauthenticatedSession({
+      logger: args.req.log,
+    });
   }
 }

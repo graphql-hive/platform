@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest, ServiceLogger } from '@hive/service-common';
+import { Logger } from '../../shared/providers/logger';
 import { TokenStorage } from '../../token/providers/token-storage';
 import { TokensConfig } from '../../token/providers/tokens';
 import {
@@ -16,14 +17,19 @@ export class TargetAccessTokenSession extends Session {
 
   private policies: Array<AuthorizationPolicyStatement>;
 
-  constructor(args: {
-    organizationId: string;
-    projectId: string;
-    targetId: string;
-    token: string;
-    policies: Array<AuthorizationPolicyStatement>;
-  }) {
-    super();
+  constructor(
+    args: {
+      organizationId: string;
+      projectId: string;
+      targetId: string;
+      token: string;
+      policies: Array<AuthorizationPolicyStatement>;
+    },
+    deps: {
+      logger: Logger;
+    },
+  ) {
+    super({ logger: deps.logger });
     this.organizationId = args.organizationId;
     this.projectId = args.projectId;
     this.targetId = args.targetId;
@@ -115,19 +121,24 @@ export class TargetAccessTokenStrategy extends AuthNStrategy<TargetAccessTokenSe
 
     const result = await tokens.getToken({ token: accessToken });
 
-    return new TargetAccessTokenSession({
-      organizationId: result.organization,
-      projectId: result.project,
-      targetId: result.target,
-      token: accessToken,
-      policies: transformAccessTokenLegacyScopes({
+    return new TargetAccessTokenSession(
+      {
         organizationId: result.organization,
+        projectId: result.project,
         targetId: result.target,
-        scopes: result.scopes as Array<
-          OrganizationAccessScope | ProjectAccessScope | TargetAccessScope
-        >,
-      }),
-    });
+        token: accessToken,
+        policies: transformAccessTokenLegacyScopes({
+          organizationId: result.organization,
+          targetId: result.target,
+          scopes: result.scopes as Array<
+            OrganizationAccessScope | ProjectAccessScope | TargetAccessScope
+          >,
+        }),
+      },
+      {
+        logger: args.req.log,
+      },
+    );
   }
 }
 
