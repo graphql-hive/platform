@@ -228,6 +228,7 @@ function transformOrganizationMemberLegacyScopes(args: {
             'member:removeMember',
             'member:assignRole',
             'member:modifyRole',
+            'member:describe',
           ],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
@@ -307,7 +308,15 @@ function transformOrganizationMemberLegacyScopes(args: {
       case TargetAccessScope.SETTINGS: {
         policies.push({
           effect: 'allow',
-          action: ['target:delete', 'target:modifySettings'],
+          action: ['target:modifySettings'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
+        break;
+      }
+      case TargetAccessScope.DELETE: {
+        policies.push({
+          effect: 'allow',
+          action: ['target:delete'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;

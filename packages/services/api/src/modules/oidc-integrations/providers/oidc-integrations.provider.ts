@@ -36,18 +36,13 @@ export class OIDCIntegrationsProvider {
       return false;
     }
 
-    try {
-      await this.session.assertPerformAction({
+    return await this.session.canPerformAction({
+      organizationId,
+      action: 'oidc:modify',
+      params: {
         organizationId,
-        action: 'oidc:modify',
-        params: {
-          organizationId,
-        },
-      });
-      return true;
-    } catch {
-      return false;
-    }
+      },
+    });
   }
 
   async getOIDCIntegrationForOrganization(args: {
