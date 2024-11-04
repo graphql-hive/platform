@@ -41,7 +41,6 @@ import { TimeAgo } from '@/components/ui/time-ago';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { FragmentType, graphql, useFragment } from '@/gql';
 import { SupportTicketPriority, SupportTicketStatus } from '@/gql/graphql';
-import { OrganizationAccessScope, useOrganizationAccess } from '@/lib/access/organization';
 import { useNotifications, useToggle } from '@/lib/hooks';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -294,6 +293,7 @@ const Support_OrganizationFragment = graphql(`
   fragment Support_OrganizationFragment on Organization {
     id
     slug
+    viewerCanManageSupportTickets
     me {
       ...CanAccessOrganization_MemberFragment
       isOwner
@@ -329,12 +329,6 @@ function Support(props: {
     toggle();
     props.refetch();
   }, [toggle, props.refetch]);
-  useOrganizationAccess({
-    scope: OrganizationAccessScope.Read,
-    member: organization.me,
-    redirect: true,
-    organizationSlug: organization.slug,
-  });
 
   const tickets = supportTicketsConnection?.edges.map(e => e.node);
 

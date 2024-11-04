@@ -24,7 +24,6 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/components/ui/use-toast';
 import { UserMenu } from '@/components/ui/user-menu';
-import { env } from '@/env/frontend';
 import { graphql, useFragment } from '@/gql';
 import { ProjectType } from '@/gql/graphql';
 import {
@@ -62,6 +61,7 @@ const OrganizationLayout_OrganizationFragment = graphql(`
     slug
     viewerCanModifySchemaPolicy
     viewerCanCreateProject
+    viewerCanManageSupportTickets
     me {
       ...CanAccessOrganization_MemberFragment
     }
@@ -188,17 +188,16 @@ export function OrganizationLayout({
                     </Link>
                   </TabsTrigger>
                 )}
-                {canAccessOrganization(OrganizationAccessScope.Read, meInCurrentOrg) &&
-                  env.zendeskSupport && (
-                    <TabsTrigger variant="menu" value={Page.Support} asChild>
-                      <Link
-                        to="/$organizationSlug/view/support"
-                        params={{ organizationSlug: currentOrganization.slug }}
-                      >
-                        Support
-                      </Link>
-                    </TabsTrigger>
-                  )}
+                {currentOrganization.viewerCanManageSupportTickets && (
+                  <TabsTrigger variant="menu" value={Page.Support} asChild>
+                    <Link
+                      to="/$organizationSlug/view/support"
+                      params={{ organizationSlug: currentOrganization.slug }}
+                    >
+                      Support
+                    </Link>
+                  </TabsTrigger>
+                )}
                 {getIsStripeEnabled() &&
                   canAccessOrganization(OrganizationAccessScope.Settings, meInCurrentOrg) && (
                     <TabsTrigger variant="menu" value={Page.Subscription} asChild>
