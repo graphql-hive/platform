@@ -83,6 +83,7 @@ export default gql`
 
   extend type Organization {
     projects: ProjectConnection!
+    viewerCanCreateProject: Boolean!
   }
 
   type Project {

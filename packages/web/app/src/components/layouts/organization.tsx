@@ -61,6 +61,7 @@ const OrganizationLayout_OrganizationFragment = graphql(`
     id
     slug
     viewerCanModifySchemaPolicy
+    viewerCanCreateProject
     me {
       ...CanAccessOrganization_MemberFragment
     }
@@ -218,7 +219,7 @@ export function OrganizationLayout({
               <div className="h-5 w-12 animate-pulse rounded-full bg-gray-800" />
             </div>
           )}
-          {currentOrganization ? (
+          {currentOrganization?.viewerCanCreateProject ? (
             <>
               <Button onClick={toggleModalOpen} variant="link" className="text-orange-500">
                 <PlusIcon size={16} className="mr-2" />
