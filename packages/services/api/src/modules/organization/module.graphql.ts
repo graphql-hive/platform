@@ -237,6 +237,30 @@ export default gql`
     Whether the viewer can delete the organization
     """
     viewerCanDelete: Boolean!
+    """
+    Whether the viewer can see the members within the organization
+    """
+    viewerCanSeeMembers: Boolean!
+    """
+    Whether the viewer can manage member invites
+    """
+    viewerCanManageInvitations: Boolean!
+    """
+    Whether the viewer can assign roles to users
+    """
+    viewerCanAssignUserRoles: Boolean!
+    """
+    Whether the viewer can remove a member from the organization
+    """
+    viewerCanRemoveMember: Boolean!
+    """
+    Whether the viewer can modify roles of members within the organization
+    """
+    viewerCanManageRoles: Boolean!
+    """
+    Whether the viewer can migrate the legacy member roles
+    """
+    viewerCanMigrateLegacyMemberRoles: Boolean!
   }
 
   type OrganizationConnection {

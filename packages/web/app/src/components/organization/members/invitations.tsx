@@ -285,7 +285,6 @@ const InvitationDeleteButton_DeleteInvitation = graphql(`
 const Members_Invitation = graphql(`
   fragment Members_Invitation on OrganizationInvitation {
     id
-    createdAt
     expiresAt
     email
     code
@@ -413,7 +412,6 @@ const OrganizationInvitations_OrganizationFragment = graphql(`
         ...Members_Invitation
       }
     }
-
     ...MemberInvitationForm_OrganizationFragment
   }
 `);

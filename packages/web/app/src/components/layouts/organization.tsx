@@ -26,11 +26,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { UserMenu } from '@/components/ui/user-menu';
 import { graphql, useFragment } from '@/gql';
 import { ProjectType } from '@/gql/graphql';
-import {
-  canAccessOrganization,
-  OrganizationAccessScope,
-  useOrganizationAccess,
-} from '@/lib/access/organization';
 import { getIsStripeEnabled } from '@/lib/billing/stripe-public-key';
 import { useToggle } from '@/lib/hooks';
 import { useLastVisitedOrganizationWriter } from '@/lib/last-visited-org';
@@ -64,6 +59,7 @@ const OrganizationLayout_OrganizationFragment = graphql(`
     viewerCanManageSupportTickets
     viewerCanDescribeBilling
     viewerCanAccessSettings
+    viewerCanSeeMembers
     me {
       ...CanAccessOrganization_MemberFragment
     }
@@ -111,16 +107,7 @@ export function OrganizationLayout({
   );
   const currentOrganization = organizations?.find(org => org.slug === props.organizationSlug);
 
-  useOrganizationAccess({
-    member: currentOrganization?.me ?? null,
-    scope: OrganizationAccessScope.Read,
-    redirect: true,
-    organizationSlug: props.organizationSlug,
-  });
-
   useLastVisitedOrganizationWriter(currentOrganization?.slug);
-
-  const meInCurrentOrg = currentOrganization?.me;
 
   if (query.error) {
     return <QueryError error={query.error} organizationSlug={props.organizationSlug} />;
@@ -148,7 +135,7 @@ export function OrganizationLayout({
       </header>
       <div className="relative h-[--tabs-navbar-height] border-b border-gray-800">
         <div className="container flex items-center justify-between">
-          {currentOrganization && meInCurrentOrg ? (
+          {currentOrganization ? (
             <Tabs value={page} className="min-w-[600px]">
               <TabsList variant="menu">
                 <TabsTrigger variant="menu" value={Page.Overview} asChild>
@@ -159,7 +146,7 @@ export function OrganizationLayout({
                     Overview
                   </Link>
                 </TabsTrigger>
-                {canAccessOrganization(OrganizationAccessScope.Members, meInCurrentOrg) && (
+                {currentOrganization.viewerCanSeeMembers && (
                   <TabsTrigger variant="menu" value={Page.Members} asChild>
                     <Link
                       to="/$organizationSlug/view/members"

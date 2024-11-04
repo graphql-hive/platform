@@ -23,8 +23,14 @@ export const Organization: Pick<
   | 'slug'
   | 'unassignedMembersToMigrate'
   | 'viewerCanAccessSettings'
+  | 'viewerCanAssignUserRoles'
   | 'viewerCanDelete'
+  | 'viewerCanManageInvitations'
+  | 'viewerCanManageRoles'
+  | 'viewerCanMigrateLegacyMemberRoles'
   | 'viewerCanModifySlug'
+  | 'viewerCanRemoveMember'
+  | 'viewerCanSeeMembers'
   | 'viewerCanTransferOwnership'
   | '__isTypeOf'
 > = {
@@ -177,5 +183,58 @@ export const Organization: Pick<
         },
       }),
     ]).then(result => result.some(Boolean));
+  },
+  viewerCanSeeMembers: async (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:describe',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+
+  viewerCanManageInvitations: (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:manageInvites',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanAssignUserRoles: (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:assignRole',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanRemoveMember: (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:removeMember',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanManageRoles: (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:modifyRole',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanMigrateLegacyMemberRoles: async (organization, _arg, { injector, session }) => {
+    const owner = await injector
+      .get(OrganizationManager)
+      .getOrganizationOwner({ organizationId: organization.id });
+    const viewer = await session.getViewer();
+    return viewer.id === owner.id;
   },
 };
