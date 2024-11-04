@@ -62,6 +62,7 @@ const OrganizationLayout_OrganizationFragment = graphql(`
     viewerCanModifySchemaPolicy
     viewerCanCreateProject
     viewerCanManageSupportTickets
+    viewerCanDescribeBilling
     me {
       ...CanAccessOrganization_MemberFragment
     }
@@ -198,17 +199,16 @@ export function OrganizationLayout({
                     </Link>
                   </TabsTrigger>
                 )}
-                {getIsStripeEnabled() &&
-                  canAccessOrganization(OrganizationAccessScope.Settings, meInCurrentOrg) && (
-                    <TabsTrigger variant="menu" value={Page.Subscription} asChild>
-                      <Link
-                        to="/$organizationSlug/view/subscription"
-                        params={{ organizationSlug: currentOrganization.slug }}
-                      >
-                        Subscription
-                      </Link>
-                    </TabsTrigger>
-                  )}
+                {getIsStripeEnabled() && currentOrganization.viewerCanDescribeBilling && (
+                  <TabsTrigger variant="menu" value={Page.Subscription} asChild>
+                    <Link
+                      to="/$organizationSlug/view/subscription"
+                      params={{ organizationSlug: currentOrganization.slug }}
+                    >
+                      Subscription
+                    </Link>
+                  </TabsTrigger>
+                )}
               </TabsList>
             </Tabs>
           ) : (

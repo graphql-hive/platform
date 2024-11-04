@@ -293,11 +293,6 @@ const Support_OrganizationFragment = graphql(`
   fragment Support_OrganizationFragment on Organization {
     id
     slug
-    viewerCanManageSupportTickets
-    me {
-      ...CanAccessOrganization_MemberFragment
-      isOwner
-    }
     supportTickets {
       ...Support_SupportTicketConnection
     }

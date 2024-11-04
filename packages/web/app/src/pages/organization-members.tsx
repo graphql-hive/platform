@@ -9,7 +9,6 @@ import { Meta } from '@/components/ui/meta';
 import { NavLayout, PageLayout, PageLayoutContent } from '@/components/ui/page-content-layout';
 import { QueryError } from '@/components/ui/query-error';
 import { FragmentType, graphql, useFragment } from '@/gql';
-import { OrganizationAccessScope, useOrganizationAccess } from '@/lib/access/organization';
 import { cn } from '@/lib/utils';
 
 const OrganizationMembersPage_OrganizationFragment = graphql(`
@@ -60,14 +59,7 @@ function PageContent(props: {
     props.organization,
   );
 
-  const hasAccess = useOrganizationAccess({
-    scope: OrganizationAccessScope.Members,
-    redirect: true,
-    member: organization.me,
-    organizationSlug: organization.slug,
-  });
-
-  if (!organization || !hasAccess) {
+  if (!organization) {
     return null;
   }
 

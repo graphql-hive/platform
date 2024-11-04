@@ -17,10 +17,6 @@ const OrganizationPolicyPageQuery = graphql(`
     organization(selector: $selector) {
       organization {
         id
-        me {
-          id
-          ...CanAccessOrganization_MemberFragment
-        }
         projects {
           nodes {
             id
