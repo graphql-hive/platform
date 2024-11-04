@@ -53,6 +53,7 @@ const ProjectLayoutQuery = graphql(`
             id
             slug
             registryModel
+            viewerCanModifySchemaPolicy
           }
         }
       }
@@ -156,7 +157,7 @@ export function ProjectLayout({
                     </Link>
                   </TabsTrigger>
                 )}
-                {canAccessProject(ProjectAccessScope.Settings, currentOrganization.me) && (
+                {currentProject.viewerCanModifySchemaPolicy && (
                   <>
                     <TabsTrigger variant="menu" value={Page.Policy} asChild>
                       <Link

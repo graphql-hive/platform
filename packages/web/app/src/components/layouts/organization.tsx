@@ -60,6 +60,7 @@ const OrganizationLayout_OrganizationFragment = graphql(`
   fragment OrganizationLayout_OrganizationFragment on Organization {
     id
     slug
+    viewerCanModifySchemaPolicy
     me {
       ...CanAccessOrganization_MemberFragment
     }
@@ -166,25 +167,25 @@ export function OrganizationLayout({
                     </Link>
                   </TabsTrigger>
                 )}
+                {currentOrganization.viewerCanModifySchemaPolicy && (
+                  <TabsTrigger variant="menu" value={Page.Policy} asChild>
+                    <Link
+                      to="/$organizationSlug/view/policy"
+                      params={{ organizationSlug: currentOrganization.slug }}
+                    >
+                      Policy
+                    </Link>
+                  </TabsTrigger>
+                )}
                 {canAccessOrganization(OrganizationAccessScope.Settings, meInCurrentOrg) && (
-                  <>
-                    <TabsTrigger variant="menu" value={Page.Policy} asChild>
-                      <Link
-                        to="/$organizationSlug/view/policy"
-                        params={{ organizationSlug: currentOrganization.slug }}
-                      >
-                        Policy
-                      </Link>
-                    </TabsTrigger>
-                    <TabsTrigger variant="menu" value={Page.Settings} asChild>
-                      <Link
-                        to="/$organizationSlug/view/settings"
-                        params={{ organizationSlug: currentOrganization.slug }}
-                      >
-                        Settings
-                      </Link>
-                    </TabsTrigger>
-                  </>
+                  <TabsTrigger variant="menu" value={Page.Settings} asChild>
+                    <Link
+                      to="/$organizationSlug/view/settings"
+                      params={{ organizationSlug: currentOrganization.slug }}
+                    >
+                      Settings
+                    </Link>
+                  </TabsTrigger>
                 )}
                 {canAccessOrganization(OrganizationAccessScope.Read, meInCurrentOrg) &&
                   env.zendeskSupport && (

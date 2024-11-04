@@ -8,8 +8,7 @@ import { Subtitle, Title } from '@/components/ui/page';
 import { QueryError } from '@/components/ui/query-error';
 import { useToast } from '@/components/ui/use-toast';
 import { graphql } from '@/gql';
-import { ProjectAccessScope, RegistryModel } from '@/gql/graphql';
-import { useProjectAccess } from '@/lib/access/project';
+import { RegistryModel } from '@/gql/graphql';
 
 const ProjectPolicyPageQuery = graphql(`
   query ProjectPolicyPageQuery($organizationSlug: String!, $projectSlug: String!) {
@@ -82,14 +81,6 @@ function ProjectPolicyContent(props: { organizationSlug: string; projectSlug: st
   const currentOrganization = query.data?.organization?.organization;
   const currentProject = query.data?.project;
 
-  const hasAccess = useProjectAccess({
-    scope: ProjectAccessScope.Settings,
-    member: currentOrganization?.me ?? null,
-    redirect: true,
-    organizationSlug: props.organizationSlug,
-    projectSlug: props.projectSlug,
-  });
-
   if (query.error) {
     return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
   }
@@ -111,7 +102,7 @@ function ProjectPolicyContent(props: { organizationSlug: string; projectSlug: st
             schema.
           </Subtitle>
         </div>
-        {currentProject && currentOrganization && hasAccess ? (
+        {currentProject && currentOrganization ? (
           <Card>
             <CardHeader>
               <CardTitle>Rules</CardTitle>
