@@ -431,7 +431,7 @@ export class OrganizationManager {
     const { slug } = input;
     this.logger.info('Updating an organization clean id (input=%o)', input);
     await this.session.assertPerformAction({
-      action: 'organization:modifySettings',
+      action: 'organization:modifySlug',
       organizationId: input.organizationId,
       params: {
         organizationId: input.organizationId,

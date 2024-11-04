@@ -221,6 +221,22 @@ export default gql`
     Returns a list of members that are not assigned to any role.
     """
     unassignedMembersToMigrate: [MemberRoleMigrationGroup!]!
+    """
+    Whether the viewer should be able to access the settings page within the app
+    """
+    viewerCanAccessSettings: Boolean!
+    """
+    Whether the viewer can modify the organization slug
+    """
+    viewerCanModifySlug: Boolean!
+    """
+    Whether the viewer can transfer ownership of the organization
+    """
+    viewerCanTransferOwnership: Boolean!
+    """
+    Whether the viewer can delete the organization
+    """
+    viewerCanDelete: Boolean!
   }
 
   type OrganizationConnection {

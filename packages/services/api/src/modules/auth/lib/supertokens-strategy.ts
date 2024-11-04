@@ -213,7 +213,7 @@ function transformOrganizationMemberLegacyScopes(args: {
         policies.push({
           effect: 'allow',
           action: [
-            'organization:modifySettings',
+            'organization:modifySlug',
             'schemaLinting:modifyOrganizationRules',
             'billing:describe',
             'billing:update',

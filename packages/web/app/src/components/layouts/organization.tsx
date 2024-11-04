@@ -63,6 +63,7 @@ const OrganizationLayout_OrganizationFragment = graphql(`
     viewerCanCreateProject
     viewerCanManageSupportTickets
     viewerCanDescribeBilling
+    viewerCanAccessSettings
     me {
       ...CanAccessOrganization_MemberFragment
     }
@@ -179,7 +180,7 @@ export function OrganizationLayout({
                     </Link>
                   </TabsTrigger>
                 )}
-                {canAccessOrganization(OrganizationAccessScope.Settings, meInCurrentOrg) && (
+                {currentOrganization.viewerCanAccessSettings && (
                   <TabsTrigger variant="menu" value={Page.Settings} asChild>
                     <Link
                       to="/$organizationSlug/view/settings"

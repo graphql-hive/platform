@@ -4,7 +4,12 @@ import type { OrganizationResolvers } from './../../../__generated__/types';
 
 export const Organization: Pick<
   OrganizationResolvers,
-  'gitHubIntegration' | 'hasGitHubIntegration' | 'hasSlackIntegration' | '__isTypeOf'
+  | 'gitHubIntegration'
+  | 'hasGitHubIntegration'
+  | 'hasSlackIntegration'
+  | 'viewerCanModifyGitHubIntegration'
+  | 'viewerCanModifySlackIntegration'
+  | '__isTypeOf'
 > = {
   gitHubIntegration: async (organization, _, { injector }) => {
     const repositories = await injector.get(GitHubIntegrationManager).getRepositories({
@@ -27,6 +32,38 @@ export const Organization: Pick<
   hasSlackIntegration: (organization, _, { injector }) => {
     return injector.get(SlackIntegrationManager).isAvailable({
       organizationId: organization.id,
+    });
+  },
+  viewerCanModifyGitHubIntegration: async (organization, _arg, { session, injector }) => {
+    const isAvailable = await injector.get(GitHubIntegrationManager).isAvailable({
+      organizationId: organization.id,
+    });
+    if (!isAvailable) {
+      return false;
+    }
+
+    return session.canPerformAction({
+      action: 'gitHubIntegration:modify',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanModifySlackIntegration: async (organization, _arg, { session, injector }) => {
+    const isAvailable = await injector.get(SlackIntegrationManager).isAvailable({
+      organizationId: organization.id,
+    });
+    if (!isAvailable) {
+      return false;
+    }
+
+    return session.canPerformAction({
+      action: 'slackIntegration:modify',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
     });
   },
 };

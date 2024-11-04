@@ -323,7 +323,7 @@ function schemaCheckOrPublishIdentity(
  */
 const actionDefinitions = {
   'organization:describe': defaultOrgIdentity,
-  'organization:modifySettings': defaultOrgIdentity,
+  'organization:modifySlug': defaultOrgIdentity,
   'organization:delete': defaultOrgIdentity,
   'gitHubIntegration:modify': defaultOrgIdentity,
   'slackIntegration:modify': defaultOrgIdentity,
