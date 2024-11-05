@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 
 const defaultDescription =
-  'Open-source GraphQL platform for managing APIs with federation and stitching, preventing breaking changes, and optimizing performance. Self-host or deploy in the cloud for complete data control.';
-const defaultSuffix = 'GraphQL Hive';
+  'Fully Open-source schema registry, analytics and gateway for GraphQL federation and other GraphQL. Self-host or deploy in the cloud for complete data control.';
+const defaultSuffix = 'Hive';
 
 export function Meta({
   title,
@@ -25,7 +25,7 @@ export function Meta({
       <meta
         property="og:image"
         key="og:image"
-        content="https://og-image.the-guild.dev/?product=HIVE&title=Open%20GraphQL%20Platform&extra=Prevent breaking changes, monitor performance and manage your gateway (Federation, Stitching)"
+        content="https://og-image.the-guild.dev/?product=HIVE&title=Open%20GraphQL%20Platform&extra=Open-source schema registry, analytics and gateway for GraphQL federation"
       />
     </Helmet>
   );
