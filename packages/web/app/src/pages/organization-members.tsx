@@ -10,6 +10,7 @@ import { Meta } from '@/components/ui/meta';
 import { NavLayout, PageLayout, PageLayoutContent } from '@/components/ui/page-content-layout';
 import { QueryError } from '@/components/ui/query-error';
 import { FragmentType, graphql, useFragment } from '@/gql';
+import { useRedirect } from '@/lib/access/common';
 import { cn } from '@/lib/utils';
 
 const OrganizationMembersPage_OrganizationFragment = graphql(`
@@ -126,6 +127,7 @@ const OrganizationMembersPageQuery = graphql(`
     organization(selector: $selector) {
       organization {
         ...OrganizationMembersPage_OrganizationFragment
+        viewerCanSeeMembers
       }
     }
   }
@@ -145,11 +147,28 @@ function OrganizationMembersPageContent(props: {
     },
   });
 
+  const currentOrganization = query.data?.organization?.organization;
+
+  useRedirect({
+    canAccess: currentOrganization?.viewerCanSeeMembers === true,
+    redirectTo: router => {
+      void router.navigate({
+        to: '/$organizationSlug',
+        params: {
+          organizationSlug: props.organizationSlug,
+        },
+      });
+    },
+    entity: currentOrganization,
+  });
+
+  if (currentOrganization?.viewerCanSeeMembers === false) {
+    return null;
+  }
+
   if (query.error) {
     return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
   }
-
-  const currentOrganization = query.data?.organization?.organization;
 
   return (
     <OrganizationLayout

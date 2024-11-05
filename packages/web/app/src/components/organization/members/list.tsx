@@ -137,13 +137,13 @@ function OrganizationMemberRoleSwitcher(props: {
   const isMe = props.memberId === me.id;
   // A user can't change its own role
   const canAssignRole = !isOwner && !isMe && organization.viewerCanAssignUserRoles;
-  const roles = organization.memberRoles;
+  const roles = organization.memberRoles ?? [];
   const { toast } = useToast();
   const [assignRoleState, assignRole] = useMutation(
     OrganizationMemberRoleSwitcher_AssignRoleMutation,
   );
   const [isPermissionsModalOpen, togglePermissionsModalOpen] = useToggle(false);
-  const memberRole = roles.find(role => role.id === props.memberRoleId);
+  const memberRole = roles?.find(role => role.id === props.memberRoleId);
 
   if (!memberRole || !member) {
     console.error('No role or member provided to OrganizationMemberRoleSwitcher');
@@ -503,7 +503,7 @@ export function OrganizationMembers(props: {
   refetchMembers(): void;
 }) {
   const organization = useFragment(OrganizationMembers_OrganizationFragment, props.organization);
-  const members = organization.members.nodes;
+  const members = organization.members?.nodes;
   const [orderDirection, setOrderDirection] = useState<'asc' | 'desc' | null>(null);
   const [sortByKey, setSortByKey] = useState<'name' | 'role'>('name');
 

@@ -11,6 +11,7 @@ import { QueryError } from '@/components/ui/query-error';
 import { useToast } from '@/components/ui/use-toast';
 import { graphql } from '@/gql';
 import { RegistryModel } from '@/gql/graphql';
+import { useRedirect } from '@/lib/access/common';
 
 const OrganizationPolicyPageQuery = graphql(`
   query OrganizationPolicyPageQuery($selector: OrganizationSelectorInput!) {
@@ -29,6 +30,7 @@ const OrganizationPolicyPageQuery = graphql(`
           updatedAt
           ...PolicySettings_SchemaPolicyFragment
         }
+        viewerCanModifySchemaPolicy
       }
     }
   }
@@ -80,6 +82,23 @@ function PolicyPageContent(props: { organizationSlug: string }) {
   const legacyProjects = currentOrganization?.projects.nodes.filter(
     p => p.registryModel === RegistryModel.Legacy,
   );
+
+  useRedirect({
+    canAccess: currentOrganization?.viewerCanModifySchemaPolicy === true,
+    redirectTo: router => {
+      void router.navigate({
+        to: '/$organizationSlug',
+        params: {
+          organizationSlug: props.organizationSlug,
+        },
+      });
+    },
+    entity: currentOrganization,
+  });
+
+  if (currentOrganization?.viewerCanModifySchemaPolicy === false) {
+    return null;
+  }
 
   if (query.error) {
     return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;

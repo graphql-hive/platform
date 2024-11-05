@@ -32,6 +32,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { TransferOrganizationOwnershipModal } from '@/components/v2/modals';
 import { env } from '@/env/frontend';
 import { FragmentType, graphql, useFragment } from '@/gql';
+import { useRedirect } from '@/lib/access/common';
 import { useToggle } from '@/lib/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from '@tanstack/react-router';
@@ -173,7 +174,6 @@ const SettingsPageRenderer_OrganizationFragment = graphql(`
     viewerCanDelete
     viewerCanTransferOwnership
     viewerCanModifySlug
-    viewerCanAccessSettings
     viewerCanManageOIDCIntegration
     viewerCanModifySlackIntegration
     viewerCanModifyGitHubIntegration
@@ -255,11 +255,6 @@ const SettingsPageRenderer = (props: {
     },
     [slugMutate, props.organizationSlug],
   );
-
-  if (organization.viewerCanAccessSettings === false) {
-    // TODO: error state
-    return null;
-  }
 
   return (
     <div>
@@ -458,6 +453,7 @@ const OrganizationSettingsPageQuery = graphql(`
     organization(selector: $selector) {
       organization {
         ...SettingsPageRenderer_OrganizationFragment
+        viewerCanAccessSettings
       }
     }
   }
@@ -473,11 +469,28 @@ function SettingsPageContent(props: { organizationSlug: string }) {
     },
   });
 
+  const currentOrganization = query.data?.organization?.organization;
+
+  useRedirect({
+    canAccess: currentOrganization?.viewerCanAccessSettings === true,
+    redirectTo: router => {
+      void router.navigate({
+        to: '/$organizationSlug',
+        params: {
+          organizationSlug: props.organizationSlug,
+        },
+      });
+    },
+    entity: currentOrganization,
+  });
+
+  if (currentOrganization?.viewerCanAccessSettings === false) {
+    return null;
+  }
+
   if (query.error) {
     return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
   }
-
-  const currentOrganization = query.data?.organization?.organization;
 
   return (
     <OrganizationLayout

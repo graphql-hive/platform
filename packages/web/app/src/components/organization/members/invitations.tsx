@@ -94,7 +94,7 @@ function MemberInvitationForm(props: {
   const { toast } = useToast();
   const organization = useFragment(MemberInvitationForm_OrganizationFragment, props.organization);
   const [invitation, invite] = useMutation(MemberInvitationForm_InviteByEmail);
-  const viewerRole = organization.memberRoles.find(r => r.name === 'Viewer');
+  const viewerRole = organization.memberRoles?.find(r => r.name === 'Viewer');
 
   const form = useForm<MemberInvitationFormValues>({
     resolver: zodResolver(memberInvitationFormSchema),
@@ -204,9 +204,9 @@ function MemberInvitationForm(props: {
                   <FormItem>
                     <FormControl>
                       <RoleSelector
-                        roles={organization.memberRoles}
+                        roles={organization.memberRoles ?? []}
                         defaultRole={
-                          organization.memberRoles.find(r => r.id === field.value) ?? viewerRole
+                          organization.memberRoles?.find(r => r.id === field.value) ?? viewerRole
                         }
                         isRoleActive={role => ({
                           active: role.canInvite,
@@ -424,6 +424,10 @@ export function OrganizationInvitations(props: {
     OrganizationInvitations_OrganizationFragment,
     props.organization,
   );
+
+  if (!organization.invitations) {
+    return null;
+  }
 
   return (
     <SubPageLayout>

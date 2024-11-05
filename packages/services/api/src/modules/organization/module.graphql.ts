@@ -212,10 +212,10 @@ export default gql`
     name: String! @deprecated(reason: "Use the 'slug' field instead.")
     owner: Member!
     me: Member!
-    members: MemberConnection!
-    invitations: OrganizationInvitationConnection!
+    members: MemberConnection
+    invitations: OrganizationInvitationConnection
     getStarted: OrganizationGetStarted!
-    memberRoles: [MemberRole!]!
+    memberRoles: [MemberRole!]
     """
     Only available to members with the Admin role.
     Returns a list of members that are not assigned to any role.
