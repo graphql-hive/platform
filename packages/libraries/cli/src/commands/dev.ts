@@ -478,7 +478,7 @@ export default class Dev extends Command<typeof Dev> {
   }
 
   private async resolveSdlFromUrl(url: string) {
-    const sdl = await loadSchema('federation-subgraph', url).catch(error => {
+    const sdl = await loadSchema('federation-subgraph-introspection', url).catch(error => {
       this.handleFetchError(error);
     });
 
