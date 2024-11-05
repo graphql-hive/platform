@@ -37,22 +37,6 @@ const CLI_SchemaComposeMutation = graphql(/* GraphQL */ `
   }
 `);
 
-const ServiceIntrospectionQuery = /* GraphQL */ `
-  query ServiceSdlQuery {
-    _service {
-      sdl
-    }
-  }
-` as unknown as TypedDocumentNode<
-  {
-    __typename?: 'Query';
-    _service: { sdl: string };
-  },
-  {
-    [key: string]: never;
-  }
->;
-
 type ServiceName = string;
 type Sdl = string;
 
