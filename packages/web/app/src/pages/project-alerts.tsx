@@ -163,17 +163,6 @@ function Alerts(props: {
   );
 }
 
-const ProjectAlertsPage_OrganizationFragment = graphql(`
-  fragment ProjectAlertsPage_OrganizationFragment on Organization {
-    id
-    slug
-    me {
-      id
-      ...CanAccessProject_MemberFragment
-    }
-  }
-`);
-
 const ProjectAlertsPageQuery = graphql(`
   query ProjectAlertsPageQuery($organizationSlug: String!, $projectSlug: String!) {
     project(selector: { organizationSlug: $organizationSlug, projectSlug: $projectSlug }) {
