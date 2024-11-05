@@ -55,7 +55,6 @@ const TargetLayoutQuery = graphql(`
       nodes {
         id
         slug
-        isAppDeploymentsEnabled
         me {
           id
           ...CanAccessTarget_MemberFragment
@@ -70,6 +69,7 @@ const TargetLayoutQuery = graphql(`
                 id
                 slug
                 viewerCanViewLaboratory
+                viewerCanViewAppDeployments
               }
             }
           }
@@ -236,7 +236,7 @@ export const TargetLayout = ({
                     Insights
                   </Link>
                 </TabsTrigger>
-                {currentOrganization.isAppDeploymentsEnabled && (
+                {currentTarget.viewerCanViewAppDeployments && (
                   <TabsTrigger variant="menu" value={Page.Apps} asChild>
                     <Link
                       to="/$organizationSlug/$projectSlug/$targetSlug/apps"

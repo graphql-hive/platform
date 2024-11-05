@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ghost from '../../public/images/figures/ghost.svg?url';
 import { LoaderCircleIcon } from 'lucide-react';
 import { useClient, useQuery } from 'urql';
@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { graphql } from '@/gql';
+import { useRedirect } from '@/lib/access/common';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { Link, useRouter } from '@tanstack/react-router';
 
@@ -53,6 +54,7 @@ const TargetAppsVersionQuery = graphql(`
       }
     ) {
       id
+      viewerCanViewAppDeployments
       appDeployment(appName: $appName, appVersion: $appVersion) {
         id
         name
@@ -99,11 +101,12 @@ export function TargetAppVersionPage(props: {
   const client = useClient();
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const isAppDeploymentsEnabled =
-    !data.fetching && !data.stale && !data.data?.organization?.organization.isAppDeploymentsEnabled;
+  const project = data.data?.target;
 
-  useEffect(() => {
-    if (isAppDeploymentsEnabled) {
+  useRedirect({
+    entity: project,
+    canAccess: project?.viewerCanViewAppDeployments === true,
+    redirectTo(router) {
       void router.navigate({
         to: '/$organizationSlug/$projectSlug/$targetSlug',
         params: {
@@ -113,12 +116,16 @@ export function TargetAppVersionPage(props: {
         },
         replace: true,
       });
-    }
-  }, [isAppDeploymentsEnabled]);
+    },
+  });
 
   const title = data.data?.target?.appDeployment
     ? `${data.data.target.appDeployment.name}@${data.data.target.appDeployment.version}`
     : 'App Deployment';
+
+  if (project?.viewerCanViewAppDeployments === true) {
+    return null;
+  }
 
   if (!data.fetching && !data.stale && !data?.data?.target?.appDeployment) {
     return (
