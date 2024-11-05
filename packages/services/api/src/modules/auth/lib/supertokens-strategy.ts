@@ -255,7 +255,7 @@ function transformOrganizationMemberLegacyScopes(args: {
       case ProjectAccessScope.ALERTS: {
         policies.push({
           effect: 'allow',
-          action: ['alert:modify', 'alert:describe'],
+          action: ['alert:modify'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;

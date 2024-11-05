@@ -9,6 +9,7 @@ import { QueryError } from '@/components/ui/query-error';
 import { useToast } from '@/components/ui/use-toast';
 import { graphql } from '@/gql';
 import { RegistryModel } from '@/gql/graphql';
+import { useRedirect } from '@/lib/access/common';
 
 const ProjectPolicyPageQuery = graphql(`
   query ProjectPolicyPageQuery($organizationSlug: String!, $projectSlug: String!) {
@@ -39,6 +40,7 @@ const ProjectPolicyPageQuery = graphql(`
           }
         }
       }
+      viewerCanModifySchemaPolicy
     }
   }
 `);
@@ -80,6 +82,24 @@ function ProjectPolicyContent(props: { organizationSlug: string; projectSlug: st
 
   const currentOrganization = query.data?.organization?.organization;
   const currentProject = query.data?.project;
+
+  useRedirect({
+    canAccess: currentProject?.viewerCanModifySchemaPolicy === true,
+    redirectTo: router => {
+      void router.navigate({
+        to: '/$organizationSlug/$projectSlug',
+        params: {
+          organizationSlug: props.organizationSlug,
+          projectSlug: props.projectSlug,
+        },
+      });
+    },
+    entity: currentProject,
+  });
+
+  if (currentProject?.viewerCanModifySchemaPolicy === false) {
+    return null;
+  }
 
   if (query.error) {
     return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;

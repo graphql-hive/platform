@@ -346,7 +346,6 @@ const actionDefinitions = {
   'project:describe': defaultProjectIdentity,
   'project:delete': defaultProjectIdentity,
   'project:modifySettings': defaultProjectIdentity,
-  'alert:describe': defaultProjectIdentity,
   'alert:modify': defaultProjectIdentity,
   'schemaLinting:modifyOrganizationRules': defaultOrgIdentity,
   'schemaLinting:modifyProjectRules': defaultProjectIdentity,

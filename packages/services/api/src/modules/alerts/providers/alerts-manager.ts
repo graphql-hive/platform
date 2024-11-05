@@ -125,7 +125,7 @@ export class AlertsManager {
       selector.projectId,
     );
     await this.session.assertPerformAction({
-      action: 'alert:describe',
+      action: 'alert:modify',
       organizationId: selector.organizationId,
       params: {
         organizationId: selector.organizationId,
@@ -199,7 +199,7 @@ export class AlertsManager {
       selector.projectId,
     );
     await this.session.assertPerformAction({
-      action: 'alert:describe',
+      action: 'alert:modify',
       organizationId: selector.organizationId,
       params: {
         organizationId: selector.organizationId,

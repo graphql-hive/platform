@@ -16,7 +16,6 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { UserMenu } from '@/components/ui/user-menu';
 import { graphql } from '@/gql';
-import { canAccessProject, ProjectAccessScope, useProjectAccess } from '@/lib/access/project';
 import { useToggle } from '@/lib/hooks';
 import { useLastVisitedOrganizationWriter } from '@/lib/last-visited-org';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -54,6 +53,9 @@ const ProjectLayoutQuery = graphql(`
             slug
             registryModel
             viewerCanModifySchemaPolicy
+            viewerCanCreateTarget
+            viewerCanModifyAlerts
+            viewerCanModifySettings
           }
         }
       }
@@ -88,14 +90,6 @@ export function ProjectLayout({
   const currentProject = currentOrganization?.projects.nodes.find(
     node => node.slug === props.projectSlug,
   );
-
-  useProjectAccess({
-    scope: ProjectAccessScope.Read,
-    member: currentOrganization?.me ?? null,
-    redirect: true,
-    organizationSlug: props.organizationSlug,
-    projectSlug: props.projectSlug,
-  });
 
   useLastVisitedOrganizationWriter(currentOrganization?.slug);
 
@@ -144,7 +138,7 @@ export function ProjectLayout({
                     Targets
                   </Link>
                 </TabsTrigger>
-                {canAccessProject(ProjectAccessScope.Alerts, currentOrganization.me) && (
+                {currentProject.viewerCanModifyAlerts && (
                   <TabsTrigger variant="menu" value={Page.Alerts} asChild>
                     <Link
                       to="/$organizationSlug/$projectSlug/view/alerts"
@@ -170,18 +164,20 @@ export function ProjectLayout({
                         Policy
                       </Link>
                     </TabsTrigger>
-                    <TabsTrigger variant="menu" value={Page.Settings} asChild>
-                      <Link
-                        to="/$organizationSlug/$projectSlug/view/settings"
-                        params={{
-                          organizationSlug: currentOrganization.slug,
-                          projectSlug: currentProject.slug,
-                        }}
-                      >
-                        Settings
-                      </Link>
-                    </TabsTrigger>
                   </>
+                )}
+                {currentProject.viewerCanModifySettings && (
+                  <TabsTrigger variant="menu" value={Page.Settings} asChild>
+                    <Link
+                      to="/$organizationSlug/$projectSlug/view/settings"
+                      params={{
+                        organizationSlug: currentOrganization.slug,
+                        projectSlug: currentProject.slug,
+                      }}
+                    >
+                      Settings
+                    </Link>
+                  </TabsTrigger>
                 )}
               </TabsList>
             </Tabs>
@@ -192,7 +188,7 @@ export function ProjectLayout({
               <div className="h-5 w-12 animate-pulse rounded-full bg-gray-800" />
             </div>
           )}
-          {currentProject ? (
+          {currentProject?.viewerCanCreateTarget ? (
             <Button onClick={toggleModalOpen} variant="link" className="text-orange-500">
               <PlusIcon size={16} className="mr-2" />
               New target
