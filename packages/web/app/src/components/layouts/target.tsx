@@ -69,6 +69,7 @@ const TargetLayoutQuery = graphql(`
               nodes {
                 id
                 slug
+                viewerCanViewLaboratory
               }
             }
           }
@@ -123,10 +124,6 @@ export const TargetLayout = ({
 
   useLastVisitedOrganizationWriter(currentOrganization?.slug);
 
-  const hasRegistryReadAccess = canAccessTarget(
-    TargetAccessScope.RegistryRead,
-    currentOrganization?.me ?? null,
-  );
   const hasReadAccess = canAccessTarget(TargetAccessScope.Read, currentOrganization?.me ?? null);
   const hasSettingsAccess = canAccessTarget(
     TargetAccessScope.Settings,
@@ -179,95 +176,93 @@ export const TargetLayout = ({
           {currentOrganization && currentProject && currentTarget ? (
             <Tabs className="flex h-full grow flex-col" value={page}>
               <TabsList variant="menu">
-                {hasRegistryReadAccess && (
-                  <>
-                    <TabsTrigger variant="menu" value={Page.Schema} asChild>
-                      <Link
-                        to="/$organizationSlug/$projectSlug/$targetSlug"
-                        params={{
-                          organizationSlug: props.organizationSlug,
-                          projectSlug: props.projectSlug,
-                          targetSlug: props.targetSlug,
-                        }}
-                      >
-                        Schema
-                      </Link>
-                    </TabsTrigger>
-                    <TabsTrigger variant="menu" value={Page.Checks} asChild>
-                      <Link
-                        to="/$organizationSlug/$projectSlug/$targetSlug/checks"
-                        params={{
-                          organizationSlug: props.organizationSlug,
-                          projectSlug: props.projectSlug,
-                          targetSlug: props.targetSlug,
-                        }}
-                      >
-                        Checks
-                      </Link>
-                    </TabsTrigger>
-                    <TabsTrigger variant="menu" value={Page.Explorer} asChild>
-                      <Link
-                        to="/$organizationSlug/$projectSlug/$targetSlug/explorer"
-                        params={{
-                          organizationSlug: props.organizationSlug,
-                          projectSlug: props.projectSlug,
-                          targetSlug: props.targetSlug,
-                        }}
-                      >
-                        Explorer
-                      </Link>
-                    </TabsTrigger>
-                    <TabsTrigger variant="menu" value={Page.History} asChild>
-                      <Link
-                        to="/$organizationSlug/$projectSlug/$targetSlug/history"
-                        params={{
-                          organizationSlug: currentOrganization.slug,
-                          projectSlug: currentProject.slug,
-                          targetSlug: currentTarget.slug,
-                        }}
-                      >
-                        History
-                      </Link>
-                    </TabsTrigger>
-                    <TabsTrigger variant="menu" value={Page.Insights} asChild>
-                      <Link
-                        to="/$organizationSlug/$projectSlug/$targetSlug/insights"
-                        params={{
-                          organizationSlug: props.organizationSlug,
-                          projectSlug: props.projectSlug,
-                          targetSlug: props.targetSlug,
-                        }}
-                      >
-                        Insights
-                      </Link>
-                    </TabsTrigger>
-                    {currentOrganization.isAppDeploymentsEnabled && (
-                      <TabsTrigger variant="menu" value={Page.Apps} asChild>
-                        <Link
-                          to="/$organizationSlug/$projectSlug/$targetSlug/apps"
-                          params={{
-                            organizationSlug: props.organizationSlug,
-                            projectSlug: props.projectSlug,
-                            targetSlug: props.targetSlug,
-                          }}
-                        >
-                          Apps
-                        </Link>
-                      </TabsTrigger>
-                    )}
-                    <TabsTrigger variant="menu" value={Page.Laboratory} asChild>
-                      <Link
-                        to="/$organizationSlug/$projectSlug/$targetSlug/laboratory"
-                        params={{
-                          organizationSlug: props.organizationSlug,
-                          projectSlug: props.projectSlug,
-                          targetSlug: props.targetSlug,
-                        }}
-                      >
-                        Laboratory
-                      </Link>
-                    </TabsTrigger>
-                  </>
+                <TabsTrigger variant="menu" value={Page.Schema} asChild>
+                  <Link
+                    to="/$organizationSlug/$projectSlug/$targetSlug"
+                    params={{
+                      organizationSlug: props.organizationSlug,
+                      projectSlug: props.projectSlug,
+                      targetSlug: props.targetSlug,
+                    }}
+                  >
+                    Schema
+                  </Link>
+                </TabsTrigger>
+                <TabsTrigger variant="menu" value={Page.Checks} asChild>
+                  <Link
+                    to="/$organizationSlug/$projectSlug/$targetSlug/checks"
+                    params={{
+                      organizationSlug: props.organizationSlug,
+                      projectSlug: props.projectSlug,
+                      targetSlug: props.targetSlug,
+                    }}
+                  >
+                    Checks
+                  </Link>
+                </TabsTrigger>
+                <TabsTrigger variant="menu" value={Page.Explorer} asChild>
+                  <Link
+                    to="/$organizationSlug/$projectSlug/$targetSlug/explorer"
+                    params={{
+                      organizationSlug: props.organizationSlug,
+                      projectSlug: props.projectSlug,
+                      targetSlug: props.targetSlug,
+                    }}
+                  >
+                    Explorer
+                  </Link>
+                </TabsTrigger>
+                <TabsTrigger variant="menu" value={Page.History} asChild>
+                  <Link
+                    to="/$organizationSlug/$projectSlug/$targetSlug/history"
+                    params={{
+                      organizationSlug: currentOrganization.slug,
+                      projectSlug: currentProject.slug,
+                      targetSlug: currentTarget.slug,
+                    }}
+                  >
+                    History
+                  </Link>
+                </TabsTrigger>
+                <TabsTrigger variant="menu" value={Page.Insights} asChild>
+                  <Link
+                    to="/$organizationSlug/$projectSlug/$targetSlug/insights"
+                    params={{
+                      organizationSlug: props.organizationSlug,
+                      projectSlug: props.projectSlug,
+                      targetSlug: props.targetSlug,
+                    }}
+                  >
+                    Insights
+                  </Link>
+                </TabsTrigger>
+                {currentOrganization.isAppDeploymentsEnabled && (
+                  <TabsTrigger variant="menu" value={Page.Apps} asChild>
+                    <Link
+                      to="/$organizationSlug/$projectSlug/$targetSlug/apps"
+                      params={{
+                        organizationSlug: props.organizationSlug,
+                        projectSlug: props.projectSlug,
+                        targetSlug: props.targetSlug,
+                      }}
+                    >
+                      Apps
+                    </Link>
+                  </TabsTrigger>
+                )}
+                {currentTarget.viewerCanViewLaboratory && (
+                  <TabsTrigger variant="menu" value={Page.Laboratory} asChild>
+                    <Link
+                      to="/$organizationSlug/$projectSlug/$targetSlug/laboratory"
+                      params={{
+                        organizationSlug: props.organizationSlug,
+                        projectSlug: props.projectSlug,
+                        targetSlug: props.targetSlug,
+                      }}
+                    >
+                      Laboratory
+                    </Link>
+                  </TabsTrigger>
                 )}
                 {canAccessSettingsPage && (
                   <TabsTrigger variant="menu" value={Page.Settings} asChild>

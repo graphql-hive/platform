@@ -571,13 +571,16 @@ const targetSettingsRoute = createRoute({
 const targetLaboratoryRoute = createRoute({
   getParentRoute: () => targetRoute,
   path: 'laboratory',
+  validateSearch: () => ({}) as { operation: string | undefined },
   component: function TargetLaboratoryRoute() {
     const { organizationSlug, projectSlug, targetSlug } = targetLaboratoryRoute.useParams();
+    const { operation } = targetLaboratoryRoute.useSearch();
     return (
       <TargetLaboratoryPage
         organizationSlug={organizationSlug}
         projectSlug={projectSlug}
         targetSlug={targetSlug}
+        selectedOperationId={operation}
       />
     );
   },

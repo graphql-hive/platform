@@ -156,6 +156,8 @@ export const typeDefs = gql`
   }
 
   extend type Target {
+    viewerCanViewLaboratory: Boolean!
+    viewerCanModifyLaboratory: Boolean!
     documentCollection(id: ID!): DocumentCollection
     documentCollections(first: Int = 100, after: String = null): DocumentCollectionConnection!
     documentCollectionOperation(id: ID!): DocumentCollectionOperation
