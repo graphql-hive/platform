@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { buildSchema, execute, GraphQLError, parse, print } from 'graphql';
+import { buildSchema, execute, GraphQLError, parse } from 'graphql';
 import { z } from 'zod';
 import { env } from '@/env/backend';
 import { graphql } from '@/gql';
@@ -91,7 +91,7 @@ export function connectLab(server: FastifyInstance) {
       return;
     }
 
-    if (!!response?.errors?.length) {
+    if (response?.errors?.length) {
       void res.status(200).send(response.data);
       return;
     }
