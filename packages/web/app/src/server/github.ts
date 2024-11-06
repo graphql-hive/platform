@@ -86,15 +86,15 @@ export function connectGithub(server: FastifyInstance) {
         },
         operationName: 'getOrganizationByGitHubInstallationId',
         query: /* GraphQL */ `
-          query getOrganizationByGitHubInstallationId($installation: ID!) {
-            organizationByGitHubInstallationId(input: $input) {
+          query getOrganizationByGitHubInstallationId($installationId: ID!) {
+            organizationByGitHubInstallationId(installation: $installationId) {
               id
               slug
             }
           }
         `,
         variables: {
-          installation: installationId,
+          installationId,
         },
       });
 
