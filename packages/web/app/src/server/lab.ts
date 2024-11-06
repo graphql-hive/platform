@@ -1,8 +1,20 @@
 import type { FastifyInstance } from 'fastify';
-import { buildSchema, execute, GraphQLError, parse } from 'graphql';
+import { buildSchema, execute, GraphQLError, parse, print } from 'graphql';
 import { z } from 'zod';
 import { env } from '@/env/backend';
+import { graphql } from '@/gql';
 import { addMocksToSchema } from '@graphql-tools/mock';
+import { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { graphqlRequest } from './utils';
+
+const LabEndpoint_GetLab = graphql(/* GraphQL */ `
+  query LabEndpoint_GetLab($selector: TargetSelectorInput!) {
+    lab(selector: $selector) {
+      schema
+      mocks
+    }
+  }
+`);
 
 const LabParams = z.object({
   organizationSlug: z.string({
@@ -48,30 +60,12 @@ export function connectLab(server: FastifyInstance) {
       headers['Cookie'] = req.headers.cookie as string;
     }
 
-    const body = {
-      operationName: 'lab',
-      query: /* GraphQL */ `
-        query lab($selector: TargetSelectorInput!) {
-          lab(selector: $selector) {
-            schema
-            mocks
-          }
-        }
-      `,
-      variables: {
-        selector: {
-          organizationSlug,
-          projectSlug,
-          targetSlug,
-        },
-      },
-    };
-
     if (req.headers['x-request-id']) {
       headers['x-request-id'] = req.headers['x-request-id'] as string;
     }
 
-    const response = await fetch(url, {
+    const response = await graphqlRequest({
+      url,
       headers: {
         'content-type': 'application/json',
         'graphql-client-name': 'Hive App',
@@ -79,13 +73,18 @@ export function connectLab(server: FastifyInstance) {
         ...headers,
       },
       credentials: 'include',
-      method: 'POST',
-      body: JSON.stringify(body),
+      operationName: 'LabEndpoint_GetLab',
+      document: LabEndpoint_GetLab,
+      variables: {
+        selector: {
+          organizationSlug,
+          projectSlug,
+          targetSlug,
+        },
+      },
     });
 
-    const parsedData = await response.json();
-
-    if (!parsedData.data?.lab?.schema) {
+    if (!response.data?.lab?.schema) {
       void res.status(200).send({
         errors: [new GraphQLError('Please publish your first schema to Hive')],
       });
@@ -93,15 +92,15 @@ export function connectLab(server: FastifyInstance) {
       return;
     }
 
-    if (parsedData.data?.errors?.length > 0) {
-      void res.status(200).send(parsedData.data);
+    if (!!response?.errors?.length) {
+      void res.status(200).send(response.data);
       return;
     }
 
     try {
       const graphqlRequest = LabBody.parse(req.body);
 
-      const rawSchema = buildSchema(parsedData.data.lab?.schema);
+      const rawSchema = buildSchema(response.data.lab?.schema);
       const document = parse(graphqlRequest.query);
 
       const mockedSchema = addMocksToSchema({
@@ -123,4 +122,15 @@ export function connectLab(server: FastifyInstance) {
       void res.status(200).send({ errors: [e] });
     }
   });
+}
+
+function createGraphQLBody<TResult, TVariables>(
+  document: TypedDocumentNode<TResult, TVariables>,
+  variables: TVariables,
+) {
+  return {
+    operationName: 'lab',
+    query: print(document),
+    variables,
+  };
 }

@@ -60,10 +60,7 @@ const config: CodegenConfig = {
       },
     ),
     './packages/web/app/src/gql/': {
-      documents: [
-        './packages/web/app/src/(components|lib|pages)/**/*.ts(x)?',
-        '!./packages/web/app/src/server/**/*.ts',
-      ],
+      documents: ['./packages/web/app/src/(components|lib|pages|server)/**/*.ts(x)?'],
       preset: 'client',
       config: {
         scalars: {
