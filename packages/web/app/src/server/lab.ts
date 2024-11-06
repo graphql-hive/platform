@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { env } from '@/env/backend';
 import { graphql } from '@/gql';
 import { addMocksToSchema } from '@graphql-tools/mock';
-import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { graphqlRequest } from './utils';
 
 const LabEndpoint_GetLab = graphql(/* GraphQL */ `
@@ -122,15 +121,4 @@ export function connectLab(server: FastifyInstance) {
       void res.status(200).send({ errors: [e] });
     }
   });
-}
-
-function createGraphQLBody<TResult, TVariables>(
-  document: TypedDocumentNode<TResult, TVariables>,
-  variables: TVariables,
-) {
-  return {
-    operationName: 'lab',
-    query: print(document),
-    variables,
-  };
 }
