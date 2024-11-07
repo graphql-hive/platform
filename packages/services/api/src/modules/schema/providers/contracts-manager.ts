@@ -2,7 +2,8 @@ import { Injectable, Scope } from 'graphql-modules';
 import type { SchemaCheck, SchemaVersion } from '@hive/storage';
 import type { Target } from '../../../shared/entities';
 import { cache } from '../../../shared/helpers';
-import { Session } from '../../auth/lib/authz';
+import { AuthManager } from '../../auth/providers/auth-manager';
+import { TargetAccessScope } from '../../auth/providers/scopes';
 import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
 import { Storage } from '../../shared/providers/storage';
@@ -24,7 +25,7 @@ export class ContractsManager {
     logger: Logger,
     private contracts: Contracts,
     private storage: Storage,
-    private session: Session,
+    private authManager: AuthManager,
     private idTranslator: IdTranslator,
     private breakingSchemaChangeUsageHelper: BreakingSchemaChangeUsageHelper,
   ) {
@@ -50,14 +51,11 @@ export class ContractsManager {
       this.idTranslator.translateTargetId(breadcrumb),
     ]);
 
-    await this.session.assertPerformAction({
-      action: 'target:modifySettings',
-      organizationId,
-      params: {
-        organizationId,
-        projectId,
-        targetId,
-      },
+    await this.authManager.ensureTargetAccess({
+      organizationId: organizationId,
+      projectId: projectId,
+      targetId: targetId,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     return await this.contracts.createContract(args);
@@ -88,14 +86,11 @@ export class ContractsManager {
       this.idTranslator.translateTargetId(breadcrumb),
     ]);
 
-    await this.session.assertPerformAction({
-      action: 'target:modifySettings',
-      organizationId,
-      params: {
-        organizationId,
-        projectId,
-        targetId,
-      },
+    await this.authManager.ensureTargetAccess({
+      organizationId: organizationId,
+      projectId: projectId,
+      targetId: targetId,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     return await this.contracts.disableContract({
@@ -103,7 +98,7 @@ export class ContractsManager {
     });
   }
 
-  async getViewerCanDisableContractForContract(contract: Contract): Promise<boolean> {
+  async getViewerCanDisableContractForContract(contract: Contract) {
     if (contract.isDisabled) {
       return false;
     }
@@ -111,7 +106,6 @@ export class ContractsManager {
     const breadcrumb = await this.storage.getTargetBreadcrumbForTargetId({
       targetId: contract.targetId,
     });
-
     if (!breadcrumb) {
       return false;
     }
@@ -122,15 +116,15 @@ export class ContractsManager {
       this.idTranslator.translateTargetId(breadcrumb),
     ]);
 
-    return await this.session.canPerformAction({
-      action: 'target:modifySettings',
-      organizationId,
-      params: {
-        organizationId,
-        projectId,
-        targetId,
-      },
-    });
+    return await this.authManager
+      .ensureTargetAccess({
+        organizationId: organizationId,
+        projectId: projectId,
+        targetId: targetId,
+        scope: TargetAccessScope.SETTINGS,
+      })
+      .then(() => true)
+      .catch(() => false);
   }
 
   public async getPaginatedContractsForTarget(args: {
@@ -138,14 +132,11 @@ export class ContractsManager {
     cursor: string | null;
     first: number | null;
   }) {
-    await this.session.assertPerformAction({
-      action: 'target:modifySettings',
+    await this.authManager.ensureTargetAccess({
       organizationId: args.target.orgId,
-      params: {
-        organizationId: args.target.orgId,
-        projectId: args.target.projectId,
-        targetId: args.target.id,
-      },
+      projectId: args.target.projectId,
+      targetId: args.target.id,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     return this.contracts.getPaginatedContractsByTargetId({
@@ -161,13 +152,11 @@ export class ContractsManager {
     cursor: string | null;
     first: number | null;
   }) {
-    await this.session.assertPerformAction({
-      action: 'project:describe',
+    await this.authManager.ensureTargetAccess({
       organizationId: args.target.orgId,
-      params: {
-        organizationId: args.target.orgId,
-        projectId: args.target.projectId,
-      },
+      projectId: args.target.projectId,
+      targetId: args.target.id,
+      scope: TargetAccessScope.READ,
     });
 
     return this.contracts.getPaginatedContractsByTargetId({

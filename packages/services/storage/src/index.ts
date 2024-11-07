@@ -49,6 +49,7 @@ import {
   projects,
   schema_log as schema_log_in_db,
   schema_policy_config,
+  schema_version_to_log,
   schema_versions,
   target_validation,
   targets,
@@ -1898,7 +1899,7 @@ export async function createStorage(
         const uniqueSelectors = Array.from(uniqueSelectorsMap.values());
 
         const rows = await pool
-          .any<unknown>(
+          .many<unknown>(
             sql`/* getTarget */
               SELECT
                 ${targetSQLFields}
@@ -2168,13 +2169,13 @@ export async function createStorage(
         `,
       );
     },
-    async getMaybeLatestValidVersion(args) {
+    async getMaybeLatestValidVersion({ targetId: target }) {
       const version = await pool.maybeOne<unknown>(
         sql`/* getMaybeLatestValidVersion */
           SELECT
             ${schemaVersionSQLFields(sql`sv.`)}
           FROM schema_versions as sv
-          WHERE sv.target_id = ${args.targetId} AND sv.is_composable IS TRUE
+          WHERE sv.target_id = ${target} AND sv.is_composable IS TRUE
           ORDER BY sv.created_at DESC
           LIMIT 1
         `,
@@ -2200,14 +2201,14 @@ export async function createStorage(
 
       return SchemaVersionModel.parse(version);
     },
-    async getLatestVersion(args) {
+    async getLatestVersion({ projectId: project, targetId: target }) {
       const version = await pool.maybeOne<unknown>(
         sql`/* getLatestVersion */
           SELECT
             ${schemaVersionSQLFields(sql`sv.`)}
           FROM schema_versions as sv
           LEFT JOIN targets as t ON (t.id = sv.target_id)
-          WHERE sv.target_id = ${args.targetId} AND t.project_id = ${args.projectId}
+          WHERE sv.target_id = ${target} AND t.project_id = ${project}
           ORDER BY sv.created_at DESC
           LIMIT 1
         `,
@@ -2216,14 +2217,14 @@ export async function createStorage(
       return SchemaVersionModel.parse(version);
     },
 
-    async getMaybeLatestVersion(args) {
+    async getMaybeLatestVersion({ projectId: project, targetId: target }) {
       const version = await pool.maybeOne<unknown>(
         sql`/* getMaybeLatestVersion */
           SELECT
             ${schemaVersionSQLFields(sql`sv.`)}
           FROM schema_versions as sv
           LEFT JOIN targets as t ON (t.id = sv.target_id)
-          WHERE sv.target_id = ${args.targetId} AND t.project_id = ${args.projectId}
+          WHERE sv.target_id = ${target} AND t.project_id = ${project}
           ORDER BY sv.created_at DESC
           LIMIT 1
         `,
@@ -2389,6 +2390,40 @@ export async function createStorage(
 
       return result.rows.map(transformSchema);
     },
+    async getSchemasOfPreviousVersion({ versionId: version, targetId: target, onlyComposable }) {
+      const results = await pool.query<
+        OverrideProp<schema_log, 'action', 'PUSH'> &
+          Pick<projects, 'type'> &
+          Pick<schema_version_to_log, 'version_id'>
+      >(
+        sql`/* getSchemasOfPreviousVersion */
+          SELECT sl.*, lower(sl.service_name) as service_name, p.type, svl.version_id as version_id
+          FROM schema_version_to_log as svl
+          LEFT JOIN schema_log as sl ON (sl.id = svl.action_id)
+          LEFT JOIN projects as p ON (p.id = sl.project_id)
+          WHERE svl.version_id = (
+            SELECT sv.id FROM schema_versions as sv WHERE sv.created_at < (
+              SELECT svi.created_at FROM schema_versions as svi WHERE svi.id = ${version}
+            ) AND sv.target_id = ${target} AND ${
+              onlyComposable ? sql`sv.is_composable IS TRUE` : true
+            } ORDER BY sv.created_at DESC LIMIT 1
+          ) AND sl.action = 'PUSH'
+          ORDER BY sl.created_at DESC
+        `,
+      );
+
+      if (results.rowCount === 0) {
+        return {
+          schemas: [],
+        };
+      }
+
+      return {
+        schemas: results.rows.map(transformSchema),
+        id: results.rows[0].version_id,
+      };
+    },
+
     async getServiceSchemaOfVersion(args) {
       const result = await pool.maybeOne<
         Pick<
@@ -4127,7 +4162,6 @@ export async function createStorage(
       });
 
       const check = await this.findSchemaCheck({
-        targetId: args.targetId,
         schemaCheckId: result.id,
       });
 
@@ -4148,7 +4182,6 @@ export async function createStorage(
         LEFT JOIN "sdl_store" as s_supergraph        ON s_supergraph."id" = c."supergraph_sdl_store_id"
         WHERE
           c."id" = ${args.schemaCheckId}
-          AND c."target_id" = ${args.targetId}
       `);
 
       if (result == null) {
@@ -4159,7 +4192,6 @@ export async function createStorage(
     },
     async approveFailedSchemaCheck(args) {
       const schemaCheck = await this.findSchemaCheck({
-        targetId: args.targetId,
         schemaCheckId: args.schemaCheckId,
       });
 

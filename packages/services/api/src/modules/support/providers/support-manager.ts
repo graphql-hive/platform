@@ -3,7 +3,8 @@ import { Inject, Injectable, Scope } from 'graphql-modules';
 import { z } from 'zod';
 import { Organization, SupportTicketPriority, SupportTicketStatus } from '../../../shared/entities';
 import { atomic } from '../../../shared/helpers';
-import { Session } from '../../auth/lib/authz';
+import { AuthManager } from '../../auth/providers/auth-manager';
+import { OrganizationAccessScope } from '../../auth/providers/scopes';
 import { HttpClient } from '../../shared/providers/http-client';
 import { Logger } from '../../shared/providers/logger';
 import { Storage } from '../../shared/providers/storage';
@@ -133,9 +134,9 @@ export class SupportManager {
     @Inject(SUPPORT_MODULE_CONFIG) private config: SupportConfig,
     logger: Logger,
     private httpClient: HttpClient,
+    private authManager: AuthManager,
     private organizationManager: OrganizationManager,
     private storage: Storage,
-    private session: Session,
   ) {
     this.logger = logger.child({ service: 'SupportManager' });
   }
@@ -375,12 +376,9 @@ export class SupportManager {
 
   async getTickets(organizationId: string) {
     this.logger.info('Fetching support tickets (id: %s)', organizationId);
-    await this.session.assertPerformAction({
-      organizationId,
-      action: 'support:manageTickets',
-      params: {
-        organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      organizationId: organizationId,
+      scope: OrganizationAccessScope.READ,
     });
     const internalOrganizationId = await this.ensureZendeskOrganizationId(organizationId);
 
@@ -419,12 +417,9 @@ export class SupportManager {
       organizationId,
       ticketId,
     );
-    await this.session.assertPerformAction({
-      organizationId,
-      action: 'support:manageTickets',
-      params: {
-        organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      organizationId: organizationId,
+      scope: OrganizationAccessScope.READ,
     });
     const zendeskOrganizationId = await this.ensureZendeskOrganizationId(organizationId);
 
@@ -520,14 +515,12 @@ export class SupportManager {
       };
     }
 
-    await this.session.assertPerformAction({
+    await this.authManager.ensureOrganizationAccess({
       organizationId: input.organizationId,
-      action: 'support:manageTickets',
-      params: {
-        organizationId: input.organizationId,
-      },
+      scope: OrganizationAccessScope.READ,
     });
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
+
     const internalOrganizationId = await this.ensureZendeskOrganizationId(input.organizationId);
     const internalUserId = await this.ensureZendeskUserId({
       userId: currentUser.id,
@@ -610,14 +603,11 @@ export class SupportManager {
       };
     }
 
-    await this.session.assertPerformAction({
+    await this.authManager.ensureOrganizationAccess({
       organizationId: input.organizationId,
-      action: 'support:manageTickets',
-      params: {
-        organizationId: input.organizationId,
-      },
+      scope: OrganizationAccessScope.READ,
     });
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
     const internalUserId = await this.ensureZendeskUserId({
       userId: currentUser.id,
       organizationId: input.organizationId,

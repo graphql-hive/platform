@@ -3,7 +3,6 @@ import { Inject, Injectable, Scope } from 'graphql-modules';
 import { Organization, OrganizationMemberRole } from '../../../shared/entities';
 import { HiveError } from '../../../shared/errors';
 import { cache, diffArrays, share } from '../../../shared/helpers';
-import { Session } from '../../auth/lib/authz';
 import { AuthManager } from '../../auth/providers/auth-manager';
 import { OrganizationAccessScope } from '../../auth/providers/organization-access';
 import { ProjectAccessScope } from '../../auth/providers/project-access';
@@ -61,7 +60,6 @@ export class OrganizationManager {
     logger: Logger,
     private storage: Storage,
     private authManager: AuthManager,
-    private session: Session,
     private tokenStorage: TokenStorage,
     private activityManager: ActivityManager,
     private billingProvider: BillingProvider,
@@ -73,42 +71,43 @@ export class OrganizationManager {
   }
 
   getOrganizationFromToken: () => Promise<Organization | never> = share(async () => {
-    const { organizationId } = this.session.getLegacySelector();
+    const token = this.authManager.ensureApiToken();
+    const result = await this.tokenStorage.getToken({ token });
 
-    await this.session.assertPerformAction({
-      action: 'organization:describe',
-      organizationId,
-      params: {
-        organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      organizationId: result.organization,
+      scope: OrganizationAccessScope.READ,
     });
 
     return this.storage.getOrganization({
-      organizationId,
+      organizationId: result.organization,
     });
   });
 
   getOrganizationIdByToken: () => Promise<string | never> = share(async () => {
-    const { organizationId } = this.session.getLegacySelector();
-    return organizationId;
-  });
-
-  async getOrganization(selector: OrganizationSelector): Promise<Organization> {
-    this.logger.debug('Fetching organization (selector=%o)', selector);
-    await this.session.assertPerformAction({
-      action: 'organization:describe',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-      },
+    const token = this.authManager.ensureApiToken();
+    const { organization } = await this.tokenStorage.getToken({
+      token,
     });
 
+    return organization;
+  });
+
+  async getOrganization(
+    selector: OrganizationSelector,
+    scope = OrganizationAccessScope.READ,
+  ): Promise<Organization> {
+    this.logger.debug('Fetching organization (selector=%o)', selector);
+    await this.authManager.ensureOrganizationAccess({
+      ...selector,
+      scope,
+    });
     return this.storage.getOrganization(selector);
   }
 
   async getOrganizations(): Promise<readonly Organization[]> {
     this.logger.debug('Fetching organizations');
-    const user = await this.session.getViewer();
+    const user = await this.authManager.getCurrentUser();
     return this.storage.getOrganizations({ userId: user.id });
   }
 
@@ -176,7 +175,7 @@ export class OrganizationManager {
       }
   > {
     this.logger.debug('Leaving organization (organization=%s)', organizationId);
-    const user = await this.session.getViewer();
+    const user = await this.authManager.getCurrentUser();
 
     const canLeave = await this.canLeaveOrganization({
       organizationId,
@@ -208,7 +207,6 @@ export class OrganizationManager {
 
     // Because we checked the access before, it's stale by now
     this.authManager.resetAccessCache();
-    this.session.reset();
 
     return {
       ok: true,
@@ -231,12 +229,9 @@ export class OrganizationManager {
       };
     }
 
-    const hasAccess = await this.session.canPerformAction({
-      action: 'organization:describe',
+    const hasAccess = await this.authManager.checkOrganizationAccess({
       organizationId: organization.id,
-      params: {
-        organizationId: organization.id,
-      },
+      scope: OrganizationAccessScope.READ,
     });
 
     if (hasAccess) {
@@ -269,14 +264,10 @@ export class OrganizationManager {
 
   @cache((selector: OrganizationSelector) => selector.organizationId)
   async getInvitations(selector: OrganizationSelector) {
-    await this.session.assertPerformAction({
-      action: 'member:manageInvites',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-      },
+      scope: OrganizationAccessScope.MEMBERS,
     });
-
     return this.storage.getOrganizationInvitations(selector);
   }
 
@@ -326,15 +317,12 @@ export class OrganizationManager {
 
   async deleteOrganization(selector: OrganizationSelector): Promise<Organization> {
     this.logger.info('Deleting an organization (organization=%s)', selector.organizationId);
-    await this.session.assertPerformAction({
-      action: 'organization:delete',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-      },
+      scope: OrganizationAccessScope.DELETE,
     });
 
-    const organization = await this.storage.getOrganization({
+    const organization = await this.getOrganization({
       organizationId: selector.organizationId,
     });
 
@@ -346,7 +334,6 @@ export class OrganizationManager {
 
     // Because we checked the access before, it's stale by now
     this.authManager.resetAccessCache();
-    this.session.reset();
 
     return deletedOrganization;
   }
@@ -358,15 +345,11 @@ export class OrganizationManager {
   ): Promise<Organization> {
     const { plan } = input;
     this.logger.info('Updating an organization plan (input=%o)', input);
-    await this.session.assertPerformAction({
-      action: 'billing:update',
-      organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      ...input,
+      scope: OrganizationAccessScope.SETTINGS,
     });
-
-    const organization = await this.storage.getOrganization({
+    const organization = await this.getOrganization({
       organizationId: input.organizationId,
     });
 
@@ -394,15 +377,11 @@ export class OrganizationManager {
   ): Promise<Organization> {
     const { monthlyRateLimit } = input;
     this.logger.info('Updating an organization plan (input=%o)', input);
-    await this.session.assertPerformAction({
-      action: 'billing:update',
-      organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      ...input,
+      scope: OrganizationAccessScope.SETTINGS,
     });
-
-    const organization = await this.storage.getOrganization({
+    const organization = await this.getOrganization({
       organizationId: input.organizationId,
     });
 
@@ -430,17 +409,13 @@ export class OrganizationManager {
   ) {
     const { slug } = input;
     this.logger.info('Updating an organization clean id (input=%o)', input);
-    await this.session.assertPerformAction({
-      action: 'organization:modifySettings',
-      organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      ...input,
+      scope: OrganizationAccessScope.SETTINGS,
     });
-
     const [user, organization] = await Promise.all([
-      this.session.getViewer(),
-      this.storage.getOrganization({
+      this.authManager.getCurrentUser(),
+      this.getOrganization({
         organizationId: input.organizationId,
       }),
     ]);
@@ -475,23 +450,17 @@ export class OrganizationManager {
   }
 
   async deleteInvitation(input: { email: string; organizationId: string }) {
-    await this.session.assertPerformAction({
-      action: 'member:manageInvites',
+    await this.authManager.ensureOrganizationAccess({
+      scope: OrganizationAccessScope.MEMBERS,
       organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
     });
     return this.storage.deleteOrganizationInvitationByEmail(input);
   }
 
   async inviteByEmail(input: { email: string; organization: string; role?: string | null }) {
-    await this.session.assertPerformAction({
-      action: 'member:manageInvites',
+    await this.authManager.ensureOrganizationAccess({
+      scope: OrganizationAccessScope.MEMBERS,
       organizationId: input.organization,
-      params: {
-        organizationId: input.organization,
-      },
     });
 
     const { email } = input;
@@ -605,7 +574,7 @@ export class OrganizationManager {
   async joinOrganization({ code }: { code: string }): Promise<Organization | { message: string }> {
     this.logger.info('Joining an organization (code=%s)', code);
 
-    const user = await this.session.getViewer();
+    const user = await this.authManager.getCurrentUser();
     const isOIDCUser = user.oidcIntegrationId !== null;
 
     if (isOIDCUser) {
@@ -644,7 +613,6 @@ export class OrganizationManager {
 
     // Because we checked the access before, it's stale by now
     this.authManager.resetAccessCache();
-    this.session.reset();
 
     await Promise.all([
       this.storage.completeGetStartedStep({
@@ -668,7 +636,7 @@ export class OrganizationManager {
       userId: string;
     } & OrganizationSelector,
   ) {
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
 
     if (currentUser.id === selector.userId) {
       return {
@@ -738,14 +706,11 @@ export class OrganizationManager {
       code: string;
     } & OrganizationSelector,
   ) {
-    await this.session.assertPerformAction({
-      action: 'organization:describe',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-      },
+      scope: OrganizationAccessScope.READ,
     });
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
 
     return this.storage.getOrganizationTransferRequest({
       organizationId: selector.organizationId,
@@ -760,14 +725,11 @@ export class OrganizationManager {
       accept: boolean;
     } & OrganizationSelector,
   ) {
-    await this.session.assertPerformAction({
-      action: 'organization:describe',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
+      scope: OrganizationAccessScope.READ,
     });
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
 
     await this.storage.answerOrganizationTransferRequest({
       organizationId: input.organizationId,
@@ -783,14 +745,10 @@ export class OrganizationManager {
     } & OrganizationSelector,
   ): Promise<Organization> {
     this.logger.info('Deleting a member from an organization (selector=%o)', selector);
-    await this.session.assertPerformAction({
-      action: 'member:removeMember',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      ...selector,
+      scope: OrganizationAccessScope.MEMBERS,
     });
-
     const owner = await this.getOrganizationOwner(selector);
     const { user, organizationId: organization } = selector;
 
@@ -798,7 +756,7 @@ export class OrganizationManager {
       throw new HiveError(`Cannot remove the owner from the organization`);
     }
 
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
 
     const [currentUserAsMember, member] = await Promise.all([
       this.storage.getOrganizationMember({
@@ -849,7 +807,6 @@ export class OrganizationManager {
 
     // Because we checked the access before, it's stale by now
     this.authManager.resetAccessCache();
-    this.session.reset();
 
     return this.storage.getOrganization({
       organizationId: organization,
@@ -865,15 +822,12 @@ export class OrganizationManager {
     } & OrganizationSelector,
   ) {
     this.logger.info('Updating a member access in an organization (input=%o)', input);
-    await this.session.assertPerformAction({
-      action: 'member:assignRole',
-      organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      ...input,
+      scope: OrganizationAccessScope.MEMBERS,
     });
 
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
 
     const [currentMember, member] = await Promise.all([
       this.getOrganizationMember({
@@ -919,7 +873,6 @@ export class OrganizationManager {
 
     // Because we checked the access before, it's stale by now
     this.authManager.resetAccessCache();
-    this.session.reset();
 
     return this.storage.getOrganization({
       organizationId: input.organizationId,
@@ -934,12 +887,9 @@ export class OrganizationManager {
     projectAccessScopes: readonly ProjectAccessScope[];
     targetAccessScopes: readonly TargetAccessScope[];
   }) {
-    await this.session.assertPerformAction({
-      action: 'member:modifyRole',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
+      scope: OrganizationAccessScope.MEMBERS,
     });
 
     const scopes = ensureReadAccess([
@@ -948,7 +898,7 @@ export class OrganizationManager {
       ...input.targetAccessScopes,
     ]);
 
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
     const currentUserAsMember = await this.getOrganizationMember({
       organizationId: input.organizationId,
       userId: currentUser.id,
@@ -1008,12 +958,9 @@ export class OrganizationManager {
   }
 
   async deleteMemberRole(input: { organizationId: string; roleId: string }) {
-    await this.session.assertPerformAction({
-      action: 'member:modifyRole',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
+      scope: OrganizationAccessScope.MEMBERS,
     });
 
     const role = await this.storage.getOrganizationMemberRole({
@@ -1029,7 +976,7 @@ export class OrganizationManager {
       };
     }
 
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
     const currentUserAsMember = await this.getOrganizationMember({
       organizationId: input.organizationId,
       userId: currentUser.id,
@@ -1061,12 +1008,9 @@ export class OrganizationManager {
   }
 
   async assignMemberRole(input: { organizationId: string; userId: string; roleId: string }) {
-    await this.session.assertPerformAction({
-      action: 'member:assignRole',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
+      scope: OrganizationAccessScope.MEMBERS,
     });
 
     // Ensure selected member is part of the organization
@@ -1079,7 +1023,7 @@ export class OrganizationManager {
       throw new Error(`Member is not part of the organization`);
     }
 
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
     const [currentUserAsMember, newRole] = await Promise.all([
       this.getOrganizationMember({
         organizationId: input.organizationId,
@@ -1157,7 +1101,6 @@ export class OrganizationManager {
 
     // Access cache is stale by now
     this.authManager.resetAccessCache();
-    this.session.reset();
 
     return {
       ok: {
@@ -1179,14 +1122,12 @@ export class OrganizationManager {
     projectAccessScopes: readonly ProjectAccessScope[];
     targetAccessScopes: readonly TargetAccessScope[];
   }) {
-    await this.session.assertPerformAction({
-      action: 'member:modifyRole',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-      },
+      scope: OrganizationAccessScope.MEMBERS,
     });
-    const currentUser = await this.session.getViewer();
+
+    const currentUser = await this.authManager.getCurrentUser();
     const [role, currentUserAsMember] = await Promise.all([
       this.storage.getOrganizationMemberRole({
         organizationId: input.organizationId,
@@ -1291,7 +1232,6 @@ export class OrganizationManager {
 
     // Access cache is stale by now
     this.authManager.resetAccessCache();
-    this.session.reset();
 
     return {
       ok: {
@@ -1302,12 +1242,9 @@ export class OrganizationManager {
 
   async getMembersWithoutRole(selector: { organizationId: string }) {
     if (
-      await this.session.canPerformAction({
-        action: 'member:describe',
+      await this.authManager.checkOrganizationAccess({
         organizationId: selector.organizationId,
-        params: {
-          organizationId: selector.organizationId,
-        },
+        scope: OrganizationAccessScope.MEMBERS,
       })
     ) {
       return this.storage.getMembersWithoutRole({
@@ -1320,12 +1257,9 @@ export class OrganizationManager {
   }
 
   async getMemberRoles(selector: { organizationId: string }) {
-    await this.session.assertPerformAction({
-      action: 'member:describe',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-      },
+      scope: OrganizationAccessScope.MEMBERS,
     });
 
     return this.storage.getOrganizationMemberRoles({
@@ -1334,12 +1268,9 @@ export class OrganizationManager {
   }
 
   async getMemberRole(selector: { organizationId: string; roleId: string }) {
-    await this.session.assertPerformAction({
-      action: 'member:describe',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-      },
+      scope: OrganizationAccessScope.MEMBERS,
     });
 
     return this.storage.getOrganizationMemberRole({
@@ -1511,7 +1442,7 @@ export class OrganizationManager {
       userIds: readonly string[];
     } | null;
   }) {
-    const currentUser = await this.session.getViewer();
+    const currentUser = await this.authManager.getCurrentUser();
     const currentUserAsMember = await this.getOrganizationMember({
       organizationId: organizationId,
       userId: currentUser.id,

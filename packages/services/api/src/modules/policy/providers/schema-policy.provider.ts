@@ -1,7 +1,12 @@
 import { Injectable, Scope } from 'graphql-modules';
 import type { CheckPolicyResponse, PolicyConfigurationObject } from '@hive/policy';
 import { SchemaPolicy } from '../../../shared/entities';
-import { Session } from '../../auth/lib/authz';
+import { AuthManager } from '../../auth/providers/auth-manager';
+import {
+  OrganizationAccessScope,
+  ProjectAccessScope,
+  TargetAccessScope,
+} from '../../auth/providers/scopes';
 import { Logger } from '../../shared/providers/logger';
 import {
   OrganizationSelector,
@@ -21,7 +26,7 @@ export class SchemaPolicyProvider {
   constructor(
     rootLogger: Logger,
     private storage: Storage,
-    private session: Session,
+    private authManager: AuthManager,
     private api: SchemaPolicyApiProvider,
   ) {
     this.logger = rootLogger.child({ service: 'SchemaPolicyProvider' });
@@ -34,6 +39,19 @@ export class SchemaPolicyProvider {
         ...policy.config,
       };
     }, {} as PolicyConfigurationObject);
+  }
+
+  async getCalculatedTargetPolicyForApi(selector: TargetSelector): Promise<{
+    orgLevel: SchemaPolicy | null;
+    projectLevel: SchemaPolicy | null;
+    mergedPolicy: PolicyConfigurationObject | null;
+  }> {
+    await this.authManager.ensureTargetAccess({
+      ...selector,
+      scope: TargetAccessScope.SETTINGS,
+    });
+
+    return this._getCalculatedPolicyForTarget(selector);
   }
 
   private async _getCalculatedPolicyForTarget(selector: TargetSelector): Promise<{
@@ -125,12 +143,9 @@ export class SchemaPolicyProvider {
     policy: any,
     allowOverrides: boolean,
   ) {
-    await this.session.assertPerformAction({
-      action: 'schemaLinting:modifyOrganizationRules',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      ...selector,
+      scope: OrganizationAccessScope.SETTINGS,
     });
 
     return await this.storage.setSchemaPolicyForOrganization({
@@ -141,13 +156,9 @@ export class SchemaPolicyProvider {
   }
 
   async setProjectPolicy(selector: ProjectSelector, policy: any) {
-    await this.session.assertPerformAction({
-      action: 'schemaLinting:modifyProjectRules',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-        projectId: selector.projectId,
-      },
+    await this.authManager.ensureProjectAccess({
+      ...selector,
+      scope: ProjectAccessScope.SETTINGS,
     });
 
     return await this.storage.setSchemaPolicyForProject({
@@ -157,38 +168,27 @@ export class SchemaPolicyProvider {
   }
 
   async getOrganizationPolicy(selector: OrganizationSelector) {
-    await this.session.assertPerformAction({
-      action: 'schemaLinting:modifyOrganizationRules',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-      },
+    await this.authManager.ensureOrganizationAccess({
+      ...selector,
+      scope: OrganizationAccessScope.SETTINGS,
     });
 
     return this.storage.getSchemaPolicyForOrganization(selector.organizationId);
   }
 
   async getOrganizationPolicyForProject(selector: ProjectSelector) {
-    await this.session.assertPerformAction({
-      action: 'schemaLinting:modifyProjectRules',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-        projectId: selector.projectId,
-      },
+    await this.authManager.ensureProjectAccess({
+      ...selector,
+      scope: ProjectAccessScope.SETTINGS,
     });
 
     return this.storage.getSchemaPolicyForOrganization(selector.organizationId);
   }
 
   async getProjectPolicy(selector: ProjectSelector) {
-    await this.session.assertPerformAction({
-      action: 'schemaLinting:modifyProjectRules',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-        projectId: selector.projectId,
-      },
+    await this.authManager.ensureProjectAccess({
+      ...selector,
+      scope: ProjectAccessScope.SETTINGS,
     });
 
     return this.storage.getSchemaPolicyForProject(selector.projectId);

@@ -150,7 +150,7 @@ describe('create', () => {
       expect(errors).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            message: `No access (reason: "Missing permission for performing 'oidc:modify' on resource")`,
+            message: `No access (reason: "Missing organization:integrations permission")`,
           }),
         ]),
       );
@@ -545,7 +545,7 @@ describe('delete', () => {
       expect(errors).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            message: `No access (reason: "Missing permission for performing 'oidc:modify' on resource")`,
+            message: `No access (reason: "Missing organization:integrations permission")`,
           }),
         ]),
       );
@@ -742,7 +742,7 @@ describe('update', () => {
       expect(errors).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            message: `No access (reason: "Missing permission for performing 'oidc:modify' on resource")`,
+            message: `No access (reason: "Missing organization:integrations permission")`,
           }),
         ]),
       );

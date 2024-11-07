@@ -41,8 +41,11 @@ export class SchemaVersionHelper {
   @cache<SchemaVersion>(version => version.id)
   private async composeSchemaVersion(schemaVersion: SchemaVersion) {
     const [schemas, project, organization] = await Promise.all([
-      this.storage.getSchemasOfVersion({
+      this.schemaManager.getMaybeSchemasOfVersion({
         versionId: schemaVersion.id,
+        organizationId: schemaVersion.organizationId,
+        projectId: schemaVersion.projectId,
+        targetId: schemaVersion.targetId,
       }),
       this.projectManager.getProject({
         organizationId: schemaVersion.organizationId,
@@ -152,8 +155,11 @@ export class SchemaVersionHelper {
     }
 
     if (schemaVersion.hasPersistedSchemaChanges) {
-      const changes = await this.storage.getSchemaChangesForVersion({
-        versionId: schemaVersion.id,
+      const changes = await this.schemaManager.getSchemaChangesForVersion({
+        organizationId: schemaVersion.organizationId,
+        projectId: schemaVersion.projectId,
+        targetId: schemaVersion.targetId,
+        version: schemaVersion.id,
       });
 
       const safeChanges: Array<SchemaChangeType> = [];
@@ -183,10 +189,16 @@ export class SchemaVersionHelper {
     const incomingSdl = await this.getCompositeSchemaSdl(schemaVersion);
 
     const [schemaBefore, schemasAfter] = await Promise.all([
-      this.storage.getSchemasOfVersion({
+      this.schemaManager.getMaybeSchemasOfVersion({
+        organizationId: schemaVersion.organizationId,
+        projectId: schemaVersion.projectId,
+        targetId: schemaVersion.targetId,
         versionId: schemaVersion.id,
       }),
-      this.storage.getSchemasOfVersion({
+      this.schemaManager.getMaybeSchemasOfVersion({
+        organizationId: schemaVersion.organizationId,
+        projectId: schemaVersion.projectId,
+        targetId: schemaVersion.targetId,
         versionId: previousVersion.id,
       }),
     ]);

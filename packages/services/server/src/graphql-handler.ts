@@ -9,15 +9,10 @@ import {
   type DefinitionNode,
   type OperationDefinitionNode,
 } from 'graphql';
-import {
-  createYoga,
-  Plugin,
-  useErrorHandler,
-  useExecutionCancellation,
-  useExtendContext,
-} from 'graphql-yoga';
+import { createYoga, Plugin, useErrorHandler, useExecutionCancellation } from 'graphql-yoga';
 import hyperid from 'hyperid';
 import { isGraphQLError } from '@envelop/core';
+import { useGenericAuth } from '@envelop/generic-auth';
 import { useGraphQlJit } from '@envelop/graphql-jit';
 import { useGraphQLModules } from '@envelop/graphql-modules';
 import { useOpenTelemetry } from '@envelop/opentelemetry';
@@ -27,9 +22,9 @@ import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import { Registry, RegistryContext } from '@hive/api';
 import { cleanRequestId, type TracingInstance } from '@hive/service-common';
 import { runWithAsyncContext } from '@sentry/node';
-import { AuthN, Session } from '../../api/src/modules/auth/lib/authz';
 import { asyncStorage } from './async-storage';
 import type { HiveConfig, HivePersistedDocumentsConfig } from './environment';
+import { resolveUser, type SupertokensSession } from './supertokens';
 import { useArmor } from './use-armor';
 import { extractUserId, useSentryUser } from './use-sentry-user';
 
@@ -53,13 +48,12 @@ export interface GraphQLHandlerOptions {
   hivePersistedDocumentsConfig: HivePersistedDocumentsConfig;
   release: string;
   logger: FastifyBaseLogger;
-  authN: AuthN;
 }
 
 interface Context extends RegistryContext {
   req: FastifyRequest;
   reply: FastifyReply;
-  session: Session;
+  session: SupertokensSession | null;
 }
 
 const NoIntrospection: ValidationRule = (context: ValidationContext) => ({
@@ -162,9 +156,13 @@ export const graphqlHandler = (options: GraphQLHandlerOptions): RouteHandlerMeth
           }
         }
       }),
-      useExtendContext(async context => ({
-        session: await options.authN.authenticate(context),
-      })),
+      useGenericAuth({
+        mode: 'resolve-only',
+        contextFieldName: 'session',
+        async resolveUserFn(ctx: Context) {
+          return resolveUser(ctx);
+        },
+      }),
       useHive({
         debug: true,
         enabled: !!options.hiveConfig,
@@ -272,6 +270,7 @@ export const graphqlHandler = (options: GraphQLHandlerOptions): RouteHandlerMeth
             reply,
             headers: req.headers,
             requestId,
+            session: null,
           });
         });
 

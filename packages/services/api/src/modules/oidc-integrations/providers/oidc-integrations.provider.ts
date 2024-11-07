@@ -2,7 +2,8 @@ import { Inject, Injectable, Scope } from 'graphql-modules';
 import zod from 'zod';
 import { OIDCIntegration } from '../../../shared/entities';
 import { HiveError } from '../../../shared/errors';
-import { Session } from '../../auth/lib/authz';
+import { AuthManager } from '../../auth/providers/auth-manager';
+import { OrganizationAccessScope } from '../../auth/providers/organization-access';
 import { CryptoProvider } from '../../shared/providers/crypto';
 import { Logger } from '../../shared/providers/logger';
 import { PUB_SUB_CONFIG, type HivePubSub } from '../../shared/providers/pub-sub';
@@ -19,10 +20,10 @@ export class OIDCIntegrationsProvider {
   constructor(
     logger: Logger,
     private storage: Storage,
+    private authManager: AuthManager,
     private crypto: CryptoProvider,
     @Inject(PUB_SUB_CONFIG) private pubSub: HivePubSub,
     @Inject(OIDC_INTEGRATIONS_ENABLED) private enabled: boolean,
-    private session: Session,
   ) {
     this.logger = logger.child({ source: 'OIDCIntegrationsProvider' });
   }
@@ -36,13 +37,15 @@ export class OIDCIntegrationsProvider {
       return false;
     }
 
-    return await this.session.canPerformAction({
-      organizationId,
-      action: 'oidc:modify',
-      params: {
-        organizationId,
-      },
-    });
+    try {
+      await this.authManager.ensureOrganizationAccess({
+        organizationId: organizationId,
+        scope: OrganizationAccessScope.INTEGRATIONS,
+      });
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   async getOIDCIntegrationForOrganization(args: {
@@ -57,12 +60,9 @@ export class OIDCIntegrationsProvider {
       return null;
     }
 
-    await this.session.assertPerformAction({
+    await this.authManager.ensureOrganizationAccess({
       organizationId: args.organizationId,
-      action: 'oidc:modify',
-      params: {
-        organizationId: args.organizationId,
-      },
+      scope: OrganizationAccessScope.INTEGRATIONS,
     });
 
     return await this.storage.getOIDCIntegrationForOrganization({
@@ -90,12 +90,9 @@ export class OIDCIntegrationsProvider {
       } as const;
     }
 
-    await this.session.assertPerformAction({
+    await this.authManager.ensureOrganizationAccess({
       organizationId: args.organizationId,
-      action: 'oidc:modify',
-      params: {
-        organizationId: args.organizationId,
-      },
+      scope: OrganizationAccessScope.INTEGRATIONS,
     });
 
     const organization = await this.storage.getOrganization({
@@ -197,12 +194,9 @@ export class OIDCIntegrationsProvider {
       } as const;
     }
 
-    await this.session.assertPerformAction({
-      action: 'oidc:modify',
+    await this.authManager.ensureOrganizationAccess({
       organizationId: integration.linkedOrganizationId,
-      params: {
-        organizationId: integration.linkedOrganizationId,
-      },
+      scope: OrganizationAccessScope.INTEGRATIONS,
     });
 
     const clientIdResult = maybe(OIDCIntegrationClientIdModel).safeParse(args.clientId);
@@ -277,12 +271,9 @@ export class OIDCIntegrationsProvider {
       } as const;
     }
 
-    await this.session.assertPerformAction({
+    await this.authManager.ensureOrganizationAccess({
       organizationId: integration.linkedOrganizationId,
-      action: 'oidc:modify',
-      params: {
-        organizationId: integration.linkedOrganizationId,
-      },
+      scope: OrganizationAccessScope.INTEGRATIONS,
     });
 
     await this.storage.deleteOIDCIntegration(args);
@@ -312,12 +303,9 @@ export class OIDCIntegrationsProvider {
       } as const;
     }
 
-    await this.session.assertPerformAction({
+    await this.authManager.ensureOrganizationAccess({
       organizationId: oidcIntegration.linkedOrganizationId,
-      action: 'oidc:modify',
-      params: {
-        organizationId: oidcIntegration.linkedOrganizationId,
-      },
+      scope: OrganizationAccessScope.INTEGRATIONS,
     });
 
     return {
@@ -360,12 +348,9 @@ export class OIDCIntegrationsProvider {
       throw new HiveError('Integration not found.');
     }
 
-    await this.session.assertPerformAction({
+    await this.authManager.ensureOrganizationAccess({
       organizationId: integration.linkedOrganizationId,
-      action: 'oidc:modify',
-      params: {
-        organizationId: integration.linkedOrganizationId,
-      },
+      scope: OrganizationAccessScope.INTEGRATIONS,
     });
 
     return this.pubSub.subscribe('oidcIntegrationLogs', integration.id);

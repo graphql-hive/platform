@@ -1,9 +1,11 @@
 import { Injectable, Scope } from 'graphql-modules';
 import { Target } from '../../../shared/entities';
 import { batch } from '../../../shared/helpers';
-import { Session } from '../../auth/lib/authz';
+import { AuthManager } from '../../auth/providers/auth-manager';
+import { TargetAccessScope } from '../../auth/providers/scopes';
 import { Logger } from '../../shared/providers/logger';
 import { TargetManager } from '../../target/providers/target-manager';
+import { TokenStorage } from '../../token/providers/token-storage';
 import { AppDeployments, type AppDeploymentRecord } from './app-deployments';
 
 export type AppDeploymentStatus = 'pending' | 'active' | 'retired';
@@ -17,7 +19,8 @@ export class AppDeploymentsManager {
 
   constructor(
     logger: Logger,
-    private session: Session,
+    private auth: AuthManager,
+    private tokenStorage: TokenStorage,
     private targetManager: TargetManager,
     private appDeployments: AppDeployments,
   ) {
@@ -31,6 +34,13 @@ export class AppDeploymentsManager {
       version: string;
     },
   ): Promise<null | AppDeploymentRecord> {
+    await this.auth.ensureTargetAccess({
+      organizationId: target.orgId,
+      projectId: target.projectId,
+      targetId: target.id,
+      scope: TargetAccessScope.READ,
+    });
+
     const appDeployment = await this.appDeployments.findAppDeployment({
       targetId: target.id,
       name: appDeploymentInput.name,
@@ -40,16 +50,6 @@ export class AppDeploymentsManager {
     if (!appDeployment) {
       return null;
     }
-
-    await this.session.assertPerformAction({
-      action: 'appDeployment:describe',
-      organizationId: target.orgId,
-      params: {
-        organizationId: target.orgId,
-        projectId: target.projectId,
-        targetId: target.id,
-      },
-    });
 
     return appDeployment;
   }
@@ -72,22 +72,19 @@ export class AppDeploymentsManager {
       version: string;
     };
   }) {
-    const token = this.session.getLegacySelector();
+    const token = this.auth.ensureApiToken();
+    const tokenRecord = await this.tokenStorage.getToken({ token });
 
-    await this.session.assertPerformAction({
-      action: 'appDeployment:create',
-      organizationId: token.organizationId,
-      params: {
-        organizationId: token.organizationId,
-        projectId: token.projectId,
-        targetId: token.targetId,
-        appDeploymentName: args.appDeployment.name,
-      },
+    await this.auth.ensureTargetAccess({
+      organizationId: tokenRecord.organization,
+      projectId: tokenRecord.project,
+      targetId: tokenRecord.target,
+      scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
     return await this.appDeployments.createAppDeployment({
-      organizationId: token.organizationId,
-      targetId: token.targetId,
+      organizationId: tokenRecord.organization,
+      targetId: tokenRecord.target,
       appDeployment: args.appDeployment,
     });
   }
@@ -102,23 +99,20 @@ export class AppDeploymentsManager {
       body: string;
     }>;
   }) {
-    const token = this.session.getLegacySelector();
+    const token = this.auth.ensureApiToken();
+    const tokenRecord = await this.tokenStorage.getToken({ token });
 
-    await this.session.assertPerformAction({
-      action: 'appDeployment:create',
-      organizationId: token.organizationId,
-      params: {
-        organizationId: token.organizationId,
-        projectId: token.projectId,
-        targetId: token.targetId,
-        appDeploymentName: args.appDeployment.name,
-      },
+    await this.auth.ensureTargetAccess({
+      organizationId: tokenRecord.organization,
+      projectId: tokenRecord.project,
+      targetId: tokenRecord.target,
+      scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
     return await this.appDeployments.addDocumentsToAppDeployment({
-      organizationId: token.organizationId,
-      projectId: token.projectId,
-      targetId: token.targetId,
+      organizationId: tokenRecord.organization,
+      projectId: tokenRecord.project,
+      targetId: tokenRecord.target,
       appDeployment: args.appDeployment,
       operations: args.documents,
     });
@@ -130,22 +124,19 @@ export class AppDeploymentsManager {
       version: string;
     };
   }) {
-    const token = this.session.getLegacySelector();
+    const token = this.auth.ensureApiToken();
+    const tokenRecord = await this.tokenStorage.getToken({ token });
 
-    await this.session.assertPerformAction({
-      action: 'appDeployment:publish',
-      organizationId: token.organizationId,
-      params: {
-        organizationId: token.organizationId,
-        projectId: token.projectId,
-        targetId: token.targetId,
-        appDeploymentName: args.appDeployment.name,
-      },
+    await this.auth.ensureTargetAccess({
+      organizationId: tokenRecord.organization,
+      projectId: tokenRecord.project,
+      targetId: tokenRecord.target,
+      scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
     return await this.appDeployments.activateAppDeployment({
-      organizationId: token.organizationId,
-      targetId: token.targetId,
+      organizationId: tokenRecord.organization,
+      targetId: tokenRecord.target,
       appDeployment: args.appDeployment,
     });
   }
@@ -159,15 +150,11 @@ export class AppDeploymentsManager {
   }) {
     const target = await this.targetManager.getTargetById({ targetId: args.targetId });
 
-    await this.session.assertPerformAction({
-      action: 'appDeployment:retire',
+    await this.auth.ensureTargetAccess({
       organizationId: target.orgId,
-      params: {
-        organizationId: target.orgId,
-        projectId: target.projectId,
-        targetId: target.id,
-        appDeploymentName: args.appDeployment.name,
-      },
+      projectId: target.projectId,
+      targetId: target.id,
+      scope: TargetAccessScope.REGISTRY_WRITE,
     });
 
     return await this.appDeployments.retireAppDeployment({
@@ -195,14 +182,11 @@ export class AppDeploymentsManager {
     target: Target,
     args: { cursor: string | null; first: number | null },
   ) {
-    await this.session.assertPerformAction({
-      action: 'appDeployment:describe',
+    await this.auth.ensureTargetAccess({
       organizationId: target.orgId,
-      params: {
-        organizationId: target.orgId,
-        projectId: target.projectId,
-        targetId: target.id,
-      },
+      projectId: target.projectId,
+      targetId: target.id,
+      scope: TargetAccessScope.READ,
     });
 
     return await this.appDeployments.getPaginatedAppDeployments({

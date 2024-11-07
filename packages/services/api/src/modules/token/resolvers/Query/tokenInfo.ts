@@ -1,4 +1,4 @@
-import { Session } from '../../../auth/lib/authz';
+import { AuthManager } from '../../../auth/providers/auth-manager';
 import { TokenManager } from '../../providers/token-manager';
 import type { QueryResolvers } from './../../../../__generated__/types';
 
@@ -8,7 +8,7 @@ export const tokenInfo: NonNullable<QueryResolvers['tokenInfo']> = async (
   { injector },
 ) => {
   try {
-    injector.get(Session).getLegacySelector();
+    injector.get(AuthManager).ensureApiToken();
   } catch (error) {
     return {
       __typename: 'TokenNotFoundError',

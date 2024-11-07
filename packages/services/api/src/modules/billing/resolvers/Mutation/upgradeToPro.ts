@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql';
 import { TRPCClientError } from '@trpc/client';
-import { Session } from '../../../auth/lib/authz';
+import { AuthManager } from '../../../auth/providers/auth-manager';
+import { OrganizationAccessScope } from '../../../auth/providers/organization-access';
 import { OrganizationManager } from '../../../organization/providers/organization-manager';
 import { IdTranslator } from '../../../shared/providers/id-translator';
 import { USAGE_DEFAULT_LIMITATIONS } from '../../constants';
@@ -15,12 +16,9 @@ export const upgradeToPro: NonNullable<MutationResolvers['upgradeToPro']> = asyn
   const organizationId = await injector.get(IdTranslator).translateOrganizationId({
     organizationSlug: args.input.organization.organizationSlug,
   });
-  await injector.get(Session).assertPerformAction({
-    action: 'billing:update',
+  await injector.get(AuthManager).ensureOrganizationAccess({
     organizationId: organizationId,
-    params: {
-      organizationId: organizationId,
-    },
+    scope: OrganizationAccessScope.SETTINGS,
   });
 
   let organization = await injector.get(OrganizationManager).getOrganization({

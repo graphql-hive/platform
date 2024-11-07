@@ -1,5 +1,5 @@
 import { Injectable, Scope } from 'graphql-modules';
-import { Session } from '../../auth/lib/authz';
+import { AuthManager } from '../../auth/providers/auth-manager';
 import { Logger } from '../../shared/providers/logger';
 import { Storage } from '../../shared/providers/storage';
 
@@ -12,7 +12,7 @@ export class ActivityManager {
 
   constructor(
     logger: Logger,
-    private session: Session,
+    private authManager: AuthManager,
     private storage: Storage,
   ) {
     this.logger = logger.child({
@@ -24,7 +24,7 @@ export class ActivityManager {
     try {
       this.logger.debug('Creating an activity');
 
-      const user = activity.user ? activity.user.id : (await this.session.getViewer()).id;
+      const user = activity.user ? activity.user.id : (await this.authManager.getCurrentUser()).id;
 
       await this.storage.createActivity({
         organizationId: activity.selector.organizationId,

@@ -50,19 +50,40 @@ export const Target: Pick<
     };
   },
   latestSchemaVersion: (target, _, { injector }) => {
-    return injector.get(SchemaManager).getMaybeLatestVersion(target);
+    return injector.get(SchemaManager).getMaybeLatestVersion({
+      targetId: target.id,
+      projectId: target.projectId,
+      organizationId: target.orgId,
+    });
   },
   latestValidSchemaVersion: async (target, __, { injector }) => {
-    return injector.get(SchemaManager).getMaybeLatestValidVersion(target);
+    return injector.get(SchemaManager).getMaybeLatestValidVersion({
+      organizationId: target.orgId,
+      projectId: target.projectId,
+      targetId: target.id,
+    });
   },
   baseSchema: (target, _, { injector }) => {
-    return injector.get(SchemaManager).getBaseSchemaForTarget(target);
+    return injector.get(SchemaManager).getBaseSchema({
+      targetId: target.id,
+      projectId: target.projectId,
+      organizationId: target.orgId,
+    });
   },
   hasSchema: (target, _, { injector }) => {
-    return injector.get(SchemaManager).hasSchema(target);
+    return injector.get(SchemaManager).hasSchema({
+      targetId: target.id,
+      projectId: target.projectId,
+      organizationId: target.orgId,
+    });
   },
   schemaCheck: async (target, args, { injector }) => {
-    const schemaCheck = await injector.get(SchemaManager).findSchemaCheckForTarget(target, args.id);
+    const schemaCheck = await injector.get(SchemaManager).findSchemaCheck({
+      targetId: target.id,
+      projectId: target.projectId,
+      organizationId: target.orgId,
+      schemaCheckId: args.id,
+    });
 
     if (schemaCheck == null) {
       return null;
@@ -77,7 +98,10 @@ export const Target: Pick<
     );
   },
   schemaChecks: async (target, args, { injector }) => {
-    const result = await injector.get(SchemaManager).getPaginatedSchemaChecksForTarget(target, {
+    const result = await injector.get(SchemaManager).getPaginatedSchemaChecksForTarget({
+      targetId: target.id,
+      projectId: target.projectId,
+      organizationId: target.orgId,
       first: args.first ?? null,
       cursor: args.after ?? null,
       filters: args.filters ?? null,

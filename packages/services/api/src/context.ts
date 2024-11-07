@@ -1,5 +1,4 @@
 import type { FastifyRequest } from '@hive/service-common';
-import { Session } from './modules/auth/lib/authz';
 
 export interface RegistryContext {
   req: FastifyRequest;
@@ -7,7 +6,6 @@ export interface RegistryContext {
   user: any;
   headers: Record<string, string | string[] | undefined>;
   request: Request;
-  session: Session;
 }
 
 declare global {

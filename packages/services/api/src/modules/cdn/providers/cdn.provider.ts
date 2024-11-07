@@ -4,7 +4,8 @@ import { z } from 'zod';
 import { encodeCdnToken, generatePrivateKey } from '@hive/cdn-script/cdn-token';
 import { HiveError } from '../../../shared/errors';
 import { isUUID } from '../../../shared/is-uuid';
-import { Session } from '../../auth/lib/authz';
+import { AuthManager } from '../../auth/providers/auth-manager';
+import { TargetAccessScope } from '../../auth/providers/scopes';
 import type { Contract } from '../../schema/providers/contracts';
 import { Logger } from '../../shared/providers/logger';
 import { S3_CONFIG, type S3Config } from '../../shared/providers/s3-config';
@@ -22,7 +23,7 @@ export class CdnProvider {
 
   constructor(
     logger: Logger,
-    private session: Session,
+    @Inject(AuthManager) private authManager: AuthManager,
     @Inject(CDN_CONFIG) private config: CDNConfig,
     @Inject(S3_CONFIG) private s3Config: S3Config,
     @Inject(Storage) private storage: Storage,
@@ -85,14 +86,11 @@ export class CdnProvider {
       } as const;
     }
 
-    await this.session.assertPerformAction({
-      action: 'cdnAccessToken:create',
+    await this.authManager.ensureTargetAccess({
       organizationId: args.organizationId,
-      params: {
-        organizationId: args.organizationId,
-        projectId: args.projectId,
-        targetId: args.targetId,
-      },
+      projectId: args.projectId,
+      targetId: args.targetId,
+      scope: TargetAccessScope.READ,
     });
 
     // generate all things upfront so we do net get surprised by encoding issues after writing to the destination.
@@ -243,14 +241,11 @@ export class CdnProvider {
       args.cdnAccessTokenId,
     );
 
-    await this.session.assertPerformAction({
-      action: 'cdnAccessToken:delete',
+    await this.authManager.ensureTargetAccess({
       organizationId: args.organizationId,
-      params: {
-        organizationId: args.organizationId,
-        projectId: args.projectId,
-        targetId: args.targetId,
-      },
+      projectId: args.projectId,
+      targetId: args.targetId,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     if (isUUID(args.cdnAccessTokenId) === false) {
@@ -331,14 +326,11 @@ export class CdnProvider {
     first: number | null;
     cursor: string | null;
   }) {
-    await this.session.assertPerformAction({
-      action: 'cdnAccessToken:describe',
+    await this.authManager.ensureTargetAccess({
       organizationId: args.organizationId,
-      params: {
-        organizationId: args.organizationId,
-        projectId: args.projectId,
-        targetId: args.targetId,
-      },
+      projectId: args.projectId,
+      targetId: args.targetId,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     const paginatedResult = await this.storage.getPaginatedCDNAccessTokensForTarget({

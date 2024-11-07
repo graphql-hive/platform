@@ -1,10 +1,10 @@
-import { Injectable, Scope } from 'graphql-modules';
+import { CONTEXT, Inject, Injectable, Scope } from 'graphql-modules';
 import type { User } from '../../../shared/entities';
 import { AccessError } from '../../../shared/errors';
+import type { Listify, MapToArray } from '../../../shared/helpers';
 import { share } from '../../../shared/helpers';
 import { Storage } from '../../shared/providers/storage';
-import { Session } from '../lib/authz';
-import { TargetAccessTokenSession } from '../lib/target-access-token-strategy';
+import { TokenStorage } from '../../token/providers/token-storage';
 import {
   OrganizationAccess,
   OrganizationAccessScope,
@@ -12,6 +12,7 @@ import {
 } from './organization-access';
 import { ProjectAccess, ProjectAccessScope, ProjectUserScopesSelector } from './project-access';
 import { TargetAccess, TargetAccessScope, TargetUserScopesSelector } from './target-access';
+import { ApiToken } from './tokens';
 import { UserManager } from './user-manager';
 
 export interface OrganizationAccessSelector {
@@ -32,6 +33,13 @@ export interface TargetAccessSelector {
   scope: TargetAccessScope;
 }
 
+type SuperTokenSessionPayload = {
+  version: '1';
+  superTokensUserId: string;
+  email: string;
+  externalUserId: string | null;
+};
+
 /**
  * Responsible for auth checks.
  * Talks to Storage.
@@ -41,23 +49,81 @@ export interface TargetAccessSelector {
   global: true,
 })
 export class AuthManager {
+  private session: SuperTokenSessionPayload | null;
+
   constructor(
+    @Inject(ApiToken) private apiToken: string,
+    @Inject(CONTEXT) context: any,
     private organizationAccess: OrganizationAccess,
     private projectAccess: ProjectAccess,
     private targetAccess: TargetAccess,
     private userManager: UserManager,
+    private tokenStorage: TokenStorage,
     private storage: Storage,
-    private session: Session,
-  ) {}
+  ) {
+    this.session = context.session;
+  }
 
-  async ensureOrganizationAccess(selector: OrganizationAccessSelector): Promise<void | never> {
-    if (this.session instanceof TargetAccessTokenSession) {
-      await this.organizationAccess.ensureAccessForToken({
+  async ensureTargetAccess(
+    selector: Listify<TargetAccessSelector, 'targetId'>,
+  ): Promise<void | never> {
+    if (this.apiToken) {
+      if (hasManyTargets(selector)) {
+        await Promise.all(
+          selector.targetId.map(target =>
+            this.ensureTargetAccess({
+              ...selector,
+              targetId: target,
+            }),
+          ),
+        );
+      } else {
+        await this.targetAccess.ensureAccessForToken({
+          ...(selector as TargetAccessSelector),
+          token: this.apiToken,
+        });
+      }
+    } else if (hasManyTargets(selector)) {
+      await Promise.all(
+        selector.targetId.map(target =>
+          this.ensureTargetAccess({
+            ...selector,
+            targetId: target,
+          }),
+        ),
+      );
+    } else {
+      const user = await this.getCurrentUser();
+      await this.targetAccess.ensureAccessForUser({
+        ...(selector as TargetAccessSelector),
+        userId: user.id,
+      });
+    }
+  }
+
+  async ensureProjectAccess(selector: ProjectAccessSelector): Promise<void | never> {
+    if (this.apiToken) {
+      await this.projectAccess.ensureAccessForToken({
         ...selector,
-        token: this.session.token,
+        token: this.apiToken,
       });
     } else {
-      const user = await this.session.getViewer();
+      const user = await this.getCurrentUser();
+      await this.projectAccess.ensureAccessForUser({
+        ...selector,
+        userId: user.id,
+      });
+    }
+  }
+
+  async ensureOrganizationAccess(selector: OrganizationAccessSelector): Promise<void | never> {
+    if (this.apiToken) {
+      await this.organizationAccess.ensureAccessForToken({
+        ...selector,
+        token: this.apiToken,
+      });
+    } else {
+      const user = await this.getCurrentUser();
 
       // If a user is an admin, we can allow access for all data
       if (user.isAdmin) {
@@ -72,11 +138,11 @@ export class AuthManager {
   }
 
   async checkOrganizationAccess(selector: OrganizationAccessSelector): Promise<boolean> {
-    if (this.session instanceof TargetAccessTokenSession) {
+    if (this.apiToken) {
       throw new Error('checkOrganizationAccess for token is not implemented yet');
     }
 
-    const user = await this.session.getViewer();
+    const user = await this.getCurrentUser();
 
     return this.organizationAccess.checkAccessForUser({
       ...selector,
@@ -85,7 +151,7 @@ export class AuthManager {
   }
 
   async ensureOrganizationOwnership(selector: { organization: string }): Promise<void | never> {
-    const user = await this.session.getViewer();
+    const user = await this.getCurrentUser();
     const isOwner = await this.organizationAccess.checkOwnershipForUser({
       organizationId: selector.organization,
       userId: user.id,
@@ -96,23 +162,48 @@ export class AuthManager {
     }
   }
 
+  ensureApiToken(): string | never {
+    if (this.apiToken) {
+      return this.apiToken;
+    }
+
+    throw new AccessError('Authorization header is missing');
+  }
+
   getOrganizationOwnerByToken: () => Promise<User | never> = share(async () => {
-    const result = this.session.getLegacySelector();
+    const token = this.ensureApiToken();
+    const result = await this.tokenStorage.getToken({ token });
 
     await this.ensureOrganizationAccess({
-      organizationId: result.organizationId,
+      organizationId: result.organization,
       scope: OrganizationAccessScope.READ,
     });
 
     const member = await this.storage.getOrganizationOwner({
-      organizationId: result.organizationId,
+      organizationId: result.organization,
     });
 
     return member.user;
   });
 
+  getCurrentUser: () => Promise<(User & { isAdmin: boolean }) | never> = share(async () => {
+    if (!this.session) {
+      throw new AccessError('Authorization token is missing', 'UNAUTHENTICATED');
+    }
+
+    const user = await this.storage.getUserBySuperTokenId({
+      superTokensUserId: this.session.superTokensUserId,
+    });
+
+    if (!user) {
+      throw new AccessError('User not found');
+    }
+
+    return user;
+  });
+
   async getCurrentUserAccessScopes(organizationId: string) {
-    const user = await this.session.getViewer();
+    const user = await this.getCurrentUser();
 
     if (!user) {
       throw new AccessError('User not found');
@@ -137,11 +228,15 @@ export class AuthManager {
   }
 
   async updateCurrentUser(input: { displayName: string; fullName: string }): Promise<User> {
-    const user = await this.session.getViewer();
+    const user = await this.getCurrentUser();
     return this.userManager.updateUser({
       id: user.id,
       ...input,
     });
+  }
+
+  isUser() {
+    return !!this.session;
   }
 
   getMemberOrganizationScopes(selector: OrganizationUserScopesSelector) {
@@ -161,4 +256,10 @@ export class AuthManager {
     this.projectAccess.resetAccessCache();
     this.targetAccess.resetAccessCache();
   }
+}
+
+function hasManyTargets(
+  selector: Listify<TargetAccessSelector, 'targetId'>,
+): selector is MapToArray<TargetAccessSelector, 'targetId'> {
+  return Array.isArray(selector.targetId);
 }

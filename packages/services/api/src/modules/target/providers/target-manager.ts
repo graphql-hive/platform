@@ -2,7 +2,9 @@ import { Injectable, Scope } from 'graphql-modules';
 import * as zod from 'zod';
 import type { Target, TargetSettings } from '../../../shared/entities';
 import { share } from '../../../shared/helpers';
-import { Session } from '../../auth/lib/authz';
+import { AuthManager } from '../../auth/providers/auth-manager';
+import { ProjectAccessScope } from '../../auth/providers/project-access';
+import { TargetAccessScope } from '../../auth/providers/target-access';
 import { ActivityManager } from '../../shared/providers/activity-manager';
 import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
@@ -27,7 +29,7 @@ export class TargetManager {
     logger: Logger,
     private storage: Storage,
     private tokenStorage: TokenStorage,
-    private session: Session,
+    private authManager: AuthManager,
     private activityManager: ActivityManager,
     private idTranslator: IdTranslator,
   ) {
@@ -56,13 +58,10 @@ export class TargetManager {
       project,
       organization,
     );
-    await this.session.assertPerformAction({
-      action: 'target:create',
+    await this.authManager.ensureProjectAccess({
+      projectId: project,
       organizationId: organization,
-      params: {
-        organizationId: organization,
-        projectId: project,
-      },
+      scope: ProjectAccessScope.READ,
     });
 
     if (reservedSlugs.includes(slug)) {
@@ -104,14 +103,11 @@ export class TargetManager {
       project,
       organization,
     );
-    await this.session.assertPerformAction({
-      action: 'target:delete',
+    await this.authManager.ensureTargetAccess({
+      projectId: project,
       organizationId: organization,
-      params: {
-        organizationId: organization,
-        projectId: project,
-        targetId: target,
-      },
+      targetId: target,
+      scope: TargetAccessScope.DELETE,
     });
 
     const deletedTarget = await this.storage.deleteTarget({
@@ -138,42 +134,40 @@ export class TargetManager {
 
   async getTargets(selector: ProjectSelector): Promise<readonly Target[]> {
     this.logger.debug('Fetching targets (selector=%o)', selector);
-    await this.session.assertPerformAction({
-      action: 'project:describe',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-        projectId: selector.projectId,
-      },
+    await this.authManager.ensureProjectAccess({
+      ...selector,
+      scope: ProjectAccessScope.READ,
     });
-
     return this.storage.getTargets(selector);
   }
 
-  async getTarget(selector: TargetSelector): Promise<Target> {
+  async getTarget(selector: TargetSelector, scope = TargetAccessScope.READ): Promise<Target> {
     this.logger.debug('Fetching target (selector=%o)', selector);
-    await this.session.assertPerformAction({
-      action: 'project:describe',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-        projectId: selector.projectId,
-      },
+    await this.authManager.ensureTargetAccess({
+      ...selector,
+      scope,
     });
     return this.storage.getTarget(selector);
   }
 
   getTargetIdByToken: () => Promise<string | never> = share(async () => {
-    const selector = this.session.getLegacySelector();
-    const { target } = await this.tokenStorage.getToken({ token: selector.token });
+    const token = this.authManager.ensureApiToken();
+    const { target } = await this.tokenStorage.getToken({ token });
 
     return target;
   });
 
   getTargetFromToken: () => Promise<Target | never> = share(async () => {
-    const selector = this.session.getLegacySelector();
+    const token = this.authManager.ensureApiToken();
     const { target, project, organization } = await this.tokenStorage.getToken({
-      token: selector.token,
+      token,
+    });
+
+    await this.authManager.ensureTargetAccess({
+      organizationId: organization,
+      projectId: project,
+      targetId: target,
+      scope: TargetAccessScope.READ,
     });
 
     return this.storage.getTarget({
@@ -185,14 +179,9 @@ export class TargetManager {
 
   async getTargetSettings(selector: TargetSelector): Promise<TargetSettings> {
     this.logger.debug('Fetching target settings (selector=%o)', selector);
-    await this.session.assertPerformAction({
-      action: 'target:modifySettings',
-      organizationId: selector.organizationId,
-      params: {
-        organizationId: selector.organizationId,
-        projectId: selector.projectId,
-        targetId: selector.targetId,
-      },
+    await this.authManager.ensureTargetAccess({
+      ...selector,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     return this.storage.getTargetSettings(selector);
@@ -204,14 +193,9 @@ export class TargetManager {
     } & TargetSelector,
   ): Promise<TargetSettings['validation']> {
     this.logger.debug('Setting target validation (input=%o)', input);
-    await this.session.assertPerformAction({
-      action: 'target:modifySettings',
-      organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-        projectId: input.projectId,
-        targetId: input.targetId,
-      },
+    await this.authManager.ensureTargetAccess({
+      ...input,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     await this.storage.completeGetStartedStep({
@@ -226,14 +210,9 @@ export class TargetManager {
     input: Omit<TargetSettings['validation'], 'enabled'> & TargetSelector,
   ): Promise<TargetSettings['validation']> {
     this.logger.debug('Updating target validation settings (input=%o)', input);
-    await this.session.assertPerformAction({
-      action: 'target:modifySettings',
-      organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-        projectId: input.projectId,
-        targetId: input.targetId,
-      },
+    await this.authManager.ensureTargetAccess({
+      ...input,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     if (input.targets.length === 0) {
@@ -259,17 +238,11 @@ export class TargetManager {
   > {
     const { slug, organizationId: organization, projectId: project, targetId: target } = input;
     this.logger.info('Updating a target slug (input=%o)', input);
-    await this.session.assertPerformAction({
-      action: 'target:modifySettings',
-      organizationId: input.organizationId,
-      params: {
-        organizationId: input.organizationId,
-        projectId: input.projectId,
-        targetId: input.targetId,
-      },
+    await this.authManager.ensureTargetAccess({
+      ...input,
+      scope: TargetAccessScope.SETTINGS,
     });
-
-    const user = await this.session.getViewer();
+    const user = await this.authManager.getCurrentUser();
 
     if (reservedSlugs.includes(slug)) {
       return {
@@ -309,14 +282,11 @@ export class TargetManager {
     targetId: string;
     graphqlEndpointUrl: string | null;
   }) {
-    await this.session.assertPerformAction({
-      action: 'target:modifySettings',
+    await this.authManager.ensureTargetAccess({
       organizationId: args.organizationId,
-      params: {
-        organizationId: args.organizationId,
-        projectId: args.projectId,
-        targetId: args.targetId,
-      },
+      projectId: args.projectId,
+      targetId: args.targetId,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     const graphqlEndpointUrl = TargetGraphQLEndpointUrlModel.safeParse(args.graphqlEndpointUrl);
@@ -377,14 +347,11 @@ export class TargetManager {
     targetId: string;
     nativeComposition: boolean;
   }) {
-    await this.session.assertPerformAction({
-      action: 'target:modifySettings',
+    await this.authManager.ensureTargetAccess({
       organizationId: args.organizationId,
-      params: {
-        organizationId: args.organizationId,
-        projectId: args.projectId,
-        targetId: args.targetId,
-      },
+      projectId: args.projectId,
+      targetId: args.targetId,
+      scope: TargetAccessScope.SETTINGS,
     });
 
     this.logger.info(

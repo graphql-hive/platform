@@ -64,7 +64,12 @@ export const SchemaVersion: SchemaVersionResolvers = {
     };
   },
   schemas: (version, _, { injector }) => {
-    return injector.get(SchemaManager).getMaybeSchemasOfVersion(version);
+    return injector.get(SchemaManager).getMaybeSchemasOfVersion({
+      versionId: version.id,
+      organizationId: version.organizationId,
+      projectId: version.projectId,
+      targetId: version.targetId,
+    });
   },
   schemaCompositionErrors: async (version, _, { injector }) => {
     return injector.get(SchemaVersionHelper).getSchemaCompositionErrors(version);
