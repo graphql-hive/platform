@@ -415,8 +415,8 @@ importers:
         specifier: 4.2.13
         version: 4.2.13
       '@theguild/federation-composition':
-        specifier: 0.14.0
-        version: 0.14.0(graphql@16.9.0)
+        specifier: 0.14.1
+        version: 0.14.1(graphql@16.9.0)
       colors:
         specifier: 1.4.0
         version: 1.4.0
@@ -703,8 +703,8 @@ importers:
         specifier: 7.7.0
         version: 7.7.0
       '@theguild/federation-composition':
-        specifier: 0.14.0
-        version: 0.14.0(graphql@16.9.0)
+        specifier: 0.14.1
+        version: 0.14.1(graphql@16.9.0)
       '@trpc/client':
         specifier: 10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -1088,8 +1088,8 @@ importers:
         specifier: 7.119.2
         version: 7.119.2
       '@theguild/federation-composition':
-        specifier: 0.14.0
-        version: 0.14.0(graphql@16.9.0)
+        specifier: 0.14.1
+        version: 0.14.1(graphql@16.9.0)
       '@trpc/server':
         specifier: 10.45.2
         version: 10.45.2
@@ -7297,8 +7297,8 @@ packages:
       eslint: ^8 || ^9
       typescript: ^5
 
-  '@theguild/federation-composition@0.14.0':
-    resolution: {integrity: sha512-ltf9psoCcMgSfKphuj31kN1xLuhda0t2cJ72ciQ+kEwiCzqE9HnG3iD3Kt4xoJbbgiZSUvEftqulFc5gU0BEYg==}
+  '@theguild/federation-composition@0.14.1':
+    resolution: {integrity: sha512-mHQMxN0yE73jBH7wicf2lj88sT+pllC3FpSkhoSPPp0CJTyoWarRAxWei1fVreF0aO+0HJHqixNivo4pkl/LlQ==}
     engines: {node: '>=18'}
     peerDependencies:
       graphql: ^16.0.0
@@ -23152,7 +23152,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  '@theguild/federation-composition@0.14.0(graphql@16.9.0)':
+  '@theguild/federation-composition@0.14.1(graphql@16.9.0)':
     dependencies:
       constant-case: 3.0.4
       debug: 4.3.4
