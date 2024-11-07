@@ -391,76 +391,66 @@ function ProjectSettingsContent(props: { organizationSlug: string; projectSlug: 
   }
 
   return (
-    <ProjectLayout
-      organizationSlug={props.organizationSlug}
-      projectSlug={props.projectSlug}
-      page={Page.Settings}
-      className="flex flex-col gap-y-10"
-    >
-      <div>
-        <div className="py-6">
-          <Title>Settings</Title>
-          <Subtitle>Manage your project settings</Subtitle>
-        </div>
-        <div className="flex flex-col gap-y-4">
-          {project && organization ? (
-            <>
-              <ModelMigrationSettings project={project} organizationSlug={organization.slug} />
-              <ProjectSettingsPage_SlugForm
-                organizationSlug={props.organizationSlug}
-                projectSlug={props.projectSlug}
-              />
-              {query.data?.isGitHubIntegrationFeatureEnabled &&
-              !project.isProjectNameInGitHubCheckEnabled ? (
-                <GitHubIntegration
-                  organizationSlug={organization.slug}
-                  projectSlug={project.slug}
-                />
-              ) : null}
-
-              {project.type === ProjectType.Federation ? (
-                <ExternalCompositionSettings project={project} organization={organization} />
-              ) : null}
-
-              {project.type === ProjectType.Federation ? (
-                <NativeCompositionSettings project={project} organization={organization} />
-              ) : null}
-
-              {project.viewerCanDelete && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Delete Project</CardTitle>
-                    <CardDescription>
-                      Deleting an project will delete all the targets, schemas and data associated
-                      with it.
-                      <br />
-                      <DocsLink
-                        className="text-muted-foreground text-sm"
-                        href="/management/projects#delete-a-project"
-                      >
-                        <strong>This action is not reversible!</strong> You can find more
-                        information about this process in the documentation
-                      </DocsLink>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardFooter>
-                    <Button variant="destructive" onClick={toggleModalOpen}>
-                      Delete Project
-                    </Button>
-                  </CardFooter>
-                </Card>
-              )}
-              <DeleteProjectModal
-                projectSlug={props.projectSlug}
-                organizationSlug={props.organizationSlug}
-                isOpen={isModalOpen}
-                toggleModalOpen={toggleModalOpen}
-              />
-            </>
-          ) : null}
-        </div>
+    <div>
+      <div className="py-6">
+        <Title>Settings</Title>
+        <Subtitle>Manage your project settings</Subtitle>
       </div>
-    </ProjectLayout>
+      <div className="flex flex-col gap-y-4">
+        {project && organization ? (
+          <>
+            <ModelMigrationSettings project={project} organizationSlug={organization.slug} />
+            <ProjectSettingsPage_SlugForm
+              organizationSlug={props.organizationSlug}
+              projectSlug={props.projectSlug}
+            />
+            {query.data?.isGitHubIntegrationFeatureEnabled &&
+            !project.isProjectNameInGitHubCheckEnabled ? (
+              <GitHubIntegration organizationSlug={organization.slug} projectSlug={project.slug} />
+            ) : null}
+
+            {project.type === ProjectType.Federation ? (
+              <ExternalCompositionSettings project={project} organization={organization} />
+            ) : null}
+
+            {project.type === ProjectType.Federation ? (
+              <NativeCompositionSettings project={project} organization={organization} />
+            ) : null}
+
+            {project.viewerCanDelete && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Delete Project</CardTitle>
+                  <CardDescription>
+                    Deleting an project will delete all the targets, schemas and data associated
+                    with it.
+                    <br />
+                    <DocsLink
+                      className="text-muted-foreground text-sm"
+                      href="/management/projects#delete-a-project"
+                    >
+                      <strong>This action is not reversible!</strong> You can find more information
+                      about this process in the documentation
+                    </DocsLink>
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button variant="destructive" onClick={toggleModalOpen}>
+                    Delete Project
+                  </Button>
+                </CardFooter>
+              </Card>
+            )}
+            <DeleteProjectModal
+              projectSlug={props.projectSlug}
+              organizationSlug={props.organizationSlug}
+              isOpen={isModalOpen}
+              toggleModalOpen={toggleModalOpen}
+            />
+          </>
+        ) : null}
+      </div>
+    </div>
   );
 }
 
@@ -468,10 +458,17 @@ export function ProjectSettingsPage(props: { organizationSlug: string; projectSl
   return (
     <>
       <Meta title="Project settings" />
-      <ProjectSettingsContent
+      <ProjectLayout
         organizationSlug={props.organizationSlug}
         projectSlug={props.projectSlug}
-      />
+        page={Page.Settings}
+        className="flex flex-col gap-y-10"
+      >
+        <ProjectSettingsContent
+          organizationSlug={props.organizationSlug}
+          projectSlug={props.projectSlug}
+        />
+      </ProjectLayout>
     </>
   );
 }

@@ -4,7 +4,7 @@ import type { OrganizationResolvers } from './../../../__generated__/types';
 
 export const Organization: Pick<
   OrganizationResolvers,
-  'projects' | 'viewerCanCreateProject' | '__isTypeOf'
+  'projectBySlug' | 'projects' | 'viewerCanCreateProject' | '__isTypeOf'
 > = {
   projects: (organization, _, { injector }) => {
     return injector.get(ProjectManager).getProjects({ organizationId: organization.id });
@@ -17,5 +17,10 @@ export const Organization: Pick<
         organizationId: organization.id,
       },
     });
+  },
+  projectBySlug: async (organization, args, { injector }) => {
+    return injector
+      .get(ProjectManager)
+      .getProjectBySlugForOrganization(organization, args.projectSlug);
   },
 };

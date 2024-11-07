@@ -139,4 +139,8 @@ export default gql`
     selector: ProjectSelector!
     deletedProject: Project!
   }
+
+  type Organization {
+    projectBySlug(projectSlug: String!): Project
+  }
 `;

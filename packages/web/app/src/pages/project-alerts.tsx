@@ -223,35 +223,28 @@ function AlertsPageContent(props: { organizationSlug: string; projectSlug: strin
   const targets = currentProject?.targets?.nodes || [];
 
   return (
-    <ProjectLayout
-      projectSlug={props.projectSlug}
-      organizationSlug={props.organizationSlug}
-      page={Page.Alerts}
-      className="flex flex-col gap-y-10"
-    >
-      <div>
-        <div className="py-6">
-          <Title>Alerts and Notifications</Title>
-          <Subtitle>Configure alerts and notifications for your project.</Subtitle>
-        </div>
-        {currentProject ? (
-          <div className="flex flex-col gap-y-4">
-            <Channels
-              organizationSlug={props.organizationSlug}
-              projectSlug={props.projectSlug}
-              channels={channels}
-            />
-            <Alerts
-              organizationSlug={props.organizationSlug}
-              projectSlug={props.projectSlug}
-              alerts={alerts}
-              channels={channels}
-              targets={targets}
-            />
-          </div>
-        ) : null}
+    <div>
+      <div className="py-6">
+        <Title>Alerts and Notifications</Title>
+        <Subtitle>Configure alerts and notifications for your project.</Subtitle>
       </div>
-    </ProjectLayout>
+      {currentProject ? (
+        <div className="flex flex-col gap-y-4">
+          <Channels
+            organizationSlug={props.organizationSlug}
+            projectSlug={props.projectSlug}
+            channels={channels}
+          />
+          <Alerts
+            organizationSlug={props.organizationSlug}
+            projectSlug={props.projectSlug}
+            alerts={alerts}
+            channels={channels}
+            targets={targets}
+          />
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -259,10 +252,17 @@ export function ProjectAlertsPage(props: { organizationSlug: string; projectSlug
   return (
     <>
       <Meta title="Alerts" />
-      <AlertsPageContent
-        organizationSlug={props.organizationSlug}
+      <ProjectLayout
         projectSlug={props.projectSlug}
-      />
+        organizationSlug={props.organizationSlug}
+        page={Page.Alerts}
+        className="flex flex-col gap-y-10"
+      >
+        <AlertsPageContent
+          organizationSlug={props.organizationSlug}
+          projectSlug={props.projectSlug}
+        />
+      </ProjectLayout>
     </>
   );
 }

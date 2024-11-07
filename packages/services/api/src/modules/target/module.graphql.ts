@@ -167,6 +167,11 @@ export default gql`
     graphqlEndpointUrl: String
     validationSettings: TargetValidationSettings!
     experimental_forcedLegacySchemaComposition: Boolean!
+    viewerCanAccessSettings: Boolean!
+    viewerCanModifySettings: Boolean!
+    viewerCanModifyTargetAccessToken: Boolean!
+    viewerCanModifyCDNAccessToken: Boolean!
+    viewerCanDelete: Boolean!
   }
 
   type TargetValidationSettings {
