@@ -209,7 +209,7 @@ function TargetAppsView(props: {
     },
   });
 
-  if (project?.viewerCanViewAppDeployments === true) {
+  if (project?.viewerCanViewAppDeployments === false) {
     return null;
   }
 
