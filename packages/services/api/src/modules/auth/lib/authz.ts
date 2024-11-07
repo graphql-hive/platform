@@ -357,6 +357,7 @@ const actionDefinitions = {
   'laboratory:createCollection': defaultTargetIdentity,
   'laboratory:modifyCollection': defaultTargetIdentity,
   'laboratory:deleteCollection': defaultTargetIdentity,
+  'laboratory:updatePreflightScript': defaultTargetIdentity,
   'appDeployment:describe': defaultTargetIdentity,
   'appDeployment:create': defaultAppDeploymentIdentity,
   'appDeployment:publish': defaultAppDeploymentIdentity,
