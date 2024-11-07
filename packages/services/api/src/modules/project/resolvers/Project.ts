@@ -1,6 +1,6 @@
 import { ProjectType } from '../../../shared/entities';
 import { OrganizationManager } from '../../organization/providers/organization-manager';
-import type { ProjectResolvers } from './../../../__generated__/types.next';
+import type { ProjectResolvers } from './../../../__generated__/types';
 
 export const Project: Pick<
   ProjectResolvers,

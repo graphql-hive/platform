@@ -1,9 +1,7 @@
 import { Injectable, Scope } from 'graphql-modules';
 import type { Project, ProjectType } from '../../../shared/entities';
 import { share } from '../../../shared/helpers';
-import { AuthManager } from '../../auth/providers/auth-manager';
-import { OrganizationAccessScope } from '../../auth/providers/organization-access';
-import { ProjectAccessScope } from '../../auth/providers/project-access';
+import { Session } from '../../auth/lib/authz';
 import { ActivityManager } from '../../shared/providers/activity-manager';
 import { Logger } from '../../shared/providers/logger';
 import { OrganizationSelector, ProjectSelector, Storage } from '../../shared/providers/storage';
@@ -25,7 +23,7 @@ export class ProjectManager {
   constructor(
     logger: Logger,
     private storage: Storage,
-    private authManager: AuthManager,
+    private session: Session,
     private tokenStorage: TokenStorage,
     private activityManager: ActivityManager,
   ) {
@@ -41,9 +39,12 @@ export class ProjectManager {
     const { slug, type, organizationId: organization } = input;
     this.logger.info('Creating a project (input=%o)', input);
 
-    await this.authManager.ensureOrganizationAccess({
-      organizationId: input.organizationId,
-      scope: OrganizationAccessScope.READ,
+    await this.session.assertPerformAction({
+      action: 'project:create',
+      organizationId: organization,
+      params: {
+        organizationId: organization,
+      },
     });
 
     if (reservedSlugs.includes(slug)) {
@@ -87,10 +88,13 @@ export class ProjectManager {
     projectId: project,
   }: ProjectSelector): Promise<Project> {
     this.logger.info('Deleting a project (project=%s, organization=%s)', project, organization);
-    await this.authManager.ensureProjectAccess({
-      projectId: project,
+    await this.session.assertPerformAction({
+      action: 'project:delete',
       organizationId: organization,
-      scope: ProjectAccessScope.DELETE,
+      params: {
+        organizationId: organization,
+        projectId: project,
+      },
     });
 
     const deletedProject = await this.storage.deleteProject({
@@ -115,28 +119,47 @@ export class ProjectManager {
   }
 
   getProjectIdByToken: () => Promise<string | never> = share(async () => {
-    const token = this.authManager.ensureApiToken();
-    const { project } = await this.tokenStorage.getToken({ token });
-
-    return project;
+    const token = this.session.getLegacySelector();
+    return token.projectId;
   });
 
   async getProject(selector: ProjectSelector): Promise<Project> {
     this.logger.debug('Fetching project (selector=%o)', selector);
-    await this.authManager.ensureProjectAccess({
-      ...selector,
-      scope: ProjectAccessScope.READ,
+    await this.session.assertPerformAction({
+      action: 'project:describe',
+      organizationId: selector.organizationId,
+      params: {
+        organizationId: selector.organizationId,
+        projectId: selector.projectId,
+      },
     });
     return this.storage.getProject(selector);
   }
 
   async getProjects(selector: OrganizationSelector): Promise<Project[]> {
     this.logger.debug('Fetching projects (selector=%o)', selector);
-    await this.authManager.ensureOrganizationAccess({
-      ...selector,
-      scope: OrganizationAccessScope.READ,
-    });
-    return this.storage.getProjects(selector);
+    const projects = await this.storage.getProjects(selector);
+
+    const filteredProjects: Project[] = [];
+
+    for (const project of projects) {
+      if (
+        false ===
+        (await this.session.canPerformAction({
+          action: 'project:describe',
+          organizationId: selector.organizationId,
+          params: {
+            organizationId: selector.organizationId,
+            projectId: project.id,
+          },
+        }))
+      ) {
+        continue;
+      }
+      filteredProjects.push(project);
+    }
+
+    return filteredProjects;
   }
 
   async updateSlug(
@@ -155,11 +178,16 @@ export class ProjectManager {
   > {
     const { slug, organizationId: organization, projectId: project } = input;
     this.logger.info('Updating a project slug (input=%o)', input);
-    await this.authManager.ensureProjectAccess({
-      ...input,
-      scope: ProjectAccessScope.SETTINGS,
+    await this.session.assertPerformAction({
+      action: 'project:modifySettings',
+      organizationId: organization,
+      params: {
+        organizationId: organization,
+        projectId: project,
+      },
     });
-    const user = await this.authManager.getCurrentUser();
+
+    const user = await this.session.getViewer();
 
     if (reservedSlugs.includes(slug)) {
       return {

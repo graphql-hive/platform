@@ -1,4 +1,4 @@
-import type { DocumentCollectionOperationsConnectionResolvers } from './../../../__generated__/types.next';
+import type { DocumentCollectionOperationsConnectionResolvers } from './../../../__generated__/types';
 
 export const DocumentCollectionOperationsConnection: DocumentCollectionOperationsConnectionResolvers =
   {};

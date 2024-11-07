@@ -692,13 +692,13 @@ const ConditionalBreakingChanges = (props: {
                       checked={values.targetIds.includes(pt.id)}
                       onCheckedChange={async isChecked => {
                         await setFieldValue(
-                          'targets',
+                          'targetIds',
                           isChecked
                             ? [...values.targetIds, pt.id]
                             : values.targetIds.filter(value => value !== pt.id),
                         );
                       }}
-                      onBlur={() => setFieldTouched('targets', true)}
+                      onBlur={() => setFieldTouched('targetIds', true)}
                     />{' '}
                     {pt.slug}
                   </div>

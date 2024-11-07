@@ -46,6 +46,9 @@ import {
   SeverityLevel,
 } from '@sentry/node';
 import { createServerAdapter } from '@whatwg-node/server';
+import { AuthN } from '../../api/src/modules/auth/lib/authz';
+import { SuperTokensUserAuthNStrategy } from '../../api/src/modules/auth/lib/supertokens-strategy';
+import { TargetAccessTokenStrategy } from '../../api/src/modules/auth/lib/target-access-token-strategy';
 import { createContext, internalApiRouter } from './api';
 import { asyncStorage } from './async-storage';
 import { env } from './environment';
@@ -362,10 +365,6 @@ export async function main() {
           }
         : null,
       encryptionSecret: env.encryptionSecret,
-      feedback: {
-        token: 'noop',
-        channel: 'noop',
-      },
       schemaConfig: env.hiveServices.webApp
         ? {
             schemaPublishLink(input) {
@@ -388,6 +387,21 @@ export async function main() {
       appDeploymentsEnabled: env.featureFlags.appDeploymentsEnabled,
     });
 
+    const authN = new AuthN({
+      strategies: [
+        new SuperTokensUserAuthNStrategy({
+          logger: server.log,
+          storage,
+        }),
+        new TargetAccessTokenStrategy({
+          logger: server.log,
+          tokensConfig: {
+            endpoint: env.hiveServices.tokens.endpoint,
+          },
+        }),
+      ],
+    });
+
     const graphqlPath = '/graphql';
     const port = env.http.port;
     const signature = Math.random().toString(16).substr(2);
@@ -405,6 +419,7 @@ export async function main() {
       hivePersistedDocumentsConfig: env.hivePersistedDocuments,
       tracing,
       logger: logger as any,
+      authN,
     });
 
     server.route({

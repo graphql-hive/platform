@@ -1,5 +1,5 @@
 import { SupportManager } from '../providers/support-manager';
-import type { OrganizationResolvers } from './../../../__generated__/types.next';
+import type { OrganizationResolvers } from './../../../__generated__/types';
 
 export const Organization: Pick<
   OrganizationResolvers,

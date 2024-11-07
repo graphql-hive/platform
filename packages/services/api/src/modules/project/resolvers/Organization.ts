@@ -1,5 +1,5 @@
 import { ProjectManager } from '../providers/project-manager';
-import type { OrganizationResolvers } from './../../../__generated__/types.next';
+import type { OrganizationResolvers } from './../../../__generated__/types';
 
 export const Organization: Pick<OrganizationResolvers, 'projects' | '__isTypeOf'> = {
   projects: (organization, _, { injector }) => {

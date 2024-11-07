@@ -1,40 +1,6 @@
 import { RuleInstanceSeverityLevel, SchemaPolicyInput } from 'testkit/gql/graphql';
 import { graphql } from './gql';
 
-export const TargetCalculatedPolicy = graphql(`
-  query TargetCalculatedPolicy($selector: TargetSelectorInput!) {
-    target(selector: $selector) {
-      id
-      schemaPolicy {
-        mergedRules {
-          ...SchemaPolicyRuleInstanceFields
-        }
-        projectPolicy {
-          id
-          rules {
-            ...SchemaPolicyRuleInstanceFields
-          }
-        }
-        organizationPolicy {
-          id
-          allowOverrides
-          rules {
-            ...SchemaPolicyRuleInstanceFields
-          }
-        }
-      }
-    }
-  }
-
-  fragment SchemaPolicyRuleInstanceFields on SchemaPolicyRuleInstance {
-    rule {
-      id
-    }
-    severity
-    configuration
-  }
-`);
-
 export const OrganizationAndProjectsWithSchemaPolicy = graphql(`
   query OrganizationAndProjectsWithSchemaPolicy($organization: String!) {
     organization(selector: { organizationSlug: $organization }) {

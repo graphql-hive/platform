@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { AuthManager } from '../../auth/providers/auth-manager';
+import { Session } from '../../auth/lib/authz';
 import {
   isOrganizationScope,
   OrganizationAccessScope,
@@ -7,7 +7,7 @@ import {
 import { isProjectScope, ProjectAccessScope } from '../../auth/providers/project-access';
 import { isTargetScope, TargetAccessScope } from '../../auth/providers/target-access';
 import { OrganizationManager } from '../providers/organization-manager';
-import type { OrganizationResolvers } from './../../../__generated__/types.next';
+import type { OrganizationResolvers } from './../../../__generated__/types';
 
 export const Organization: Pick<
   OrganizationResolvers,
@@ -33,7 +33,7 @@ export const Organization: Pick<
       .getOrganizationOwner({ organizationId: organization.id });
   },
   me: async (organization, _, { injector }) => {
-    const me = await injector.get(AuthManager).getCurrentUser();
+    const me = await injector.get(Session).getViewer();
     const members = await injector
       .get(OrganizationManager)
       .getOrganizationMembers({ organizationId: organization.id });

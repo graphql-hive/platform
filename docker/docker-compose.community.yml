@@ -40,7 +40,7 @@ services:
       - ./.hive/clickhouse/db:/var/lib/clickhouse
 
   broker:
-    image: redpandadata/redpanda:v23.3.20
+    image: redpandadata/redpanda:v23.3.21
     container_name: broker
     hostname: broker
     networks:
@@ -76,7 +76,7 @@ services:
       - ./.hive/broker/db:/var/lib/redpanda/data
 
   redis:
-    image: bitnami/redis:7.4.0
+    image: bitnami/redis:7.4.1
     networks:
       - 'stack'
     healthcheck:

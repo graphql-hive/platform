@@ -1,4 +1,4 @@
-import { createApplication, Scope } from 'graphql-modules';
+import { CONTEXT, createApplication, Provider, Scope } from 'graphql-modules';
 import { Redis } from 'ioredis';
 import { adminModule } from './modules/admin';
 import { alertsModule } from './modules/alerts';
@@ -6,14 +6,13 @@ import { WEBHOOKS_CONFIG, WebhooksConfig } from './modules/alerts/providers/toke
 import { appDeploymentsModule } from './modules/app-deployments';
 import { APP_DEPLOYMENTS_ENABLED } from './modules/app-deployments/providers/app-deployments-enabled-token';
 import { authModule } from './modules/auth';
+import { Session } from './modules/auth/lib/authz';
 import { billingModule } from './modules/billing';
 import { BILLING_CONFIG, BillingConfig } from './modules/billing/providers/tokens';
 import { cdnModule } from './modules/cdn';
 import { AwsClient } from './modules/cdn/providers/aws';
 import { CDN_CONFIG, CDNConfig } from './modules/cdn/providers/tokens';
 import { collectionModule } from './modules/collection';
-import { feedbackModule } from './modules/feedback';
-import { FEEDBACK_SLACK_CHANNEL, FEEDBACK_SLACK_TOKEN } from './modules/feedback/providers/tokens';
 import { integrationsModule } from './modules/integrations';
 import {
   GITHUB_APP_CONFIG,
@@ -82,7 +81,6 @@ const modules = [
   labModule,
   integrationsModule,
   alertsModule,
-  feedbackModule,
   cdnModule,
   adminModule,
   usageEstimationModule,
@@ -112,7 +110,6 @@ export function createRegistry({
   s3,
   s3Mirror,
   encryptionSecret,
-  feedback,
   billing,
   schemaConfig,
   supportConfig,
@@ -148,10 +145,6 @@ export function createRegistry({
     sessionToken?: string;
   } | null;
   encryptionSecret: string;
-  feedback: {
-    token: string;
-    channel: string;
-  };
   app: {
     baseUrl: string;
   } | null;
@@ -191,7 +184,7 @@ export function createRegistry({
 
   const artifactStorageWriter = new ArtifactStorageWriter(s3Config, logger);
 
-  const providers = [
+  const providers: Provider[] = [
     ActivityManager,
     HttpClient,
     IdTranslator,
@@ -274,16 +267,6 @@ export function createRegistry({
       scope: Scope.Singleton,
     },
     {
-      provide: FEEDBACK_SLACK_CHANNEL,
-      useValue: feedback.channel,
-      scope: Scope.Singleton,
-    },
-    {
-      provide: FEEDBACK_SLACK_TOKEN,
-      useValue: feedback.token,
-      scope: Scope.Singleton,
-    },
-    {
       provide: OIDC_INTEGRATIONS_ENABLED,
       useValue: organizationOIDC,
       scope: Scope.Singleton,
@@ -306,6 +289,14 @@ export function createRegistry({
     { provide: PUB_SUB_CONFIG, scope: Scope.Singleton, useValue: pubSub },
     encryptionSecretProvider(encryptionSecret),
     provideSchemaModuleConfig(schemaConfig),
+    {
+      provide: Session,
+      useFactory(context: { session: Session }) {
+        return context.session;
+      },
+      scope: Scope.Operation,
+      deps: [CONTEXT],
+    },
   ];
 
   if (emailsEndpoint) {

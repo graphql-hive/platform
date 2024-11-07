@@ -1,5 +1,5 @@
 import { SchemaPolicyProvider } from '../providers/schema-policy.provider';
-import type { ProjectResolvers } from './../../../__generated__/types.next';
+import type { ProjectResolvers } from './../../../__generated__/types';
 
 export const Project: Pick<ProjectResolvers, 'parentSchemaPolicy' | 'schemaPolicy' | '__isTypeOf'> =
   {

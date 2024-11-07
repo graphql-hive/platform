@@ -1,5 +1,5 @@
 import { APP_DEPLOYMENTS_ENABLED } from '../providers/app-deployments-enabled-token';
-import type { OrganizationResolvers } from './../../../__generated__/types.next';
+import type { OrganizationResolvers } from './../../../__generated__/types';
 
 /*
  * Note: This object type is generated because "OrganizationMapper" is declared. This is to ensure runtime safety.

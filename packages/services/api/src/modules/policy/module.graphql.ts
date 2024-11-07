@@ -83,17 +83,4 @@ export default gql`
     schemaPolicy: SchemaPolicy
     parentSchemaPolicy: SchemaPolicy
   }
-
-  extend type Target {
-    """
-    A merged representation of the schema policy, as inherited from the organization and project.
-    """
-    schemaPolicy: TargetSchemaPolicy
-  }
-
-  type TargetSchemaPolicy {
-    organizationPolicy: SchemaPolicy
-    projectPolicy: SchemaPolicy
-    mergedRules: [SchemaPolicyRuleInstance!]!
-  }
 `;

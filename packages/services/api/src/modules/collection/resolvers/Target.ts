@@ -1,5 +1,5 @@
 import { CollectionProvider } from '../providers/collection.provider';
-import type { TargetResolvers } from './../../../__generated__/types.next';
+import type { TargetResolvers } from './../../../__generated__/types';
 
 export const Target: Pick<
   TargetResolvers,
