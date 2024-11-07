@@ -1,5 +1,8 @@
 import { Injectable, Scope } from 'graphql-modules';
-import { AuthManager } from '../../auth/providers/auth-manager';
+import { TargetSelectorInput } from '../../../__generated__/types.next';
+import { Target } from '../../../shared/entities';
+import { Session } from '../../auth/lib/authz';
+import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
 import { Storage } from '../../shared/providers/storage';
 import type { PreflightScriptModule } from './../__generated__/types';
@@ -14,7 +17,8 @@ export class PreflightScriptProvider {
   constructor(
     logger: Logger,
     private storage: Storage,
-    private authManager: AuthManager,
+    private session: Session,
+    private idTranslator: IdTranslator,
   ) {
     this.logger = logger.child({ source: 'PreflightScriptProvider' });
   }
@@ -24,22 +28,85 @@ export class PreflightScriptProvider {
   }
 
   async createPreflightScript(
-    targetSlug: string,
+    selector: TargetSelectorInput,
     { sourceCode }: PreflightScriptModule.CreatePreflightScriptInput,
-  ) {
-    const currentUser = await this.authManager.getCurrentUser();
+  ): Promise<{
+    preflightScript: PreflightScriptModule.PreflightScript;
+    target: Target;
+  }> {
+    const [organizationId, projectId, targetId] = await Promise.all([
+      this.idTranslator.translateOrganizationId(selector),
+      this.idTranslator.translateProjectId(selector),
+      this.idTranslator.translateTargetId(selector),
+    ]);
 
-    return this.storage.createPreflightScript({
+    await this.session.assertPerformAction({
+      action: 'laboratory:updatePreflightScript',
+      organizationId,
+      params: {
+        organizationId,
+        projectId,
+        targetId,
+      },
+    });
+
+    const target = await this.storage.getTarget({
+      organizationId,
+      projectId,
+      targetId,
+    });
+
+    const currentUser = await this.session.getViewer();
+
+    const preflightScript = await this.storage.createPreflightScript({
       createdByUserId: currentUser.id,
       sourceCode,
-      targetSlug,
+      targetId,
     });
+
+    return {
+      preflightScript,
+      target
+    }
   }
 
-  updatePreflightScript(input: PreflightScriptModule.UpdatePreflightScriptInput) {
-    return this.storage.updatePreflightScript({
+  async updatePreflightScript(
+    selector: TargetSelectorInput,
+    input: PreflightScriptModule.UpdatePreflightScriptInput,
+  ): Promise<{
+    preflightScript: PreflightScriptModule.PreflightScript | null;
+    target: Target;
+  }> {
+    const [organizationId, projectId, targetId] = await Promise.all([
+      this.idTranslator.translateOrganizationId(selector),
+      this.idTranslator.translateProjectId(selector),
+      this.idTranslator.translateTargetId(selector),
+    ]);
+
+    await this.session.assertPerformAction({
+      action: 'laboratory:updatePreflightScript',
+      organizationId,
+      params: {
+        organizationId,
+        projectId,
+        targetId,
+      },
+    });
+
+    const target = await this.storage.getTarget({
+      organizationId,
+      projectId,
+      targetId,
+    });
+
+    const preflightScript = await this.storage.updatePreflightScript({
       id: input.id,
       sourceCode: input.sourceCode,
     });
+
+    return {
+      preflightScript,
+      target,
+    };
   }
 }

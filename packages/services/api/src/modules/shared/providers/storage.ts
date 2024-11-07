@@ -740,7 +740,7 @@ export interface Storage {
   getPreflightScript(_: { targetSlug: string }): Promise<PreflightScript | null>;
 
   createPreflightScript(_: {
-    targetSlug: string;
+    targetId: string;
     sourceCode: string;
     createdByUserId: string | null;
   }): Promise<PreflightScript>;
