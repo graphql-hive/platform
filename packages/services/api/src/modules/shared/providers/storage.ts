@@ -737,16 +737,6 @@ export interface Storage {
     createdByUserId: string | null;
   }): Promise<DocumentCollection>;
 
-  getPreflightScript(_: { targetSlug: string }): Promise<PreflightScript | null>;
-
-  createPreflightScript(_: {
-    targetId: string;
-    sourceCode: string;
-    createdByUserId: string | null;
-  }): Promise<PreflightScript>;
-
-  updatePreflightScript(_: { id: string; sourceCode: string }): Promise<PreflightScript | null>;
-
   /**
    * Returns null if the document collection does not exist (did not get deleted).
    * Returns the id of the deleted document collection if it got deleted
