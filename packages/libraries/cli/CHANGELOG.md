@@ -1,5 +1,14 @@
 # @graphql-hive/cli
 
+## 0.44.3
+
+### Patch Changes
+
+- [#5872](https://github.com/graphql-hive/platform/pull/5872)
+  [`580d349`](https://github.com/graphql-hive/platform/commit/580d349d45b85dc6103b39c6e07bc3d81e5d3bc9)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Bump @theguild/federation-composition
+  to v0.14.1
+
 ## 0.44.2
 
 ### Patch Changes
