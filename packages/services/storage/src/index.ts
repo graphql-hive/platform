@@ -3961,7 +3961,7 @@ export async function createStorage(
                                                , "target_id"
                                                , "created_by_user_id")
       VALUES (${args.sourceCode},
-              ${args.targetSlug},
+              ${args.targetId},
               ${args.createdByUserId})
       RETURNING
           "id"

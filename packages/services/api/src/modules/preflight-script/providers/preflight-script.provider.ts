@@ -41,7 +41,7 @@ export class PreflightScriptProvider {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'laboratory:updatePreflightScript',
+      action: 'laboratory:createPreflightScript',
       organizationId,
       params: {
         organizationId,

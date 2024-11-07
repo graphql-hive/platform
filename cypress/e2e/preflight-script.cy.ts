@@ -16,8 +16,13 @@ beforeEach(() => {
 
 describe('Preflight Script', () => {
   it('mini script editor should be read only', () => {
+    // Wait loading disappears
+    cy.dataCy('preflight-script-editor-mini').should('not.contain', 'Loading');
+    // Click
+    cy.dataCy('preflight-script-editor-mini').click();
+    // And type
     cy.dataCy('preflight-script-editor-mini').within(() => {
-      cy.get('textarea').type('hello', { force: true });
+      cy.get('textarea').type('🐝', { force: true });
     });
     cy.dataCy('preflight-script-editor-mini').should(
       'have.text',
@@ -30,11 +35,14 @@ describe('Preflight Script Modal', () => {
   const script = 'console.log("Hello_world")';
   const env = '{"foo":123}';
 
-  beforeEach(() => {
-    cy.dataCy('preflight-script-modal-button').click();
+  const writeScript = (script: string) => {
     cy.dataCy('preflight-script-editor').within(() => {
       cy.get('textarea').type(script, { delay: 0, force: true });
     });
+  };
+
+  beforeEach(() => {
+    cy.dataCy('preflight-script-modal-button').click();
     cy.dataCy('env-editor').within(() => {
       cy.get('textarea').type(env, {
         parseSpecialCharSequences: false,
@@ -44,6 +52,7 @@ describe('Preflight Script Modal', () => {
   });
 
   it('should save script and env variables when submitting', () => {
+    writeScript(script);
     cy.dataCy('preflight-script-modal-submit').click();
     cy.dataCy('env-editor-mini').should('have.text', env);
     cy.dataCy('preflight-script-editor-mini').should('have.text', script);
@@ -54,12 +63,14 @@ describe('Preflight Script Modal', () => {
   });
 
   it("shouldn't save script and env variables when not submitting", () => {
+    writeScript(script);
     cy.dataCy('preflight-script-modal-cancel').click();
     cy.dataCy('env-editor-mini').should('have.text', '');
     cy.dataCy('preflight-script-editor-mini').should('have.text', '');
   });
 
   it('should run script and show console/error output', () => {
+    writeScript(script);
     cy.dataCy('run-preflight-script').click();
     cy.dataCy('console-output').should('have.text', 'Log: Hello_world');
 
@@ -89,10 +100,8 @@ throw new TypeError('Test')`,
   });
 
   it('should run script and update env variables', () => {
+    cy.intercept('test.com', { body: '"Fixture"' });
     cy.dataCy('preflight-script-editor').within(() => {
-      cy.get('textarea').type('{CMD}{A}{Backspace}', { force: true });
-
-      cy.intercept('test.com', { body: '"Fixture"' });
       cy.get('textarea').type(
         `const response = await fetch('test.com')
 const data = await response.json()
@@ -113,6 +122,15 @@ lab.environment.set('my-test', data)`,
       // replace space with &nbsp;
       '{  "foo": 123,  "my-test": "Fixture"}'.replaceAll(' ', '\xa0'),
     );
+  });
+
+  it('`crypto-js` should works, since we removed `...Buffer` and `...Array` global variables', () => {
+    cy.dataCy('preflight-script-editor').within(() => {
+      cy.get('textarea').type('console.log(lab.CryptoJS.SHA256("🐝"))', { delay: 0, force: true });
+    });
+    cy.dataCy('run-preflight-script').click();
+    cy.dataCy('console-output').should('contain', 'Info: Using crypto-js version:')
+    cy.dataCy('console-output').should('contain', 'Log: d5b51e79e4be0c4f4d6b9a14e16ca864de96afe68459e60a794e80393a4809e8')
   });
 });
 
