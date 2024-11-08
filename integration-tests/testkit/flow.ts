@@ -528,6 +528,77 @@ export function readTokenInfo(token: string) {
   });
 }
 
+export function readOrganizationInfo(
+  selector: {
+    organizationSlug: string;
+  },
+  authToken: string,
+) {
+  return execute({
+    document: graphql(`
+      query readOrganizationInfo($selector: OrganizationSelectorInput!) {
+        organization(selector: $selector) {
+          organization {
+            id
+            slug
+          }
+        }
+      }
+    `),
+    authToken,
+    variables: {
+      selector,
+    },
+  });
+}
+
+export function readProjectInfo(
+  selector: {
+    organizationSlug: string;
+    projectSlug: string;
+  },
+  authToken: string,
+) {
+  return execute({
+    document: graphql(`
+      query readProjectInfo($selector: ProjectSelectorInput!) {
+        project(selector: $selector) {
+          id
+          slug
+        }
+      }
+    `),
+    authToken,
+    variables: {
+      selector,
+    },
+  });
+}
+
+export function readTargetInfo(
+  selector: {
+    organizationSlug: string;
+    projectSlug: string;
+    targetSlug: string;
+  },
+  authToken: string,
+) {
+  return execute({
+    document: graphql(`
+      query readTargetInfo($selector: TargetSelectorInput!) {
+        target(selector: $selector) {
+          id
+          slug
+        }
+      }
+    `),
+    authToken,
+    variables: {
+      selector,
+    },
+  });
+}
+
 export function createMemberRole(input: CreateMemberRoleInput, authToken: string) {
   return execute({
     document: graphql(`
