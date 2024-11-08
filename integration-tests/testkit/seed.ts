@@ -20,6 +20,8 @@ import {
 } from './collections';
 import { ensureEnv } from './env';
 import {
+  addAlert,
+  addAlertChannel,
   assignMemberRole,
   checkSchema,
   compareToPreviousVersion,
@@ -419,6 +421,24 @@ export function initSeed() {
                   }).then(r => r.expectNoGraphQLErrors());
 
                   return result.updateOperationInDocumentCollection;
+                },
+                async addAlert(
+                  input: {
+                    token?: string;
+                  } & Parameters<typeof addAlert>[0],
+                ) {
+                  const result = await addAlert(input, input.token || ownerToken).then(r =>
+                    r.expectNoGraphQLErrors(),
+                  );
+                  return result.addAlert;
+                },
+                async addAlertChannel(
+                  input: { token?: string } & Parameters<typeof addAlertChannel>[0],
+                ) {
+                  const result = await addAlertChannel(input, input.token || ownerToken).then(r =>
+                    r.expectNoGraphQLErrors(),
+                  );
+                  return result.addAlertChannel;
                 },
                 /**
                  * Create a access token for a given target.
