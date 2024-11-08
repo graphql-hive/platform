@@ -34,7 +34,7 @@ function validateSourceCode(code: string) {
     console.log({ error });
     return {
       error: {
-        __typename: 'PreflightScriptError',
+        __typename: 'PreflightScriptError' as const,
         message: error instanceof Error ? error.message : String(error),
       },
     };
@@ -124,7 +124,7 @@ export class PreflightScriptProvider {
 
     return {
       ok: {
-        __typename: 'PreflightScriptOkPayload',
+        __typename: 'PreflightScriptOkPayload' as const,
         preflightScript,
         updatedTarget: target,
       },
@@ -178,7 +178,7 @@ export class PreflightScriptProvider {
     if (!result) {
       return {
         error: {
-          __typename: 'PreflightScriptError',
+          __typename: 'PreflightScriptError' as const,
           message: 'No preflight script found',
         },
       };
@@ -188,7 +188,7 @@ export class PreflightScriptProvider {
 
     return {
       ok: {
-        __typename: 'PreflightScriptOkPayload',
+        __typename: 'PreflightScriptOkPayload' as const,
         preflightScript,
         updatedTarget: target,
       },
