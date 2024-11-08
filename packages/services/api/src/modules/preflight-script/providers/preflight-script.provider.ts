@@ -1,6 +1,7 @@
 import { Inject, Injectable, Scope } from 'graphql-modules';
 import { sql, type DatabasePool } from 'slonik';
-import zod from 'zod';
+import { z } from 'zod';
+import { fromZodError } from 'zod-validation-error';
 import { getLocalLang, getTokenSync } from '@nodesecure/i18n';
 import * as jsxray from '@nodesecure/js-x-ray';
 import { TargetSelectorInput } from '../../../__generated__/types.next';
@@ -11,13 +12,13 @@ import { PG_POOL_CONFIG } from '../../shared/providers/pg-pool';
 import { Storage } from '../../shared/providers/storage';
 import type { PreflightScriptModule } from './../__generated__/types';
 
-const PreflightScriptModel = zod.strictObject({
-  id: zod.string(),
-  sourceCode: zod.string().max(5_000),
-  targetId: zod.string(),
-  createdByUserId: zod.union([zod.string(), zod.null()]),
-  createdAt: zod.string(),
-  updatedAt: zod.string(),
+const PreflightScriptModel = z.strictObject({
+  id: z.string(),
+  sourceCode: z.string().max(5_000),
+  targetId: z.string(),
+  createdByUserId: z.union([z.string(), z.null()]),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 const scanner = new jsxray.AstAnalyser();
@@ -119,9 +120,17 @@ export class PreflightScriptProvider {
           , to_json("created_at") as "createdAt"
           , to_json("updated_at") as "updatedAt"
       `);
+    const { data: preflightScript, error } = PreflightScriptModel.safeParse(result);
 
-    const preflightScript = PreflightScriptModel.parse(result);
-
+    if (error) {
+      const { message } = fromZodError(error);
+      return {
+        error: {
+          __typename: 'PreflightScriptError' as const,
+          message,
+        },
+      };
+    }
     return {
       ok: {
         __typename: 'PreflightScriptOkPayload' as const,
@@ -184,8 +193,17 @@ export class PreflightScriptProvider {
       };
     }
 
-    const preflightScript = PreflightScriptModel.parse(result);
+    const { data: preflightScript, error } = PreflightScriptModel.safeParse(result);
 
+    if (error) {
+      const { message } = fromZodError(error);
+      return {
+        error: {
+          __typename: 'PreflightScriptError' as const,
+          message,
+        },
+      };
+    }
     return {
       ok: {
         __typename: 'PreflightScriptOkPayload' as const,
