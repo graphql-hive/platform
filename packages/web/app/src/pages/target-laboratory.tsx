@@ -44,7 +44,7 @@ import {
 import { createGraphiQLFetcher, Fetcher, isAsyncIterable } from '@graphiql/toolkit';
 import { EnterFullScreenIcon, ExitFullScreenIcon } from '@radix-ui/react-icons';
 import { Repeater } from '@repeaterjs/repeater';
-import { Link as RouterLink, useParams, useRouter } from '@tanstack/react-router';
+import { Link as RouterLink, useRouter } from '@tanstack/react-router';
 import 'graphiql/style.css';
 import '@graphiql/plugin-explorer/style.css';
 import { useRedirect } from '@/lib/access/common';

@@ -1,7 +1,6 @@
 import { Injectable, Scope } from 'graphql-modules';
 import * as zod from 'zod';
-import { Target } from '@hive/api';
-import { DocumentCollection, DocumentCollectionOperation } from '../../../shared/entities';
+import { DocumentCollection, DocumentCollectionOperation, Target } from '../../../shared/entities';
 import { isUUID } from '../../../shared/is-uuid';
 import { Session } from '../../auth/lib/authz';
 import { IdTranslator } from '../../shared/providers/id-translator';
