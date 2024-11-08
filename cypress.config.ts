@@ -41,9 +41,7 @@ export default defineConfig({
       on('task', {
         connectDB,
         async deleteUser(email = 'test@test.com') {
-          const [user] = await connectDB(`SELECT *
-                                          FROM users
-                                          WHERE email = '${email}';`);
+          const [user] = await connectDB(`SELECT * FROM users WHERE email = '${email}';`);
           if (user) {
             await connectDB(`
 BEGIN;
