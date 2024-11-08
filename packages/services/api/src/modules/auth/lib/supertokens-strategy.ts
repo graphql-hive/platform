@@ -164,6 +164,8 @@ export class SuperTokensUserAuthNStrategy extends AuthNStrategy<SuperTokensCooki
       return null;
     }
 
+    this.logger.debug('SuperTokens session resolved successfully');
+
     return new SuperTokensCookieBasedSession(
       {
         superTokensUserId: session.superTokensUserId,

@@ -59,7 +59,7 @@ export class TargetAccessTokenStrategy extends AuthNStrategy<TargetAccessTokenSe
 
   constructor(deps: { logger: ServiceLogger; tokensConfig: TokensConfig }) {
     super();
-    this.logger = deps.logger.child({ module: 'OrganizationAccessTokenStrategy' });
+    this.logger = deps.logger.child({ module: 'TargetAccessTokenStrategy' });
     this.tokensConfig = deps.tokensConfig;
   }
 
@@ -121,6 +121,8 @@ export class TargetAccessTokenStrategy extends AuthNStrategy<TargetAccessTokenSe
 
     const result = await tokens.getToken({ token: accessToken });
 
+    this.logger.debug('TargetAccessToken session resolved successfully');
+
     return new TargetAccessTokenSession(
       {
         organizationId: result.organization,
@@ -164,6 +166,11 @@ function transformAccessTokenLegacyScopes(args: {
           action: ['schemaCheck:create'],
           resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
         });
+        policies.push({
+          effect: 'allow',
+          action: ['organization:describe', 'project:describe'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+        });
         break;
       }
       case TargetAccessScope.REGISTRY_WRITE: {
@@ -180,6 +187,11 @@ function transformAccessTokenLegacyScopes(args: {
             'schemaVersion:publish',
           ],
           resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
+        });
+        policies.push({
+          effect: 'allow',
+          action: ['organization:describe', 'project:describe'],
+          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
       }
