@@ -161,38 +161,42 @@ function transformAccessTokenLegacyScopes(args: {
   for (const policy of args.scopes) {
     switch (policy) {
       case TargetAccessScope.REGISTRY_READ: {
-        policies.push({
-          effect: 'allow',
-          action: ['schemaCheck:create'],
-          resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
-        });
-        policies.push({
-          effect: 'allow',
-          action: ['organization:describe', 'project:describe'],
-          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
-        });
+        policies.push(
+          {
+            effect: 'allow',
+            action: ['schemaCheck:create'],
+            resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
+          },
+          {
+            effect: 'allow',
+            action: ['organization:describe', 'project:describe'],
+            resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+          },
+        );
         break;
       }
       case TargetAccessScope.REGISTRY_WRITE: {
-        policies.push({
-          effect: 'allow',
-          action: [
-            'appDeployment:describe',
-            'appDeployment:create',
-            'appDeployment:publish',
-            'appDeployment:retire',
-            'schemaVersion:publish',
-            'schemaVersion:deleteService',
-            'schema:loadFromRegistry',
-            'schemaVersion:publish',
-          ],
-          resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
-        });
-        policies.push({
-          effect: 'allow',
-          action: ['organization:describe', 'project:describe'],
-          resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
-        });
+        policies.push(
+          {
+            effect: 'allow',
+            action: [
+              'appDeployment:describe',
+              'appDeployment:create',
+              'appDeployment:publish',
+              'appDeployment:retire',
+              'schemaVersion:publish',
+              'schemaVersion:deleteService',
+              'schema:loadFromRegistry',
+              'schemaVersion:publish',
+            ],
+            resource: [`hrn:${args.organizationId}:target/${args.targetId}`],
+          },
+          {
+            effect: 'allow',
+            action: ['organization:describe', 'project:describe'],
+            resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
+          },
+        );
         break;
       }
     }
