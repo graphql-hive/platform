@@ -27,7 +27,6 @@ import type {
   OrganizationMemberRole,
   PaginatedDocumentCollectionOperations,
   PaginatedDocumentCollections,
-  PreflightScript,
   Project,
   Schema,
   SchemaLog,
