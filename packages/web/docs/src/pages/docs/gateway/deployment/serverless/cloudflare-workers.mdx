@@ -22,15 +22,21 @@ import { createGatewayRuntime } from '@graphql-hive/gateway'
 import http from '@graphql-mesh/transport-http'
 import supergraph from './supergraph'
 
-export const gateway = createGatewayRuntime({
-  // All options available in `gateway.config.ts` configuration can also be passed here.
-  supergraph,
-  transports: {
-    http // For example, http transport is required for subgraphs using standard GraphQL over HTTP.
-  }
-})
+export default {
+  async fetch(request, env, ctx) {
+    const gateway = createGatewayRuntime({
+      // All options available in `gateway.config.ts` configuration can also be passed here.
+      supergraph,
+      transports: {
+        http // http transport is required for subgraphs using standard GraphQL over HTTP.
+      }
+    })
 
-export default { fetch: gateway }
+    const response = await gateway(request)
+    ctx.waitUntil(gateway[Symbol.asyncDispose]()) // Hive Gateway implements the explicit resource management
+    return response
+  }
+}
 ```
 
 ```js filename="supergraph.js"
