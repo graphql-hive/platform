@@ -51,6 +51,9 @@ export function IndexPage(): ReactElement {
             --nextra-primary-saturation: 40%;
             --nextra-bg: 255, 255, 255;
           }
+          .nextra-sidebar-footer {
+            display: none;
+          }
         `}
       </style>
       <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
