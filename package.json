@@ -105,7 +105,9 @@
       "mjml-cli@4.14.0>html-minifier": "-",
       "ws@^8.0.0": "^8.18.0",
       "ws@*": ">=8.18.0 || >=7.5.10 || >=6.2.3 || >=5.2.4",
-      "cookie@<0.7.0": "0.7.2"
+      "cookie@<0.7.0": "0.7.2",
+      "graphql-yoga": "5.9.0-alpha-20241108073538-27e47f1e",
+      "@graphql-yoga/plugin-persisted-operations": "3.9.0-alpha-20241108073538-27e47f1e"
     },
     "patchedDependencies": {
       "mjml-core@4.14.0": "patches/mjml-core@4.14.0.patch",
