@@ -129,8 +129,27 @@ lab.environment.set('my-test', data)`,
       cy.get('textarea').type('console.log(lab.CryptoJS.SHA256("🐝"))', { delay: 0, force: true });
     });
     cy.dataCy('run-preflight-script').click();
-    cy.dataCy('console-output').should('contain', 'Info: Using crypto-js version:')
-    cy.dataCy('console-output').should('contain', 'Log: d5b51e79e4be0c4f4d6b9a14e16ca864de96afe68459e60a794e80393a4809e8')
+    cy.dataCy('console-output').should('contain', 'Info: Using crypto-js version:');
+    cy.dataCy('console-output').should(
+      'contain',
+      'Log: d5b51e79e4be0c4f4d6b9a14e16ca864de96afe68459e60a794e80393a4809e8',
+    );
+  });
+
+  it('should disallow eval', () => {
+    cy.dataCy('preflight-script-editor').within(() => {
+      cy.get('textarea').type('eval()', { delay: 0, force: true });
+    });
+    cy.dataCy('preflight-script-modal-submit').click();
+    cy.get('body').contains('Usage of dangerous statement like eval() or Function("").');
+  });
+
+  it('should disallow invalid code', () => {
+    cy.dataCy('preflight-script-editor').within(() => {
+      cy.get('textarea').type('🐝', { delay: 0, force: true });
+    });
+    cy.dataCy('preflight-script-modal-submit').click();
+    cy.get('body').contains("[1:1]: Illegal character '}");
   });
 });
 

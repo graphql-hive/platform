@@ -1,8 +1,9 @@
 import { Inject, Injectable, Scope } from 'graphql-modules';
-import { DatabasePool, sql } from 'slonik';
+import { sql, type DatabasePool } from 'slonik';
 import zod from 'zod';
+import { getLocalLang, getTokenSync } from '@nodesecure/i18n';
+import * as jsxray from '@nodesecure/js-x-ray';
 import { TargetSelectorInput } from '../../../__generated__/types.next';
-import { Target } from '../../../shared/entities';
 import { Session } from '../../auth/lib/authz';
 import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
@@ -12,12 +13,33 @@ import type { PreflightScriptModule } from './../__generated__/types';
 
 const PreflightScriptModel = zod.strictObject({
   id: zod.string(),
-  sourceCode: zod.string(),
+  sourceCode: zod.string().max(5_000),
   targetId: zod.string(),
   createdByUserId: zod.union([zod.string(), zod.null()]),
   createdAt: zod.string(),
   updatedAt: zod.string(),
 });
+
+const scanner = new jsxray.AstAnalyser();
+await getLocalLang();
+
+function validateSourceCode(code: string) {
+  try {
+    const { warnings } = scanner.analyse(code);
+    for (const warning of warnings) {
+      const message = getTokenSync(jsxray.warnings[warning.kind].i18n);
+      throw new Error(message);
+    }
+  } catch (error) {
+    console.log({ error });
+    return {
+      error: {
+        __typename: 'PreflightScriptError',
+        message: error instanceof Error ? error.message : String(error),
+      },
+    };
+  }
+}
 
 @Injectable({
   global: true,
@@ -54,10 +76,10 @@ export class PreflightScriptProvider {
   async createPreflightScript(
     selector: TargetSelectorInput,
     { sourceCode }: PreflightScriptModule.CreatePreflightScriptInput,
-  ): Promise<{
-    preflightScript: PreflightScriptModule.PreflightScript;
-    target: Target;
-  }> {
+  ) {
+    const res = validateSourceCode(sourceCode);
+    if (res) return res;
+
     const [organizationId, projectId, targetId] = await Promise.all([
       this.idTranslator.translateOrganizationId(selector),
       this.idTranslator.translateProjectId(selector),
@@ -101,18 +123,21 @@ export class PreflightScriptProvider {
     const preflightScript = PreflightScriptModel.parse(result);
 
     return {
-      preflightScript,
-      target,
+      ok: {
+        __typename: 'PreflightScriptOkPayload',
+        preflightScript,
+        updatedTarget: target,
+      },
     };
   }
 
   async updatePreflightScript(
     selector: TargetSelectorInput,
     input: PreflightScriptModule.UpdatePreflightScriptInput,
-  ): Promise<{
-    preflightScript: PreflightScriptModule.PreflightScript | null;
-    target: Target;
-  }> {
+  ) {
+    const res = validateSourceCode(input.sourceCode);
+    if (res) return res;
+
     const [organizationId, projectId, targetId] = await Promise.all([
       this.idTranslator.translateOrganizationId(selector),
       this.idTranslator.translateProjectId(selector),
@@ -150,15 +175,23 @@ export class PreflightScriptProvider {
           , to_json("updated_at") as "updatedAt"
       `);
 
-    // if (!result) {
-    //   throw new Error('No preflight script found');
-    // }
+    if (!result) {
+      return {
+        error: {
+          __typename: 'PreflightScriptError',
+          message: 'No preflight script found',
+        },
+      };
+    }
 
-    const preflightScript = result && PreflightScriptModel.parse(result);
+    const preflightScript = PreflightScriptModel.parse(result);
 
     return {
-      preflightScript,
-      target,
+      ok: {
+        __typename: 'PreflightScriptOkPayload',
+        preflightScript,
+        updatedTarget: target,
+      },
     };
   }
 }
