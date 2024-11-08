@@ -148,6 +148,7 @@ export default gql`
 
   extend type Project {
     targets: TargetConnection!
+    targetBySlug(targetSlug: String!): Target
   }
 
   type TargetConnection {

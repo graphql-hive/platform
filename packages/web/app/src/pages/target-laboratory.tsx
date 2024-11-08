@@ -356,18 +356,22 @@ function LaboratoryPageContent(props: {
     entity: target,
   });
 
+  if (query.error) {
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={query.error}
+        showLogoutButton={false}
+      />
+    );
+  }
+
   if (target?.viewerCanViewLaboratory === false) {
     return null;
   }
 
   return (
-    <TargetLayout
-      organizationSlug={props.organizationSlug}
-      projectSlug={props.projectSlug}
-      targetSlug={props.targetSlug}
-      page={Page.Laboratory}
-      className="flex h-[--content-height] flex-col pb-0"
-    >
+    <>
       <div className="flex py-6">
         <div className="flex-1">
           <Title>Laboratory</Title>
@@ -514,7 +518,7 @@ function LaboratoryPageContent(props: {
         isOpen={isConnectLabModalOpen}
         isCDNEnabled={query.data ?? null}
       />
-    </TargetLayout>
+    </>
   );
 }
 
@@ -527,7 +531,15 @@ export function TargetLaboratoryPage(props: {
   return (
     <>
       <Meta title="Schema laboratory" />
-      <LaboratoryPageContent {...props} />
+      <TargetLayout
+        organizationSlug={props.organizationSlug}
+        projectSlug={props.projectSlug}
+        targetSlug={props.targetSlug}
+        page={Page.Laboratory}
+        className="flex h-[--content-height] flex-col pb-0"
+      >
+        <LaboratoryPageContent {...props} />
+      </TargetLayout>
     </>
   );
 }

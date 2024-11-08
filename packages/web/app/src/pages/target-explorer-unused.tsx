@@ -215,7 +215,13 @@ function UnusedSchemaExplorer(props: {
   }, [dateRangeController.resolvedRange]);
 
   if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={query.error}
+        showLogoutButton={false}
+      />
+    );
   }
 
   const latestSchemaVersion = query.data?.target?.latestSchemaVersion;
@@ -339,32 +345,29 @@ function ExplorerUnusedSchemaPageContent(props: {
   const currentOrganization = query.data?.organization?.organization;
   const hasCollectedOperations = query.data?.hasCollectedOperations === true;
 
+  if (!currentOrganization) {
+    return null;
+  }
+
+  if (!hasCollectedOperations) {
+    return (
+      <div className="py-8">
+        <EmptyList
+          title="Hive is waiting for your first collected operation"
+          description="You can collect usage of your GraphQL API with Hive Client"
+          docsUrl="/features/usage-reporting"
+        />
+      </div>
+    );
+  }
+
   return (
-    <TargetLayout
+    <UnusedSchemaExplorer
+      dataRetentionInDays={currentOrganization.rateLimit.retentionInDays}
       organizationSlug={props.organizationSlug}
       projectSlug={props.projectSlug}
       targetSlug={props.targetSlug}
-      page={Page.Explorer}
-    >
-      {currentOrganization ? (
-        hasCollectedOperations ? (
-          <UnusedSchemaExplorer
-            dataRetentionInDays={currentOrganization.rateLimit.retentionInDays}
-            organizationSlug={props.organizationSlug}
-            projectSlug={props.projectSlug}
-            targetSlug={props.targetSlug}
-          />
-        ) : (
-          <div className="py-8">
-            <EmptyList
-              title="Hive is waiting for your first collected operation"
-              description="You can collect usage of your GraphQL API with Hive Client"
-              docsUrl="/features/usage-reporting"
-            />
-          </div>
-        )
-      ) : null}
-    </TargetLayout>
+    />
   );
 }
 
@@ -376,7 +379,14 @@ export function TargetExplorerUnusedPage(props: {
   return (
     <>
       <Meta title="Unused Schema Explorer" />
-      <ExplorerUnusedSchemaPageContent {...props} />
+      <TargetLayout
+        organizationSlug={props.organizationSlug}
+        projectSlug={props.projectSlug}
+        targetSlug={props.targetSlug}
+        page={Page.Explorer}
+      >
+        <ExplorerUnusedSchemaPageContent {...props} />
+      </TargetLayout>
     </>
   );
 }

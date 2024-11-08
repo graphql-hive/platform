@@ -9,6 +9,7 @@ import { CardDescription } from '@/components/ui/card';
 import { EmptyList, noSchemaVersion } from '@/components/ui/empty-list';
 import { Meta } from '@/components/ui/meta';
 import { SubPageLayoutHeader } from '@/components/ui/page-content-layout';
+import { QueryError } from '@/components/ui/query-error';
 import { Spinner } from '@/components/ui/spinner';
 import {
   Table,
@@ -208,6 +209,16 @@ function TargetAppsView(props: {
       });
     },
   });
+
+  if (data.error) {
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={data.error}
+        showLogoutButton={false}
+      />
+    );
+  }
 
   if (project?.viewerCanViewAppDeployments === false) {
     return null;

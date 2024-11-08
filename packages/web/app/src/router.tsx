@@ -68,7 +68,7 @@ import { TargetInsightsClientPage } from './pages/target-insights-client';
 import { TargetInsightsCoordinatePage } from './pages/target-insights-coordinate';
 import { TargetInsightsOperationPage } from './pages/target-insights-operation';
 import { TargetLaboratoryPage } from './pages/target-laboratory';
-import { TargetSettingsPage } from './pages/target-settings';
+import { TargetSettingsPage, TargetSettingsPageEnum } from './pages/target-settings';
 
 SuperTokens.init(frontendConfig());
 if (env.sentry) {
@@ -534,17 +534,7 @@ const targetIndexRoute = createRoute({
 });
 
 const TargetSettingRouteSearch = z.object({
-  page: z
-    .enum([
-      'general',
-      'cdn',
-      'registry-token',
-      'breaking-changes',
-      'base-schema',
-      'schema-contracts',
-    ])
-    .default('general')
-    .optional(),
+  page: TargetSettingsPageEnum.default('general').optional(),
 });
 
 const targetSettingsRoute = createRoute({

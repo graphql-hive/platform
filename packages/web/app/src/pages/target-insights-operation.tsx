@@ -199,36 +199,32 @@ function OperationInsightsContent(props: {
   }
 
   const currentOrganization = query.data?.organization?.organization;
-  const hasCollectedOperations = query.data?.hasCollectedOperations === true;
+
+  if (!currentOrganization) {
+    return null;
+  }
+
+  if (!query.data?.hasCollectedOperations) {
+    return (
+      <div className="py-8">
+        <EmptyList
+          title="Hive is waiting for your first collected operation"
+          description="You can collect usage of your GraphQL API with Hive Client"
+          docsUrl="/features/usage-reporting"
+        />
+      </div>
+    );
+  }
 
   return (
-    <TargetLayout
+    <OperationView
       organizationSlug={props.organizationSlug}
       projectSlug={props.projectSlug}
       targetSlug={props.targetSlug}
-      page={Page.Insights}
-    >
-      {currentOrganization ? (
-        hasCollectedOperations ? (
-          <OperationView
-            organizationSlug={props.organizationSlug}
-            projectSlug={props.projectSlug}
-            targetSlug={props.targetSlug}
-            dataRetentionInDays={currentOrganization.rateLimit.retentionInDays}
-            operationHash={props.operationHash}
-            operationName={props.operationName}
-          />
-        ) : (
-          <div className="py-8">
-            <EmptyList
-              title="Hive is waiting for your first collected operation"
-              description="You can collect usage of your GraphQL API with Hive Client"
-              docsUrl="/features/usage-reporting"
-            />
-          </div>
-        )
-      ) : null}
-    </TargetLayout>
+      dataRetentionInDays={currentOrganization.rateLimit.retentionInDays}
+      operationHash={props.operationHash}
+      operationName={props.operationName}
+    />
   );
 }
 
@@ -242,7 +238,14 @@ export function TargetInsightsOperationPage(props: {
   return (
     <>
       <Meta title={`Operation ${props.operationName}`} />
-      <OperationInsightsContent {...props} />
+      <TargetLayout
+        organizationSlug={props.organizationSlug}
+        projectSlug={props.projectSlug}
+        targetSlug={props.targetSlug}
+        page={Page.Insights}
+      >
+        <OperationInsightsContent {...props} />
+      </TargetLayout>
     </>
   );
 }
