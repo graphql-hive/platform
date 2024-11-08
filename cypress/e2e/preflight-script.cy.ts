@@ -7,9 +7,6 @@ beforeEach(() => {
     cy.task('createProject', result.sAccessToken);
     cy.setCookie('sRefreshToken', result.sRefreshToken);
   });
-  // cy.task<Token>('login').then(result => {
-  //   cy.setCookie('sRefreshToken', result.sRefreshToken);
-  // });
   cy.visit('/foo/my-new-project/development/laboratory');
   cy.get('[aria-label*="Preflight Script"]').click();
 });
