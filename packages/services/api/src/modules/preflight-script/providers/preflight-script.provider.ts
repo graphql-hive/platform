@@ -4,13 +4,16 @@ import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { getLocalLang, getTokenSync } from '@nodesecure/i18n';
 import * as jsxray from '@nodesecure/js-x-ray';
-import { TargetSelectorInput } from '../../../__generated__/types.next';
+import {
+  CreatePreflightScriptInput,
+  TargetSelectorInput,
+  UpdatePreflightScriptInput,
+} from '../../../__generated__/types';
 import { Session } from '../../auth/lib/authz';
 import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
 import { PG_POOL_CONFIG } from '../../shared/providers/pg-pool';
 import { Storage } from '../../shared/providers/storage';
-import type { PreflightScriptModule } from './../__generated__/types';
 
 const PreflightScriptModel = z.strictObject({
   id: z.string(),
@@ -76,7 +79,7 @@ export class PreflightScriptProvider {
 
   async createPreflightScript(
     selector: TargetSelectorInput,
-    { sourceCode }: PreflightScriptModule.CreatePreflightScriptInput,
+    { sourceCode }: CreatePreflightScriptInput,
   ) {
     const res = validateSourceCode(sourceCode);
     if (res) return res;
@@ -140,10 +143,7 @@ export class PreflightScriptProvider {
     };
   }
 
-  async updatePreflightScript(
-    selector: TargetSelectorInput,
-    input: PreflightScriptModule.UpdatePreflightScriptInput,
-  ) {
+  async updatePreflightScript(selector: TargetSelectorInput, input: UpdatePreflightScriptInput) {
     const res = validateSourceCode(input.sourceCode);
     if (res) return res;
 
