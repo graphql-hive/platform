@@ -3,7 +3,9 @@ import { gql } from 'graphql-modules';
 export default gql`
   extend type Query {
     project(selector: ProjectSelectorInput!): Project
+      @deprecated(reason: "Use field 'Organization.projectBySlug' instead.")
     projects(selector: OrganizationSelectorInput!): ProjectConnection!
+      @deprecated(reason: "Use field 'Organization.projects' instead.")
   }
 
   extend type Mutation {
