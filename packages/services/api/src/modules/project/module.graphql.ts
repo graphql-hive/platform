@@ -84,6 +84,7 @@ export default gql`
   extend type Organization {
     projects: ProjectConnection!
     viewerCanCreateProject: Boolean!
+    projectBySlug(projectSlug: String!): Project
   }
 
   type Project {
@@ -138,9 +139,5 @@ export default gql`
   type DeleteProjectPayload {
     selector: ProjectSelector!
     deletedProject: Project!
-  }
-
-  type Organization {
-    projectBySlug(projectSlug: String!): Project
   }
 `;
