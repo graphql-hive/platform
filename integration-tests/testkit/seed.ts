@@ -173,7 +173,7 @@ export function initSeed() {
                 ownerToken,
               ).then(r => r.expectNoGraphQLErrors());
 
-              const members = membersResult.organization?.organization.members.nodes;
+              const members = membersResult.organization?.organization.members?.nodes;
 
               if (!members) {
                 throw new Error(`Could not get members for org ${organization.slug}`);
@@ -857,7 +857,7 @@ export function initSeed() {
                   }
 
                   const createdRole =
-                    memberRoleCreationResult.createMemberRole.ok?.updatedOrganization.memberRoles.find(
+                    memberRoleCreationResult.createMemberRole.ok?.updatedOrganization.memberRoles?.find(
                       r => r.name === name,
                     );
 
