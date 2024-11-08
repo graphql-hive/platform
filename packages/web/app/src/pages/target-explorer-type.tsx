@@ -200,7 +200,13 @@ function TypeExplorerPageContent(props: {
   }, [setDataRetentionInDays, retentionInDays]);
 
   if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={query.error}
+        showLogoutButton={false}
+      />
+    );
   }
 
   const currentTarget = query.data?.target;

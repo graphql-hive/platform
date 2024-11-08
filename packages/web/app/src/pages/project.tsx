@@ -303,7 +303,13 @@ const ProjectsPageContent = (
   }, [targetConnection?.nodes]);
 
   if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={query.error}
+        showLogoutButton={false}
+      />
+    );
   }
 
   return (

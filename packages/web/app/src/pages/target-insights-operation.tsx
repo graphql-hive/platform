@@ -195,7 +195,13 @@ function OperationInsightsContent(props: {
   });
 
   if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={query.error}
+        showLogoutButton={false}
+      />
+    );
   }
 
   const currentOrganization = query.data?.organization?.organization;

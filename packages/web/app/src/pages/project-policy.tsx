@@ -102,7 +102,13 @@ function ProjectPolicyContent(props: { organizationSlug: string; projectSlug: st
   }
 
   if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={query.error}
+        showLogoutButton={false}
+      />
+    );
   }
 
   const isLegacyProject = currentProject?.registryModel === RegistryModel.Legacy;

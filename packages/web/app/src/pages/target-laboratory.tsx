@@ -316,10 +316,6 @@ function LaboratoryPageContent(props: {
     };
   }, [query.data?.target?.graphqlEndpointUrl, actualSelectedApiEndpoint]);
 
-  if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
-  }
-
   const FullScreenIcon = isFullScreen ? ExitFullScreenIcon : EnterFullScreenIcon;
 
   const handleTabChange = useCallback<Exclude<GraphiQLProviderProps['onTabChange'], undefined>>(

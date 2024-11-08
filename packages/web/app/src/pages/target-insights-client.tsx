@@ -93,7 +93,13 @@ function ClientView(props: {
   const totalOperations = query.data?.clientStats?.operations.nodes.length ?? 0;
 
   if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={query.error}
+        showLogoutButton={false}
+      />
+    );
   }
 
   return (

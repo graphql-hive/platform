@@ -387,7 +387,13 @@ function ProjectSettingsContent(props: { organizationSlug: string; projectSlug: 
   }
 
   if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={query.error}
+        showLogoutButton={false}
+      />
+    );
   }
 
   return (
