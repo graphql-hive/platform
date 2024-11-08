@@ -1,8 +1,10 @@
 import fs from 'node:fs';
 // eslint-disable-next-line import/no-extraneous-dependencies -- cypress SHOULD be a dev dependency
 import { defineConfig } from 'cypress';
+import { initSeed } from 'integration-tests/testkit/seed.js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import pg from 'pg';
+import 'integration-tests/local-dev.js';
 
 const isCI = Boolean(process.env.CI);
 
@@ -22,6 +24,8 @@ export default defineConfig({
   },
   e2e: {
     setupNodeEvents(on, config) {
+      const seed = initSeed();
+
       async function connectDB(query: string) {
         const dbUrl = new URL(config.env.POSTGRES_URL);
         const client = new pg.Client({
@@ -67,32 +71,34 @@ COMMIT;
           firstName?: string;
           lastName?: string;
         } = {}) {
-          const response = await fetch('http://localhost:3001/auth-api/signup', {
-            method: 'POST',
-            headers: {
-              'content-type': 'application/json',
-            },
-            body: JSON.stringify({
-              formFields: [
-                { id: 'email', value: email },
-                { id: 'password', value: password },
-                { id: 'firstName', value: firstName },
-                { id: 'lastName', value: lastName },
-              ],
-            }),
-          });
-          const data = await response.json();
-          if (response.status !== 200 || data.status === 'FIELD_ERROR') {
-            throw new Error(
-              `${response.status}: ${response.statusText}\n\n${JSON.stringify(data, null, 2)}`,
-            );
-          }
-          const result: Token = {
-            sAccessToken: response.headers.get('st-access-token')!,
-            sFrontToken: response.headers.get('front-token')!,
-            sRefreshToken: response.headers.get('st-refresh-token')!,
-          };
-          return result;
+          const { createOrg, ownerToken } = seed.createOwner(email);
+
+          // const response = await fetch('http://localhost:3001/auth-api/signup', {
+          //   method: 'POST',
+          //   headers: {
+          //     'content-type': 'application/json',
+          //   },
+          //   body: JSON.stringify({
+          //     formFields: [
+          //       { id: 'email', value: email },
+          //       { id: 'password', value: password },
+          //       { id: 'firstName', value: firstName },
+          //       { id: 'lastName', value: lastName },
+          //     ],
+          //   }),
+          // });
+          // const data = await response.json();
+          // if (response.status !== 200 || data.status === 'FIELD_ERROR') {
+          //   throw new Error(
+          //     `${response.status}: ${response.statusText}\n\n${JSON.stringify(data, null, 2)}`,
+          //   );
+          // }
+          // const result: Token = {
+          //   sAccessToken: response.headers.get('st-access-token')!,
+          //   sFrontToken: response.headers.get('front-token')!,
+          //   sRefreshToken: response.headers.get('st-refresh-token')!,
+          // };
+          // return result;
         },
         async login() {
           const response = await fetch('http://localhost:3001/auth-api/signin', {

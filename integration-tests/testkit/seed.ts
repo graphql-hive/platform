@@ -7,8 +7,7 @@ import {
   RegistryModel,
   SchemaPolicyInput,
   TargetAccessScope,
-  TargetSelectorInput,
-} from 'testkit/gql/graphql';
+} from './gql/graphql';
 import { authenticate, userEmail } from './auth';
 import {
   CreateCollectionMutation,
@@ -83,10 +82,9 @@ export function initSeed() {
         },
       };
     },
-    authenticate: authenticate,
+    authenticate,
     generateEmail: () => userEmail(generateUnique()),
-    async createOwner() {
-      const ownerEmail = userEmail(generateUnique());
+    async createOwner(ownerEmail = userEmail(generateUnique())) {
       const ownerToken = await authenticate(ownerEmail).then(r => r.access_token);
 
       return {
