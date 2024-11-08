@@ -1,4 +1,4 @@
-import { MutationResolvers } from '../../../../__generated__/types.next';
+import { MutationResolvers } from '../../../../__generated__/types';
 import { PreflightScriptProvider } from '../../providers/preflight-script.provider';
 
 export const createPreflightScript: NonNullable<MutationResolvers['createPreflightScript']> = (

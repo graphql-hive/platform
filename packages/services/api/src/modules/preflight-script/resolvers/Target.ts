@@ -1,4 +1,4 @@
-import type { TargetResolvers } from '../../../__generated__/types.next';
+import type { TargetResolvers } from '../../../__generated__/types';
 import { PreflightScriptProvider } from '../providers/preflight-script.provider';
 
 /*
