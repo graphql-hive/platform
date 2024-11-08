@@ -10,6 +10,14 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
       layout: 'raw',
     },
   },
+  federation: {
+    title: 'Federation',
+    type: 'page',
+    display: 'hidden',
+    theme: {
+      layout: 'raw',
+    },
+  },
   hive: {
     title: 'Get Started',
     type: 'page',

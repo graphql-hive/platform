@@ -183,6 +183,7 @@ export function FeatureTabs({ className }: { className?: string }) {
                 description="Entry point to your distributed data graph."
                 highlights={highlights['GraphQL Gateway']}
                 setActiveHighlight={setActiveHighlight}
+                noImage
               />
             </Tabs.Content>
           </>
@@ -249,6 +250,7 @@ function Feature(props: {
   description: string;
   highlights: Highlight[];
   documentationLink?: string;
+  noImage?: boolean;
   setActiveHighlight: (highlight: string) => void;
 }) {
   const { title, description, documentationLink, highlights } = props;
