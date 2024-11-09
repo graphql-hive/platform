@@ -5,7 +5,9 @@ import { Logger } from './logger';
 
 export type { RedisInstance as Redis };
 
-export type RedisConfig = Required<Pick<RedisOptions, 'host' | 'port' | 'password'>>;
+export type RedisConfig = Required<Pick<RedisOptions, 'host' | 'port' | 'password'>> & {
+  tls_enabled: boolean;
+};
 
 export const REDIS_INSTANCE = new InjectionToken<RedisInstance>('REDIS_INSTANCE');
 
@@ -24,6 +26,7 @@ export function createRedisClient(label: string, config: RedisConfig, logger: Lo
     db: 0,
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
+    tls: config.tls_enabled ? {} : undefined,
   });
 
   redis.on('error', err => {

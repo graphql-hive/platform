@@ -64,6 +64,7 @@ async function main() {
         host: env.redis.host,
         port: env.redis.port,
         password: env.redis.password,
+        tls_enabled: env.redis.tls_enabled,
       },
       webhookQueueName: 'webhook',
       maxAttempts: 10,

@@ -9,6 +9,13 @@ const numberFromNumberOrNumberString = (input: unknown): number | undefined => {
 };
 
 const NumberFromString = zod.preprocess(numberFromNumberOrNumberString, zod.number().min(1));
+const BooleanFromString = zod.preprocess(val => {
+  if (typeof val === 'string') {
+    if (['1', 'true'].includes(val.toLowerCase())) return true;
+    if (['0', 'false'].includes(val.toLowerCase())) return false;
+  }
+  return val;
+}, zod.coerce.boolean());
 
 // treat an empty string (`''`) as undefined
 const emptyString = <T extends zod.ZodType>(input: T) => {
@@ -92,6 +99,7 @@ const RedisModel = zod.object({
   REDIS_HOST: zod.string(),
   REDIS_PORT: NumberFromString,
   REDIS_PASSWORD: emptyString(zod.string().optional()),
+  REDIS_TLS_ENABLED: BooleanFromString,
 });
 
 const SuperTokensModel = zod.object({
@@ -397,6 +405,7 @@ export const env = {
     host: redis.REDIS_HOST,
     port: redis.REDIS_PORT,
     password: redis.REDIS_PASSWORD ?? '',
+    tls_enabled: redis.REDIS_TLS_ENABLED ?? false,
   },
   supertokens: {
     connectionURI: supertokens.SUPERTOKENS_CONNECTION_URI,
