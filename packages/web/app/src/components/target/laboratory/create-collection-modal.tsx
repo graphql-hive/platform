@@ -258,7 +258,7 @@ export function CreateCollectionModalContent(props: {
                       <FormItem>
                         <FormLabel>Collection Name</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="My Collection" />
+                          <Input {...field} placeholder="My Collection" data-cy="collection-name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -273,7 +273,11 @@ export function CreateCollectionModalContent(props: {
                       <FormItem>
                         <FormLabel>Collection Description</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="My Collection" />
+                          <Input
+                            {...field}
+                            placeholder="My Collection"
+                            data-cy="collection-description"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -302,7 +306,7 @@ export function CreateCollectionModalContent(props: {
                   className="w-full justify-center"
                   variant="primary"
                   disabled={props.form.formState.isSubmitting || !props.form.formState.isValid}
-                  data-cy="confirm"
+                  data-cy="save-collection"
                 >
                   {props.collectionId ? 'Update' : 'Add'}
                 </Button>
