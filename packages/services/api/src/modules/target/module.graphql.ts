@@ -3,9 +3,7 @@ import { gql } from 'graphql-modules';
 export default gql`
   extend type Query {
     target(selector: TargetSelectorInput!): Target
-      @deprecated(reason: "Use field 'Project.targetBySlug' instead.")
     targets(selector: ProjectSelectorInput!): TargetConnection!
-      @deprecated(reason: "Use field 'Project.targets' instead.")
   }
 
   extend type Mutation {
