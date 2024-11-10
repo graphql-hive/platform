@@ -169,7 +169,7 @@ function transformAccessTokenLegacyScopes(args: {
           },
           {
             effect: 'allow',
-            action: ['organization:describe', 'project:describe', 'alert:describe'],
+            action: ['organization:describe', 'project:describe'],
             resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
           },
         );
@@ -193,7 +193,7 @@ function transformAccessTokenLegacyScopes(args: {
           },
           {
             effect: 'allow',
-            action: ['organization:describe', 'project:describe', 'alert:describe'],
+            action: ['organization:describe', 'project:describe'],
             resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
           },
         );
