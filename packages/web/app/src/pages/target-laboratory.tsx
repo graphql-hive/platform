@@ -47,6 +47,7 @@ import { Repeater } from '@repeaterjs/repeater';
 import { Link as RouterLink, useRouter } from '@tanstack/react-router';
 import 'graphiql/style.css';
 import '@graphiql/plugin-explorer/style.css';
+import { useRedirect } from '@/lib/access/common';
 
 const explorer = explorerPlugin();
 
@@ -246,6 +247,7 @@ function LaboratoryPageContent(props: {
   organizationSlug: string;
   projectSlug: string;
   targetSlug: string;
+  selectedOperationId: string | undefined;
 }) {
   const [query] = useQuery({
     query: TargetLaboratoryPageQuery,
@@ -314,10 +316,6 @@ function LaboratoryPageContent(props: {
     };
   }, [query.data?.target?.graphqlEndpointUrl, actualSelectedApiEndpoint]);
 
-  if (query.error) {
-    return <QueryError organizationSlug={props.organizationSlug} error={query.error} />;
-  }
-
   const FullScreenIcon = isFullScreen ? ExitFullScreenIcon : EnterFullScreenIcon;
 
   const handleTabChange = useCallback<Exclude<GraphiQLProviderProps['onTabChange'], undefined>>(
@@ -331,20 +329,45 @@ function LaboratoryPageContent(props: {
           projectSlug: props.projectSlug,
           targetSlug: props.targetSlug,
         },
-        search: userOperations.has(activeTab.id) ? { operation: activeTab.id } : {},
+        search: { operation: userOperations.has(activeTab.id) ? activeTab.id : undefined },
       });
     },
     [userOperations],
   );
 
+  const target = query.data?.target;
+
+  useRedirect({
+    canAccess: target?.viewerCanViewLaboratory === true,
+    redirectTo: router => {
+      void router.navigate({
+        to: '/$organizationSlug/$projectSlug/$targetSlug',
+        params: {
+          organizationSlug: props.organizationSlug,
+          projectSlug: props.projectSlug,
+          targetSlug: props.targetSlug,
+        },
+      });
+    },
+    entity: target,
+  });
+
+  if (query.error) {
+    return (
+      <QueryError
+        organizationSlug={props.organizationSlug}
+        error={query.error}
+        showLogoutButton={false}
+      />
+    );
+  }
+
+  if (target?.viewerCanViewLaboratory === false) {
+    return null;
+  }
+
   return (
-    <TargetLayout
-      organizationSlug={props.organizationSlug}
-      projectSlug={props.projectSlug}
-      targetSlug={props.targetSlug}
-      page={Page.Laboratory}
-      className="flex h-[--content-height] flex-col pb-0"
-    >
+    <>
       <div className="flex py-6">
         <div className="flex-1">
           <Title>Laboratory</Title>
@@ -453,6 +476,7 @@ function LaboratoryPageContent(props: {
           forcedTheme="dark"
           className={isFullScreen ? 'fixed inset-0 bg-[#030711]' : ''}
           onTabChange={handleTabChange}
+          readOnly={!!props.selectedOperationId && target?.viewerCanModifyLaboratory === false}
         >
           <GraphiQL.Logo>
             <Button
@@ -467,13 +491,18 @@ function LaboratoryPageContent(props: {
           <GraphiQL.Toolbar>
             {({ prettify }) => (
               <>
-                <Save
-                  organizationSlug={props.organizationSlug}
-                  projectSlug={props.projectSlug}
-                  targetSlug={props.targetSlug}
-                />
+                {query.data?.target?.viewerCanModifyLaboratory && (
+                  <Save
+                    organizationSlug={props.organizationSlug}
+                    projectSlug={props.projectSlug}
+                    targetSlug={props.targetSlug}
+                  />
+                )}
                 <Share />
-                {prettify}
+                {/* if people have no modify access they should still be able to format their own queries. */}
+                {(query.data?.target?.viewerCanModifyLaboratory === true ||
+                  !props.selectedOperationId) &&
+                  prettify}
               </>
             )}
           </GraphiQL.Toolbar>
@@ -485,7 +514,7 @@ function LaboratoryPageContent(props: {
         isOpen={isConnectLabModalOpen}
         isCDNEnabled={query.data ?? null}
       />
-    </TargetLayout>
+    </>
   );
 }
 
@@ -493,11 +522,20 @@ export function TargetLaboratoryPage(props: {
   organizationSlug: string;
   projectSlug: string;
   targetSlug: string;
+  selectedOperationId: string | undefined;
 }) {
   return (
     <>
       <Meta title="Schema laboratory" />
-      <LaboratoryPageContent {...props} />
+      <TargetLayout
+        organizationSlug={props.organizationSlug}
+        projectSlug={props.projectSlug}
+        targetSlug={props.targetSlug}
+        page={Page.Laboratory}
+        className="flex h-[--content-height] flex-col pb-0"
+      >
+        <LaboratoryPageContent {...props} />
+      </TargetLayout>
     </>
   );
 }

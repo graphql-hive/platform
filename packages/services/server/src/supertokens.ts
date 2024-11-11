@@ -24,10 +24,6 @@ import { createThirdPartyEmailPasswordNodeOktaProvider } from './supertokens/okt
 const SuperTokenAccessTokenModel = zod.object({
   version: zod.literal('1'),
   superTokensUserId: zod.string(),
-  /**
-   * Supertokens for some reason omits externalUserId from the access token payload if it is null.
-   */
-  externalUserId: zod.optional(zod.union([zod.string(), zod.null()])),
   email: zod.string(),
 });
 
@@ -182,7 +178,7 @@ export const backendConfig = (requirements: {
             ...originalImplementation,
             async createNewSession(input) {
               console.log(`Creating a new session for "${input.userId}"`);
-              const user = await ThirdPartyEmailPasswordNode.getUserById(input.userId);
+              const user = await supertokens.getUser(input.userId, input.userContext);
 
               if (!user) {
                 console.log(`Failed to find user with id "${input.userId}"`);
@@ -191,24 +187,16 @@ export const backendConfig = (requirements: {
                 );
               }
 
-              const externalUserId = user.thirdParty
-                ? `${user.thirdParty.id}|${user.thirdParty.userId}`
-                : null;
-
-              console.log(`External user id for user "${input.userId}" is "${externalUserId}"`);
-
               input.accessTokenPayload = {
                 version: '1',
                 superTokensUserId: input.userId,
-                externalUserId,
-                email: user.email,
+                email: user.emails[0],
               };
 
               input.sessionDataInDatabase = {
                 version: '1',
                 superTokensUserId: input.userId,
-                externalUserId,
-                email: user.email,
+                email: user.emails[0],
               };
 
               return originalImplementation.createNewSession(input);
@@ -239,7 +227,7 @@ const getEnsureUserOverrides = (
       if (response.status === 'OK') {
         await internalApi.ensureUser({
           superTokensUserId: response.user.id,
-          email: response.user.email,
+          email: response.user.emails[0],
           oidcIntegrationId: null,
           firstName,
           lastName,
@@ -258,7 +246,7 @@ const getEnsureUserOverrides = (
       if (response.status === 'OK') {
         await internalApi.ensureUser({
           superTokensUserId: response.user.id,
-          email: response.user.email,
+          email: response.user.emails[0],
           oidcIntegrationId: null,
           // They are not available during sign in.
           firstName: null,
@@ -287,7 +275,7 @@ const getEnsureUserOverrides = (
       if (response.status === 'OK') {
         await internalApi.ensureUser({
           superTokensUserId: response.user.id,
-          email: response.user.email,
+          email: response.user.emails[0],
           oidcIntegrationId: extractOidcId(input),
           // TODO: should we somehow extract the first and last name from the third party provider?
           firstName: null,
@@ -301,8 +289,8 @@ const getEnsureUserOverrides = (
       const result = await originalImplementation.passwordResetPOST!(input);
 
       // For security reasons we revoke all sessions when a password reset is performed.
-      if (result.status === 'OK' && result.userId) {
-        await SessionNode.revokeAllSessionsForUser(result.userId);
+      if (result.status === 'OK' && result.user) {
+        await SessionNode.revokeAllSessionsForUser(result.user.id);
       }
 
       return result;

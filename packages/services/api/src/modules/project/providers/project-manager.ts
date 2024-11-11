@@ -1,5 +1,5 @@
 import { Injectable, Scope } from 'graphql-modules';
-import type { Project, ProjectType } from '../../../shared/entities';
+import type { Organization, Project, ProjectType } from '../../../shared/entities';
 import { share } from '../../../shared/helpers';
 import { Session } from '../../auth/lib/authz';
 import { ActivityManager } from '../../shared/providers/activity-manager';
@@ -134,6 +134,35 @@ export class ProjectManager {
       },
     });
     return this.storage.getProject(selector);
+  }
+
+  async getProjectBySlugForOrganization(
+    organization: Organization,
+    projectSlug: string,
+  ): Promise<Project | null> {
+    const project = await this.storage.getProjectBySlug({
+      organizationId: organization.id,
+      slug: projectSlug,
+    });
+
+    if (!project) {
+      return null;
+    }
+
+    const canViewerAccess = await this.session.canPerformAction({
+      action: 'project:describe',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+        projectId: project.id,
+      },
+    });
+
+    if (canViewerAccess === false) {
+      return null;
+    }
+
+    return project;
   }
 
   async getProjects(selector: OrganizationSelector): Promise<Project[]> {

@@ -24,13 +24,13 @@ import { UserMenu } from '@/components/ui/user-menu';
 import { CopyValue, Tag } from '@/components/v2';
 import { graphql } from '@/gql';
 import { ProjectType } from '@/gql/graphql';
-import { canAccessTarget, TargetAccessScope, useTargetAccess } from '@/lib/access/target';
 import { getDocsUrl } from '@/lib/docs-url';
 import { useToggle } from '@/lib/hooks';
 import { useLastVisitedOrganizationWriter } from '@/lib/last-visited-org';
 import { cn } from '@/lib/utils';
 import { Link } from '@tanstack/react-router';
 import { ProjectMigrationToast } from '../project/migration-toast';
+import { ResourceNotFoundComponent } from '../resource-not-found';
 import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { TargetSelector } from './target-selector';
 
@@ -46,38 +46,32 @@ export enum Page {
 }
 
 const TargetLayoutQuery = graphql(`
-  query TargetLayoutQuery {
+  query TargetLayoutQuery($organizationSlug: String!, $projectSlug: String!, $targetSlug: String!) {
     me {
       id
       ...UserMenu_MeFragment
     }
     organizations {
-      nodes {
-        id
-        slug
-        isAppDeploymentsEnabled
-        me {
-          id
-          ...CanAccessTarget_MemberFragment
-        }
-        projects {
-          nodes {
-            id
-            slug
-            registryModel
-            targets {
-              nodes {
-                id
-                slug
-              }
-            }
-          }
-        }
-      }
       ...TargetSelector_OrganizationConnectionFragment
       ...UserMenu_OrganizationConnectionFragment
     }
     isCDNEnabled
+    organization: organizationBySlug(organizationSlug: $organizationSlug) {
+      id
+      slug
+      project: projectBySlug(projectSlug: $projectSlug) {
+        id
+        slug
+        registryModel
+        target: targetBySlug(targetSlug: $targetSlug) {
+          id
+          slug
+          viewerCanViewLaboratory
+          viewerCanViewAppDeployments
+          viewerCanAccessSettings
+        }
+      }
+    }
   }
 `);
 
@@ -100,49 +94,21 @@ export const TargetLayout = ({
   const [query] = useQuery({
     query: TargetLayoutQuery,
     requestPolicy: 'cache-first',
+    variables: {
+      organizationSlug: props.organizationSlug,
+      projectSlug: props.projectSlug,
+      targetSlug: props.targetSlug,
+    },
   });
 
   const me = query.data?.me;
-  const currentOrganization = query.data?.organizations.nodes.find(
-    node => node.slug === props.organizationSlug,
-  );
-  const currentProject = currentOrganization?.projects.nodes.find(
-    node => node.slug === props.projectSlug,
-  );
-  const currentTarget = currentProject?.targets.nodes.find(node => node.slug === props.targetSlug);
+  const currentOrganization = query.data?.organization;
+  const currentProject = query.data?.organization?.project;
+  const currentTarget = query.data?.organization?.project?.target;
+
   const isCDNEnabled = query.data?.isCDNEnabled === true;
 
-  useTargetAccess({
-    scope: TargetAccessScope.Read,
-    member: currentOrganization?.me ?? null,
-    redirect: true,
-    targetSlug: props.targetSlug,
-    projectSlug: props.projectSlug,
-    organizationSlug: props.organizationSlug,
-  });
-
   useLastVisitedOrganizationWriter(currentOrganization?.slug);
-
-  const hasRegistryReadAccess = canAccessTarget(
-    TargetAccessScope.RegistryRead,
-    currentOrganization?.me ?? null,
-  );
-  const hasReadAccess = canAccessTarget(TargetAccessScope.Read, currentOrganization?.me ?? null);
-  const hasSettingsAccess = canAccessTarget(
-    TargetAccessScope.Settings,
-    currentOrganization?.me ?? null,
-  );
-  const hasRegistryWriteAccess = canAccessTarget(
-    TargetAccessScope.RegistryWrite,
-    currentOrganization?.me ?? null,
-  );
-  const hasTokensWriteAccess = canAccessTarget(
-    TargetAccessScope.TokensWrite,
-    currentOrganization?.me ?? null,
-  );
-
-  const canAccessSettingsPage =
-    hasReadAccess || hasSettingsAccess || hasRegistryWriteAccess || hasTokensWriteAccess;
 
   return (
     <>
@@ -167,20 +133,24 @@ export const TargetLayout = ({
         </div>
       </header>
 
-      {currentProject?.registryModel === 'LEGACY' ? (
-        <ProjectMigrationToast
-          organizationSlug={props.organizationSlug}
-          projectSlug={props.projectSlug}
-        />
-      ) : null}
+      {query.fetching === false &&
+      query.stale === false &&
+      (currentProject === null || currentOrganization === null || currentTarget === null) ? (
+        <ResourceNotFoundComponent title="404 - This project does not seem to exist." />
+      ) : (
+        <>
+          {currentProject?.registryModel === 'LEGACY' ? (
+            <ProjectMigrationToast
+              organizationSlug={props.organizationSlug}
+              projectSlug={props.projectSlug}
+            />
+          ) : null}
 
-      <div className="relative h-[--tabs-navbar-height] border-b border-gray-800">
-        <div className="container flex items-center justify-between">
-          {currentOrganization && currentProject && currentTarget ? (
-            <Tabs className="flex h-full grow flex-col" value={page}>
-              <TabsList variant="menu">
-                {hasRegistryReadAccess && (
-                  <>
+          <div className="relative h-[--tabs-navbar-height] border-b border-gray-800">
+            <div className="container flex items-center justify-between">
+              {currentOrganization && currentProject && currentTarget ? (
+                <Tabs className="flex h-full grow flex-col" value={page}>
+                  <TabsList variant="menu">
                     <TabsTrigger variant="menu" value={Page.Schema} asChild>
                       <Link
                         to="/$organizationSlug/$projectSlug/$targetSlug"
@@ -241,7 +211,7 @@ export const TargetLayout = ({
                         Insights
                       </Link>
                     </TabsTrigger>
-                    {currentOrganization.isAppDeploymentsEnabled && (
+                    {currentTarget.viewerCanViewAppDeployments && (
                       <TabsTrigger variant="menu" value={Page.Apps} asChild>
                         <Link
                           to="/$organizationSlug/$projectSlug/$targetSlug/apps"
@@ -255,68 +225,69 @@ export const TargetLayout = ({
                         </Link>
                       </TabsTrigger>
                     )}
-                    <TabsTrigger variant="menu" value={Page.Laboratory} asChild>
-                      <Link
-                        to="/$organizationSlug/$projectSlug/$targetSlug/laboratory"
-                        params={{
-                          organizationSlug: props.organizationSlug,
-                          projectSlug: props.projectSlug,
-                          targetSlug: props.targetSlug,
-                        }}
-                      >
-                        Laboratory
-                      </Link>
-                    </TabsTrigger>
+                    {currentTarget.viewerCanViewLaboratory && (
+                      <TabsTrigger variant="menu" value={Page.Laboratory} asChild>
+                        <Link
+                          to="/$organizationSlug/$projectSlug/$targetSlug/laboratory"
+                          params={{
+                            organizationSlug: props.organizationSlug,
+                            projectSlug: props.projectSlug,
+                            targetSlug: props.targetSlug,
+                          }}
+                        >
+                          Laboratory
+                        </Link>
+                      </TabsTrigger>
+                    )}
+                    {currentTarget.viewerCanAccessSettings && (
+                      <TabsTrigger variant="menu" value={Page.Settings} asChild>
+                        <Link
+                          to="/$organizationSlug/$projectSlug/$targetSlug/settings"
+                          params={{
+                            organizationSlug: props.organizationSlug,
+                            projectSlug: props.projectSlug,
+                            targetSlug: props.targetSlug,
+                          }}
+                        >
+                          Settings
+                        </Link>
+                      </TabsTrigger>
+                    )}
+                  </TabsList>
+                </Tabs>
+              ) : (
+                <div className="flex flex-row gap-x-8 border-b-2 border-b-transparent px-4 py-3">
+                  <div className="h-5 w-12 animate-pulse rounded-full bg-gray-800" />
+                  <div className="h-5 w-12 animate-pulse rounded-full bg-gray-800" />
+                  <div className="h-5 w-12 animate-pulse rounded-full bg-gray-800" />
+                </div>
+              )}
+              {currentTarget ? (
+                connect != null ? (
+                  connect
+                ) : isCDNEnabled ? (
+                  <>
+                    <Button onClick={toggleModalOpen} variant="link" className="text-orange-500">
+                      <LinkIcon size={16} className="mr-2" />
+                      Connect to CDN
+                    </Button>
+                    <ConnectSchemaModal
+                      organizationSlug={props.organizationSlug}
+                      projectSlug={props.projectSlug}
+                      targetSlug={props.targetSlug}
+                      isOpen={isModalOpen}
+                      toggleModalOpen={toggleModalOpen}
+                    />
                   </>
-                )}
-                {canAccessSettingsPage && (
-                  <TabsTrigger variant="menu" value={Page.Settings} asChild>
-                    <Link
-                      to="/$organizationSlug/$projectSlug/$targetSlug/settings"
-                      params={{
-                        organizationSlug: props.organizationSlug,
-                        projectSlug: props.projectSlug,
-                        targetSlug: props.targetSlug,
-                      }}
-                      search={{ page: 'general' }}
-                    >
-                      Settings
-                    </Link>
-                  </TabsTrigger>
-                )}
-              </TabsList>
-            </Tabs>
-          ) : (
-            <div className="flex flex-row gap-x-8 border-b-2 border-b-transparent px-4 py-3">
-              <div className="h-5 w-12 animate-pulse rounded-full bg-gray-800" />
-              <div className="h-5 w-12 animate-pulse rounded-full bg-gray-800" />
-              <div className="h-5 w-12 animate-pulse rounded-full bg-gray-800" />
+                ) : null
+              ) : null}
             </div>
-          )}
-          {currentTarget ? (
-            connect != null ? (
-              connect
-            ) : isCDNEnabled ? (
-              <>
-                <Button onClick={toggleModalOpen} variant="link" className="text-orange-500">
-                  <LinkIcon size={16} className="mr-2" />
-                  Connect to CDN
-                </Button>
-                <ConnectSchemaModal
-                  organizationSlug={props.organizationSlug}
-                  projectSlug={props.projectSlug}
-                  targetSlug={props.targetSlug}
-                  isOpen={isModalOpen}
-                  toggleModalOpen={toggleModalOpen}
-                />
-              </>
-            ) : null
-          ) : null}
-        </div>
-      </div>
-      <div className={cn('container min-h-[var(--content-height)] pb-7', className)}>
-        {children}
-      </div>
+          </div>
+          <div className={cn('container min-h-[var(--content-height)] pb-7', className)}>
+            {children}
+          </div>
+        </>
+      )}
     </>
   );
 };

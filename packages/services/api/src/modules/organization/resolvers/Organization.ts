@@ -22,6 +22,16 @@ export const Organization: Pick<
   | 'owner'
   | 'slug'
   | 'unassignedMembersToMigrate'
+  | 'viewerCanAccessSettings'
+  | 'viewerCanAssignUserRoles'
+  | 'viewerCanDelete'
+  | 'viewerCanManageInvitations'
+  | 'viewerCanManageRoles'
+  | 'viewerCanMigrateLegacyMemberRoles'
+  | 'viewerCanModifySlug'
+  | 'viewerCanRemoveMember'
+  | 'viewerCanSeeMembers'
+  | 'viewerCanTransferOwnership'
   | '__isTypeOf'
 > = {
   __isTypeOf: organization => {
@@ -109,4 +119,122 @@ export const Organization: Pick<
     );
   },
   cleanId: organization => organization.slug,
+  viewerCanDelete: async (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'organization:delete',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanModifySlug: async (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'organization:modifySlug',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanTransferOwnership: async (organization, _arg, { session, injector }) => {
+    const owner = await injector
+      .get(OrganizationManager)
+      .getOrganizationOwner({ organizationId: organization.id });
+    const viewer = await session.getViewer();
+    return viewer.id === owner.id;
+  },
+  viewerCanAccessSettings: async (organization, _arg, { session }) => {
+    /* If any of these yields true the user should be able to access the settings */
+    return Promise.all([
+      session.canPerformAction({
+        action: 'organization:modifySlug',
+        organizationId: organization.id,
+        params: {
+          organizationId: organization.id,
+        },
+      }),
+      session.canPerformAction({
+        action: 'organization:delete',
+        organizationId: organization.id,
+        params: {
+          organizationId: organization.id,
+        },
+      }),
+      session.canPerformAction({
+        action: 'oidc:modify',
+        organizationId: organization.id,
+        params: {
+          organizationId: organization.id,
+        },
+      }),
+      session.canPerformAction({
+        action: 'gitHubIntegration:modify',
+        organizationId: organization.id,
+        params: {
+          organizationId: organization.id,
+        },
+      }),
+      session.canPerformAction({
+        action: 'slackIntegration:modify',
+        organizationId: organization.id,
+        params: {
+          organizationId: organization.id,
+        },
+      }),
+    ]).then(result => result.some(Boolean));
+  },
+  viewerCanSeeMembers: async (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:describe',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+
+  viewerCanManageInvitations: (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:manageInvites',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanAssignUserRoles: (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:assignRole',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanRemoveMember: (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:removeMember',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanManageRoles: (organization, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'member:modifyRole',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+  },
+  viewerCanMigrateLegacyMemberRoles: async (organization, _arg, { injector, session }) => {
+    const owner = await injector
+      .get(OrganizationManager)
+      .getOrganizationOwner({ organizationId: organization.id });
+    const viewer = await session.getViewer();
+    return viewer.id === owner.id;
+  },
 };

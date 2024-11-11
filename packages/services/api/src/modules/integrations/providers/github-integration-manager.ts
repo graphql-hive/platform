@@ -428,10 +428,11 @@ export class GitHubIntegrationManager {
 
   async enableProjectNameInGithubCheck(input: ProjectSelector) {
     await this.session.assertPerformAction({
-      action: 'gitHubIntegration:modify',
+      action: 'project:modifySettings',
       organizationId: input.organizationId,
       params: {
         organizationId: input.organizationId,
+        projectId: input.projectId,
       },
     });
 
