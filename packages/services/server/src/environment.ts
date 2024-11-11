@@ -398,7 +398,7 @@ export const env = {
     host: redis.REDIS_HOST,
     port: redis.REDIS_PORT,
     password: redis.REDIS_PASSWORD ?? '',
-    tlsEnabled: redis.REDIS_TLS_ENABLED ?? false,
+    tlsEnabled: redis.REDIS_TLS_ENABLED === '1',
   },
   supertokens: {
     connectionURI: supertokens.SUPERTOKENS_CONNECTION_URI,

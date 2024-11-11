@@ -152,7 +152,7 @@ export const env = {
     host: redis.REDIS_HOST,
     port: redis.REDIS_PORT,
     password: redis.REDIS_PASSWORD ?? '',
-    tlsEnabled: redis.REDIS_TLS_ENABLED,
+    tlsEnabled: redis.REDIS_TLS_ENABLED === '1',
   },
   sentry: sentry.SENTRY === '1' ? { dsn: sentry.SENTRY_DSN } : null,
   log: {
