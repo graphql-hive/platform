@@ -43,6 +43,14 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
       toc: true,
     },
   },
+  partners: {
+    title: 'Partners',
+    type: 'page',
+    display: 'hidden',
+    theme: {
+      layout: 'raw',
+    },
+  },
   products: {
     title: 'Products',
     type: 'menu',
@@ -98,6 +106,6 @@ export default meta;
 
 type DeepPartial<T> = T extends object
   ? {
-      [P in keyof T]?: DeepPartial<T[P]>;
-    }
+    [P in keyof T]?: DeepPartial<T[P]>;
+  }
   : T;
