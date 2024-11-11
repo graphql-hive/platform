@@ -147,6 +147,11 @@ export default withGuildDocs({
       destination: '/docs/other-integrations/:path*',
       permanent: false,
     },
+    {
+      source: '/docs/api-reference/gateway/cli',
+      destination: 'docs/gateway',
+      permanent: true,
+    },
   ],
   swcMinify: true,
   webpack: (config, { webpack }) => {
