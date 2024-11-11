@@ -5,7 +5,7 @@ import type { TypeInput as ThirdPartEmailPasswordTypeInput } from 'supertokens-n
 import zod from 'zod';
 import { createInternalApiCaller } from '../api';
 
-const couldNotResolveOidcIntegrationSymbol = Symbol('could_not_resolve_oidc_integration');
+const couldNotResolveOidcIntegrationBrand = '[graphql_hive]err_could_not_resolve_oidc_integration';
 
 type InternalApiCaller = ReturnType<typeof createInternalApiCaller>;
 
@@ -14,7 +14,7 @@ export const getOIDCSuperTokensOverrides = (): ThirdPartEmailPasswordTypeInput['
     return {
       ...originalImplementation,
       async authorisationUrlGET(input) {
-        if (input.userContext?.[couldNotResolveOidcIntegrationSymbol] === true) {
+        if (input.userContext?.[couldNotResolveOidcIntegrationBrand] === true) {
           return {
             status: 'GENERAL_ERROR',
             message: 'Could not find OIDC integration.',
@@ -48,7 +48,7 @@ export const createOIDCSuperTokensProvider = (args: {
           // In the next step the override `authorisationUrlGET` from `getOIDCSuperTokensOverrides` is called.
           // We use the user context to return a `GENERAL_ERROR` with a human readable message.
           // We cannot return an error here (except an "Unexpected error"), so we also need to return fake dat
-          input.userContext[couldNotResolveOidcIntegrationSymbol] = true;
+          input.userContext[couldNotResolveOidcIntegrationBrand] = true;
 
           return {
             thirdPartyId: 'oidc',
