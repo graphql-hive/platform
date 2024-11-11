@@ -234,8 +234,8 @@ export class AlertsManager {
     );
 
     const [channels, alerts] = await Promise.all([
-      this.getChannels({ organizationId: organization, projectId: project }),
-      this.getAlerts({ organizationId: organization, projectId: project }),
+      this.storage.getAlertChannels({ organizationId: organization, projectId: project }),
+      this.storage.getAlerts({ organizationId: organization, projectId: project }),
     ]);
 
     const matchingAlerts = alerts.filter(
