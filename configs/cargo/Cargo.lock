@@ -1910,31 +1910,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "graphql-hive-router"
-version = "0.0.1"
-dependencies = [
- "anyhow",
- "apollo-router",
- "async-trait",
- "futures",
- "graphql-parser 0.4.0 (git+https://github.com/graphql-rust/graphql-parser.git?rev=8d76425d83c40670570cc325f57c730262f07456)",
- "graphql-tools",
- "http 0.2.11",
- "lru",
- "md5",
- "rand 0.8.5",
- "reqwest 0.12.5",
- "schemars",
- "serde",
- "serde_json",
- "sha2",
- "thiserror",
- "tokio",
- "tower",
- "tracing",
-]
-
-[[package]]
 name = "graphql-introspection-query"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2161,6 +2136,31 @@ dependencies = [
  "smallvec",
  "thiserror",
  "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "hive-apollo-router-plugin"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "apollo-router",
+ "async-trait",
+ "futures",
+ "graphql-parser 0.4.0 (git+https://github.com/graphql-rust/graphql-parser.git?rev=8d76425d83c40670570cc325f57c730262f07456)",
+ "graphql-tools",
+ "http 0.2.11",
+ "lru",
+ "md5",
+ "rand 0.8.5",
+ "reqwest 0.12.5",
+ "schemars",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
+ "tokio",
+ "tower",
  "tracing",
 ]
 
