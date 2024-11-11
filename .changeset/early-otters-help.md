@@ -1,7 +1,5 @@
 ---
-'@graphql-hive/core': minor
-'@graphql-hive/yoga': minor
 'hive': minor
 ---
 
-Added REDIS_TLS_ENABLED option to handle AWS Elasticache "encryption-in-transit" configuration
+Add `REDIS_TLS_ENABLED` environment variable for enabling and disabling Redis TLS for `emails`, `schema`, `tokens`, `webhooks` and `server` services.
