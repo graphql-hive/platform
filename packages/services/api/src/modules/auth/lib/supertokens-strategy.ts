@@ -200,6 +200,7 @@ function transformOrganizationMemberLegacyScopes(args: {
             'project:create',
             'project:describe',
             'organization:describe',
+            'target:create',
           ],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
