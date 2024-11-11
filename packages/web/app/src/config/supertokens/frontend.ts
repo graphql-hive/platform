@@ -1,5 +1,6 @@
 import Provider from 'supertokens-auth-react/lib/build/recipe/thirdparty/providers';
 import { CustomProviderConfig } from 'supertokens-auth-react/lib/build/recipe/thirdparty/providers/types';
+import type { SuperTokensConfig } from 'supertokens-auth-react/lib/build/types';
 import EmailVerification from 'supertokens-auth-react/recipe/emailverification';
 import SessionReact from 'supertokens-auth-react/recipe/session';
 import ThirdPartyEmailPasswordReact from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
@@ -10,7 +11,7 @@ import {
   getOIDCOverrides,
 } from '@/lib/supertokens/third-party-email-password-react-oidc-provider';
 
-export const frontendConfig = () => {
+export const frontendConfig = (): SuperTokensConfig => {
   const providers: Array<Provider | CustomProviderConfig> = [];
 
   if (env.auth.github === true) {
@@ -68,16 +69,6 @@ export const frontendConfig = () => {
             ],
           },
         },
-        async getRedirectionURL(context) {
-          if (context.action === 'SUCCESS') {
-            // Allow only local pages to be redirected to
-            if (context.redirectToPath !== undefined && /^\/[^/]+/.test(context.redirectToPath)) {
-              // we are navigating back to where the user was before they authenticated
-              return context.redirectToPath;
-            }
-            return '/';
-          }
-        },
         override: env.auth.oidc ? getOIDCOverrides() : undefined,
       }),
       EmailVerification.init({
@@ -85,5 +76,15 @@ export const frontendConfig = () => {
       }),
       SessionReact.init(),
     ],
+    async getRedirectionURL(context) {
+      if (context.action === 'SUCCESS') {
+        // Allow only local pages to be redirected to
+        if (context.redirectToPath !== undefined && /^\/[^/]+/.test(context.redirectToPath)) {
+          // we are navigating back to where the user was before they authenticated
+          return context.redirectToPath;
+        }
+        return '/';
+      }
+    },
   };
 };
