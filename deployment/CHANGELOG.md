@@ -1,5 +1,19 @@
 # hive
 
+## 1.1.0
+
+### Minor Changes
+
+- [#5884](https://github.com/graphql-hive/platform/pull/5884)
+  [`8aec41a`](https://github.com/graphql-hive/platform/commit/8aec41a36ee897aad0057e6817a9433a545fd18d)
+  Thanks [@andriihrachov](https://github.com/andriihrachov)! - Add `REDIS_TLS_ENABLED` environment
+  variable for enabling and disabling Redis TLS for `emails`, `schema`, `tokens`, `webhooks` and
+  `server` services.
+
+- [#5889](https://github.com/graphql-hive/platform/pull/5889)
+  [`0eef5ed`](https://github.com/graphql-hive/platform/commit/0eef5edc6b8a940d3e70b5ea322a73ac6af07d33)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Update `supertokens-postgresql` to `8.0`.
+
 ## 1.0.2
 
 ### Patch Changes
