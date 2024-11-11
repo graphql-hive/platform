@@ -790,8 +790,8 @@ importers:
         specifier: 30.4.4
         version: 30.4.4(patch_hash=jxrvl4xmdvyktjijg7yfdkb34i)
       supertokens-node:
-        specifier: 15.2.1
-        version: 15.2.1(encoding@0.1.13)
+        specifier: 16.7.5
+        version: 16.7.5(encoding@0.1.13)
       tslib:
         specifier: 2.8.0
         version: 2.8.0
@@ -1244,8 +1244,8 @@ importers:
         specifier: 0.0.4
         version: 0.0.4
       supertokens-node:
-        specifier: 15.2.1
-        version: 15.2.1(encoding@0.1.13)
+        specifier: 16.7.5
+        version: 16.7.5(encoding@0.1.13)
       tslib:
         specifier: 2.8.0
         version: 2.8.0
@@ -12527,10 +12527,6 @@ packages:
   nodemailer-shared@1.1.0:
     resolution: {integrity: sha512-68xW5LSyPWv8R0GLm6veAvm7E+XFXkVgvE3FW0FGxNMMZqMkPFeGDVALfR1DPdSfcoO36PnW7q5AAOgFImEZGg==}
 
-  nodemailer@6.9.15:
-    resolution: {integrity: sha512-AHf04ySLC6CIfuRtRiEYtGEXgRfa6INgWGluDhnxTZhHSKvrBu7lc1VVchQ0d8nPc4cFaZoPq8vkyNoZr0TpGQ==}
-    engines: {node: '>=6.0.0'}
-
   nodemailer@6.9.16:
     resolution: {integrity: sha512-psAuZdTIRN08HKVd/E8ObdV6NO7NTBY3KsC30F7M4H1OnmLCUNaS56FpYxyb26zWLSyYF9Ozch9KYHhHegsiOQ==}
     engines: {node: '>=6.0.0'}
@@ -14698,8 +14694,8 @@ packages:
   supertokens-js-override@0.0.4:
     resolution: {integrity: sha512-r0JFBjkMIdep3Lbk3JA+MpnpuOtw4RSyrlRAbrzMcxwiYco3GFWl/daimQZ5b1forOiUODpOlXbSOljP/oyurg==}
 
-  supertokens-node@15.2.1:
-    resolution: {integrity: sha512-3zJ2EsiHYJHnYwAzDQI5Alp+4x/KcwEOBgeoPN5bWglZY0Xw0AzcZvd8S3N71vjLGvab0J3XxWmHeEHqSz5dbg==}
+  supertokens-node@16.7.5:
+    resolution: {integrity: sha512-xrVwi0GfgLIqHKaWXEp7fCgmVQ2wTiJTHG2CQGLkGMvrO9dUcxY+H6qozn3EvyXxbkm1BmflYD8N7ILNSIbR1g==}
 
   supertokens-web-js@0.8.0:
     resolution: {integrity: sha512-kkvuPbdy1I0e7nejVJAhpPJhR5h7EUHdn7Fh1YqfSjZfSJh46J3JU2qWGCgSDVZuD1hSuUKb6skF9CQnltHWrQ==}
@@ -16233,8 +16229,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16341,11 +16337,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.596.0':
+  '@aws-sdk/client-sso-oidc@3.596.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16384,6 +16380,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.0
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso-oidc@3.682.0(@aws-sdk/client-sts@3.682.0)':
@@ -16517,11 +16514,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)':
+  '@aws-sdk/client-sts@3.596.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16560,7 +16557,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.0
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/client-sts@3.682.0':
@@ -16674,7 +16670,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.596.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -16793,7 +16789,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/types': 3.6.0
@@ -16966,7 +16962,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/shared-ini-file-loader': 3.1.9
@@ -29817,8 +29813,6 @@ snapshots:
     dependencies:
       nodemailer-fetch: 1.6.0
 
-  nodemailer@6.9.15: {}
-
   nodemailer@6.9.16: {}
 
   noms@0.0.0:
@@ -32233,7 +32227,7 @@ snapshots:
 
   supertokens-js-override@0.0.4: {}
 
-  supertokens-node@15.2.1(encoding@0.1.13):
+  supertokens-node@16.7.5(encoding@0.1.13):
     dependencies:
       content-type: 1.0.5
       cookie: 0.7.2
@@ -32242,7 +32236,7 @@ snapshots:
       inflation: 2.0.0
       jose: 4.15.9
       libphonenumber-js: 1.10.14
-      nodemailer: 6.9.15
+      nodemailer: 6.9.16
       pkce-challenge: 3.1.0
       psl: 1.8.0
       supertokens-js-override: 0.0.4
