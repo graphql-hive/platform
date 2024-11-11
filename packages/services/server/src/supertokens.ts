@@ -24,10 +24,6 @@ import { createThirdPartyEmailPasswordNodeOktaProvider } from './supertokens/okt
 const SuperTokenAccessTokenModel = zod.object({
   version: zod.literal('1'),
   superTokensUserId: zod.string(),
-  /**
-   * Supertokens for some reason omits externalUserId from the access token payload if it is null.
-   */
-  externalUserId: zod.optional(zod.union([zod.string(), zod.null()])),
   email: zod.string(),
 });
 
@@ -184,32 +180,22 @@ export const backendConfig = (requirements: {
               console.log(`Creating a new session for "${input.userId}"`);
               const user = await supertokens.getUser(input.userId, input.userContext);
 
-              const method = user?.loginMethods.at(0);
-
-              if (!user || !method) {
+              if (!user) {
                 console.log(`Failed to find user with id "${input.userId}"`);
                 throw new Error(
                   `SuperTokens: Creating a new session failed. Could not find user with id ${input.userId}.`,
                 );
               }
 
-              const externalUserId = method.thirdParty
-                ? `${method.thirdParty.id}|${method.thirdParty.userId}`
-                : null;
-
-              console.log(`External user id for user "${input.userId}" is "${externalUserId}"`);
-
               input.accessTokenPayload = {
                 version: '1',
                 superTokensUserId: input.userId,
-                externalUserId,
                 email: user.emails[0],
               };
 
               input.sessionDataInDatabase = {
                 version: '1',
                 superTokensUserId: input.userId,
-                externalUserId,
                 email: user.emails[0],
               };
 
