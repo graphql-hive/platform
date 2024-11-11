@@ -149,7 +149,7 @@ export default withGuildDocs({
     },
     {
       source: '/docs/api-reference/gateway/cli',
-      destination: 'docs/gateway',
+      destination: '/docs/api-reference/gateway-cli',
       permanent: true,
     },
   ],
