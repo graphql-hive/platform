@@ -8,7 +8,7 @@ export interface Config {
     host: string;
     port: number;
     password: string;
-    tls_enabled: boolean;
+    tlsEnabled: boolean;
   };
   webhookQueueName: string;
   maxAttempts: number;

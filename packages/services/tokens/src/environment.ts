@@ -10,14 +10,6 @@ const numberFromNumberOrNumberString = (input: unknown): number | undefined => {
 
 const NumberFromString = zod.preprocess(numberFromNumberOrNumberString, zod.number().min(1));
 
-const BooleanFromString = zod.preprocess(val => {
-  if (typeof val === 'string') {
-    if (['1', 'true'].includes(val.toLowerCase())) return true;
-    if (['0', 'false'].includes(val.toLowerCase())) return false;
-  }
-  return val;
-}, zod.coerce.boolean());
-
 // treat an empty string (`''`) as undefined
 const emptyString = <T extends zod.ZodType>(input: T) => {
   return zod.preprocess((value: unknown) => {
@@ -56,7 +48,7 @@ const RedisModel = zod.object({
   REDIS_HOST: zod.string(),
   REDIS_PORT: NumberFromString,
   REDIS_PASSWORD: emptyString(zod.string().optional()),
-  REDIS_TLS_ENABLED: BooleanFromString,
+  REDIS_TLS_ENABLED: emptyString(zod.union([zod.literal('1'), zod.literal('0')]).optional()),
 });
 
 const PrometheusModel = zod.object({
@@ -152,7 +144,7 @@ export const env = {
     host: redis.REDIS_HOST,
     port: redis.REDIS_PORT,
     password: redis.REDIS_PASSWORD,
-    tls_enabled: redis.REDIS_TLS_ENABLED,
+    tlsEnabled: redis.REDIS_TLS_ENABLED,
   },
   heartbeat: base.HEARTBEAT_ENDPOINT ? { endpoint: base.HEARTBEAT_ENDPOINT } : null,
   sentry: sentry.SENTRY === '1' ? { dsn: sentry.SENTRY_DSN } : null,
