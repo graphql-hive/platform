@@ -60,5 +60,7 @@ export default {
 
         CREATE INDEX IF NOT EXISTS "oauth_logout_challenges_time_created_index"
           ON "supertokens_oauth_logout_challenges"("time_created" DESC);
+      END IF;
+    END $$;
   `,
 } satisfies MigrationExecutor;
