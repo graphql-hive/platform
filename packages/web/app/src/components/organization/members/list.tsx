@@ -345,7 +345,8 @@ const OrganizationMemberRow_MemberFragment = graphql(`
       id
       name
     }
-
+    isOwner
+    viewerCanRemove
     ...ChangePermissionsModal_MemberFragment
     ...OrganizationMemberRoleSwitcher_MemberFragment
   }
@@ -438,16 +439,30 @@ function OrganizationMemberRow(props: {
           <h4 className="text-xs text-gray-400">{member.user.email}</h4>
         </td>
         <td className="relative py-3 text-center text-sm">
-          <OrganizationMemberRoleSwitcher
-            organization={organization}
-            memberId={member.id}
-            memberName={member.user.displayName}
-            memberRoleId={member.role?.id}
-            member={member}
-          />
+          {member.isOwner ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <span className="font-bold">Owner</span>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[200px] text-left">
+                  The organization owner has full access to everything within the organization. The
+                  role of the owner can not be changed.
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <OrganizationMemberRoleSwitcher
+              organization={organization}
+              memberId={member.id}
+              memberName={member.user.displayName}
+              memberRoleId={member.role?.id}
+              member={member}
+            />
+          )}
         </td>
         <td className="py-3 text-right text-sm">
-          {organization.viewerCanRemoveMember && (
+          {member.viewerCanRemove && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="data-[state=open]:bg-muted flex size-8 p-0">
@@ -491,7 +506,6 @@ const OrganizationMembers_OrganizationFragment = graphql(`
       total
     }
     viewerCanManageInvitations
-    viewerCanRemoveMember
     viewerCanMigrateLegacyMemberRoles
     ...OrganizationMemberRoleSwitcher_OrganizationFragment
     ...MemberInvitationForm_OrganizationFragment

@@ -251,10 +251,6 @@ export default gql`
     """
     viewerCanAssignUserRoles: Boolean!
     """
-    Whether the viewer can remove a member from the organization
-    """
-    viewerCanRemoveMember: Boolean!
-    """
     Whether the viewer can modify roles of members within the organization
     """
     viewerCanManageRoles: Boolean!
@@ -326,6 +322,10 @@ export default gql`
     canLeaveOrganization: Boolean!
     role: MemberRole
     isAdmin: Boolean!
+    """
+    Whether the viewer can remove this member from the organization.
+    """
+    viewerCanRemove: Boolean!
   }
 
   type MemberRole {

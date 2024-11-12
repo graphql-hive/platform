@@ -29,7 +29,6 @@ export const Organization: Pick<
   | 'viewerCanManageRoles'
   | 'viewerCanMigrateLegacyMemberRoles'
   | 'viewerCanModifySlug'
-  | 'viewerCanRemoveMember'
   | 'viewerCanSeeMembers'
   | 'viewerCanTransferOwnership'
   | '__isTypeOf'
@@ -206,15 +205,6 @@ export const Organization: Pick<
   viewerCanAssignUserRoles: (organization, _arg, { session }) => {
     return session.canPerformAction({
       action: 'member:assignRole',
-      organizationId: organization.id,
-      params: {
-        organizationId: organization.id,
-      },
-    });
-  },
-  viewerCanRemoveMember: (organization, _arg, { session }) => {
-    return session.canPerformAction({
-      action: 'member:removeMember',
       organizationId: organization.id,
       params: {
         organizationId: organization.id,
