@@ -95,12 +95,13 @@ jobs:
         if: steps.rust-crate.outputs.crate_publish == 'true'
         with:
           toolchain: stable
-          components: cargo-edit
 
       - name: Prepare hive-apollo-router-plugin release
         if: steps.rust-crate.outputs.crate_publish == 'true'
         working-directory: packages/libraries/router
-        run: cargo set-version ${{ steps.rust-crate.outputs.crate_version }}
+        run: |
+          cargo install set-cargo-version
+          set-cargo-version ${{ steps.rust-crate.outputs.crate_version }}
 
       - name: crate release hive-apollo-router-plugin
         if: steps.rust-crate.outputs.crate_publish == 'true'
