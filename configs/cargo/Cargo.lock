@@ -1044,6 +1044,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "combine"
+version = "4.6.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba5a308b75df32fe02788e748662718f03fde005016435c444eea572398219fd"
+dependencies = [
+ "bytes",
+ "memchr",
+]
+
+[[package]]
 name = "compress"
 version = "0.0.1"
 dependencies = [
@@ -1924,25 +1934,27 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2ebc8013b4426d5b81a4364c419a95ed0b404af2b82e2457de52d9348f0e474"
 dependencies = [
- "combine",
+ "combine 3.8.1",
  "thiserror",
 ]
 
 [[package]]
-name = "graphql-parser"
-version = "0.4.0"
-source = "git+https://github.com/graphql-rust/graphql-parser.git?rev=8d76425d83c40670570cc325f57c730262f07456#8d76425d83c40670570cc325f57c730262f07456"
+name = "graphql-parser-hive-fork"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8a0137d5de726e9c6ddb3e6abcddc4fc3fd1c1cfcf23667388b6ccec9fa6433f"
 dependencies = [
- "combine",
+ "combine 4.6.7",
  "thiserror",
 ]
 
 [[package]]
 name = "graphql-tools"
-version = "0.2.5"
-source = "git+https://github.com/dotansimha/graphql-tools-rs.git?rev=6b14d3973b5bebd6b88156414c5c01be4ef7d21f#6b14d3973b5bebd6b88156414c5c01be4ef7d21f"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95425f2929b120031cf009ed986fda2b610154b904c342765793e1f5cf453b5f"
 dependencies = [
- "graphql-parser 0.4.0 (git+https://github.com/graphql-rust/graphql-parser.git?rev=8d76425d83c40670570cc325f57c730262f07456)",
+ "graphql-parser-hive-fork",
  "lazy_static",
  "serde",
  "serde_json",
@@ -1967,7 +1979,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e27ed0c2cf0c0cc52c6bcf3b45c907f433015e580879d14005386251842fb0a"
 dependencies = [
  "graphql-introspection-query",
- "graphql-parser 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "graphql-parser",
  "heck 0.4.1",
  "lazy_static",
  "proc-macro2",
@@ -2147,7 +2159,7 @@ dependencies = [
  "apollo-router",
  "async-trait",
  "futures",
- "graphql-parser 0.4.0 (git+https://github.com/graphql-rust/graphql-parser.git?rev=8d76425d83c40670570cc325f57c730262f07456)",
+ "graphql-parser-hive-fork",
  "graphql-tools",
  "http 0.2.11",
  "lru",
