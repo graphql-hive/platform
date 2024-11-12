@@ -96,20 +96,17 @@ jobs:
         with:
           toolchain: stable
 
-      - name: Prepare hive-apollo-router-plugin release
+      - name: release hive-apollo-router-plugin to Crates.io
         if: steps.rust-crate.outputs.crate_publish == 'true'
         run: |
           cargo install set-cargo-version
           set-cargo-version packages/libraries/router/Cargo.toml ${{ steps.rust-crate.outputs.crate_version }}
 
-      - name: crate release hive-apollo-router-plugin
-        if: steps.rust-crate.outputs.crate_publish == 'true'
-        uses: katyo/publish-crates@v2
-        with:
-          path: ./packages/libraries/router
-          token: ${{ secrets.GITHUB_TOKEN }}
-          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-          args: --allow-dirty
+          cd packages/libraries/router
+          cargo install cargo-release
+
+          cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          cargo release publish --all-features --no-confirm --no-verify --allow-dirty --execute
 
   publish_docker_cli:
     needs: [publish]
