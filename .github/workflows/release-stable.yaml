@@ -106,7 +106,9 @@ jobs:
           cargo install cargo-release
 
           cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-          cargo release publish --all-features --no-confirm --no-verify --allow-dirty --execute
+          # clean tree to make cargo release happy
+          git commit --all --amend --no-edit
+          cargo release publish --all-features --no-confirm --no-verify --execute
 
   publish_docker_cli:
     needs: [publish]
