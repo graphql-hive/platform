@@ -1,10 +1,20 @@
 # 16.10.2024
 
+## 0.0.1
+
+### Patch Changes
+
+- [#5898](https://github.com/graphql-hive/console/pull/5898)
+  [`1a92d7d`](https://github.com/graphql-hive/console/commit/1a92d7decf9d0593450e81b394d12c92f40c2b3d)
+  Thanks [@dotansimha](https://github.com/dotansimha)! - Initial release of
+  hive-apollo-router-plugin crate
+
 - Report enum values when an enum is used as an output type and align with JS implementation
 
 # 19.07.2024
 
-- Writes `supergraph-schema.graphql` file to a temporary directory (the path depends on OS), and this is now the default of `HIVE_CDN_SCHEMA_FILE_PATH`.
+- Writes `supergraph-schema.graphql` file to a temporary directory (the path depends on OS), and
+  this is now the default of `HIVE_CDN_SCHEMA_FILE_PATH`.
 
 # 10.04.2024
 
@@ -12,7 +22,8 @@
 
 # 09.01.2024
 
-- Introduce `HIVE_CDN_SCHEMA_FILE_PATH` environment variable to specify where to download the supergraph schema (default is `./supergraph-schema.graphql`)
+- Introduce `HIVE_CDN_SCHEMA_FILE_PATH` environment variable to specify where to download the
+  supergraph schema (default is `./supergraph-schema.graphql`)
 
 # 11.07.2023
 
