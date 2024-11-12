@@ -29,6 +29,7 @@ import {
   createMemberRole,
   createOrganization,
   createProject,
+  createTarget,
   createToken,
   deleteMemberRole,
   deleteSchema,
@@ -730,6 +731,16 @@ export function initSeed() {
                     },
                     ownerToken,
                   ).then(r => r.expectNoGraphQLErrors());
+                },
+                async createTarget(args?: { slug?: string; accessToken?: string }) {
+                  return createTarget(
+                    {
+                      organizationSlug: orgSlug,
+                      projectSlug: project.slug,
+                      slug: args?.slug ?? generateUnique(),
+                    },
+                    args?.accessToken ?? ownerToken,
+                  );
                 },
               };
             },
