@@ -98,10 +98,9 @@ jobs:
 
       - name: Prepare hive-apollo-router-plugin release
         if: steps.rust-crate.outputs.crate_publish == 'true'
-        working-directory: packages/libraries/router
         run: |
           cargo install set-cargo-version
-          set-cargo-version ${{ steps.rust-crate.outputs.crate_version }}
+          set-cargo-version packages/libraries/router/Cargo.toml ${{ steps.rust-crate.outputs.crate_version }}
 
       - name: crate release hive-apollo-router-plugin
         if: steps.rust-crate.outputs.crate_publish == 'true'
