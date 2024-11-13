@@ -49,10 +49,7 @@ export function EcosystemManagementSection({ className }: { className?: string }
               Get started with Federation
               <ArrowIcon />
             </CallToAction>
-            <CallToAction
-              href="https://the-guild.dev/graphql/hive/docs/use-cases/apollo-studio"
-              variant="secondary"
-            >
+            <CallToAction href="/docs/use-cases/apollo-studio" variant="secondary">
               <BookIcon />
               Migrate from Apollo GraphOS
             </CallToAction>

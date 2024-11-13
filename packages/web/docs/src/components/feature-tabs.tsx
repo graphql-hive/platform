@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Image, { StaticImageData } from 'next/image';
+import NextLink from 'next/link';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import * as Tabs from '@radix-ui/react-tabs';
 import { CallToAction, Heading } from '@theguild/components';
@@ -264,7 +265,7 @@ function Feature(props: {
         {highlights.map((highlight, i) => {
           if (highlight.link) {
             return (
-              <a
+              <NextLink
                 href={highlight.link}
                 key={i}
                 title={'Learn more about ' + highlight.title}
@@ -273,7 +274,7 @@ function Feature(props: {
               >
                 <dt className="text-green-1000 font-medium">{highlight.title}</dt>
                 <dd className="mt-2 text-sm leading-5 text-green-800">{highlight.description}</dd>
-              </a>
+              </NextLink>
             );
           }
 
