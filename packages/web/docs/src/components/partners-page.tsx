@@ -5,6 +5,7 @@ import {
   GetYourAPIGameRightSection,
   Heading,
   InfoCard,
+  useTheme,
 } from '@theguild/components';
 import { Hero, HeroLinks } from './hero';
 import { Page } from './page';
