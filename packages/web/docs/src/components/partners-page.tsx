@@ -5,8 +5,8 @@ import {
   GetYourAPIGameRightSection,
   Heading,
   InfoCard,
-  useTheme,
 } from '@theguild/components';
+import { FrequentlyAskedPartnersQuestions } from './frequently-asked-questions';
 import { Hero, HeroLinks } from './hero';
 import { Page } from './page';
 
@@ -119,6 +119,7 @@ export function PartnersPage() {
       </Hero>
       <WhyUs />
       <SolutionsPartner />
+      <FrequentlyAskedPartnersQuestions />
       <GetYourAPIGameRightSection className="mx-4 mt-6 sm:mb-6 md:mx-6 md:mt-16" />
     </Page>
   );
