@@ -172,7 +172,7 @@ export function FederationPage(): ReactElement {
         >
           <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
             <Heading as="h3" size="sm" className="max-w-full text-balance text-white">
-              Single, Unified API0
+              Single, Unified API
             </Heading>
 
             <p className="mt-4 w-[700px] max-w-full text-white/80 lg:mt-6">
