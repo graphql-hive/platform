@@ -93,51 +93,33 @@ function SolutionsPartner({ className }: { className?: string }) {
 
 export function PartnersPage() {
   return (
-    <Tooltip.Provider>
-      <style global jsx>
-        {`
-          html {
-            scroll-behavior: smooth;
-          }
-          body {
-            background: #fff;
-            --nextra-primary-hue: 191deg;
-            --nextra-primary-saturation: 40%;
-            --nextra-bg: 255, 255, 255;
-          }
-          .nextra-sidebar-footer {
-            display: none;
-          }
-        `}
-      </style>
-      <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
-        <Hero className="mx-4 h-1/4 max-sm:mt-2 md:mx-6">
-          <Heading
-            as="h1"
-            size="xl"
-            className="mx-auto max-w-3xl text-balance text-center text-white"
+    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
+      <Hero className="mx-4 h-1/4 max-sm:mt-2 md:mx-6">
+        <Heading
+          as="h1"
+          size="xl"
+          className="mx-auto max-w-3xl text-balance text-center text-white"
+        >
+          Accelerate Your Federation Journey
+        </Heading>
+        <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
+          The Hive Partner Network accelerates your federation journey, delivering expert solutions
+          and best-in-class technology for faster value realization.
+        </p>
+        <HeroLinks>
+          <CallToAction
+            variant="primary-inverted"
+            onClick={() => {
+              (window as any).$crisp?.push(['do', 'chat:open']);
+            }}
           >
-            Accelerate Your Federation Journey
-          </Heading>
-          <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
-            The Hive Partner Network accelerates your federation journey, delivering expert
-            solutions and best-in-class technology for faster value realization.
-          </p>
-          <HeroLinks>
-            <CallToAction
-              variant="primary-inverted"
-              onClick={() => {
-                (window as any).$crisp?.push(['do', 'chat:open']);
-              }}
-            >
-              Get in touch
-            </CallToAction>
-          </HeroLinks>
-        </Hero>
-        <WhyUs />
-        <SolutionsPartner />
-        <GetYourAPIGameRightSection className="mx-4 mt-6 sm:mb-6 md:mx-6 md:mt-16" />
-      </Page>
-    </Tooltip.Provider>
+            Get in touch
+          </CallToAction>
+        </HeroLinks>
+      </Hero>
+      <WhyUs />
+      <SolutionsPartner />
+      <GetYourAPIGameRightSection className="mx-4 mt-6 sm:mb-6 md:mx-6 md:mt-16" />
+    </Page>
   );
 }
