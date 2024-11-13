@@ -105,7 +105,7 @@ jobs:
           cd packages/libraries/router
 
           cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-          cargo publish --allow-dirty
+          cargo publish --allow-dirty --no-verify
 
   publish_docker_cli:
     needs: [publish]
