@@ -79,33 +79,33 @@ jobs:
           VERSION: ${{ steps.cli.outputs.version }}
         run: pnpm oclif promote --no-xz --sha ${GITHUB_SHA:0:7} --version $VERSION
 
-      # - name: extract published Crate version
-      #   id: rust-crate
-      #   # if:
-      #   #   steps.changesets.outputs.published && contains(steps.changesets.outputs.publishedPackages,
-      #   #   '"hive-apollo-router-plugin"')
-      #   run: |
-      #     # echo '${{steps.changesets.outputs.publishedPackages}}' > published.json
-      #     # VERSION=`echo $(jq -r '.[] | select(.name | endswith("hive-apollo-router-plugin")).version' published.json)`
-      #     # echo "crate_version=$VERSION" >> $GITHUB_OUTPUT
-      #     echo "crate_version=0.0.1" >> $GITHUB_OUTPUT
-      #     echo "crate_publish=true" >> $GITHUB_OUTPUT
+      - name: extract published Crate version
+        id: rust-crate
+        # if:
+        #   steps.changesets.outputs.published && contains(steps.changesets.outputs.publishedPackages,
+        #   '"hive-apollo-router-plugin"')
+        run: |
+          # echo '${{steps.changesets.outputs.publishedPackages}}' > published.json
+          # VERSION=`echo $(jq -r '.[] | select(.name | endswith("hive-apollo-router-plugin")).version' published.json)`
+          # echo "crate_version=$VERSION" >> $GITHUB_OUTPUT
+          echo "crate_version=0.0.1" >> $GITHUB_OUTPUT
+          echo "crate_publish=true" >> $GITHUB_OUTPUT
 
-      # - uses: dtolnay/rust-toolchain@stable
-      #   if: steps.rust-crate.outputs.crate_publish == 'true'
-      #   with:
-      #     toolchain: stable
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.rust-crate.outputs.crate_publish == 'true'
+        with:
+          toolchain: stable
 
-      # - name: release hive-apollo-router-plugin to Crates.io
-      #   if: steps.rust-crate.outputs.crate_publish == 'true'
-      #   run: |
-      #     cargo install set-cargo-version
-      #     set-cargo-version packages/libraries/router/Cargo.toml ${{ steps.rust-crate.outputs.crate_version }}
+      - name: release hive-apollo-router-plugin to Crates.io
+        if: steps.rust-crate.outputs.crate_publish == 'true'
+        run: |
+          cargo install set-cargo-version
+          set-cargo-version packages/libraries/router/Cargo.toml ${{ steps.rust-crate.outputs.crate_version }}
 
-      #     cd packages/libraries/router
+          cd packages/libraries/router
 
-      #     cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      #     cargo release publish --all-features --no-confirm --no-verify --execute
+          cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          cargo publish --allow-dirty
 
   publish_docker_cli:
     needs: [publish]
