@@ -89,10 +89,21 @@ will be used for authenticating the supergraph polling from the CDN.
     Creating a custom Apollo Router binary requires compiling it from source.
     To setup a project, please follow ["Create a new project"](https://www.apollographql.com/docs/router/customizations/custom-binary/#1-create-a-new-project) section of "Creating a custom Apollo Router binary" guide.
 
-    Once your project is ready, update `Cargo.toml` file with the following dependencies:
+    Once your project is ready, update `Cargo.toml` file with the [`hive_apollo_router_plugin`](https://crates.io/crates/hive-apollo-router-plugin) Crate dependency:
 
     ```toml filename="Cargo.toml"
-    graphql-hive-router = { git = "https://github.com/graphql-hive/platform", branch = "main" }
+    [dependencies]
+    # You can find the version additional information in Crates.io:
+    # https://crates.io/crates/hive-apollo-router-plugin
+    hive_apollo_router_plugin = "..."
+    ```
+
+    Alternatively, you can point to a Git if you need a specific commit or version of the plugin:
+
+    ```toml filename="Cargo.toml"
+    [dependencies]
+    # You can use a "branch", or commit id with "rev" key
+    hive_apollo_router_plugin = { git = "https://github.com/graphql-hive/console", branch = "main" }
     ```
 
     Next, update `src/main.rs` file with the following content to add GraphQL Hive:
@@ -101,7 +112,7 @@ will be used for authenticating the supergraph polling from the CDN.
       mod plugins;
 
       use anyhow::Result;
-    + use graphql_hive_router::registry;
+    + use hive_apollo_router_plugin::registry;
 
       fn main() -> Result<()> {
     -   apollo_router::main()
@@ -181,10 +192,21 @@ You can send usage reporting to Hive registry by enabling `hive.usage` plugin in
     Creating a custom Apollo Router binary requires compiling it from source.
     To setup a project, please follow ["Create a new project"](https://www.apollographql.com/docs/router/customizations/custom-binary/#1-create-a-new-project) section of "Creating a custom Apollo Router binary" guide.
 
-    Once your project is ready, update `Cargo.toml` file with the following dependencies:
+    Once your project is ready, update `Cargo.toml` file with the [`hive_apollo_router_plugin`](https://crates.io/crates/hive-apollo-router-plugin) Crate dependency:
 
     ```toml filename="Cargo.toml"
-    graphql-hive-router = { git = "https://github.com/graphql-hive/platform", branch = "main" }
+    [dependencies]
+    # You can find the version additional information in Crates.io:
+    # https://crates.io/crates/hive-apollo-router-plugin
+    hive_apollo_router_plugin = "..."
+    ```
+
+    Alternatively, you can point to a Git if you need a specific commit or version of the plugin:
+
+    ```toml filename="Cargo.toml"
+    [dependencies]
+    # You can use a "branch", or commit id with "rev" key
+    hive_apollo_router_plugin = { git = "https://github.com/graphql-hive/console", branch = "main" }
     ```
 
     Next, update `src/main.rs` file with the following content to add GraphQL Hive:
@@ -193,8 +215,8 @@ You can send usage reporting to Hive registry by enabling `hive.usage` plugin in
       mod plugins;
 
       use anyhow::Result;
-    + use graphql_hive_router::registry;
-    + use graphql_hive_router::usage;
+    + use hive_apollo_router_plugin::registry;
+    + use hive_apollo_router_plugin::usage;
 
       fn main() -> Result<()> {
     -   apollo_router::main()
@@ -253,3 +275,4 @@ plugins:
 
 - [Get started with Apollo Federation and Hive guide](/docs/get-started/apollo-federation)
 - [Apollo Router documentation](https://www.apollographql.com/docs/router/)
+- [Hive Plugin for Apollo-Router @ Crates.io](https://crates.io/crates/hive-apollo-router-plugin)
