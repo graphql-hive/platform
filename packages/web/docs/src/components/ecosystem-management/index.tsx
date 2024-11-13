@@ -45,7 +45,7 @@ export function EcosystemManagementSection({ className }: { className?: string }
             ))}
           </ul>
           <div className="bottom-0 flex w-full flex-col gap-x-4 gap-y-2 max-lg:absolute max-lg:translate-y-[calc(100%+24px)]">
-            <CallToAction href="/docs/get-started/apollo-federation" variant="primary-inverted">
+            <CallToAction href="/federation" variant="primary-inverted">
               Get started with Federation
               <ArrowIcon />
             </CallToAction>
