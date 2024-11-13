@@ -130,7 +130,7 @@ export function FeatureTabs({ className }: { className?: string }) {
           <>
             <Tabs.Content
               value="Schema Registry"
-              {/* Make it accessible to crawlers, otherwise there's no DOM element */}
+              // Make it accessible to crawlers, otherwise there's no DOM element to index
               forceMount
               className="data-[state=inactive]:hidden"
               tabIndex={-1}
