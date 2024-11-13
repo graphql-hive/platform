@@ -291,6 +291,7 @@ function Illustration(props: { className?: string }) {
               key={i}
               className={cn(
                 'absolute inset-0',
+                // Makes it accessible by crawlers.
                 highlightedEdge !== null && highlightedEdge - 1 === i ? 'visible' : 'invisible',
               )}
             >
@@ -298,9 +299,6 @@ function Illustration(props: { className?: string }) {
             </span>
           );
         })}
-        {/* <span className="absolute inset-0">
-          {highlightedEdge !== null ? edgeTexts[highlightedEdge - 1] : null}
-        </span> */}
       </p>
     </div>
   );
