@@ -63,7 +63,7 @@ export function IndexPage(): ReactElement {
             size="xl"
             className="mx-auto max-w-3xl text-balance text-center text-white"
           >
-            Open-source GraphQL platform
+            Open-Source GraphQL Platform
           </Heading>
           <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
             Schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs.
@@ -79,7 +79,7 @@ export function IndexPage(): ReactElement {
             </li>
             <li>
               <CheckIcon className="text-blue-400" />
-              Can be self-hosted!
+              Managed and self-hosted
             </li>
           </HeroFeatures>
           <HeroLinks>
@@ -180,7 +180,7 @@ function EnterpriseFocusedCards({ className }: { className?: string }) {
         </InfoCard>
         <InfoCard
           as="li"
-          heading="Customizable User Roles and Permissions"
+          heading="RBAC"
           icon={<PerformanceListItemIcon />}
           className="flex-1 px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
         >
@@ -196,35 +196,34 @@ function UltimatePerformanceCards() {
   return (
     <section className="px-4 py-6 sm:py-12 md:px-6 xl:px-[120px]">
       <Heading as="h3" size="md" className="text-balance text-center">
-        GraphQL for the ultimate performance
+        GraphQL federation for the ultimate performance
       </Heading>
       <ul className="mt-6 flex flex-row flex-wrap justify-center gap-2 md:mt-16 md:gap-6">
         <InfoCard
           as="li"
-          heading="Deliver improvements faster"
+          heading="Team Autonomy"
           icon={<PerformanceListItemIcon />}
           className="flex-1 rounded-2xl md:rounded-3xl"
         >
-          Accelerate feature improvements and experiments, by seamless decoupling of backend and
-          frontend environments.
+          Perfect for domain-driven design, allowing teams to work contribute individual graphs in
+          any language to a cohesive GraphQL API.
         </InfoCard>
         <InfoCard
           as="li"
-          heading="Network efficiency"
+          heading="Scalability"
           icon={<PerformanceListItemIcon />}
           className="flex-1 basis-full rounded-2xl md:basis-0 md:rounded-3xl"
         >
-          Minimize unnecessary network calls that hinder your application's speed. Use GraphQL to
-          enhance responsiveness and scales these benefits across your enterprise.
+          Individual graphs can be scaled independently based on their specific requirements.
         </InfoCard>
         <InfoCard
           as="li"
-          heading="Optimized data retrieval"
+          heading="Unified API"
           icon={<PerformanceListItemIcon />}
           className="flex-1 basis-full rounded-2xl md:rounded-3xl lg:basis-0"
         >
-          Streamline communication between frontend and backend by enabling precise data selection,
-          reducing unnecessary payloads and simplifying API interactions.
+          Clients get a seamless, unified experience. The complexity is hidden behind a single
+          endpoint.
         </InfoCard>
       </ul>
     </section>

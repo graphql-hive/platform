@@ -6,6 +6,7 @@ import {
   HighlightDecoration,
 } from '@theguild/components';
 import { cn } from '../../lib';
+import { ArrowIcon } from '../arrow-icon';
 import { BookIcon } from '../book-icon';
 import { CheckIcon } from '../check-icon';
 import styles from './ecosystem-management.module.css';
@@ -24,7 +25,7 @@ export function EcosystemManagementSection({ className }: { className?: string }
       <div className="relative mx-auto flex w-[1392px] max-w-full flex-col gap-x-4 gap-y-6 md:gap-y-12 lg:flex-row [@media(min-width:1400px)]:gap-x-[120px]">
         <div className="flex flex-col gap-12 lg:w-[488px]">
           <Heading as="h3" size="sm">
-            360° GraphQL Lifecycle
+            GraphQL Federation Platform
           </Heading>
           <ul className="mx-auto flex list-none flex-col gap-y-4 text-white/80 lg:gap-y-6">
             {[
@@ -35,7 +36,7 @@ export function EcosystemManagementSection({ className }: { className?: string }
                 or&nbsp;build your own stack, connecting GraphQL federation, Hive Gateway, GraphQL
                 Mesh and more.
               </>,
-              'Learn how to migrate from Apollo and keep your GraphQL stack vendor-unlocked.',
+              'Learn how to migrate from Apollo and keep your GraphQL Federation stack vendor-unlocked.',
             ].map((text, i) => (
               <li key={i} className="flex items-start gap-4">
                 <CheckIcon className="mt-0.5 shrink-0 text-blue-400" />
@@ -43,16 +44,17 @@ export function EcosystemManagementSection({ className }: { className?: string }
               </li>
             ))}
           </ul>
-          <div className="bottom-0 flex w-full flex-col gap-x-4 gap-y-2 max-lg:absolute max-lg:translate-y-[calc(100%+24px)] sm:flex-row">
+          <div className="bottom-0 flex w-full flex-col gap-x-4 gap-y-2 max-lg:absolute max-lg:translate-y-[calc(100%+24px)]">
+            <CallToAction href="/docs/get-started/apollo-federation" variant="primary-inverted">
+              Get started with Federation
+              <ArrowIcon />
+            </CallToAction>
             <CallToAction
               href="https://the-guild.dev/graphql/hive/docs/use-cases/apollo-studio"
-              variant="primary-inverted"
+              variant="secondary"
             >
-              Migrate from Apollo
-            </CallToAction>
-            <CallToAction href="https://github.com/the-guild-org" variant="secondary">
               <BookIcon />
-              Explore the ecosystem
+              Migrate from Apollo GraphOS
             </CallToAction>
           </div>
         </div>
@@ -66,12 +68,12 @@ export function EcosystemManagementSection({ className }: { className?: string }
 }
 
 const edgeTexts = [
-  'Apps send requests to Hive Gateway that acts as the entrypoint to data from your GraphQL service/subgraphs.',
+  'Apps send requests to Hive Gateway that acts as the entrypoint to data from your federated subgraphs.',
   'Developers that build the apps/api clients will use GraphQL Codegen for generating type-safe code that makes writing apps safer and faster.',
   'Codegen uses Hive to pull the GraphQL schema for generating the code.',
-  'Hive Gateway pulls the composite schema / supergraph from the Hive schema registry that gives it all the information about the subgraphs and available data to serve to the outside world.',
+  'Hive Gateway pulls the supergraph from the Hive Schema Registry that gives it all the information about the subgraphs and available data to serve to the outside world.',
   'Hive Gateway delegates GraphQL requests to the corresponding Yoga subgraphs within your internal network.',
-  'Check the subgraph schema against the Hive registry before deployment to ensure integrity. After deploying a new subgraph version, publish its schema to Hive, to generate the supergraph used by Gateway.',
+  'Check the subgraph schema against the Hive Schema Registry before deployment to ensure integrity. After deploying a new subgraph version, publish its schema to Hive, to generate the supergraph used by Gateway.',
 ];
 const longestEdgeText = edgeTexts.reduce((a, b) => (a.length > b.length ? a : b));
 

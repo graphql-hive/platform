@@ -5,6 +5,7 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { CallToAction, Heading } from '@theguild/components';
 import { cn } from '../lib';
 import { ArrowIcon } from './arrow-icon';
+import auditImage from '../../public/features/gateway/audit.png';
 import observabilityClientsImage from '../../public/features/observability/clients.webp';
 import observabilityOperationsImage from '../../public/features/observability/operations.webp';
 import observabilityOverallImage from '../../public/features/observability/overall.webp';
@@ -12,7 +13,7 @@ import registryExplorerImage from '../../public/features/registry/explorer.webp'
 import registrySchemaChecksImage from '../../public/features/registry/schema-checks.webp';
 import registryVersionControlSystemImage from '../../public/features/registry/version-control-system.webp';
 
-const tabs = ['Schema Registry', 'GraphQL Observability', 'Schema Management'];
+const tabs = ['Schema Registry', 'GraphQL Observability', 'GraphQL Gateway'];
 type Tab = (typeof tabs)[number];
 
 const highlights: Record<Tab, Highlight[]> = {
@@ -26,24 +27,24 @@ const highlights: Record<Tab, Highlight[]> = {
     {
       title: 'Schema Checks',
       description:
-        'Identify and breaking changes before they reach production. Evolve your schema with confidence.',
+        'Identify and breaking changes before they reach production. Evolve your API with confidence.',
       image: registrySchemaChecksImage,
     },
     {
       title: 'Composition Error Prevention',
-      description: 'Avoid runtime errors by validating compatibility of all your subgraph schemas.',
+      description: 'Avoid runtime errors by validating compatibility of all your subgraphs.',
       image: registrySchemaChecksImage, // TODO: Replace with correct image
     },
     {
       title: 'Schema Explorer',
-      description: 'Navigate through your schema and check ownership and usage of types.',
+      description: 'Navigate through your GraphQL schema and check ownership and usage of types.',
       image: registryExplorerImage,
     },
   ],
   'GraphQL Observability': [
     {
       title: 'GraphQL consumers',
-      description: 'Track GraphQL requests to see how schema is utilized and by what applications.',
+      description: 'Track GraphQL requests to see how API is utilized and by what applications.',
       image: observabilityClientsImage,
     },
     {
@@ -57,24 +58,36 @@ const highlights: Record<Tab, Highlight[]> = {
       image: observabilityOperationsImage,
     },
   ],
-  'Schema Management': [
+  'GraphQL Gateway': [
     {
-      title: 'Prevent breaking changes',
+      title: 'Federation v1 and v2',
       description:
-        'Integrated Schema Registry with GraphQL Monitoring for confident API evolution.',
-      image: observabilityOverallImage,
+        'Best in class support for Apollo Federation. Scores 100% in the Federation audit.',
+      link: '/federation-gateway-audit',
+      image: auditImage,
     },
     {
-      title: 'Detect unused fields',
-      description:
-        'Hive detects and removes unused fields in your GraphQL schema for efficiency and tidiness.',
-      image: observabilityOverallImage,
+      title: 'Real-time features',
+      description: 'Contribute data from subgraphs to a GraphQL subscription seamlessly.',
+      link: '/docs/gateway/subscriptions',
+      image: auditImage,
+      // TODO: show entities and Subscription type (code)
     },
     {
-      title: 'Schema Policy',
+      title: 'Security and Compliance',
       description:
-        'Hive provides tools to lint, verify, and enforce best practices across your federated GraphQL architecture.',
-      image: observabilityOverallImage,
+        'Access control with role-based access control (RBAC), JSON Web Tokens (JWT) and Persisted Operations.',
+      link: '/docs/gateway/authorization-authentication',
+      image: auditImage,
+      // TODO: show directives and auth roles
+    },
+    {
+      title: 'OTEL & Prometheus',
+      description:
+        'Out-of-the-box support for OpenTelemetry and Prometheus metrics to fit your observability stack.',
+      link: '/docs/gateway/monitoring-tracing',
+      image: auditImage,
+      // TODO: image
     },
   ],
 };
@@ -83,7 +96,7 @@ const allHighlights = Object.values(highlights).flat();
 
 export function FeatureTabs({ className }: { className?: string }) {
   const [currentTab, setCurrentTab] = useState<Tab>('Schema Registry');
-  const icons = [<SchemaRegistryIcon />, <GraphQLObservabilityIcon />, <SchemaManagementIcon />];
+  const icons = [<SchemaRegistryIcon />, <GraphQLObservabilityIcon />, <GatewayIcon />];
 
   const smallScreenTabHandlers = useSmallScreenTabsHandlers();
   const [activeHighlight, setActiveHighlight] = useState(allHighlights[0].title);
@@ -138,7 +151,7 @@ export function FeatureTabs({ className }: { className?: string }) {
               <Feature
                 title="Schema Registry"
                 documentationLink="/docs/schema-registry"
-                description="Publish schemas, compose federated services, and detect backward-incompatible changes with ease."
+                description="Publish schemas, compose federated subgraphs, and detect backward-incompatible changes with ease."
                 highlights={highlights['Schema Registry']}
                 setActiveHighlight={setActiveHighlight}
               />
@@ -152,22 +165,22 @@ export function FeatureTabs({ className }: { className?: string }) {
               <Feature
                 title="GraphQL Observability"
                 documentationLink="/docs/schema-registry/usage-reporting"
-                description="Enhanced GraphQL Observability tools provide insights into API usage and user experience metrics."
+                description="Insights into API usage and user experience metrics."
                 highlights={highlights['GraphQL Observability']}
                 setActiveHighlight={setActiveHighlight}
               />
             </Tabs.Content>
             <Tabs.Content
-              value="Schema Management"
+              value="GraphQL Gateway"
               forceMount
               className="data-[state=inactive]:hidden"
               tabIndex={-1}
             >
               <Feature
-                title="Schema Management"
-                documentationLink="/docs/schema-registry/schema-policy"
-                description="Evolve your GraphQL API with confidence."
-                highlights={highlights['Schema Management']}
+                title="GraphQL Gateway"
+                documentationLink="/docs/gateway"
+                description="Entry point to your distributed data graph."
+                highlights={highlights['GraphQL Gateway']}
                 setActiveHighlight={setActiveHighlight}
               />
             </Tabs.Content>
@@ -214,10 +227,18 @@ function GraphQLObservabilityIcon() {
   );
 }
 
-function SchemaManagementIcon() {
+function GatewayIcon() {
   return (
-    <svg width="24" height="24" fill="currentColor">
-      <path d="M7.761 9.111a2.701 2.701 0 0 0 2.606 1.989h3.6a4.5 4.5 0 0 1 4.434 3.731 2.7 2.7 0 1 1-3.489 3.075 2.7 2.7 0 0 1 1.66-3.017 2.702 2.702 0 0 0-2.605-1.989h-3.6a4.48 4.48 0 0 1-2.7-.9v2.853a2.701 2.701 0 1 1-1.8 0V9.147a2.7 2.7 0 1 1 1.894-.036ZM6.767 7.5a.9.9 0 1 0 0-1.8.9.9 0 0 0 0 1.8Zm0 10.8a.9.9 0 1 0 0-1.8.9.9 0 0 0 0 1.8Zm10.8 0a.9.9 0 1 0 0-1.8.9.9 0 0 0 0 1.8Z" />
+    <svg
+      stroke="currentColor"
+      fill="currentColor"
+      strokeWidth="0"
+      viewBox="0 0 256 256"
+      height="24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M176,160a39.89,39.89,0,0,0-28.62,12.09l-46.1-29.63a39.8,39.8,0,0,0,0-28.92l46.1-29.63a40,40,0,1,0-8.66-13.45l-46.1,29.63a40,40,0,1,0,0,55.82l46.1,29.63A40,40,0,1,0,176,160Zm0-128a24,24,0,1,1-24,24A24,24,0,0,1,176,32ZM64,152a24,24,0,1,1,24-24A24,24,0,0,1,64,152Zm112,72a24,24,0,1,1,24-24A24,24,0,0,1,176,224Z"></path>
     </svg>
   );
 }
@@ -241,6 +262,21 @@ function Feature(props: {
       </header>
       <dl className="grid grid-cols-2 gap-4 md:gap-12">
         {highlights.map((highlight, i) => {
+          if (highlight.link) {
+            return (
+              <a
+                href={highlight.link}
+                key={i}
+                title={'Learn more about ' + highlight.title}
+                onPointerOver={() => props.setActiveHighlight(highlight.title)}
+                className="hover:bg-beige-100 -m-2 block rounded-lg p-2 md:-m-4 md:rounded-xl md:p-4"
+              >
+                <dt className="text-green-1000 font-medium">{highlight.title}</dt>
+                <dd className="mt-2 text-sm leading-5 text-green-800">{highlight.description}</dd>
+              </a>
+            );
+          }
+
           return (
             <div
               key={i}
@@ -349,4 +385,5 @@ type Highlight = {
   title: string;
   description: string;
   image: StaticImageData;
+  link?: string;
 };
