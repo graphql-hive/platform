@@ -135,7 +135,7 @@ function GetStartedTodaySection({ className }: { className?: string }) {
         <LargeHiveIconDecoration className="absolute bottom-0 right-8 hidden lg:block" />
       </DecorationIsolation>
       <Heading as="h3" size="md" className="text-white">
-        Get started today!
+        Get Started Today!
       </Heading>
       <p className="relative mt-4 text-white/80">
         Start with a free Hobby plan that fits perfectly most side projects or try our Pro plan with
@@ -158,7 +158,7 @@ function EnterpriseFocusedCards({ className }: { className?: string }) {
       className={cn('bg-beige-100 rounded-3xl px-4 pt-6 sm:py-24 md:px-6 md:py-[120px]', className)}
     >
       <Heading as="h3" size="md" className="text-balance sm:px-6 sm:text-center">
-        Enterprise-focused tools tailored for you
+        Enterprise-Focused Tools Tailored for You
       </Heading>
       <ul className="flex flex-row flex-wrap justify-center divide-y divide-solid sm:mt-6 sm:divide-x sm:divide-y-0 md:mt-16 md:px-6 xl:px-16">
         <InfoCard
@@ -196,7 +196,7 @@ function UltimatePerformanceCards() {
   return (
     <section className="px-4 py-6 sm:py-12 md:px-6 xl:px-[120px]">
       <Heading as="h3" size="md" className="text-balance text-center">
-        GraphQL federation for the ultimate performance
+        GraphQL Federation for the Ultimate Performance
       </Heading>
       <ul className="mt-6 flex flex-row flex-wrap justify-center gap-2 md:mt-16 md:gap-6">
         <InfoCard
