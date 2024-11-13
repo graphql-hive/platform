@@ -1,5 +1,14 @@
 # hive
 
+## 1.1.1
+
+### Patch Changes
+
+- [#5907](https://github.com/graphql-hive/console/pull/5907)
+  [`5adfb6c`](https://github.com/graphql-hive/console/commit/5adfb6c39dce653ffef9fdf6af9a6a582cac0231)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Remove option to remove the organization owner from
+  the organization.
+
 ## 1.1.0
 
 ### Minor Changes
