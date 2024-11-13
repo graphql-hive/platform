@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import { CallToAction, Heading } from '@theguild/components';
 import { cn } from '../lib';
 import { ArrowIcon } from './arrow-icon';
+import { FrequentlyAskedFederationQuestions } from './frequently-asked-questions';
 import { Hero, HeroLinks } from './hero';
 import { InfoCard } from './info-card';
 import { Page } from './page';
@@ -103,7 +104,7 @@ export function FederationPage(): ReactElement {
         </ul>
       </section>
       <div className="mx-4 md:mx-6">
-        <div className="">
+        <div>
           <Heading as="h2" size="md" className="text-center">
             How GraphQL Federation Works?
           </Heading>
@@ -211,6 +212,8 @@ export function FederationPage(): ReactElement {
           </div>
         </section>
       </div>
+      <WhyHive className="mx-4 md:mx-6" />
+      <FrequentlyAskedFederationQuestions className="mx-4 md:mx-6" />
       <section
         className={'relative mx-4 overflow-hidden rounded-3xl p-12 text-center sm:p-24 md:mx-6'}
       >
@@ -238,5 +241,91 @@ function PerformanceListItemIcon() {
     <svg width="24" height="24" fill="currentColor">
       <path d="M5.25 7.5a2.25 2.25 0 1 1 3 2.122v4.756a2.251 2.251 0 1 1-1.5 0V9.622A2.25 2.25 0 0 1 5.25 7.5Zm9.22-2.03a.75.75 0 0 1 1.06 0l.97.97.97-.97a.75.75 0 1 1 1.06 1.06l-.97.97.97.97a.75.75 0 0 1-1.06 1.06l-.97-.97-.97.97a.75.75 0 1 1-1.06-1.06l.97-.97-.97-.97a.75.75 0 0 1 0-1.06Zm2.03 5.03a.75.75 0 0 1 .75.75v3.128a2.251 2.251 0 1 1-1.5 0V11.25a.75.75 0 0 1 .75-.75Z" />
     </svg>
+  );
+}
+
+function WhyHive({ className }: { className?: string }) {
+  return (
+    <section
+      className={cn(
+        'bg-beige-100 mt-6 rounded-3xl px-4 pt-6 sm:py-24 md:px-6 md:py-[120px]',
+        className,
+      )}
+    >
+      <Heading as="h3" size="md" className="text-balance sm:px-6 sm:text-center">
+        Why Choose Hive for GraphQL Federation?
+      </Heading>
+      <ul className="flex flex-row flex-wrap justify-center divide-y divide-solid sm:mt-6 sm:divide-x sm:divide-y-0 md:mt-16 md:px-6 xl:px-16">
+        <InfoCard
+          as="li"
+          heading="Complete Federation Stack"
+          icon={<PerformanceListItemIcon />}
+          className="flex-1 px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
+        >
+          <div>
+            <ul className="space-y-2">
+              <li>
+                <span className="font-semibold">Gateway — </span> efficiently serve data from your
+                federated graph.
+              </li>
+              <li>
+                <span className="font-semibold">Schema Registry — </span> ensure consistency and
+                compatibility across your federated graph.
+              </li>
+              <li>
+                <span className="font-semibold">Observability — </span> monitor supergraph
+                performance and schema usage.
+              </li>
+            </ul>
+          </div>
+        </InfoCard>
+        <InfoCard
+          as="li"
+          heading="Unmatched Flexibility"
+          icon={<PerformanceListItemIcon />}
+          className="flex-1 basis-full px-0 sm:basis-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
+        >
+          <div>
+            <ul className="space-y-2">
+              <li>
+                <span className="font-semibold">Mix and Match — </span> Every component works
+                independently with other vendors (including Apollo GraphOS).
+              </li>
+              <li>
+                <span className="font-semibold">No Vendor Lock-in — </span> Switch components or
+                integrate with existing tools without rewriting your infrastructure.
+              </li>
+              <li>
+                <span className="font-semibold">Full Control — </span> Self-host any component or
+                use our cloud offering.
+              </li>
+            </ul>
+          </div>
+        </InfoCard>
+        <InfoCard
+          as="li"
+          heading="True Open Source"
+          icon={<PerformanceListItemIcon />}
+          className="flex-1 px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
+        >
+          <div>
+            <ul className="space-y-2">
+              <li>
+                <span className="font-semibold">MIT License — </span> All components are available
+                under the permissive MIT license
+              </li>
+              <li>
+                <span className="font-semibold">Transparent Development — </span> Active community
+                participation in our development process
+              </li>
+              <li>
+                <span className="font-semibold">Commercial-Grade — </span> Enterprise features
+                available out-of-the-box in the open-source version
+              </li>
+            </ul>
+          </div>
+        </InfoCard>
+      </ul>
+    </section>
   );
 }
