@@ -35,9 +35,9 @@ export function FederationPage(): ReactElement {
         </HeroLinks>
       </Hero>
       <div className="relative mt-6 sm:mt-[-72px]">
-        <section className="border-beige-400 isolate mx-auto w-[1200px] max-w-full rounded-3xl bg-white sm:max-w-[calc(100%-4rem)] sm:border md:p-6">
-          <div className="relative mx-auto flex w-[1392px] max-w-full flex-col gap-x-4 gap-y-6 md:gap-y-12 md:p-6 lg:flex-row [@media(min-width:1400px)]:gap-x-[120px]">
-            <div className="flex flex-col gap-12 lg:w-[488px]">
+        <section className="border-beige-400 isolate mx-auto w-[1200px] max-w-full rounded-3xl bg-white sm:max-w-[calc(100%-4rem)] sm:border sm:p-6">
+          <div className="relative mx-auto flex w-[1392px] max-w-full flex-col gap-x-4 gap-y-6 md:gap-y-12 lg:flex-row [@media(min-width:1400px)]:gap-x-[120px]">
+            <div className="flex flex-col gap-12 px-4 md:px-0 lg:w-[488px]">
               <Heading as="h3" size="sm" className="text-green-1000">
                 Connect and Unify APIs
               </Heading>
@@ -109,9 +109,6 @@ export function FederationPage(): ReactElement {
           </Heading>
         </div>
         <section className="bg-beige-100 relative isolate mt-6 max-w-full rounded-3xl rounded-b-none px-4 py-6 md:mt-16 lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24">
-          <div className="absolute bottom-0 left-0 h-24 w-24 bg-blue-400">
-            <div className="bg-beige-100 h-full w-full rounded-bl-3xl"></div>
-          </div>
           <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
             <Heading
               as="h3"
@@ -136,19 +133,19 @@ export function FederationPage(): ReactElement {
               <ArrowIcon />
             </CallToAction>
 
-            <div className="'xl:w-[664px] max-xl:-mx-4 max-xl:max-w-[calc(100%-1rem)] max-xl:px-4 max-xl:py-6 max-lg:max-w-[calc(100%+2rem)] xl:ml-auto">
+            <div className="max-xl:-mx-4 max-xl:max-w-[calc(100%-1rem)] max-xl:px-4 max-xl:py-6 max-lg:max-w-[calc(100%+2rem)] xl:ml-auto xl:w-[664px]">
               img
             </div>
           </div>
         </section>
         {/*  */}
-        <section className="relative isolate max-w-full rounded-none bg-blue-400 px-4 py-6 lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24">
-          <div className="bg-beige-100 absolute right-0 top-0 h-24 w-24">
-            <div className="h-full w-full rounded-tr-3xl bg-blue-400"></div>
-          </div>
-          <div className="bg-green-1000 absolute bottom-0 left-0 h-24 w-24">
-            <div className="h-full w-full rounded-bl-3xl bg-blue-400"></div>
-          </div>
+        <section
+          className={cn(
+            'relative isolate max-w-full rounded-none bg-blue-400 px-4 py-6 lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24',
+            "before:bg-beige-100 before:absolute before:-top-24 before:left-0 before:hidden before:h-24 before:w-24 before:rounded-bl-3xl before:shadow-[0_48px_0_0] before:shadow-blue-400 before:content-[''] before:lg:block",
+            "after:shadow-beige-100 after:absolute after:right-0 after:top-0 after:hidden after:h-24 after:w-24 after:rounded-tr-3xl after:bg-blue-400 after:shadow-[0_-48px_0_0] after:content-[''] after:lg:block",
+          )}
+        >
           <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
             <Heading
               as="h3"
@@ -174,17 +171,20 @@ export function FederationPage(): ReactElement {
               <ArrowIcon />
             </CallToAction>
 
-            <div className="'xl:w-[664px] max-xl:-mx-4 max-xl:max-w-[calc(100%-1rem)] max-xl:px-4 max-xl:py-6 max-lg:max-w-[calc(100%+2rem)] xl:ml-auto">
+            <div className="max-xl:-mx-4 max-xl:max-w-[calc(100%-1rem)] max-xl:px-4 max-xl:py-6 max-lg:max-w-[calc(100%+2rem)] xl:ml-auto xl:w-[664px]">
               img
             </div>
           </div>
         </section>
         {/*  */}
 
-        <section className="bg-green-1000 relative isolate max-w-full rounded-3xl rounded-t-none px-4 py-6 text-white lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24">
-          <div className="absolute right-0 top-0 h-24 w-24 bg-blue-400">
-            <div className="bg-green-1000 h-full w-full rounded-tr-3xl"></div>
-          </div>
+        <section
+          className={cn(
+            'bg-green-1000 relative isolate max-w-full rounded-3xl rounded-t-none px-4 py-6 text-white lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24',
+            "before:shadow-green-1000 before:absolute before:-top-24 before:left-0 before:hidden before:h-24 before:w-24 before:rounded-bl-3xl before:bg-blue-400 before:shadow-[0_48px_0_0] before:content-[''] before:lg:block",
+            "after:bg-green-1000 after:absolute after:right-0 after:top-0 after:hidden after:h-24 after:w-24 after:rounded-tr-3xl after:shadow-[0_-48px_0_0] after:shadow-blue-400 after:content-[''] after:lg:block",
+          )}
+        >
           <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
             <Heading as="h3" size="md" className="max-w-full text-balance text-white xl:w-[468px]">
               Single, Unified API
@@ -205,7 +205,7 @@ export function FederationPage(): ReactElement {
               <ArrowIcon />
             </CallToAction>
 
-            <div className="'xl:w-[664px] max-xl:-mx-4 max-xl:max-w-[calc(100%-1rem)] max-xl:px-4 max-xl:py-6 max-lg:max-w-[calc(100%+2rem)] xl:ml-auto">
+            <div className="max-xl:-mx-4 max-xl:max-w-[calc(100%-1rem)] max-xl:px-4 max-xl:py-6 max-lg:max-w-[calc(100%+2rem)] xl:ml-auto xl:w-[664px]">
               img
             </div>
           </div>
