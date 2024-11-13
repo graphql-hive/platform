@@ -128,7 +128,12 @@ export function FeatureTabs({ className }: { className?: string }) {
         </Tabs.List>
         <div className="grid grid-cols-1 lg:grid-cols-2">
           <>
-            <Tabs.Content value="Schema Registry" tabIndex={-1}>
+            <Tabs.Content
+              value="Schema Registry"
+              forceMount
+              className="data-[state=inactive]:hidden"
+              tabIndex={-1}
+            >
               <Feature
                 title="Schema Registry"
                 documentationLink="/docs/schema-registry"
@@ -137,7 +142,12 @@ export function FeatureTabs({ className }: { className?: string }) {
                 setActiveHighlight={setActiveHighlight}
               />
             </Tabs.Content>
-            <Tabs.Content value="GraphQL Observability" tabIndex={-1}>
+            <Tabs.Content
+              value="GraphQL Observability"
+              forceMount
+              className="data-[state=inactive]:hidden"
+              tabIndex={-1}
+            >
               <Feature
                 title="GraphQL Observability"
                 documentationLink="/docs/schema-registry/usage-reporting"
@@ -146,7 +156,12 @@ export function FeatureTabs({ className }: { className?: string }) {
                 setActiveHighlight={setActiveHighlight}
               />
             </Tabs.Content>
-            <Tabs.Content value="Schema Management" tabIndex={-1}>
+            <Tabs.Content
+              value="Schema Management"
+              forceMount
+              className="data-[state=inactive]:hidden"
+              tabIndex={-1}
+            >
               <Feature
                 title="Schema Management"
                 documentationLink="/docs/schema-registry/schema-policy"
