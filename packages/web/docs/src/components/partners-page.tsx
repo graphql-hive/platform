@@ -1,5 +1,4 @@
 import { CodeIcon, LockOpen2Icon, RocketIcon } from '@radix-ui/react-icons';
-import * as Tooltip from '@radix-ui/react-tooltip';
 import {
   CallToAction,
   cn,
@@ -55,7 +54,7 @@ function WhyUs({ className }: { className?: string }) {
 const PARTNERS = [
   {
     name: 'The Guild',
-    logo: 'https://avatars.githubusercontent.com/u/42573040?s=200&v=4',
+    logo: '/the-guild-logo.svg',
   },
 ];
 
@@ -81,7 +80,7 @@ function SolutionsPartner({ className }: { className?: string }) {
         {PARTNERS.map(partner => (
           <li
             key={partner.name}
-            className="flex h-32 max-w-56 flex-col items-center justify-center rounded-3xl border"
+            className="flex h-32 max-w-56 flex-col items-center justify-center rounded-3xl border brightness-0 grayscale"
           >
             <img src={partner.logo} alt={partner.name} className="h-10 w-auto" />
           </li>
