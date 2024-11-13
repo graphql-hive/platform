@@ -111,15 +111,11 @@ export function FederationPage(): ReactElement {
         </div>
         <section className="bg-beige-100 relative isolate mt-6 max-w-full rounded-3xl rounded-b-none px-4 py-6 md:mt-16 lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24">
           <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
-            <Heading
-              as="h3"
-              size="md"
-              className="text-green-1000 max-w-full text-balance xl:w-[468px]"
-            >
+            <Heading as="h3" size="sm" className="text-green-1000 max-w-full text-balance">
               Own Your Domain, Choose Your Stack
             </Heading>
 
-            <p className="mt-4 w-[468px] max-w-full text-green-800 lg:mt-6">
+            <p className="mt-4 w-[700px] max-w-full text-green-800 lg:mt-6">
               With GraphQL federation, each team owns their piece of the GraphQL API. They gain
               autonomy that let's them deploy on their own schedule, scale as needed and use tech
               stack that fits their needs.
@@ -128,7 +124,7 @@ export function FederationPage(): ReactElement {
             <CallToAction
               variant="secondary-inverted"
               href="/docs/get-started/apollo-federation#publish-subgraphs"
-              className="max-xl:order-1 max-md:w-full xl:mt-12"
+              className="mt-6 max-xl:order-1 max-md:w-full xl:mt-12"
             >
               Publish subgraphs to Hive
               <ArrowIcon />
@@ -144,15 +140,11 @@ export function FederationPage(): ReactElement {
           )}
         >
           <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
-            <Heading
-              as="h3"
-              size="md"
-              className="text-green-1000 max-w-full text-balance xl:w-[468px]"
-            >
+            <Heading as="h3" size="sm" className="text-green-1000 max-w-full text-balance">
               Bringing It All Together
             </Heading>
 
-            <p className="mt-4 w-[468px] max-w-full text-green-800 lg:mt-6">
+            <p className="mt-4 w-[700px] max-w-full text-green-800 lg:mt-6">
               GraphQL federation involves schema composition to combine separate GraphQL schemas
               into one coherent API. Teams can reference types from other services and the
               composition process ensures all pieces fit together. All conflicts are caught early
@@ -162,7 +154,7 @@ export function FederationPage(): ReactElement {
             <CallToAction
               variant="secondary-inverted"
               href="/docs/schema-registry"
-              className="max-xl:order-1 max-md:w-full xl:mt-12"
+              className="mt-6 max-xl:order-1 max-md:w-full xl:mt-12"
             >
               Read about Schema Registry
               <ArrowIcon />
@@ -179,11 +171,11 @@ export function FederationPage(): ReactElement {
           )}
         >
           <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
-            <Heading as="h3" size="md" className="max-w-full text-balance text-white xl:w-[468px]">
-              Single, Unified API
+            <Heading as="h3" size="sm" className="max-w-full text-balance text-white">
+              Single, Unified API0
             </Heading>
 
-            <p className="mt-4 w-[468px] max-w-full text-white/80 lg:mt-6">
+            <p className="mt-4 w-[700px] max-w-full text-white/80 lg:mt-6">
               Thanks to GraphQL gateway, clients get a single endpoint with unified schema. The
               complexity of distributed systems is hidden. The gateway ensures every query reaches
               its destination and returns with the right data.
@@ -192,7 +184,7 @@ export function FederationPage(): ReactElement {
             <CallToAction
               variant="secondary-inverted"
               href="/docs/gateway"
-              className="max-xl:order-1 max-md:w-full xl:mt-12"
+              className="mt-6 max-xl:order-1 max-md:w-full xl:mt-12"
             >
               Discover Hive Gateway
               <ArrowIcon />
