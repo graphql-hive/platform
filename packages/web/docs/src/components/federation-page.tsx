@@ -133,10 +133,6 @@ export function FederationPage(): ReactElement {
               Publish subgraphs to Hive
               <ArrowIcon />
             </CallToAction>
-
-            <div className="max-xl:-mx-4 max-xl:max-w-[calc(100%-1rem)] max-xl:px-4 max-xl:py-6 max-lg:max-w-[calc(100%+2rem)] xl:ml-auto xl:w-[664px]">
-              img
-            </div>
           </div>
         </section>
         {/*  */}
@@ -171,10 +167,6 @@ export function FederationPage(): ReactElement {
               Read about Schema Registry
               <ArrowIcon />
             </CallToAction>
-
-            <div className="max-xl:-mx-4 max-xl:max-w-[calc(100%-1rem)] max-xl:px-4 max-xl:py-6 max-lg:max-w-[calc(100%+2rem)] xl:ml-auto xl:w-[664px]">
-              img
-            </div>
           </div>
         </section>
         {/*  */}
@@ -205,10 +197,6 @@ export function FederationPage(): ReactElement {
               Discover Hive Gateway
               <ArrowIcon />
             </CallToAction>
-
-            <div className="max-xl:-mx-4 max-xl:max-w-[calc(100%-1rem)] max-xl:px-4 max-xl:py-6 max-lg:max-w-[calc(100%+2rem)] xl:ml-auto xl:w-[664px]">
-              img
-            </div>
           </div>
         </section>
       </div>
