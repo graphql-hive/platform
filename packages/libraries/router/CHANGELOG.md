@@ -1,5 +1,14 @@
 # 16.10.2024
 
+## 0.1.0
+
+### Minor Changes
+
+- [#5922](https://github.com/graphql-hive/console/pull/5922)
+  [`28c6da8`](https://github.com/graphql-hive/console/commit/28c6da8b446d62dcc4460be946fe3aecdbed858d)
+  Thanks [@dotansimha](https://github.com/dotansimha)! - Initial release of Hive plugin for
+  Apollo-Router
+
 ## 0.0.1
 
 ### Patch Changes
