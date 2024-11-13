@@ -81,14 +81,13 @@ jobs:
 
       - name: extract published Crate version
         id: rust-crate
-        # if:
-        #   steps.changesets.outputs.published && contains(steps.changesets.outputs.publishedPackages,
-        #   '"hive-apollo-router-plugin"')
+        if:
+          steps.changesets.outputs.published && contains(steps.changesets.outputs.publishedPackages,
+          '"hive-apollo-router-plugin"')
         run: |
-          # echo '${{steps.changesets.outputs.publishedPackages}}' > published.json
-          # VERSION=`echo $(jq -r '.[] | select(.name | endswith("hive-apollo-router-plugin")).version' published.json)`
-          # echo "crate_version=$VERSION" >> $GITHUB_OUTPUT
-          echo "crate_version=0.0.1" >> $GITHUB_OUTPUT
+          echo '${{steps.changesets.outputs.publishedPackages}}' > published.json
+          VERSION=`echo $(jq -r '.[] | select(.name | endswith("hive-apollo-router-plugin")).version' published.json)`
+          echo "crate_version=$VERSION" >> $GITHUB_OUTPUT
           echo "crate_publish=true" >> $GITHUB_OUTPUT
 
       - uses: dtolnay/rust-toolchain@stable
