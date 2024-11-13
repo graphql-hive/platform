@@ -132,7 +132,7 @@ export function FederationPage(): ReactElement {
               href="/docs/get-started/apollo-federation#publish-subgraphs"
               className="max-xl:order-1 max-md:w-full xl:mt-12"
             >
-              Lean how to publish subgraphs
+              Publish subgraphs to Hive
               <ArrowIcon />
             </CallToAction>
 
@@ -201,7 +201,7 @@ export function FederationPage(): ReactElement {
               href="/docs/gateway"
               className="max-xl:order-1 max-md:w-full xl:mt-12"
             >
-              Discover our Gateway
+              Discover Hive Gateway
               <ArrowIcon />
             </CallToAction>
 
