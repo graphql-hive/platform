@@ -30,7 +30,7 @@ you can use the Hive plugin as a dependency from Crates.io:
 
 ```toml
 [dependencies]
-hive-apollo-router-plugin = "0.0.1"
+hive-apollo-router-plugin = "..."
 ```
 
 And then in your codebase, make sure to import and register the Hive plugin:
