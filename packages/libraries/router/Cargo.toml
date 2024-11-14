@@ -16,8 +16,6 @@ path = "src/main.rs"
 name = "hive_apollo_router_plugin"
 path = "src/lib.rs"
 
-# change
-
 [dependencies]
 apollo-router = { version = "^1.13.0" }
 thiserror = "1.0.57"
