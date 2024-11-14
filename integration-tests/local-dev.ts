@@ -1,4 +1,5 @@
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { parse } from 'dotenv';
 
 function applyEnv(env: Record<string, string>) {
@@ -7,7 +8,9 @@ function applyEnv(env: Record<string, string>) {
   }
 }
 
-const serverEnvVars = parse(readFileSync('../packages/services/server/.env', 'utf-8'));
+const envPath = path.join(process.cwd(), 'packages', 'services', 'server', '.env');
+
+const serverEnvVars = parse(readFileSync(envPath, 'utf-8'));
 
 applyEnv({
   SUPERTOKENS_CONNECTION_URI: serverEnvVars.SUPERTOKENS_CONNECTION_URI,
