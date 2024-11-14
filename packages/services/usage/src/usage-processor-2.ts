@@ -95,7 +95,7 @@ export function usageProcessorV2(
     let newOperationMapKey = newKeyMappings.get(operationMapRecord);
 
     if (!isValidOperationBody(operationMapRecord.operation)) {
-      logger.warn(`Detected invalid operation (target=%s): %s`, operationMapKey);
+      logger.warn(`Detected invalid operation (target=%s): %s`, token.target, operationMapKey);
       invalidRawOperations
         .labels({
           reason: 'invalid_operation_body',

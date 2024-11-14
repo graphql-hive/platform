@@ -27,7 +27,7 @@ const testimonials: Testimonial[] = [
   {
     company: 'nacelle',
     logo: NacelleLogo,
-    text: "Our migration from Apollo to Hive was incredibly straightforward. In less than a month, we had about 20 services running on Hive in production. The process was smooth, and the Hive team's friendly demeanor made it even more pleasant. Although we haven't needed direct assistance with our implementation, their openness to feedback and generally nice attitude has fostered a sense of collaboration and partnership.",
+    text: "Our migration from Apollo GraphOS to Hive was incredibly straightforward. In less than a month, we had about 20 subgraphs running on Hive in production. The process was smooth, and the Hive team's friendly demeanor made it even more pleasant. Although we haven't needed direct assistance with our implementation, their openness to feedback and generally nice attitude has fostered a sense of collaboration and partnership.",
     picture: { img: nacellePicture },
     // data: [
     //   { numbers: '65M+', description: 'daily events processed' },
@@ -38,7 +38,7 @@ const testimonials: Testimonial[] = [
   {
     company: 'Karrot',
     logo: KarrotLogo,
-    text: 'We use GraphQL Hive as schema registry and monitoring tool. As a schema registry, we can publish GraphQL Schema with decoupled any application code. As a monitoring tool, we can find useful metrics. For example operation latency, usage of deprecated field. The great thing about GraphQL Hive is that it is easy to use, we have already integrated many tools like Slack or Github.',
+    text: 'We use Hive as schema registry and monitoring tool. As a schema registry, we can publish GraphQL Schema with decoupled any application code. As a monitoring tool, we can find useful metrics. For example operation latency, usage of deprecated field. The great thing about GraphQL Hive is that it is easy to use, we have already integrated many tools like Slack or Github.',
     picture: { img: karrotPicture },
   },
   {
@@ -89,7 +89,7 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
         )}
       >
         <Heading as="h2" size="md">
-          Loved by developers, trusted by businesses
+          Loved by Developers, Trusted by Businesses
         </Heading>
         <Tabs.Root
           defaultValue={testimonials[0].company}

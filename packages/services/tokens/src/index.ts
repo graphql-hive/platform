@@ -80,6 +80,7 @@ export async function main() {
     maxRetriesPerRequest: 20,
     db: 0,
     enableReadyCheck: false,
+    tls: env.redis.tlsEnabled ? {} : undefined,
   });
 
   const { start, stop, readiness, getStorage } = useCache(

@@ -49,12 +49,11 @@ import { defineConfig } from '@graphql-hive/gateway'
 
 export const gatewayConfig = defineConfig({
   supergraph: {
-    // The CDN type.
     type: 'hive',
-    // The endpoint of CDN
-    endpoint: '<endpoint>',
-    // The API key provided by Hive Registry
-    key: '<api_key>'
+    // The endpoint of Hive's CDN
+    endpoint: '<supergraph endpoint>',
+    // The CDN token provided by Hive Registry
+    key: '<cdn access token>'
   }
 })
 ```

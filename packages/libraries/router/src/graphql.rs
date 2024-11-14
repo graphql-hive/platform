@@ -451,7 +451,7 @@ impl<'s, T: Text<'s> + Clone> OperationTransformer<'s, T> for SortSelectionsTran
 
     fn transform_directives(
         &mut self,
-        directives: &Vec<Directive<'s, T>>,
+        directives: &[Directive<'s, T>],
     ) -> TransformedValue<Vec<Directive<'s, T>>> {
         let mut next_directives = self
             .transform_list(&directives, Self::transform_directive)

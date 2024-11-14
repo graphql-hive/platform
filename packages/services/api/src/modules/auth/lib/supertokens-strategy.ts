@@ -164,6 +164,8 @@ export class SuperTokensUserAuthNStrategy extends AuthNStrategy<SuperTokensCooki
       return null;
     }
 
+    this.logger.debug('SuperTokens session resolved successfully');
+
     return new SuperTokensCookieBasedSession(
       {
         superTokensUserId: session.superTokensUserId,
@@ -180,10 +182,6 @@ export class SuperTokensUserAuthNStrategy extends AuthNStrategy<SuperTokensCooki
 const SuperTokenAccessTokenModel = zod.object({
   version: zod.literal('1'),
   superTokensUserId: zod.string(),
-  /**
-   * Supertokens for some reason omits externalUserId from the access token payload if it is null.
-   */
-  externalUserId: zod.optional(zod.union([zod.string(), zod.null()])),
   email: zod.string(),
 });
 
@@ -211,7 +209,7 @@ function transformOrganizationMemberLegacyScopes(args: {
         policies.push({
           effect: 'allow',
           action: [
-            'organization:modifySettings',
+            'organization:modifySlug',
             'schemaLinting:modifyOrganizationRules',
             'billing:describe',
             'billing:update',
@@ -253,7 +251,7 @@ function transformOrganizationMemberLegacyScopes(args: {
       case ProjectAccessScope.ALERTS: {
         policies.push({
           effect: 'allow',
-          action: ['alert:modify', 'alert:describe'],
+          action: ['alert:modify'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
@@ -288,11 +286,10 @@ function transformOrganizationMemberLegacyScopes(args: {
           action: [
             'appDeployment:describe',
             'laboratory:describe',
-            'laboratory:createCollection',
-            'laboratory:deleteCollection',
-            'laboratory:modifyCollection',
+            'laboratory:modify',
             'schemaCheck:approve',
             'schemaVersion:approve',
+            'target:create',
           ],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
@@ -301,7 +298,7 @@ function transformOrganizationMemberLegacyScopes(args: {
       case TargetAccessScope.TOKENS_READ: {
         policies.push({
           effect: 'allow',
-          action: ['cdnAccessToken:describe', 'targetAccessToken:describe', 'target:create'],
+          action: [],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
@@ -309,14 +306,7 @@ function transformOrganizationMemberLegacyScopes(args: {
       case TargetAccessScope.TOKENS_WRITE: {
         policies.push({
           effect: 'allow',
-          action: [
-            'targetAccessToken:create',
-            'targetAccessToken:delete',
-            'targetAccessToken:describe',
-            'cdnAccessToken:create',
-            'cdnAccessToken:delete',
-            'cdnAccessToken:describe',
-          ],
+          action: ['targetAccessToken:modify', 'cdnAccessToken:modify'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;

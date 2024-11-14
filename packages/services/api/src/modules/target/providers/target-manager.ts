@@ -1,6 +1,6 @@
 import { Injectable, Scope } from 'graphql-modules';
 import * as zod from 'zod';
-import type { Target, TargetSettings } from '../../../shared/entities';
+import type { Project, Target, TargetSettings } from '../../../shared/entities';
 import { share } from '../../../shared/helpers';
 import { Session } from '../../auth/lib/authz';
 import { ActivityManager } from '../../shared/providers/activity-manager';
@@ -161,6 +161,14 @@ export class TargetManager {
       },
     });
     return this.storage.getTarget(selector);
+  }
+
+  async getTargetBySlugForProject(project: Project, targetSlug: string) {
+    return await this.storage.getTargetBySlug({
+      slug: targetSlug,
+      organizationId: project.orgId,
+      projectId: project.id,
+    });
   }
 
   getTargetIdByToken: () => Promise<string | never> = share(async () => {

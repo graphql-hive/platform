@@ -304,9 +304,15 @@ importers:
       '@trpc/server':
         specifier: 10.45.2
         version: 10.45.2
+      '@types/async-retry':
+        specifier: 1.4.8
+        version: 1.4.8
       '@types/dockerode':
         specifier: 3.3.31
         version: 3.3.31
+      async-retry:
+        specifier: 1.3.3
+        version: 1.3.3
       bcryptjs:
         specifier: 2.4.3
         version: 2.4.3
@@ -418,8 +424,8 @@ importers:
         specifier: 4.2.13
         version: 4.2.13
       '@theguild/federation-composition':
-        specifier: 0.14.0
-        version: 0.14.0(graphql@16.9.0)
+        specifier: 0.14.1
+        version: 0.14.1(graphql@16.9.0)
       colors:
         specifier: 1.4.0
         version: 1.4.0
@@ -532,14 +538,16 @@ importers:
         version: 16.9.0
     publishDirectory: dist
 
+  packages/libraries/router: {}
+
   packages/libraries/yoga:
     dependencies:
       '@graphql-hive/core':
         specifier: workspace:*
         version: link:../core/dist
       '@graphql-yoga/plugin-persisted-operations':
-        specifier: ^3.3.1
-        version: 3.7.0(@graphql-tools/utils@10.5.5(graphql@16.9.0))(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)
+        specifier: ^3.9.0
+        version: 3.9.0(@graphql-tools/utils@10.5.5(graphql@16.9.0))(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)
       graphql:
         specifier: ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
         version: 16.9.0
@@ -552,16 +560,16 @@ importers:
         version: 10.0.7(graphql@16.9.0)
       '@graphql-yoga/plugin-defer-stream':
         specifier: 3.7.0
-        version: 3.7.0(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)
+        version: 3.7.0(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)
       '@graphql-yoga/plugin-disable-introspection':
         specifier: 2.7.0
-        version: 2.7.0(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)
+        version: 2.7.0(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)
       '@graphql-yoga/plugin-graphql-sse':
         specifier: 3.7.0
-        version: 3.7.0(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)
+        version: 3.7.0(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)
       '@graphql-yoga/plugin-response-cache':
         specifier: 3.9.0
-        version: 3.9.0(@envelop/core@5.0.2)(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)
+        version: 3.9.0(@envelop/core@5.0.2)(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)
       '@whatwg-node/fetch':
         specifier: 0.9.22
         version: 0.9.22
@@ -569,8 +577,8 @@ importers:
         specifier: 5.16.0
         version: 5.16.0(graphql@16.9.0)
       graphql-yoga:
-        specifier: 5.7.0
-        version: 5.7.0(graphql@16.9.0)
+        specifier: 5.9.0
+        version: 5.9.0(graphql@16.9.0)
       nock:
         specifier: 14.0.0-beta.7
         version: 14.0.0-beta.7
@@ -712,8 +720,8 @@ importers:
         specifier: 7.7.0
         version: 7.7.0
       '@theguild/federation-composition':
-        specifier: 0.14.0
-        version: 0.14.0(graphql@16.9.0)
+        specifier: 0.14.1
+        version: 0.14.1(graphql@16.9.0)
       '@trpc/client':
         specifier: 10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -766,8 +774,8 @@ importers:
         specifier: 1.23.0
         version: 1.23.0(graphql@16.9.0)
       graphql-yoga:
-        specifier: 5.7.0
-        version: 5.7.0(graphql@16.9.0)
+        specifier: 5.9.0
+        version: 5.9.0(graphql@16.9.0)
       ioredis:
         specifier: 5.4.1
         version: 5.4.1
@@ -799,8 +807,8 @@ importers:
         specifier: 30.4.4
         version: 30.4.4(patch_hash=jxrvl4xmdvyktjijg7yfdkb34i)
       supertokens-node:
-        specifier: 15.2.1
-        version: 15.2.1(encoding@0.1.13)
+        specifier: 16.7.5
+        version: 16.7.5(encoding@0.1.13)
       tslib:
         specifier: 2.8.0
         version: 2.8.0
@@ -901,8 +909,8 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       graphql-yoga:
-        specifier: 5.7.0
-        version: 5.7.0(graphql@16.9.0)
+        specifier: 5.9.0
+        version: 5.9.0(graphql@16.9.0)
     devDependencies:
       wrangler:
         specifier: 3.83.0
@@ -1097,8 +1105,8 @@ importers:
         specifier: 7.119.2
         version: 7.119.2
       '@theguild/federation-composition':
-        specifier: 0.14.0
-        version: 0.14.0(graphql@16.9.0)
+        specifier: 0.14.1
+        version: 0.14.1(graphql@16.9.0)
       '@trpc/server':
         specifier: 10.45.2
         version: 10.45.2
@@ -1181,11 +1189,11 @@ importers:
         specifier: workspace:*
         version: link:../../libraries/yoga/dist
       '@graphql-yoga/plugin-persisted-operations':
-        specifier: 3.7.0
-        version: 3.7.0(@graphql-tools/utils@10.5.5(graphql@16.9.0))(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)
+        specifier: 3.9.0
+        version: 3.9.0(@graphql-tools/utils@10.5.5(graphql@16.9.0))(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)
       '@graphql-yoga/plugin-response-cache':
         specifier: 3.9.0
-        version: 3.9.0(@envelop/core@5.0.2)(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)
+        version: 3.9.0(@envelop/core@5.0.2)(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)
       '@graphql-yoga/redis-event-target':
         specifier: 3.0.1
         version: 3.0.1(ioredis@5.4.1)
@@ -1232,8 +1240,8 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       graphql-yoga:
-        specifier: 5.7.0
-        version: 5.7.0(graphql@16.9.0)
+        specifier: 5.9.0
+        version: 5.9.0(graphql@16.9.0)
       hyperid:
         specifier: 3.3.0
         version: 3.3.0
@@ -1253,8 +1261,8 @@ importers:
         specifier: 0.0.4
         version: 0.0.4
       supertokens-node:
-        specifier: 15.2.1
-        version: 15.2.1(encoding@0.1.13)
+        specifier: 16.7.5
+        version: 16.7.5(encoding@0.1.13)
       tslib:
         specifier: 2.8.0
         version: 2.8.0
@@ -1962,11 +1970,11 @@ importers:
         specifier: 8.3.6
         version: 8.3.6
       supertokens-auth-react:
-        specifier: 0.35.6
-        version: 0.35.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supertokens-web-js@0.8.0)
+        specifier: 0.38.0
+        version: 0.38.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supertokens-web-js@0.9.0)
       supertokens-web-js:
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.9.0
+        version: 0.9.0
       tailwind-merge:
         specifier: 2.5.4
         version: 2.5.4
@@ -4459,13 +4467,13 @@ packages:
       graphql: ^15.2.0 || ^16.0.0
       graphql-yoga: ^5.7.0
 
-  '@graphql-yoga/plugin-persisted-operations@3.7.0':
-    resolution: {integrity: sha512-jfr+rIZBXbFxUO3j87u+VWWwyzIEn4SqSogRexyTFGhFb8hott8UALf/jOBEtZUIyHzsO3O1TN1pG+TPbQFkHA==}
+  '@graphql-yoga/plugin-persisted-operations@3.9.0':
+    resolution: {integrity: sha512-oeayVu5FBScQ7P5WXZR9NdmrfJp9P1lFBLVvZt7EtaMHuO19S9UgTe/z9HIDtVcoB4f5TAg/RfofVanROkP66g==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@graphql-tools/utils': ^10.0.0
       graphql: ^15.2.0 || ^16.0.0
-      graphql-yoga: ^5.7.0
+      graphql-yoga: ^5.9.0
 
   '@graphql-yoga/plugin-response-cache@3.9.0':
     resolution: {integrity: sha512-npuVvmPcgkh+kr7zdXjfenSNM0DgXYTG466YmiQ5/ygjDl1bnyCDxNwtss3CrLh5qDFzAn20gp72zuSHvwY0fg==}
@@ -7329,8 +7337,8 @@ packages:
       eslint: ^8 || ^9
       typescript: ^5
 
-  '@theguild/federation-composition@0.14.0':
-    resolution: {integrity: sha512-ltf9psoCcMgSfKphuj31kN1xLuhda0t2cJ72ciQ+kEwiCzqE9HnG3iD3Kt4xoJbbgiZSUvEftqulFc5gU0BEYg==}
+  '@theguild/federation-composition@0.14.1':
+    resolution: {integrity: sha512-mHQMxN0yE73jBH7wicf2lj88sT+pllC3FpSkhoSPPp0CJTyoWarRAxWei1fVreF0aO+0HJHqixNivo4pkl/LlQ==}
     engines: {node: '>=18'}
     peerDependencies:
       graphql: ^16.0.0
@@ -10637,8 +10645,8 @@ packages:
     peerDependencies:
       graphql: ^15.2.0 || ^16.0.0
 
-  graphql-yoga@5.7.0:
-    resolution: {integrity: sha512-QyGVvFAvGhMrzjJvhjsxsyoE+e4lNrj5f5qOsRYJuWIjyw7tHfbBvybZIwzNOGY0aB5sgA8BlVvu5hxjdKJ5tQ==}
+  graphql-yoga@5.9.0:
+    resolution: {integrity: sha512-zeSu77bnl+id+MaKpS8dQPA9Dix0DgdibWM5GFrQxKBwrdpW9XOH33ofrZvs+BXVici+pJvuxo+LeUpHopiBrg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       graphql: ^15.2.0 || ^16.0.0
@@ -12593,10 +12601,6 @@ packages:
 
   nodemailer-shared@1.1.0:
     resolution: {integrity: sha512-68xW5LSyPWv8R0GLm6veAvm7E+XFXkVgvE3FW0FGxNMMZqMkPFeGDVALfR1DPdSfcoO36PnW7q5AAOgFImEZGg==}
-
-  nodemailer@6.9.15:
-    resolution: {integrity: sha512-AHf04ySLC6CIfuRtRiEYtGEXgRfa6INgWGluDhnxTZhHSKvrBu7lc1VVchQ0d8nPc4cFaZoPq8vkyNoZr0TpGQ==}
-    engines: {node: '>=6.0.0'}
 
   nodemailer@6.9.16:
     resolution: {integrity: sha512-psAuZdTIRN08HKVd/E8ObdV6NO7NTBY3KsC30F7M4H1OnmLCUNaS56FpYxyb26zWLSyYF9Ozch9KYHhHegsiOQ==}
@@ -14757,25 +14761,25 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
 
-  supertokens-auth-react@0.35.6:
-    resolution: {integrity: sha512-Bt+rYunzqP6g331Ks5Q66obiIU/t2k6siG6dtpJNY2DZqAnjgJlDr8S/UAU8I72f4qWwlYv8FKUTa8+O/0z3zA==}
+  supertokens-auth-react@0.38.0:
+    resolution: {integrity: sha512-MOFSZtmcbpp65hEXeCmn3hwiPVLnkcpW97U9J36osbqRH9eI6MD0HiRkKG8KvA+vV+FIaC2xiCu9OOLmyZk1EA==}
     engines: {node: '>=16.0.0', npm: '>=8'}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
-      supertokens-web-js: ^0.8.0
+      supertokens-web-js: ^0.9.0
 
   supertokens-js-override@0.0.4:
     resolution: {integrity: sha512-r0JFBjkMIdep3Lbk3JA+MpnpuOtw4RSyrlRAbrzMcxwiYco3GFWl/daimQZ5b1forOiUODpOlXbSOljP/oyurg==}
 
-  supertokens-node@15.2.1:
-    resolution: {integrity: sha512-3zJ2EsiHYJHnYwAzDQI5Alp+4x/KcwEOBgeoPN5bWglZY0Xw0AzcZvd8S3N71vjLGvab0J3XxWmHeEHqSz5dbg==}
+  supertokens-node@16.7.5:
+    resolution: {integrity: sha512-xrVwi0GfgLIqHKaWXEp7fCgmVQ2wTiJTHG2CQGLkGMvrO9dUcxY+H6qozn3EvyXxbkm1BmflYD8N7ILNSIbR1g==}
 
-  supertokens-web-js@0.8.0:
-    resolution: {integrity: sha512-kkvuPbdy1I0e7nejVJAhpPJhR5h7EUHdn7Fh1YqfSjZfSJh46J3JU2qWGCgSDVZuD1hSuUKb6skF9CQnltHWrQ==}
+  supertokens-web-js@0.9.0:
+    resolution: {integrity: sha512-7DucVUWxImrcjckza0oW6tkPfMzScj8V/qiQNZeUT/EfCqIbslNSO8holBHc9Eykc0vG/CC0d9ne5TRhAmRcxg==}
 
-  supertokens-website@17.0.4:
-    resolution: {integrity: sha512-ayWhEFvspUe26YhM1bq11ssEpnFCZIsoHZtJwJHgHsoflfMUKdgrzOix/bboI0PWJeNTUphHyZebw0ApctaS1Q==}
+  supertokens-website@18.0.2:
+    resolution: {integrity: sha512-M0E1yukkb5gUlVoONe56FPRHhcnCdgBfrMZiSHUle5o/sQNKafG3P+dRk2TOg22Bj0yt0iv/ah3j+MjAQMVYiA==}
 
   supports-color@4.5.0:
     resolution: {integrity: sha512-ycQR/UbvI9xIlEdQT1TQqwoXtEldExbCEAJgRo5YXlmSKjv6ThHnP9/vwGa1gr19Gfw+LkFd7KqYMhzrRC5JYw==}
@@ -16326,8 +16330,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16434,11 +16438,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.596.0(@aws-sdk/client-sts@3.596.0)':
+  '@aws-sdk/client-sso-oidc@3.596.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16477,7 +16481,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.0
     transitivePeerDependencies:
-      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso-oidc@3.682.0(@aws-sdk/client-sts@3.682.0)':
@@ -16611,11 +16614,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.596.0':
+  '@aws-sdk/client-sts@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16654,6 +16657,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.0
     transitivePeerDependencies:
+      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/client-sts@3.682.0':
@@ -16767,7 +16771,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.596.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -16886,7 +16890,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/types': 3.6.0
@@ -17059,7 +17063,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/shared-ini-file-loader': 3.1.9
@@ -19555,34 +19559,34 @@ snapshots:
     dependencies:
       tslib: 2.8.0
 
-  '@graphql-yoga/plugin-defer-stream@3.7.0(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)':
+  '@graphql-yoga/plugin-defer-stream@3.7.0(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)':
     dependencies:
       '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
       graphql: 16.9.0
-      graphql-yoga: 5.7.0(graphql@16.9.0)
+      graphql-yoga: 5.9.0(graphql@16.9.0)
 
-  '@graphql-yoga/plugin-disable-introspection@2.7.0(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)':
+  '@graphql-yoga/plugin-disable-introspection@2.7.0(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)':
     dependencies:
       graphql: 16.9.0
-      graphql-yoga: 5.7.0(graphql@16.9.0)
+      graphql-yoga: 5.9.0(graphql@16.9.0)
 
-  '@graphql-yoga/plugin-graphql-sse@3.7.0(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)':
+  '@graphql-yoga/plugin-graphql-sse@3.7.0(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)':
     dependencies:
       graphql: 16.9.0
       graphql-sse: 2.5.3(graphql@16.9.0)
-      graphql-yoga: 5.7.0(graphql@16.9.0)
+      graphql-yoga: 5.9.0(graphql@16.9.0)
 
-  '@graphql-yoga/plugin-persisted-operations@3.7.0(@graphql-tools/utils@10.5.5(graphql@16.9.0))(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)':
+  '@graphql-yoga/plugin-persisted-operations@3.9.0(@graphql-tools/utils@10.5.5(graphql@16.9.0))(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)':
     dependencies:
       '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
       graphql: 16.9.0
-      graphql-yoga: 5.7.0(graphql@16.9.0)
+      graphql-yoga: 5.9.0(graphql@16.9.0)
 
-  '@graphql-yoga/plugin-response-cache@3.9.0(@envelop/core@5.0.2)(graphql-yoga@5.7.0(graphql@16.9.0))(graphql@16.9.0)':
+  '@graphql-yoga/plugin-response-cache@3.9.0(@envelop/core@5.0.2)(graphql-yoga@5.9.0(graphql@16.9.0))(graphql@16.9.0)':
     dependencies:
       '@envelop/response-cache': 6.1.2(@envelop/core@5.0.2)(graphql@16.9.0)
       graphql: 16.9.0
-      graphql-yoga: 5.7.0(graphql@16.9.0)
+      graphql-yoga: 5.9.0(graphql@16.9.0)
     transitivePeerDependencies:
       - '@envelop/core'
 
@@ -23256,8 +23260,8 @@ snapshots:
       '@typescript-eslint/parser': 7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3)
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
       eslint-config-prettier: 9.1.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       eslint-plugin-jsonc: 2.11.1(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       eslint-plugin-mdx: 3.0.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
@@ -23274,7 +23278,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  '@theguild/federation-composition@0.14.0(graphql@16.9.0)':
+  '@theguild/federation-composition@0.14.1(graphql@16.9.0)':
     dependencies:
       constant-case: 3.0.4
       debug: 4.3.4
@@ -26074,13 +26078,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
     dependencies:
       debug: 4.3.7(supports-color@8.1.1)
       enhanced-resolve: 5.17.1
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.13.1
@@ -26111,14 +26115,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
+  eslint-module-utils@2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
     dependencies:
       debug: 3.2.7(supports-color@8.1.1)
     optionalDependencies:
       '@typescript-eslint/parser': 7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3)
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
     transitivePeerDependencies:
       - supports-color
 
@@ -26134,7 +26138,7 @@ snapshots:
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
       eslint-compat-utils: 0.1.2(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
     dependencies:
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
@@ -26144,7 +26148,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       hasown: 2.0.0
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -27380,7 +27384,7 @@ snapshots:
       lru-cache: 10.2.0
       tslib: 2.8.0
 
-  graphql-yoga@5.7.0(graphql@16.9.0):
+  graphql-yoga@5.9.0(graphql@16.9.0):
     dependencies:
       '@envelop/core': 5.0.2
       '@graphql-tools/executor': 1.3.2(graphql@16.9.0)
@@ -29964,8 +29968,6 @@ snapshots:
     dependencies:
       nodemailer-fetch: 1.6.0
 
-  nodemailer@6.9.15: {}
-
   nodemailer@6.9.16: {}
 
   noms@0.0.0:
@@ -32373,18 +32375,18 @@ snapshots:
       pirates: 4.0.5
       ts-interface-checker: 0.1.13
 
-  supertokens-auth-react@0.35.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supertokens-web-js@0.8.0):
+  supertokens-auth-react@0.38.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supertokens-web-js@0.9.0):
     dependencies:
       intl-tel-input: 17.0.19
       prop-types: 15.8.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       supertokens-js-override: 0.0.4
-      supertokens-web-js: 0.8.0
+      supertokens-web-js: 0.9.0
 
   supertokens-js-override@0.0.4: {}
 
-  supertokens-node@15.2.1(encoding@0.1.13):
+  supertokens-node@16.7.5(encoding@0.1.13):
     dependencies:
       content-type: 1.0.5
       cookie: 0.7.2
@@ -32393,7 +32395,7 @@ snapshots:
       inflation: 2.0.0
       jose: 4.15.9
       libphonenumber-js: 1.10.14
-      nodemailer: 6.9.15
+      nodemailer: 6.9.16
       pkce-challenge: 3.1.0
       psl: 1.8.0
       supertokens-js-override: 0.0.4
@@ -32402,12 +32404,12 @@ snapshots:
       - encoding
       - supports-color
 
-  supertokens-web-js@0.8.0:
+  supertokens-web-js@0.9.0:
     dependencies:
       supertokens-js-override: 0.0.4
-      supertokens-website: 17.0.4
+      supertokens-website: 18.0.2
 
-  supertokens-website@17.0.4:
+  supertokens-website@18.0.2:
     dependencies:
       browser-tabs-lock: 1.3.0
       supertokens-js-override: 0.0.4

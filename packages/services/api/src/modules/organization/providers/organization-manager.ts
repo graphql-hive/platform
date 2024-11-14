@@ -12,6 +12,7 @@ import { BillingProvider } from '../../billing/providers/billing.provider';
 import { OIDCIntegrationsProvider } from '../../oidc-integrations/providers/oidc-integrations.provider';
 import { ActivityManager } from '../../shared/providers/activity-manager';
 import { Emails, mjml } from '../../shared/providers/emails';
+import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
 import type { OrganizationSelector } from '../../shared/providers/storage';
 import { Storage } from '../../shared/providers/storage';
@@ -68,6 +69,7 @@ export class OrganizationManager {
     private oidcIntegrationProvider: OIDCIntegrationsProvider,
     private emails: Emails,
     @Inject(WEB_APP_URL) private appBaseUrl: string,
+    private idTranslator: IdTranslator,
   ) {
     this.logger = logger.child({ source: 'OrganizationManager' });
   }
@@ -104,6 +106,28 @@ export class OrganizationManager {
     });
 
     return this.storage.getOrganization(selector);
+  }
+
+  async getOrganizationBySlug(organizationSlug: string): Promise<Organization | null> {
+    const organization = await this.storage.getOrganizationBySlug({ slug: organizationSlug });
+
+    if (!organization) {
+      return null;
+    }
+
+    const canAccess = await this.session.canPerformAction({
+      action: 'organization:describe',
+      organizationId: organization.id,
+      params: {
+        organizationId: organization.id,
+      },
+    });
+
+    if (canAccess === false) {
+      return null;
+    }
+
+    return organization;
   }
 
   async getOrganizations(): Promise<readonly Organization[]> {
@@ -431,7 +455,7 @@ export class OrganizationManager {
     const { slug } = input;
     this.logger.info('Updating an organization clean id (input=%o)', input);
     await this.session.assertPerformAction({
-      action: 'organization:modifySettings',
+      action: 'organization:modifySlug',
       organizationId: input.organizationId,
       params: {
         organizationId: input.organizationId,

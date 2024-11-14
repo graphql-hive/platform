@@ -92,6 +92,7 @@ const RedisModel = zod.object({
   REDIS_HOST: zod.string(),
   REDIS_PORT: NumberFromString,
   REDIS_PASSWORD: emptyString(zod.string().optional()),
+  REDIS_TLS_ENABLED: emptyString(zod.union([zod.literal('1'), zod.literal('0')]).optional()),
 });
 
 const SuperTokensModel = zod.object({
@@ -397,6 +398,7 @@ export const env = {
     host: redis.REDIS_HOST,
     port: redis.REDIS_PORT,
     password: redis.REDIS_PASSWORD ?? '',
+    tlsEnabled: redis.REDIS_TLS_ENABLED === '1',
   },
   supertokens: {
     connectionURI: supertokens.SUPERTOKENS_CONNECTION_URI,

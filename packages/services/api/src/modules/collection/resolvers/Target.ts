@@ -3,12 +3,39 @@ import type { TargetResolvers } from './../../../__generated__/types';
 
 export const Target: Pick<
   TargetResolvers,
-  'documentCollection' | 'documentCollectionOperation' | 'documentCollections' | '__isTypeOf'
+  | 'documentCollection'
+  | 'documentCollectionOperation'
+  | 'documentCollections'
+  | 'viewerCanModifyLaboratory'
+  | 'viewerCanViewLaboratory'
+  | '__isTypeOf'
 > = {
   documentCollections: (target, args, { injector }) =>
-    injector.get(CollectionProvider).getCollections(target.id, args.first, args.after),
-  documentCollectionOperation: (_, args, { injector }) =>
-    injector.get(CollectionProvider).getOperation(args.id),
-  documentCollection: (_, args, { injector }) =>
-    injector.get(CollectionProvider).getCollection(args.id),
+    injector.get(CollectionProvider).getCollections(target, args.first, args.after),
+  documentCollectionOperation: (target, args, { injector }) =>
+    injector.get(CollectionProvider).getDocumentCollectionOperationForTarget(target, args.id),
+  documentCollection: (target, args, { injector }) =>
+    injector.get(CollectionProvider).getDocumentCollectionForTarget(target, args.id),
+  viewerCanViewLaboratory: (target, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'laboratory:describe',
+      organizationId: target.orgId,
+      params: {
+        organizationId: target.orgId,
+        projectId: target.projectId,
+        targetId: target.id,
+      },
+    });
+  },
+  viewerCanModifyLaboratory: (target, _arg, { session }) => {
+    return session.canPerformAction({
+      action: 'laboratory:modify',
+      organizationId: target.orgId,
+      params: {
+        organizationId: target.orgId,
+        projectId: target.projectId,
+        targetId: target.id,
+      },
+    });
+  },
 };

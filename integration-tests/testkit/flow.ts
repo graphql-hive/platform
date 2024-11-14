@@ -1,5 +1,7 @@
 import { graphql } from './gql';
 import type {
+  AddAlertChannelInput,
+  AddAlertInput,
   AnswerOrganizationTransferRequestInput,
   AssignMemberRoleInput,
   CreateMemberRoleInput,
@@ -525,6 +527,149 @@ export function readTokenInfo(token: string) {
       }
     `),
     token,
+  });
+}
+
+export function addAlertChannel(input: AddAlertChannelInput, authToken: string) {
+  return execute({
+    document: graphql(`
+      mutation IntegrationTests_AddAlertChannel($input: AddAlertChannelInput!) {
+        addAlertChannel(input: $input) {
+          ok {
+            addedAlertChannel {
+              id
+              name
+              type
+              ... on AlertSlackChannel {
+                channel
+              }
+              ... on AlertWebhookChannel {
+                endpoint
+              }
+              ... on TeamsWebhookChannel {
+                endpoint
+              }
+            }
+          }
+          error {
+            message
+            inputErrors {
+              webhookEndpoint
+              slackChannel
+              name
+            }
+          }
+        }
+      }
+    `),
+    variables: {
+      input,
+    },
+    authToken,
+  });
+}
+
+export function addAlert(input: AddAlertInput, authToken: string) {
+  return execute({
+    document: graphql(`
+      mutation IntegrationTests_AddAlert($input: AddAlertInput!) {
+        addAlert(input: $input) {
+          ok {
+            addedAlert {
+              id
+              type
+              channel {
+                id
+                name
+                type
+              }
+              target {
+                id
+                slug
+              }
+            }
+          }
+          error {
+            message
+          }
+        }
+      }
+    `),
+    variables: {
+      input,
+    },
+    authToken,
+  });
+}
+
+export function readOrganizationInfo(
+  selector: {
+    organizationSlug: string;
+  },
+  authToken: string,
+) {
+  return execute({
+    document: graphql(`
+      query readOrganizationInfo($selector: OrganizationSelectorInput!) {
+        organization(selector: $selector) {
+          organization {
+            id
+            slug
+          }
+        }
+      }
+    `),
+    authToken,
+    variables: {
+      selector,
+    },
+  });
+}
+
+export function readProjectInfo(
+  selector: {
+    organizationSlug: string;
+    projectSlug: string;
+  },
+  authToken: string,
+) {
+  return execute({
+    document: graphql(`
+      query readProjectInfo($selector: ProjectSelectorInput!) {
+        project(selector: $selector) {
+          id
+          slug
+        }
+      }
+    `),
+    authToken,
+    variables: {
+      selector,
+    },
+  });
+}
+
+export function readTargetInfo(
+  selector: {
+    organizationSlug: string;
+    projectSlug: string;
+    targetSlug: string;
+  },
+  authToken: string,
+) {
+  return execute({
+    document: graphql(`
+      query readTargetInfo($selector: TargetSelectorInput!) {
+        target(selector: $selector) {
+          id
+          slug
+        }
+      }
+    `),
+    authToken,
+    variables: {
+      selector,
+    },
   });
 }
 

@@ -1,5 +1,6 @@
 import { Injectable, Scope } from 'graphql-modules';
 import * as zod from 'zod';
+import { DocumentCollection, DocumentCollectionOperation, Target } from '../../../shared/entities';
 import { isUUID } from '../../../shared/is-uuid';
 import { Session } from '../../auth/lib/authz';
 import { IdTranslator } from '../../shared/providers/id-translator';
@@ -22,28 +23,88 @@ export class CollectionProvider {
     this.logger = logger.child({ source: 'CollectionProvider' });
   }
 
-  getCollections(targetId: string, first: number, cursor: string | null) {
+  async getCollections(target: Target, first: number, cursor: string | null) {
+    await this.session.assertPerformAction({
+      action: 'laboratory:describe',
+      organizationId: target.orgId,
+      params: {
+        organizationId: target.orgId,
+        projectId: target.projectId,
+        targetId: target.id,
+      },
+    });
+
     return this.storage.getPaginatedDocumentCollectionsForTarget({
-      targetId,
+      targetId: target.id,
       first,
       cursor,
     });
   }
 
-  getCollection(id: string) {
-    return this.storage.getDocumentCollection({ id });
+  getCollectionForDocumentCollectionOperation(operation: DocumentCollectionOperation) {
+    return this.storage.getDocumentCollection({ id: operation.documentCollectionId });
   }
 
-  getOperations(documentCollectionId: string, first: number, cursor: string | null) {
+  async getDocumentCollectionForTarget(target: Target, documentCollectionId: string) {
+    await this.session.assertPerformAction({
+      action: 'laboratory:describe',
+      organizationId: target.orgId,
+      params: {
+        organizationId: target.orgId,
+        projectId: target.projectId,
+        targetId: target.id,
+      },
+    });
+
+    const collection = await this.storage.getDocumentCollection({ id: documentCollectionId });
+
+    if (collection?.targetId !== target.id) {
+      return null;
+    }
+
+    return collection;
+  }
+
+  async getOperationsForDocumentCollection(
+    documentCollection: DocumentCollection,
+    first: number,
+    cursor: string | null,
+  ) {
     return this.storage.getPaginatedDocumentsForDocumentCollection({
-      documentCollectionId,
+      documentCollectionId: documentCollection.id,
       first,
       cursor,
     });
   }
 
-  getOperation(id: string) {
-    return this.storage.getDocumentCollectionDocument({ id });
+  async getDocumentCollectionOperationForTarget(target: Target, documentCollectionId: string) {
+    await this.session.assertPerformAction({
+      action: 'laboratory:describe',
+      organizationId: target.orgId,
+      params: {
+        organizationId: target.orgId,
+        projectId: target.projectId,
+        targetId: target.id,
+      },
+    });
+
+    const operation = await this.storage.getDocumentCollectionDocument({
+      id: documentCollectionId,
+    });
+
+    if (!operation) {
+      return null;
+    }
+
+    const collection = await this.storage.getDocumentCollection({
+      id: operation.documentCollectionId,
+    });
+
+    if (!collection || collection.targetId !== target.id) {
+      return null;
+    }
+
+    return operation;
   }
 
   async createCollection(
@@ -64,7 +125,7 @@ export class CollectionProvider {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'laboratory:createCollection',
+      action: 'laboratory:modify',
       organizationId,
       params: {
         organizationId,
@@ -112,7 +173,7 @@ export class CollectionProvider {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'laboratory:modifyCollection',
+      action: 'laboratory:modify',
       organizationId,
       params: {
         organizationId,
@@ -166,7 +227,7 @@ export class CollectionProvider {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'laboratory:deleteCollection',
+      action: 'laboratory:modify',
       organizationId,
       params: {
         organizationId,
@@ -222,7 +283,7 @@ export class CollectionProvider {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'laboratory:modifyCollection',
+      action: 'laboratory:modify',
       organizationId,
       params: {
         organizationId,
@@ -309,7 +370,7 @@ export class CollectionProvider {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'laboratory:modifyCollection',
+      action: 'laboratory:modify',
       organizationId,
       params: {
         organizationId,
@@ -405,7 +466,7 @@ export class CollectionProvider {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'laboratory:modifyCollection',
+      action: 'laboratory:modify',
       organizationId,
       params: {
         organizationId,

@@ -20,6 +20,8 @@ import {
 } from './collections';
 import { ensureEnv } from './env';
 import {
+  addAlert,
+  addAlertChannel,
   assignMemberRole,
   checkSchema,
   compareToPreviousVersion,
@@ -27,6 +29,7 @@ import {
   createMemberRole,
   createOrganization,
   createProject,
+  createTarget,
   createToken,
   deleteMemberRole,
   deleteSchema,
@@ -171,7 +174,7 @@ export function initSeed() {
                 ownerToken,
               ).then(r => r.expectNoGraphQLErrors());
 
-              const members = membersResult.organization?.organization.members.nodes;
+              const members = membersResult.organization?.organization.members?.nodes;
 
               if (!members) {
                 throw new Error(`Could not get members for org ${organization.slug}`);
@@ -419,6 +422,24 @@ export function initSeed() {
                   }).then(r => r.expectNoGraphQLErrors());
 
                   return result.updateOperationInDocumentCollection;
+                },
+                async addAlert(
+                  input: {
+                    token?: string;
+                  } & Parameters<typeof addAlert>[0],
+                ) {
+                  const result = await addAlert(input, input.token || ownerToken).then(r =>
+                    r.expectNoGraphQLErrors(),
+                  );
+                  return result.addAlert;
+                },
+                async addAlertChannel(
+                  input: { token?: string } & Parameters<typeof addAlertChannel>[0],
+                ) {
+                  const result = await addAlertChannel(input, input.token || ownerToken).then(r =>
+                    r.expectNoGraphQLErrors(),
+                  );
+                  return result.addAlertChannel;
                 },
                 /**
                  * Create a access token for a given target.
@@ -711,6 +732,16 @@ export function initSeed() {
                     ownerToken,
                   ).then(r => r.expectNoGraphQLErrors());
                 },
+                async createTarget(args?: { slug?: string; accessToken?: string }) {
+                  return createTarget(
+                    {
+                      organizationSlug: orgSlug,
+                      projectSlug: project.slug,
+                      slug: args?.slug ?? generateUnique(),
+                    },
+                    args?.accessToken ?? ownerToken,
+                  );
+                },
               };
             },
             async inviteAndJoinMember(inviteToken: string = ownerToken) {
@@ -837,7 +868,7 @@ export function initSeed() {
                   }
 
                   const createdRole =
-                    memberRoleCreationResult.createMemberRole.ok?.updatedOrganization.memberRoles.find(
+                    memberRoleCreationResult.createMemberRole.ok?.updatedOrganization.memberRoles?.find(
                       r => r.name === name,
                     );
 

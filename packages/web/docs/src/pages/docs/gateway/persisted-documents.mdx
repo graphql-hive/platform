@@ -76,8 +76,10 @@ import { defineConfig } from '@graphql-hive/gateway'
 export const gatewayConfig = defineConfig({
   persistedDocuments: {
     type: 'hive',
-    endpoint: '<cdn_endpoint>',
-    token: '<cdn-access-token>'
+    // The endpoint of Hive's CDN
+    endpoint: '<endpoint>',
+    // The CDN token provided by Hive Registry
+    key: '<cdn access token>'
   }
 })
 ```
@@ -94,8 +96,11 @@ import { defineConfig } from '@graphql-hive/gateway'
 export const gatewayConfig = defineConfig({
   persistedDocuments: {
     type: 'hive',
-    endpoint: '<cdn_endpoint>',
-    token: '<cdn-access-token>',
+    // The endpoint of Hive's CDN
+    endpoint: '<endpoint>',
+    // The CDN token provided by Hive Registry
+    key: '<cdn access token>'
+    // Allow executing arbitrary documents
     allowArbitraryDocuments: true
   }
 })

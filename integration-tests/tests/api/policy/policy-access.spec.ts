@@ -21,7 +21,7 @@ describe('Policy Access', () => {
         const { createOrg } = await initSeed().createOwner();
         const { organization, createProject, inviteAndJoinMember } = await createOrg();
         const { project } = await createProject(ProjectType.Single);
-        const adminRole = organization.memberRoles.find(r => r.name === 'Admin');
+        const adminRole = organization.memberRoles?.find(r => r.name === 'Admin');
 
         if (!adminRole) {
           throw new Error('Admin role not found');
@@ -87,7 +87,7 @@ describe('Policy Access', () => {
       async ({ expect }) => {
         const { createOrg } = await initSeed().createOwner();
         const { organization, inviteAndJoinMember } = await createOrg();
-        const adminRole = organization.memberRoles.find(r => r.name === 'Admin');
+        const adminRole = organization.memberRoles?.find(r => r.name === 'Admin');
 
         if (!adminRole) {
           throw new Error('Admin role not found');

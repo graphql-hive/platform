@@ -22,14 +22,14 @@ export function CommunitySection({ className }: { className?: string }) {
       className={cn('bg-green-1000 rounded-3xl px-4 py-6 lg:px-8 lg:py-16 xl:p-24', className)}
     >
       <Heading as="h2" size="sm" className="text-balance text-white lg:text-center">
-        Community-driven Open Source
+        Community-Driven Open Source
       </Heading>
       <p className="mt-4 text-white/80 lg:text-center">
         Supported by a network of early advocates, contributors, and champions.
       </p>
       <div className="my-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:my-24 lg:grid-cols-4">
         <CommunityCard
-          title="GitHub integration"
+          title="GitHub Integration"
           description="Our CLI integrates smoothly with GitHub Actions / repositories."
         >
           <CallToAction
@@ -43,7 +43,7 @@ export function CommunitySection({ className }: { className?: string }) {
           </CallToAction>
         </CommunityCard>
         <CommunityCard
-          title="Impactful community"
+          title="Impactful Community"
           description="Implement your own features with our help"
         >
           <CallToAction
@@ -56,7 +56,7 @@ export function CommunitySection({ className }: { className?: string }) {
             Discord
           </CallToAction>
         </CommunityCard>
-        <CommunityCard title="Public roadmap" description="Influence the future of Hive">
+        <CommunityCard title="Public Roadmap" description="Influence the future of Hive">
           <CallToAction
             variant="secondary-inverted"
             href="https://the-guild.dev/graphql/hive/product-updates"
@@ -67,7 +67,7 @@ export function CommunitySection({ className }: { className?: string }) {
           </CallToAction>
         </CommunityCard>
         <CommunityCard
-          title="Available for free"
+          title="Available for Free"
           description="Free Hobby plan that fits perfectly for most side projects."
         >
           <CallToAction variant="secondary-inverted" href="/#pricing">

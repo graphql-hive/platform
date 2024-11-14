@@ -22,7 +22,6 @@ const rulesToExtends = Object.fromEntries(
       'no-else-return',
       'no-lonely-if',
       'unicorn/prefer-includes',
-      'react/self-closing-comp',
       'no-extra-boolean-cast',
     ].includes(key),
   ),

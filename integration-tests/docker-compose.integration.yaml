@@ -59,6 +59,18 @@ services:
       LOG_LEVEL: debug
       CF_BROKER_SIGNATURE: secretSignature
 
+  mock_server:
+    image: mockserver/mockserver:5.15.0
+    # healthcheck - no time to implement it
+    # The image does not contain curl or wget.
+    networks:
+      - 'stack'
+    ports:
+      - 3042:3042
+    environment:
+      MOCKSERVER_LOG_LEVEL: DEBUG
+      MOCKSERVER_SERVER_PORT: 3042
+
   composition_federation_2:
     image: '${DOCKER_REGISTRY}composition-federation-2${DOCKER_TAG}'
     networks:

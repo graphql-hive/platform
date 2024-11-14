@@ -86,7 +86,7 @@ export class CdnProvider {
     }
 
     await this.session.assertPerformAction({
-      action: 'cdnAccessToken:create',
+      action: 'cdnAccessToken:modify',
       organizationId: args.organizationId,
       params: {
         organizationId: args.organizationId,
@@ -244,7 +244,7 @@ export class CdnProvider {
     );
 
     await this.session.assertPerformAction({
-      action: 'cdnAccessToken:delete',
+      action: 'cdnAccessToken:modify',
       organizationId: args.organizationId,
       params: {
         organizationId: args.organizationId,
@@ -332,7 +332,7 @@ export class CdnProvider {
     cursor: string | null;
   }) {
     await this.session.assertPerformAction({
-      action: 'cdnAccessToken:describe',
+      action: 'cdnAccessToken:modify',
       organizationId: args.organizationId,
       params: {
         organizationId: args.organizationId,

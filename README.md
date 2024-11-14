@@ -15,7 +15,7 @@ from standalone APIs to composed schemas (Federation, Stitching).
   ([status page](https://status.graphql-hive.com))
 - [Read the announcement blog post](https://the-guild.dev/blog/announcing-graphql-hive-public)
 - [Read the docs](https://the-guild.dev/graphql/hive/docs)
-- [View the changelog for self-hosting](./deployments/CHANGELOG.md)
+- [View the changelog for self-hosting](./deployment/CHANGELOG.md)
 
 ## Built for the community, for all GraphQL APIs
 

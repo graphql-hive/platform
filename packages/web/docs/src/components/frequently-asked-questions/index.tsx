@@ -54,16 +54,19 @@ export function FrequentlyAskedQuestions({ className }: { className?: string }) 
               <Accordion.Item
                 asChild
                 value={question}
-                className="rdx-state-open:pb-4 relative pb-0 transition-all duration-500 ease-[ease] focus-within:z-10"
+                className="rdx-state-open:pb-4 relative pb-0 focus-within:z-10"
               >
                 <li>
                   <Accordion.Header>
                     <Accordion.Trigger className="hive-focus hover:bg-beige-100/80 -mx-2 my-1 flex w-[calc(100%+1rem)] items-center justify-between rounded-xl bg-white px-2 py-3 text-left font-medium transition-colors duration-[.8s] md:my-2 md:py-4">
                       {question}
-                      <ChevronDownIcon className="size-5 transition duration-500 ease-in [[data-state='open']_&]:[transform:rotateX(180deg)]" />
+                      <ChevronDownIcon className="size-5 [[data-state='open']_&]:[transform:rotateX(180deg)]" />
                     </Accordion.Trigger>
                   </Accordion.Header>
-                  <Accordion.Content className="rdx-state-open:motion-safe:animate-accordion-down rdx-state-closed:motion-safe:animate-accordion-up overflow-hidden bg-white text-green-800 transition-all">
+                  <Accordion.Content
+                    forceMount
+                    className="overflow-hidden bg-white text-green-800 data-[state=closed]:hidden"
+                  >
                     {answer}
                   </Accordion.Content>
                 </li>

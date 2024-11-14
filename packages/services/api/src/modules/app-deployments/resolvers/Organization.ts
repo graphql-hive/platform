@@ -12,9 +12,9 @@ import type { OrganizationResolvers } from './../../../__generated__/types';
  */
 export const Organization: Pick<OrganizationResolvers, 'isAppDeploymentsEnabled' | '__isTypeOf'> = {
   /* Implement Organization resolver logic here */
-  isAppDeploymentsEnabled(appDeployment, _, { injector }) {
+  isAppDeploymentsEnabled(organization, _, { injector }) {
     return (
-      injector.get<boolean>(APP_DEPLOYMENTS_ENABLED) || appDeployment.featureFlags.appDeployments
+      injector.get<boolean>(APP_DEPLOYMENTS_ENABLED) || organization.featureFlags.appDeployments
     );
   },
 };
