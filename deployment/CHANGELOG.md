@@ -1,5 +1,20 @@
 # hive
 
+## 1.2.0
+
+### Minor Changes
+
+- [#5897](https://github.com/graphql-hive/console/pull/5897)
+  [`cd9a13c`](https://github.com/graphql-hive/console/commit/cd9a13cd4f98700c79db89ac4dd60f0578442efe)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Update `supertokens-postgresql` to `9.3`.
+
+### Patch Changes
+
+- [#5924](https://github.com/graphql-hive/console/pull/5924)
+  [`5ad52ba`](https://github.com/graphql-hive/console/commit/5ad52ba4d1ad002a8e3b233cefe762324113cf6a)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Fix logging for invalid operation body within usage
+  reporting.
+
 ## 1.1.1
 
 ### Patch Changes
