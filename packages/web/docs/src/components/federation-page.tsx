@@ -182,13 +182,13 @@ function HowFederationWorksSection(props: {
         variant.className,
         variant.beforeClassName
           ? [
-              "before:absolute before:-top-24 before:left-0 before:hidden before:h-24 before:w-24 before:rounded-bl-3xl before:shadow-[0_48px_0_0] before:content-[''] before:lg:block",
+              "before:absolute before:-top-24 before:left-0 before:hidden before:size-24 before:rounded-bl-3xl before:shadow-[0_48px_0_0] before:content-[''] before:lg:block",
               variant.beforeClassName,
             ]
           : null,
         variant.afterClassName
           ? [
-              "after:absolute after:right-0 after:top-0 after:hidden after:h-24 after:w-24 after:rounded-tr-3xl after:shadow-[0_-48px_0_0] after:content-[''] after:lg:block",
+              "after:absolute after:right-0 after:top-0 after:hidden after:size-24 after:rounded-tr-3xl after:shadow-[0_-48px_0_0] after:content-[''] after:lg:block",
               variant.afterClassName,
             ]
           : null,
