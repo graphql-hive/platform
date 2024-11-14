@@ -45,7 +45,7 @@ jobs:
         uses: changesets/action@v1.4.9
         with:
           publish: pnpm release
-          version: 'release:version'
+          version: pnpm release:version
           commit: 'chore(release): update monorepo packages versions'
           title: 'Upcoming Release Changes'
         env:
