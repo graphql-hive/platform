@@ -41,7 +41,7 @@ const li = (props: ComponentPropsWithoutRef<'li'>) => {
     throw new Error('Expected a question and an answer');
   }
 
-  const [question, answer] = texts;
+  const [question, ...answers] = texts;
 
   if (!question) return null;
 
@@ -60,9 +60,11 @@ const li = (props: ComponentPropsWithoutRef<'li'>) => {
         </Accordion.Header>
         <Accordion.Content
           forceMount
-          className="overflow-hidden bg-white text-green-800 data-[state=closed]:hidden"
+          className="space-y-2 overflow-hidden bg-white text-green-800 data-[state=closed]:hidden"
         >
-          {answer}
+          {answers.map((answer, i) => (
+            <p key={i}>{answer}</p>
+          ))}
         </Accordion.Content>
       </li>
     </Accordion.Item>
@@ -78,6 +80,26 @@ export function FrequentlyAskedQuestions({ className }: { className?: string }) 
       )}
     >
       <HomeQuestions
+        components={{
+          a,
+          h2,
+          ul,
+          li,
+        }}
+      />
+    </section>
+  );
+}
+
+export function FrequentlyAskedFederationQuestions({ className }: { className?: string }) {
+  return (
+    <section
+      className={cn(
+        className,
+        'text-green-1000 flex flex-col gap-x-6 gap-y-2 px-4 py-6 md:flex-row md:px-10 lg:gap-x-24 lg:px-[120px] lg:py-24',
+      )}
+    >
+      <FederationQuestions
         components={{
           a,
           h2,

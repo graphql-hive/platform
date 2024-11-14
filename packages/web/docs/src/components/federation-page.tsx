@@ -1,4 +1,5 @@
 import { ReactElement } from 'react';
+import Image from 'next/image';
 import { CallToAction, Heading } from '@theguild/components';
 import { cn } from '../lib';
 import { ArrowIcon } from './arrow-icon';
@@ -6,6 +7,7 @@ import { FrequentlyAskedFederationQuestions } from './frequently-asked-questions
 import { Hero, HeroLinks } from './hero';
 import { InfoCard } from './info-card';
 import { Page } from './page';
+import federationDiagram from '../../public/federation-diagram.png';
 
 export function FederationPage(): ReactElement {
   return (
@@ -35,184 +37,246 @@ export function FederationPage(): ReactElement {
           </CallToAction>
         </HeroLinks>
       </Hero>
-      <div className="relative mt-6 sm:mt-[-72px]">
-        <section className="border-beige-400 isolate mx-auto w-[1200px] max-w-full rounded-3xl bg-white sm:max-w-[calc(100%-4rem)] sm:border sm:p-6">
-          <div className="relative mx-auto flex w-[1392px] max-w-full flex-col gap-x-4 gap-y-6 md:gap-y-12 lg:flex-row [@media(min-width:1400px)]:gap-x-[120px]">
-            <div className="flex flex-col gap-12 px-4 md:px-0 lg:w-[488px]">
-              <Heading as="h3" size="sm" className="text-green-1000">
-                Connect and Unify APIs
-              </Heading>
-              <div className="mx-auto flex basis-full flex-col gap-y-4 leading-6 text-green-800 lg:gap-y-6">
-                <p>
-                  As GraphQL APIs grow, they become harder to maintain. Teams step on each other's
-                  toes, deployments get risky, and making changes becomes slow.
-                </p>
-                <p>
-                  GraphQL federation solves this by letting you split your GraphQL API into smaller
-                  pieces that work together.
-                </p>
-                <p>
-                  Clients interact with a single endpoint that serves as one unified API. The
-                  GraphQL gateway seamlessly coordinates requests between all services.
-                </p>
-              </div>
-              {/* <div className="bottom-0 flex w-full flex-col gap-x-4 gap-y-2 max-lg:absolute max-lg:translate-y-[calc(100%+24px)] sm:flex-row">
-                <CallToAction
-                  href="https://the-guild.dev/graphql/hive/docs/use-cases/apollo-studio"
-                  variant="primary-inverted"
-                >
-                  CTA
-                </CallToAction>
-              </div> */}
-            </div>
-            <div className="relative mx-4 h-full flex-1 overflow-hidden rounded-3xl bg-blue-400 max-sm:h-[290px] sm:min-h-[400px] md:ml-6 md:mr-0"></div>
-          </div>
-        </section>
-      </div>
-      <section className="p-6 sm:py-20 md:py-24">
-        <Heading as="h3" size="md" className="text-balance text-center">
-          Why GraphQL Federation?
-        </Heading>
-        <ul className="mt-6 flex flex-row flex-wrap justify-center gap-2 md:mt-16 md:gap-6">
-          <InfoCard
-            as="li"
-            heading="Autonomy"
-            icon={<PerformanceListItemIcon />}
-            className="flex-1 rounded-2xl md:rounded-3xl"
-          >
-            GraphQL federation is perfect for domain-driven design, allowing teams to work
-            contribute individual GraphQL APIs in any language to a cohesive GraphQL API.
-          </InfoCard>
-          <InfoCard
-            as="li"
-            heading="Scalability"
-            icon={<PerformanceListItemIcon />}
-            className="flex-1 basis-full rounded-2xl md:basis-0 md:rounded-3xl"
-          >
-            Individual GraphQL APIs can be scaled independently based on their specific
-            requirements.
-          </InfoCard>
-          <InfoCard
-            as="li"
-            heading="Unified API"
-            icon={<PerformanceListItemIcon />}
-            className="flex-1 basis-full rounded-2xl md:rounded-3xl lg:basis-0"
-          >
-            Clients get a seamless, unified experience. The complexity is hidden behind a single
-            endpoint.
-          </InfoCard>
-        </ul>
-      </section>
-      <div className="mx-4 md:mx-6">
-        <div>
-          <Heading as="h2" size="md" className="text-center">
-            How GraphQL Federation Works?
-          </Heading>
-        </div>
-        <section className="bg-beige-100 relative isolate mt-6 max-w-full rounded-3xl rounded-b-none px-4 py-6 md:mt-16 lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24">
-          <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
-            <Heading as="h3" size="sm" className="text-green-1000 max-w-full text-balance">
-              Own Your Domain, Choose Your Stack
-            </Heading>
-
-            <p className="mt-4 w-[700px] max-w-full text-green-800 lg:mt-6">
-              With GraphQL federation, each team owns their piece of the GraphQL API. They gain
-              autonomy that let's them deploy on their own schedule, scale as needed and use tech
-              stack that fits their needs.
-            </p>
-
-            <CallToAction
-              variant="secondary-inverted"
-              href="/docs/get-started/apollo-federation#publish-subgraphs"
-              className="mt-6 max-xl:order-1 max-md:w-full xl:mt-12"
-            >
-              Publish subgraphs to Hive
-              <ArrowIcon />
-            </CallToAction>
-          </div>
-        </section>
-        {/*  */}
-        <section
-          className={cn(
-            'relative isolate max-w-full rounded-none bg-blue-400 px-4 py-6 lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24',
-            "before:bg-beige-100 before:absolute before:-top-24 before:left-0 before:hidden before:h-24 before:w-24 before:rounded-bl-3xl before:shadow-[0_48px_0_0] before:shadow-blue-400 before:content-[''] before:lg:block",
-            "after:shadow-beige-100 after:absolute after:right-0 after:top-0 after:hidden after:h-24 after:w-24 after:rounded-tr-3xl after:bg-blue-400 after:shadow-[0_-48px_0_0] after:content-[''] after:lg:block",
-          )}
-        >
-          <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
-            <Heading as="h3" size="sm" className="text-green-1000 max-w-full text-balance">
-              Bringing It All Together
-            </Heading>
-
-            <p className="mt-4 w-[700px] max-w-full text-green-800 lg:mt-6">
-              GraphQL federation involves schema composition to combine separate GraphQL schemas
-              into one coherent API. Teams can reference types from other services and the
-              composition process ensures all pieces fit together. All conflicts are caught early
-              during development, saving you from production issues.
-            </p>
-
-            <CallToAction
-              variant="secondary-inverted"
-              href="/docs/schema-registry"
-              className="mt-6 max-xl:order-1 max-md:w-full xl:mt-12"
-            >
-              Read about Schema Registry
-              <ArrowIcon />
-            </CallToAction>
-          </div>
-        </section>
-        {/*  */}
-
-        <section
-          className={cn(
-            'bg-green-1000 relative isolate max-w-full rounded-3xl rounded-t-none px-4 py-6 text-white lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24',
-            "before:shadow-green-1000 before:absolute before:-top-24 before:left-0 before:hidden before:h-24 before:w-24 before:rounded-bl-3xl before:bg-blue-400 before:shadow-[0_48px_0_0] before:content-[''] before:lg:block",
-            "after:bg-green-1000 after:absolute after:right-0 after:top-0 after:hidden after:h-24 after:w-24 after:rounded-tr-3xl after:shadow-[0_-48px_0_0] after:shadow-blue-400 after:content-[''] after:lg:block",
-          )}
-        >
-          <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
-            <Heading as="h3" size="sm" className="max-w-full text-balance text-white">
-              Single, Unified API
-            </Heading>
-
-            <p className="mt-4 w-[700px] max-w-full text-white/80 lg:mt-6">
-              Thanks to GraphQL gateway, clients get a single endpoint with unified schema. The
-              complexity of distributed systems is hidden. The gateway ensures every query reaches
-              its destination and returns with the right data.
-            </p>
-
-            <CallToAction
-              variant="secondary-inverted"
-              href="/docs/gateway"
-              className="mt-6 max-xl:order-1 max-md:w-full xl:mt-12"
-            >
-              Discover Hive Gateway
-              <ArrowIcon />
-            </CallToAction>
-          </div>
-        </section>
-      </div>
+      <Intro />
+      <WhyFederation />
+      <HowFederationWorks className="mx-4 md:mx-6" />
       <WhyHive className="mx-4 md:mx-6" />
       <FrequentlyAskedFederationQuestions className="mx-4 md:mx-6" />
-      <section
-        className={'relative mx-4 overflow-hidden rounded-3xl p-12 text-center sm:p-24 md:mx-6'}
-      >
-        <Heading as="h3" size="md">
-          Get Started with GraphQL Federation
-        </Heading>
-        <p className="relative mt-4">
-          Start building your federated GraphQL API today, by following our guide, that will walk
-          you through the basics of Apollo Federation.
-        </p>
-        <CallToAction
-          variant="primary"
-          className="mx-auto mt-8"
-          href="/docs/get-started/apollo-federation"
-        >
-          Start building now
-        </CallToAction>
-      </section>
+      <GetStarted className="mx-4 md:mx-6" />
     </Page>
+  );
+}
+
+function Intro() {
+  return (
+    <div className="relative mt-6 sm:mt-[-72px]">
+      <section className="border-beige-400 isolate mx-auto w-[1200px] max-w-full rounded-3xl bg-white sm:max-w-[calc(100%-4rem)] sm:border sm:p-6">
+        <div className="relative mx-auto flex w-[1392px] max-w-full flex-col gap-x-4 gap-y-6 md:gap-y-12 lg:flex-row [@media(min-width:1400px)]:gap-x-[120px]">
+          <div className="flex grow flex-col gap-12 px-4 md:px-0 lg:w-[650px]">
+            <Heading as="h3" size="sm" className="text-green-1000">
+              Connect and Unify APIs
+            </Heading>
+            <div className="mx-auto space-y-4 leading-6 text-green-800 lg:space-y-6">
+              <p>
+                As GraphQL APIs grow, they become harder to maintain. Teams step on each other's
+                toes, deployments get risky, and making changes becomes slow.
+              </p>
+              <p>
+                GraphQL federation solves this by letting you split your GraphQL API into smaller
+                pieces that work together.
+              </p>
+              <p>
+                Clients interact with a single endpoint that serves as one unified API. The GraphQL
+                gateway seamlessly coordinates requests between all services.
+              </p>
+            </div>
+            <div className="mx-auto flex flex-row gap-4 lg:mx-0">
+              <CallToAction variant="secondary-inverted" href="#why-graphql-federation?">
+                Why GraphQL federation?
+              </CallToAction>
+              <CallToAction
+                variant="primary-inverted"
+                href="#why-choose-hive-for-graphql-federation?"
+              >
+                Why choose Hive?
+              </CallToAction>
+            </div>
+          </div>
+          <div className="relative mx-4 overflow-hidden rounded-3xl bg-blue-400 md:ml-6 md:mr-0">
+            <Image
+              width={816} // max rendered width
+              height={900} // max rendered height
+              src={federationDiagram}
+              placeholder="blur"
+              blurDataURL={federationDiagram.blurDataURL}
+              role="presentation"
+              className="mx-auto max-h-[400px] w-auto"
+              alt="Diagram showing how GraphQL federation works in a distributed system"
+            />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function WhyFederation(props: { className?: string }) {
+  return (
+    <section className={cn('p-6 sm:py-20 md:py-24', props.className)}>
+      <Heading as="h3" size="md" className="text-balance text-center">
+        Why GraphQL Federation?
+      </Heading>
+      <ul className="mt-6 flex flex-row flex-wrap justify-center gap-2 md:mt-16 md:gap-6">
+        <InfoCard
+          as="li"
+          heading="Autonomy"
+          icon={<PerformanceListItemIcon />}
+          className="flex-1 text-balance rounded-2xl md:rounded-3xl"
+        >
+          GraphQL federation is perfect for domain-driven design, allowing teams to work contribute
+          individual GraphQL APIs in any language to a cohesive GraphQL API.
+        </InfoCard>
+        <InfoCard
+          as="li"
+          heading="Scalability"
+          icon={<PerformanceListItemIcon />}
+          className="flex-1 basis-full text-balance rounded-2xl md:basis-0 md:rounded-3xl"
+        >
+          Individual GraphQL APIs can be scaled independently based on their specific requirements.
+        </InfoCard>
+        <InfoCard
+          as="li"
+          heading="Unified API"
+          icon={<PerformanceListItemIcon />}
+          className="flex-1 basis-full text-balance rounded-2xl md:rounded-3xl lg:basis-0"
+        >
+          Clients get a seamless, unified experience. The complexity is hidden behind a single
+          endpoint.
+        </InfoCard>
+      </ul>
+    </section>
+  );
+}
+
+const HowFederationWorksVariants = {
+  first: {
+    className: 'bg-beige-100 rounded-3xl rounded-b-none',
+    headingClassName: 'text-green-1000',
+    paragraphClassName: 'text-green-800',
+    beforeClassName: null,
+    afterClassName: null,
+    callToActionVariant: 'secondary-inverted' as const,
+  },
+  second: {
+    className: 'bg-blue-400',
+    headingClassName: 'text-green-1000',
+    paragraphClassName: 'text-green-800',
+    beforeClassName: 'before:bg-beige-100 before:shadow-blue-400',
+    afterClassName: 'after:shadow-beige-100 after:bg-blue-400',
+    callToActionVariant: 'secondary-inverted' as const,
+  },
+  third: {
+    className: 'bg-green-1000 rounded-3xl rounded-t-none',
+    headingClassName: 'text-white',
+    paragraphClassName: 'text-white/80',
+    beforeClassName: 'before:shadow-green-1000 before:bg-blue-400',
+    afterClassName: 'after:bg-green-1000 after:shadow-blue-400',
+    callToActionVariant: 'secondary-inverted' as const,
+  },
+};
+
+function HowFederationWorksSection(props: {
+  heading: string;
+  description: string;
+  callToAction: string;
+  callToActionLink: string;
+  callToActionTitle: string;
+  index: keyof typeof HowFederationWorksVariants;
+}) {
+  const variant = HowFederationWorksVariants[props.index];
+
+  return (
+    <section
+      className={cn(
+        'relative isolate max-w-full rounded-none px-4 py-6 lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24',
+        variant.className,
+        variant.beforeClassName
+          ? [
+              "before:absolute before:-top-24 before:left-0 before:hidden before:size-24 before:rounded-bl-3xl before:shadow-[0_48px_0_0] before:content-[''] before:lg:block",
+              variant.beforeClassName,
+            ]
+          : null,
+        variant.afterClassName
+          ? [
+              "after:absolute after:right-0 after:top-0 after:hidden after:size-24 after:rounded-tr-3xl after:shadow-[0_-48px_0_0] after:content-[''] after:lg:block",
+              variant.afterClassName,
+            ]
+          : null,
+      )}
+    >
+      <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
+        <Heading
+          as="h3"
+          size="sm"
+          className={cn('max-w-full text-balance', variant.headingClassName)}
+        >
+          {props.heading}
+        </Heading>
+
+        <p
+          className={cn(
+            'mt-4 w-[700px] max-w-full text-balance lg:mt-6',
+            variant.paragraphClassName,
+          )}
+        >
+          {props.description}
+        </p>
+
+        <CallToAction
+          variant={variant.callToActionVariant}
+          href={props.callToActionLink}
+          title={props.callToActionTitle}
+          className="mt-6 max-xl:order-1 max-md:w-full xl:mt-12"
+        >
+          {props.callToAction}
+          <ArrowIcon />
+        </CallToAction>
+      </div>
+    </section>
+  );
+}
+
+function HowFederationWorks(props: { className?: string }) {
+  return (
+    <div className={cn(props.className)}>
+      <div>
+        <Heading as="h2" size="md" className="text-center">
+          How GraphQL Federation Works?
+        </Heading>
+      </div>
+      <div className="mt-6 md:mt-16">
+        <HowFederationWorksSection
+          index="first"
+          heading="Own Your Domain, Choose Your Stack"
+          description={`
+            With GraphQL federation, each team owns their piece of the GraphQL API.
+            They gain autonomy that let's them deploy on their own schedule,
+            scale as needed and use tech stack that fits their needs.
+          `}
+          callToAction="Publish subgraphs to Hive"
+          callToActionLink="/docs/get-started/apollo-federation#publish-subgraphs"
+          callToActionTitle="Start by publishing your subgraphs to Hive"
+        />
+        <HowFederationWorksSection
+          index="second"
+          heading="Bringing It All Together"
+          description={`
+            GraphQL federation involves schema composition to combine separate GraphQL schemas into
+            one coherent API.
+            Teams can reference types from other services and the composition
+            process ensures all pieces fit together.
+            All conflicts are caught early during
+            development, saving you from production issues.
+          `}
+          callToAction="Read about Schema Registry"
+          callToActionLink="/docs/schema-registry"
+          callToActionTitle="Learn how to use Schema Registry to compose your schema and validate it"
+        />
+        <HowFederationWorksSection
+          index="third"
+          heading="Single, Unified API"
+          description={`
+            Thanks to GraphQL gateway, clients get a single endpoint with unified schema.
+            The complexity of distributed systems is hidden.
+            The gateway ensures every query reaches its
+            destination and returns with the right data.
+          `}
+          callToAction="Discover Hive Gateway"
+          callToActionLink="/docs/gateway"
+          callToActionTitle="Learn how to use Hive Gateway to serve your supergraph to clients"
+        />
+      </div>
+    </div>
   );
 }
 
@@ -240,7 +304,7 @@ function WhyHive({ className }: { className?: string }) {
           as="li"
           heading="Complete Federation Stack"
           icon={<PerformanceListItemIcon />}
-          className="flex-1 px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
+          className="flex-1 text-balance px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
         >
           <div>
             <ul className="space-y-2">
@@ -263,7 +327,7 @@ function WhyHive({ className }: { className?: string }) {
           as="li"
           heading="Unmatched Flexibility"
           icon={<PerformanceListItemIcon />}
-          className="flex-1 basis-full px-0 sm:basis-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
+          className="flex-1 basis-full text-balance px-0 sm:basis-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
         >
           <div>
             <ul className="space-y-2">
@@ -286,7 +350,7 @@ function WhyHive({ className }: { className?: string }) {
           as="li"
           heading="True Open Source"
           icon={<PerformanceListItemIcon />}
-          className="flex-1 px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
+          className="flex-1 text-balance px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
         >
           <div>
             <ul className="space-y-2">
@@ -306,6 +370,32 @@ function WhyHive({ className }: { className?: string }) {
           </div>
         </InfoCard>
       </ul>
+    </section>
+  );
+}
+
+function GetStarted(props: { className?: string }) {
+  return (
+    <section
+      className={cn(
+        'relative overflow-hidden rounded-3xl p-12 text-center sm:p-24',
+        props.className,
+      )}
+    >
+      <Heading as="h3" size="md">
+        Get Started with GraphQL Federation
+      </Heading>
+      <p className="relative mt-4">
+        Start building your federated GraphQL API today, by following our guide, that will walk you
+        through the basics of Apollo Federation.
+      </p>
+      <CallToAction
+        variant="primary"
+        className="mx-auto mt-8"
+        href="/docs/get-started/apollo-federation"
+      >
+        Start building now
+      </CallToAction>
     </section>
   );
 }

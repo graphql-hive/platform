@@ -1,5 +1,13 @@
 # 16.10.2024
 
+## 0.1.1
+
+### Patch Changes
+
+- [#5930](https://github.com/graphql-hive/console/pull/5930)
+  [`1b7acd6`](https://github.com/graphql-hive/console/commit/1b7acd6978391e402fe04cc752b5e61ec05d0f03)
+  Thanks [@dotansimha](https://github.com/dotansimha)! - Fixes for Crate publishing flow
+
 ## 0.1.0
 
 ### Minor Changes
