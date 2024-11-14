@@ -40,7 +40,7 @@ const li = (props: ComponentPropsWithoutRef<'li'>) => {
     throw new Error('Expected a question and an answer');
   }
 
-  const [question, answer] = texts;
+  const [question, ...answers] = texts;
 
   if (!question) return null;
 
@@ -59,9 +59,11 @@ const li = (props: ComponentPropsWithoutRef<'li'>) => {
         </Accordion.Header>
         <Accordion.Content
           forceMount
-          className="overflow-hidden bg-white text-green-800 data-[state=closed]:hidden"
+          className="space-y-2 overflow-hidden bg-white text-green-800 data-[state=closed]:hidden"
         >
-          {answer}
+          {answers.map((answer, i) => (
+            <p key={i}>{answer}</p>
+          ))}
         </Accordion.Content>
       </li>
     </Accordion.Item>
