@@ -45,7 +45,7 @@ jobs:
         uses: changesets/action@v1.4.9
         with:
           publish: pnpm release
-          version: pnpm changeset version && pnpm --filter hive-apollo-router-plugin sync-cargo-file
+          version: 'release:version'
           commit: 'chore(release): update monorepo packages versions'
           title: 'Upcoming Release Changes'
         env:
