@@ -25,7 +25,10 @@ on:
       - main
 
 jobs:
-  # Also see ./.github/workflows/publish-rust-find-changes.sh
+  # This script is doing the following:
+  # 1. Get the version of the apollo-router and the plugin from the Cargo.toml and package.json files
+  # 2. Check if there are changes in the Cargo.toml and package.json files in the current commit
+  # 3. If there are changes, check if the image tag exists in the GitHub Container Registry
   find-changes:
     runs-on: ubuntu-22.04
     if: ${{ !github.event.pull_request.head.repo.fork }}
@@ -52,19 +55,30 @@ jobs:
           fi
 
           echo "Running on push event, looking for changes in Rust crates or plugin versioning"
-          version_to_publish=$(./.github/workflows/publish-rust-find-changes.sh)
 
-          echo "version_to_publish: $version_to_publish"
-          echo "exit code: $? (0 means changes found)"
+          image_name="apollo-router"
+          github_org="graphql-hive"
+          router_version=$(cargo tree -i apollo-router --quiet | head -n 1 | awk -F" v" '{print $2}')
+          plugin_version=$(jq -r '.version' packages/libraries/router/package.json)
+          has_changes=$(git diff HEAD~ HEAD --name-only -- 'packages/libraries/router/Cargo.toml' 'Cargo.lock' 'packages/libraries/router/package.json')
 
-          if [ "$version_to_publish" ] && [ $? -eq 0 ]; then
-            echo "Found changes in version $version_to_publish"
-            echo "release_version=$version_to_publish" >> $GITHUB_OUTPUT
-            echo "should_release=true" >> $GITHUB_OUTPUT
-            echo "release_latest=true" >> $GITHUB_OUTPUT
-          else
-            echo "No changes found, skipping release"
-            echo "should_release=false" >> $GITHUB_OUTPUT
+          if [ "$has_changes" ]; then
+            image_tag_version="router${router_version}-plugin${plugin_version}"
+
+            response=$(curl -L \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -s \
+              https://api.github.com/orgs/${github_org}/packages/container/${image_name}/versions)
+            tag_exists=$(echo "$response" | jq -r ".[] | .metadata.container.tags[] | select(. | contains(\"${image_tag_version}\"))")
+
+            if [ ! "$tag_exists" ]; then
+              echo "Found changes in version $version_to_publish"
+              echo "release_version=$version_to_publish" >> $GITHUB_OUTPUT
+              echo "should_release=true" >> $GITHUB_OUTPUT
+              echo "release_latest=true" >> $GITHUB_OUTPUT
+            fi
           fi
 
   # Builds Rust crates, and creates Docker images
