@@ -94,7 +94,7 @@ function SolutionsPartner({ className }: { className?: string }) {
 export function PartnersPage() {
   return (
     <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
-      <Hero className="mx-4 h-1/4 max-sm:mt-2 md:mx-6">
+      <Hero className="mx-4 h-[22%] max-sm:mt-2 md:mx-6">
         <Heading
           as="h1"
           size="xl"
