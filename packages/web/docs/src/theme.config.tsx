@@ -79,8 +79,6 @@ export default defineConfig({
     // we need to get the last one to get the current page.
     const pagePath = normalizePagesResult.activePath[normalizePagesResult.activePath.length - 1];
 
-    console.log(normalizePagesResult.activePath);
-
     const isGatewayDocsPage = pagePath.route.includes('/docs/gateway');
     const suffix = isGatewayDocsPage ? 'Hive Gateway' : 'Hive';
     const title = `${pageTitle} - ${suffix}`;
@@ -91,9 +89,9 @@ export default defineConfig({
     return (
       <>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
         <link rel="canonical" href={canonicalUrl} />
-        <meta content="en" http-equiv="Content-Language" />
+        <meta content="en" httpEquiv="Content-Language" />
         <title>{title}</title>
         <meta name="robots" content="index,follow" />
         <meta name="description" content={description} />
