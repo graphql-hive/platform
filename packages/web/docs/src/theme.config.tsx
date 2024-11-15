@@ -113,7 +113,7 @@ export default defineConfig({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(createBreadcrumb(normalizePagesResult), null, 2),
           }}
-        ></script>
+        />
       </>
     );
   },
