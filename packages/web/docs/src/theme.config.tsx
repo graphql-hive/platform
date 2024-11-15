@@ -33,16 +33,14 @@ function createBreadcrumb(normalizedResult: NormalizedResult) {
 
   if (activePaths[0].route !== '/') {
     // Add the home page to all pages except the home page
-    if (activePaths[0].route !== '/') {
-      activePaths.unshift({
-        route: '/',
-        title: 'Hive',
-        name: 'index',
-        type: 'page',
-        display: 'hidden',
-        children: [],
-      });
-    }
+    activePaths.unshift({
+      route: '/',
+      title: 'Hive',
+      name: 'index',
+      type: 'page',
+      display: 'hidden',
+      children: [],
+    });
   }
 
   return {
