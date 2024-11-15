@@ -535,6 +535,8 @@ importers:
         version: 16.9.0
     publishDirectory: dist
 
+  packages/libraries/router: {}
+
   packages/libraries/yoga:
     dependencies:
       '@graphql-hive/core':
