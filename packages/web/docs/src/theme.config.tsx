@@ -45,8 +45,6 @@ function createBreadcrumb(normalizedResult: NormalizedResult) {
     }
   }
 
-  console.log(activePaths);
-
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -80,6 +78,8 @@ export default defineConfig({
     // Because it shows the full path, from top to bottom,
     // we need to get the last one to get the current page.
     const pagePath = normalizePagesResult.activePath[normalizePagesResult.activePath.length - 1];
+
+    console.log(normalizePagesResult.activePath);
 
     const isGatewayDocsPage = pagePath.route.includes('/docs/gateway');
     const suffix = isGatewayDocsPage ? 'Hive Gateway' : 'Hive';
