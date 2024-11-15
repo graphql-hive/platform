@@ -19,8 +19,7 @@ const siteName = 'Hive';
 
 function ensureAbsolute(url: string) {
   if (url.startsWith('/')) {
-    // return `https://the-guild.dev/graphql/hive${url}`;
-    return `http://localhost:3000${url}`;
+    return `https://the-guild.dev/graphql/hive${url}`;
   }
 
   return url;
