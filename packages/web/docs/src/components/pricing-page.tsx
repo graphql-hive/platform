@@ -1,15 +1,12 @@
 import {
   ArchDecoration,
-  ArchDecorationGradientDefs,
   cn,
   DecorationIsolation,
   GetYourAPIGameRightSection,
   Heading,
-  HighlightDecoration,
 } from '@theguild/components';
 import { CompanyTestimonialsSection } from './company-testimonials';
 import { FrequentlyAskedQuestions } from './frequently-asked-questions';
-import { Hero } from './hero';
 import { Page } from './page';
 import { PlanComparison } from './plan-comparison';
 import { Pricing } from './pricing';
