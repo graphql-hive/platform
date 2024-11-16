@@ -44,8 +44,8 @@ function Plan(props: {
         </div>
         <p className="mt-2">{props.description}</p>
       </header>
-      <div className="mt-8 text-5xl leading-[56px] tracking-[-0.48px]">{props.price}</div>
-      <div className="pt-6">
+      <div className="mt-4 text-5xl leading-[56px] tracking-[-0.48px]">{props.price}</div>
+      <div className="mt-4">
         <CallToAction
           variant="primary"
           {...(props.linkOnClick
@@ -61,7 +61,7 @@ function Plan(props: {
           {props.linkText}
         </CallToAction>
       </div>
-      <ul className="mt-8 text-green-800">
+      <ul className="mt-4 text-green-800">
         {props.features.map((feature, i) =>
           feature === PlanFeaturesSeparator ? (
             <li key={i} className="py-2 font-medium">
@@ -121,6 +121,10 @@ export function Pricing({ children }: { children?: ReactNode }): ReactElement {
               }
               linkText="🎉 Try free for 30 days"
               features={[
+                <>
+                  <strong>90 days</strong> of usage data retention
+                </>,
+                PlanFeaturesSeparator,
                 'Unlimited seats, projects and organizations',
                 'Unlimited schema pushes & checks',
                 <>Full access to all features (including&nbsp;SSO)</>,
