@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode } from 'react';
 import { Arrow, Content, Root, Trigger } from '@radix-ui/react-tooltip';
-import { CallToAction, Heading } from '@theguild/components';
+import { CallToAction, cn, Heading } from '@theguild/components';
 
 function Tooltip({ content, children }: { content: string; children: ReactNode }) {
   return (
@@ -91,7 +91,12 @@ export function Pricing({ children }: { children?: ReactNode }): ReactElement {
           // the padding is here so `overflow-auto` doesn't cut button hover states
           className="-mx-2 overflow-auto px-2"
         >
-          <div className="mt-16 flex min-w-[1000px] flex-row items-stretch gap-8 px-6 lg:mt-24 lg:gap-10 xl:gap-12 xl:px-0">
+          <div
+            className={cn(
+              'flex min-w-[1000px] flex-row items-stretch gap-8 px-6 lg:gap-10 xl:gap-12 xl:px-0',
+              children && 'mt-16 lg:mt-24',
+            )}
+          >
             <Plan
               name="Hobby"
               description="For personal or small projects"
