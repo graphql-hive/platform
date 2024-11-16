@@ -35,9 +35,13 @@ const li = (props: ComponentPropsWithoutRef<'li'>) => {
     )
     .filter(Boolean);
 
+  if (texts.length === 0) {
+    return null;
+  }
+
   if (texts.length < 2) {
     console.error(texts);
-    throw new Error('Expected a question and an answer');
+    throw new Error(`Expected a question and an answer, got ${texts.length} items`);
   }
 
   const [question, ...answers] = texts;
@@ -70,6 +74,13 @@ const li = (props: ComponentPropsWithoutRef<'li'>) => {
   );
 };
 
+const components = {
+  a,
+  h2,
+  ul,
+  li,
+};
+
 export function FrequentlyAskedQuestions({ className }: { className?: string }) {
   return (
     <section
@@ -78,14 +89,7 @@ export function FrequentlyAskedQuestions({ className }: { className?: string }) 
         'text-green-1000 flex flex-col gap-x-6 gap-y-2 px-4 py-6 md:flex-row md:px-10 lg:gap-x-24 lg:px-[120px] lg:py-24',
       )}
     >
-      <HomeQuestions
-        components={{
-          a,
-          h2,
-          ul,
-          li,
-        }}
-      />
+      <HomeQuestions components={components} />
     </section>
   );
 }
@@ -98,14 +102,7 @@ export function FrequentlyAskedFederationQuestions({ className }: { className?: 
         'text-green-1000 flex flex-col gap-x-6 gap-y-2 px-4 py-6 md:flex-row md:px-10 lg:gap-x-24 lg:px-[120px] lg:py-24',
       )}
     >
-      <FederationQuestions
-        components={{
-          a,
-          h2,
-          ul,
-          li,
-        }}
-      />
+      <FederationQuestions components={components} />
     </section>
   );
 }

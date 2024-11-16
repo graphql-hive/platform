@@ -48,6 +48,13 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
     type: 'menu',
     items: PRODUCTS_MENU_LIST,
   },
+  pricing: {
+    title: 'Pricing',
+    type: 'page',
+    theme: {
+      layout: 'raw',
+    },
+  },
   'product-updates': {
     type: 'page',
     title: 'Product Updates',

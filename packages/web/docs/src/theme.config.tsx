@@ -7,7 +7,7 @@ import {
   useConfig,
   useTheme,
 } from '@theguild/components';
-import { NavigationMenu } from './components/navigation-menu';
+import { isLandingPage, NavigationMenu } from './components/navigation-menu';
 import { ProductUpdateBlogPostHeader } from './components/product-update-blog-post-header';
 import { cn } from './lib';
 
@@ -33,7 +33,7 @@ export default defineConfig({
       return (
         <HiveFooter
           className={cn(
-            route === '/' ? 'light' : '[&>:first-child]:mx-0 [&>:first-child]:max-w-[90rem]',
+            isLandingPage(route) ? 'light' : '[&>:first-child]:mx-0 [&>:first-child]:max-w-[90rem]',
             'pt-[72px]',
           )}
           resources={[

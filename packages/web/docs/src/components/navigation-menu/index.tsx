@@ -8,10 +8,12 @@ export function NavigationMenu(props: ComponentPropsWithoutRef<typeof Navbar>) {
 
   return (
     <HiveNavigation
-      className={route === '/' ? 'light max-w-[1392px]' : 'max-w-[90rem]'}
+      className={isLandingPage(route) ? 'light max-w-[1392px]' : 'max-w-[90rem]'}
       companyMenuChildren={<GraphQLConfCard image={graphQLConfLocalImage} />}
       productName={PRODUCTS.HIVE.name}
       {...props}
     />
   );
 }
+
+export const isLandingPage = (route: string) => route === '/' || route === '/pricing';
