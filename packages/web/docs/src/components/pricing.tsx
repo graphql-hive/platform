@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react';
+import { Fragment, HTMLAttributes, ReactElement, ReactNode } from 'react';
 import { Arrow, Content, Root, Trigger } from '@radix-ui/react-tooltip';
 import { CallToAction, cn, Heading } from '@theguild/components';
 
@@ -19,14 +19,11 @@ function Tooltip({ content, children }: { content: string; children: ReactNode }
   );
 }
 
-const PlanFeaturesSeparator = Symbol('PlanFeaturesSeparator');
-type PlanFeaturesSeparator = typeof PlanFeaturesSeparator;
-
 function Plan(props: {
   name: string;
   description: string;
   price: ReactNode | string;
-  features: (ReactNode | string | PlanFeaturesSeparator)[];
+  features: ReactNode;
   linkText: string;
   linkOnClick?: () => void;
   adjustable: boolean;
@@ -37,7 +34,7 @@ function Plan(props: {
         <div className="flex flex-row items-center gap-2">
           <h2 className="text-2xl font-medium">{props.name}</h2>
           {props.adjustable && (
-            <span className="whitespace-nowrap rounded-full bg-green-200 px-3 py-1 text-sm font-medium leading-5">
+            <span className="whitespace-nowrap rounded-full bg-green-100 px-3 py-1 text-sm font-medium leading-5">
               Adjust your plan at any time
             </span>
           )}
@@ -61,21 +58,13 @@ function Plan(props: {
           {props.linkText}
         </CallToAction>
       </div>
-      <ul className="mt-4 text-green-800">
-        {props.features.map((feature, i) =>
-          feature === PlanFeaturesSeparator ? (
-            <li key={i} className="py-2 font-medium">
-              Plus:
-            </li>
-          ) : (
-            <li key={i} className="border-green-200 py-2 [&+&]:border-t">
-              {feature}
-            </li>
-          ),
-        )}
-      </ul>
+      <ul className="mt-4 text-green-800">{props.features}</ul>
     </article>
   );
+}
+
+function PlanFeaturesListItem(props: HTMLAttributes<HTMLLIElement>) {
+  return <li className="border-beige-200 py-2 [&:not(:last-child)]:border-b" {...props} />;
 }
 
 const USAGE_DATA_RETENTION_EXPLAINER = 'How long your GraphQL operations are stored on Hive';
@@ -103,17 +92,28 @@ export function Pricing({ children }: { children?: ReactNode }): ReactElement {
               adjustable={false}
               price="Free forever"
               linkText="Start for free"
-              features={[
-                'Unlimited seats, projects and organizations',
-                'Unlimited schema pushes & checks',
-                <>Full access to all features (including&nbsp;SSO)</>,
-                <Tooltip key="t1" content={OPERATIONS_EXPLAINER}>
-                  1M operations per month
-                </Tooltip>,
-                <Tooltip key="t2" content={USAGE_DATA_RETENTION_EXPLAINER}>
-                  7 days of usage data retention
-                </Tooltip>,
-              ]}
+              features={
+                <>
+                  <PlanFeaturesListItem>
+                    <Tooltip content={USAGE_DATA_RETENTION_EXPLAINER}>
+                      <strong>7 days</strong> of usage data retention
+                    </Tooltip>
+                  </PlanFeaturesListItem>
+                  <li className="mb-2 mt-8">Includes:</li>
+                  <PlanFeaturesListItem>
+                    Unlimited seats, projects and organizations
+                  </PlanFeaturesListItem>
+                  <PlanFeaturesListItem>Unlimited schema pushes & checks</PlanFeaturesListItem>
+                  <PlanFeaturesListItem>
+                    Full access to all features (including&nbsp;SSO)
+                  </PlanFeaturesListItem>
+                  <PlanFeaturesListItem>
+                    <Tooltip key="t1" content={OPERATIONS_EXPLAINER}>
+                      1M operations per month
+                    </Tooltip>
+                  </PlanFeaturesListItem>
+                </>
+              }
             />
             <Plan
               name="Pro"
@@ -125,25 +125,24 @@ export function Pricing({ children }: { children?: ReactNode }): ReactElement {
                 </Tooltip>
               }
               linkText="🎉 Try free for 30 days"
-              features={[
+              features={
                 <>
-                  <strong>90 days</strong> of usage data retention
-                </>,
-                PlanFeaturesSeparator,
-                'Unlimited seats, projects and organizations',
-                'Unlimited schema pushes & checks',
-                <>Full access to all features (including&nbsp;SSO)</>,
-                <Tooltip key="t1" content={OPERATIONS_EXPLAINER}>
-                  1M operations per month
-                </Tooltip>,
-                <Tooltip key="t2" content={USAGE_DATA_RETENTION_EXPLAINER}>
-                  90 days of usage data retention
-                </Tooltip>,
-                PlanFeaturesSeparator,
-                <Tooltip key="t1" content={OPERATIONS_EXPLAINER}>
-                  $10 per additional 1M operations
-                </Tooltip>,
-              ]}
+                  <PlanFeaturesListItem>
+                    <Tooltip content={USAGE_DATA_RETENTION_EXPLAINER}>
+                      <strong>90 days</strong> of usage data retention
+                    </Tooltip>
+                  </PlanFeaturesListItem>
+                  <li className="mb-2 mt-8">Everything in Hobby, plus:</li>
+                  <PlanFeaturesListItem>
+                    <Tooltip key="t1" content={OPERATIONS_EXPLAINER}>
+                      $10 per additional 1M operations
+                    </Tooltip>
+                  </PlanFeaturesListItem>
+                  <div>
+                    <p className="text-green-1000">Expected monthly operations?</p>
+                  </div>
+                </>
+              }
             />
             <Plan
               name="Enterprise"
@@ -159,34 +158,36 @@ export function Pricing({ children }: { children?: ReactNode }): ReactElement {
                   Contact us
                 </span>
               }
-              linkText="Contact us for a custom plan"
+              linkText="Shape a custom plan for your business"
               linkOnClick={() => {
                 (window as any).$crisp?.push(['do', 'chat:open']);
               }}
-              features={[
-                'Unlimited seats, projects and organizations',
-                'Unlimited schema pushes & checks',
-                <>Full access to all features (including&nbsp;SSO)</>,
-                <Tooltip key="t1" content={OPERATIONS_EXPLAINER}>
-                  Custom limit of operations
-                </Tooltip>,
-                <Tooltip key="t2" content={USAGE_DATA_RETENTION_EXPLAINER}>
-                  12 months of usage data retention
-                </Tooltip>,
-                PlanFeaturesSeparator,
-                'Improved pricing as you scale',
-                <span>
-                  GraphQL / APIs support and guidance from{' '}
-                  <a
-                    href="https://the-guild.dev"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hive-focus -mx-1 -my-0.5 rounded px-1 py-0.5 underline hover:text-blue-700"
-                  >
-                    The&nbsp;Guild
-                  </a>
-                </span>,
-              ]}
+              features={
+                <>
+                  <PlanFeaturesListItem>
+                    <Tooltip content={USAGE_DATA_RETENTION_EXPLAINER}>
+                      <strong>Custom</strong> data retention
+                    </Tooltip>
+                  </PlanFeaturesListItem>
+                  <li className="mb-2 mt-8">Everything in Pro, plus:</li>
+                  <PlanFeaturesListItem>Dedicated Slack channel for support</PlanFeaturesListItem>
+                  <PlanFeaturesListItem>White-glove onboarding</PlanFeaturesListItem>
+                  <PlanFeaturesListItem>Improved pricing as you scale</PlanFeaturesListItem>
+                  <PlanFeaturesListItem>
+                    <span>
+                      GraphQL / APIs support and guidance from{' '}
+                      <a
+                        href="https://the-guild.dev"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hive-focus -mx-1 -my-0.5 rounded px-1 py-0.5 underline hover:text-blue-700"
+                      >
+                        The&nbsp;Guild
+                      </a>
+                    </span>
+                  </PlanFeaturesListItem>
+                </>
+              }
             />
           </div>
         </div>
