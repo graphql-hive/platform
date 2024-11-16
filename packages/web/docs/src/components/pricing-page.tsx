@@ -54,8 +54,8 @@ function PricingPageHero({ className }: { className?: string }) {
               y2="341"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#fff" stop-opacity="0.3" />
-              <stop offset="1" stop-color="#fff" stop-opacity="1" />
+              <stop stopColor="#fff" stopOpacity="0.3" />
+              <stop offset="1" stopColor="#fff" stopOpacity="1" />
             </linearGradient>
             <linearGradient
               id="arch-decoration-b"
@@ -65,8 +65,8 @@ function PricingPageHero({ className }: { className?: string }) {
               y2="431"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#fff" stop-opacity="0.1" />
-              <stop offset="1" stop-color="#fff" stop-opacity="0.4" />
+              <stop stopColor="#fff" stopOpacity="0.1" />
+              <stop offset="1" stopColor="#fff" stopOpacity="0.4" />
             </linearGradient>
           </defs>
         </svg>

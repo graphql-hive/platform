@@ -1,6 +1,7 @@
-import { Fragment, HTMLAttributes, ReactElement, ReactNode } from 'react';
+import { HTMLAttributes, ReactElement, ReactNode, useState } from 'react';
 import { Arrow, Content, Root, Trigger } from '@radix-ui/react-tooltip';
 import { CallToAction, cn, Heading } from '@theguild/components';
+import { Slider } from './slider';
 
 function Tooltip({ content, children }: { content: string; children: ReactNode }) {
   return (
@@ -138,9 +139,7 @@ export function Pricing({ children }: { children?: ReactNode }): ReactElement {
                       $10 per additional 1M operations
                     </Tooltip>
                   </PlanFeaturesListItem>
-                  <div>
-                    <p className="text-green-1000">Expected monthly operations?</p>
-                  </div>
+                  <PricingSlider className="pt-4" />
                 </>
               }
             />
@@ -207,5 +206,33 @@ export function PricingHeader() {
         honest and based only on your real usage.
       </p>
     </header>
+  );
+}
+
+function PricingSlider({ className, ...rest }: { className?: string }) {
+  const [state, setState] = useState(0);
+
+  return (
+    <label className={cn(className, 'block')} {...rest}>
+      <div className="text-green-1000 font-medium">Expected monthly operations?</div>
+      <div className="text-green-1000 flex items-center gap-2 pt-12 text-sm">
+        <span className="font-medium">1M</span>
+        <Slider
+          counter="after:content-['$'_counter(price)_'_/_month'] after:[counter-set:price_calc(var(--val)*10)]"
+          onChange={event => {
+            setState(event.currentTarget.valueAsNumber);
+          }}
+        />
+        <span className="font-medium">100M</span>
+      </div>
+      <p
+        className="mt-4 rounded-xl bg-green-100 p-3 transition"
+        style={{ opacity: state >= 100 ? 1 : 0 }}
+      >
+        <span className="font-medium">Running 100M+ operations?</span>
+        <br />
+        Let's talk Enterprise.
+      </p>
+    </label>
   );
 }
