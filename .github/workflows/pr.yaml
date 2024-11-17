@@ -30,7 +30,6 @@ jobs:
       publishLatest: false
       targets: 'build'
       uploadJavaScriptArtifacts: true
-      runner: ubuntu-22.04
     secrets: inherit
 
   # Run db migrations tests
