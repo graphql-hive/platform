@@ -212,14 +212,17 @@ export function PricingHeader() {
 function PricingSlider({ className, ...rest }: { className?: string }) {
   const [millionsOfOperations, setMillionsOfOperations] = useState(0);
 
+  const min = 1;
+  const max = 300;
+
   return (
     <label className={cn(className, 'block')} {...rest}>
       <div className="text-green-1000 font-medium">Expected monthly operations?</div>
       <div className="text-green-1000 flex items-center gap-2 pt-12 text-sm">
-        <span className="font-medium">1M</span>
+        <span className="font-medium">{min}M</span>
         <Slider
-          min={1}
-          max={100}
+          min={min}
+          max={max}
           counter="after:content-['$'_counter(price)_'_/_month'] after:[counter-set:price_calc(var(--price))]"
           onChange={event => {
             const value = event.currentTarget.valueAsNumber;
@@ -230,13 +233,13 @@ function PricingSlider({ className, ...rest }: { className?: string }) {
             );
           }}
         />
-        <span className="font-medium">100M</span>
+        <span className="font-medium">{max}M</span>
       </div>
       <p
         className="mt-4 rounded-xl bg-green-100 p-3 transition"
-        style={{ opacity: millionsOfOperations >= 100 ? 1 : 0 }}
+        style={{ opacity: millionsOfOperations >= max ? 1 : 0 }}
       >
-        <span className="font-medium">Running 100M+ operations?</span>
+        <span className="font-medium">Running {max}M+ operations?</span>
         <br />
         Let's talk Enterprise.
       </p>
