@@ -84,18 +84,9 @@ jobs:
   # Builds Rust crates, and creates Docker images
   dockerize:
     uses: ./.github/workflows/build-and-dockerize.yaml
-    name: build-image (${{ matrix.platform }})
+    name: image-build
     needs:
       - find-changes
-    strategy:
-      matrix:
-        include:
-          - builder: hive-linux-x64-ubuntu2204
-            platform: linux/amd64
-            suffix: '-amd64'
-          - builder: hive-linux-arm64-ubuntu2204
-            platform: linux/arm64
-            suffix: '-arm64'
     if: ${{ needs.find-changes.outputs.should_release == 'true' }}
     with:
       imageTag: ${{ needs.find-changes.outputs.release_version }}
@@ -103,52 +94,7 @@ jobs:
       targets: apollo-router-hive-build
       build: false
       publishPrComment: true
-      uploadJavaScriptArtifacts: false
-      runner: ${{ matrix.builder }}
-      platform: ${{ matrix.platform }}
-      imageSuffix: ${{ matrix.suffix }}
     secrets: inherit
-
-  publish-manifest:
-    needs:
-      - dockerize
-      - find-changes
-    name: publish multiarch manifest
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: login to docker registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 'push manifest images (tag: ${{ needs.find-changes.outputs.release_version }})'
-        uses: Noelware/docker-manifest-action@0.4.2
-        if: ${{ needs.find-changes.outputs.should_release == 'true' }}
-        with:
-          inputs:
-            ghcr.io/graphql-hive/apollo-router:${{ needs.find-changes.outputs.release_version }}
-          images:
-            ghcr.io/graphql-hive/apollo-router:${{ needs.find-changes.outputs.release_version
-            }}-amd64,ghcr.io/graphql-hive/apollo-router:${{
-            needs.find-changes.outputs.release_version }}-arm64
-          push: true
-
-      - name: push manifest images (latest)
-        uses: Noelware/docker-manifest-action@0.4.2
-        if: ${{ needs.find-changes.outputs.release_latest == 'true' }}
-        with:
-          inputs:
-            ghcr.io/graphql-hive/apollo-router:${{ needs.find-changes.outputs.release_version }}
-          images:
-            ghcr.io/graphql-hive/apollo-router:${{ needs.find-changes.outputs.release_version
-            }}-amd64,ghcr.io/graphql-hive/apollo-router:${{
-            needs.find-changes.outputs.release_version }}-arm64
-          push: true
 
   # Test the Docker image, if it was published
   test-image:
@@ -156,7 +102,6 @@ jobs:
     needs:
       - dockerize
       - find-changes
-      - publish-manifest
     runs-on: ubuntu-22.04
     env:
       HIVE_TOKEN: ${{ secrets.HIVE_TOKEN }}
