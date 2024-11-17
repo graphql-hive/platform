@@ -122,7 +122,7 @@ export function Pricing({ children }: { children?: ReactNode }): ReactElement {
               adjustable
               price={
                 <Tooltip content="Base price charged monthly">
-                  $10<span className="text-base leading-normal text-green-800"> / month</span>
+                  $20<span className="text-base leading-normal text-green-800"> / month</span>
                 </Tooltip>
               }
               linkText="🎉 Try free for 30 days"
@@ -210,7 +210,7 @@ export function PricingHeader() {
 }
 
 function PricingSlider({ className, ...rest }: { className?: string }) {
-  const [state, setState] = useState(0);
+  const [millionsOfOperations, setMillionsOfOperations] = useState(0);
 
   return (
     <label className={cn(className, 'block')} {...rest}>
@@ -218,16 +218,23 @@ function PricingSlider({ className, ...rest }: { className?: string }) {
       <div className="text-green-1000 flex items-center gap-2 pt-12 text-sm">
         <span className="font-medium">1M</span>
         <Slider
-          counter="after:content-['$'_counter(price)_'_/_month'] after:[counter-set:price_calc(var(--val)*10)]"
+          min={1}
+          max={100}
+          counter="after:content-['$'_counter(price)_'_/_month'] after:[counter-set:price_calc(var(--price))]"
           onChange={event => {
-            setState(event.currentTarget.valueAsNumber);
+            const value = event.currentTarget.valueAsNumber;
+            setMillionsOfOperations(value);
+            event.currentTarget.parentElement!.style.setProperty(
+              '--price',
+              `${(value + 1) * 10}`, // 10$ base price + 10$ per 1M
+            );
           }}
         />
         <span className="font-medium">100M</span>
       </div>
       <p
         className="mt-4 rounded-xl bg-green-100 p-3 transition"
-        style={{ opacity: state >= 100 ? 1 : 0 }}
+        style={{ opacity: millionsOfOperations >= 100 ? 1 : 0 }}
       >
         <span className="font-medium">Running 100M+ operations?</span>
         <br />

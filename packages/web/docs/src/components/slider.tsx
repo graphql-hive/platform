@@ -1,12 +1,12 @@
-import { HTMLAttributes } from 'react';
+import {  InputHTMLAttributes } from 'react';
 import { cn } from '../lib';
 
 const svgHref = new URL('./code-icon-green.svg', import.meta.url).toString();
 
-export interface SliderProps extends HTMLAttributes<HTMLInputElement> {
+export interface SliderProps extends InputHTMLAttributes<HTMLInputElement> {
   counter: string;
 }
-export function Slider({ counter, className, ...rest }: SliderProps) {
+export function Slider({ counter, className, style, ...rest }: SliderProps) {
   return (
     <div
       ref={ref => {
@@ -14,6 +14,7 @@ export function Slider({ counter, className, ...rest }: SliderProps) {
       }}
       className={cn('relative h-10 flex-1 [container-type:inline-size]', className)}
       style={{
+        ...style,
         '--ease':
           'linear(0 0%, 0.5007 7.21%, 0.7803 12.29%, 0.8883 14.93%, 0.9724 17.63%, 1.0343 20.44%, 1.0754 23.44%, 1.0898 25.22%, 1.0984 27.11%, 1.1014 29.15%, 1.0989 31.4%, 1.0854 35.23%, 1.0196 48.86%, 1.0043 54.06%, 0.9956 59.6%, 0.9925 68.11%, 1 100%)',
       }}
