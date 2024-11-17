@@ -61,7 +61,7 @@
     "redlock": "5.0.0-beta.2",
     "slonik": "30.4.4",
     "supertokens-node": "16.7.5",
-    "tslib": "2.8.0",
+    "tslib": "2.8.1",
     "undici": "6.20.1",
     "vitest": "2.0.5",
     "zod": "3.23.8",
