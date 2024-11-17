@@ -1,4 +1,4 @@
-import {  InputHTMLAttributes } from 'react';
+import { InputHTMLAttributes } from 'react';
 import { cn } from '../lib';
 
 const svgHref = new URL('./code-icon-green.svg', import.meta.url).toString();
