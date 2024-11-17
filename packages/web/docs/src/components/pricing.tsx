@@ -223,21 +223,20 @@ function PricingSlider({ className, ...rest }: { className?: string }) {
         <Slider
           min={min}
           max={max}
-          counter="after:content-['$'_counter(price)_'_/_month'] after:[counter-set:price_calc(var(--price))]"
+          // 10$ base price + 10$ per 1M
+          style={{ '--price': 'calc(10 + var(--ops) * 10)' }}
+          counter="after:content-[''_counter(ops)_'M_operations,_$'_counter(price)_'_/_month'] after:[counter-set:ops_calc(var(--ops))_price_calc(var(--price))]"
           onChange={event => {
             const value = event.currentTarget.valueAsNumber;
             setMillionsOfOperations(value);
-            event.currentTarget.parentElement!.style.setProperty(
-              '--price',
-              `${(value + 1) * 10}`, // 10$ base price + 10$ per 1M
-            );
+            event.currentTarget.parentElement!.style.setProperty('--ops', `${value}`);
           }}
         />
         <span className="font-medium">{max}M</span>
       </div>
       <p
         className="mt-4 rounded-xl bg-green-100 p-3 transition"
-        style={{ opacity: millionsOfOperations >= max ? 1 : 0 }}
+        style={{ opacity: millionsOfOperations >= max * 0.95 ? 1 : 0 }}
       >
         <span className="font-medium">Running {max}M+ operations?</span>
         <br />
