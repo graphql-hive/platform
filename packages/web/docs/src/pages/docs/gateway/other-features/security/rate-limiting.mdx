@@ -4,14 +4,14 @@ searchable: false
 
 import { Callout } from '@theguild/components'
 
-## Rate Limiting
+# Rate Limiting
 
 Rate limiting is a technique for reducing server load by limiting the number of requests that can be
 made to a subgraph.
 
 You can use rate limiting feature in order to limit the rate of calling queries and mutations.
 
-### Programmatic Configuration
+## Programmatic Configuration
 
 ```ts filename="gateway.config.ts"
 import { defineConfig } from '@graphql-hive/gateway'
@@ -74,7 +74,7 @@ type Query {
 }
 ```
 
-### Field Configuration
+## Field Configuration
 
 - `window`: Specify a time interval window that the max number of requests can access the field. We
   use Zeit's ms to parse the window arg, docs here.

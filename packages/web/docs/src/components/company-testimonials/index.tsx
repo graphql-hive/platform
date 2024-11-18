@@ -5,15 +5,22 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { CallToAction, Heading } from '@theguild/components';
 import { cn } from '../../lib';
 import { ArrowIcon } from '../arrow-icon';
-import { KarrotLogo, NacelleLogo, WealthsimpleLogo, type LogoProps } from '../company-logos';
+import {
+  KarrotLogo,
+  NacelleLogo,
+  ProdigyLogo,
+  WealthsimpleLogo,
+  type LogoProps,
+} from '../company-logos';
 import karrotPicture from './karrot-picture.webp';
 import nacellePicture from './nacelle-picture.webp';
+import prodigyPicture from './prodigy-picture.webp';
 import wealthsimplePicture from './wealthsimple-picture.webp';
 
 type Testimonial = {
   company: string;
   logo: (props: LogoProps) => React.ReactElement;
-  text: string;
+  text: React.ReactNode;
   picture?: {
     img: string | StaticImageData;
     className?: string;
@@ -54,6 +61,27 @@ const testimonials: Testimonial[] = [
     picture: {
       img: wealthsimplePicture,
     },
+  },
+  {
+    company: 'Prodigy',
+    logo: props => (
+      <div className="flex h-8 items-center justify-center">
+        <ProdigyLogo {...props} height={37} />
+      </div>
+    ),
+    text: (
+      <>
+        Hive is essential to us handling more than 750MM GraphQL requests every month. We ship with
+        certainty that schema changes will not break clients. The <code>atLeastOnceSampler</code> is
+        crucial to capture telemetry from less-often run operations. The schema explorer condenses
+        hours of searching through Github for client usage down to minutes.
+      </>
+    ),
+    picture: {
+      img: prodigyPicture,
+      className: 'bg-[#a9e7f599]',
+    },
+    data: [{ numbers: '>750MM', description: 'requests every month' }],
   },
 ];
 
@@ -165,7 +193,7 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
                     )}
                     <article className="max-lg:mt-6 lg:relative" id={getTestimonialId(company)}>
                       <Logo title={company} height={32} className="text-blue-1000 mb-6 lg:hidden" />
-                      <blockquote className="sm:blockquote-beige-500 lg:text-xl xl:text-2xl xl:leading-[32px]">
+                      <blockquote className="sm:blockquote-beige-500 lg:text-xl xl:text-2xl xl:leading-[32px] [&_code]:font-mono [&_code]:text-[0.9em]">
                         {text}
                       </blockquote>
                       {person && <TestimonialPerson className="mt-6" person={person} />}
