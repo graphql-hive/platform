@@ -2,4 +2,4 @@
 'hive-apollo-router-plugin': patch
 ---
 
-Fix release pipeline for Cargo crate
+Improvements to release pipeline and added missing metadata to Cargo file
