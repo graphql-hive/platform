@@ -210,10 +210,10 @@ export function PricingHeader() {
 }
 
 function PricingSlider({ className, ...rest }: { className?: string }) {
-  const [millionsOfOperations, setMillionsOfOperations] = useState(0);
-
   const min = 1;
   const max = 300;
+
+  const [millionsOfOperations, setMillionsOfOperations] = useState(min);
 
   return (
     <label className={cn(className, 'block')} {...rest}>
@@ -223,8 +223,9 @@ function PricingSlider({ className, ...rest }: { className?: string }) {
         <Slider
           min={min}
           max={max}
+          defaultValue={min}
           // 10$ base price + 10$ per 1M
-          style={{ '--price': 'calc(10 + var(--ops) * 10)' }}
+          style={{ '--ops': min, '--price': 'calc(10 + var(--ops) * 10)' }}
           counter="after:content-[''_counter(ops)_'M_operations,_$'_counter(price)_'_/_month'] after:[counter-set:ops_calc(var(--ops))_price_calc(var(--price))]"
           onChange={event => {
             const value = event.currentTarget.valueAsNumber;
