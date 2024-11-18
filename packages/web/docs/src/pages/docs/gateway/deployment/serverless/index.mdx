@@ -6,7 +6,7 @@ Hive Gateway can be deployed on the edge. This means that you can deploy your Hi
 serverless environment like AWS Lambda, Cloudflare Workers, or Azure Functions.
 
 For Serverless environments, you cannot use Gateway CLI `hive-gateway` but you can use the
-`createGatewayRuntime` function from `@graphql-hive/gateway` package.
+`createGatewayRuntime` function from `@graphql-hive/gateway-runtime` package.
 
 <Callout>
   Please read carefully following sections, most importantly [Bundling
@@ -24,7 +24,7 @@ See
 for more details.
 
 ```js filename="index.js"
-import { createGatewayRuntime } from '@graphql-hive/gateway'
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
 
 const gateway = createGatewayRuntime({
   // Here any config available in `gateway.config.ts`.
@@ -64,7 +64,7 @@ transports needed to comunicate with your upstream services. This way, the trans
 statically referenced and will be included into the bundle.
 
 ```ts filename="index.ts"
-import { createGatewayRuntime } from '@graphql-hive/gateway'
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
 import http from '@graphql-mesh/transport-http'
 import supergraph from './supergraph'
 
@@ -88,7 +88,7 @@ For this, we will need to have our supergraph SDL in a `.js` or a `.ts` file, so
 it in our script.
 
 ```ts
-import { createGatewayRuntime } from '@graphql-hive/gateway'
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
 import http from '@graphql-mesh/transport-http'
 import supergraph from './supergraph.js'
 

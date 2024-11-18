@@ -24,7 +24,7 @@ with a simple configuration.
 
 ```ts filename="index.ts"
 import { App, HttpRequest, HttpResponse } from 'uWebSockets.js'
-import { createGatewayRuntime } from '@graphql-hive/gateway'
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
 
 interface ServerContext {
   req: HttpRequest
@@ -52,7 +52,7 @@ npm i graphql-ws
 import { execute, ExecutionArgs, subscribe } from 'graphql'
 import { makeBehavior } from 'graphql-ws/lib/use/uWebSockets'
 import { App, HttpRequest, HttpResponse } from 'uWebSockets.js'
-import { createGatewayRuntime } from '@graphql-hive/gateway'
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
 
 interface ServerContext {
   req: HttpRequest
