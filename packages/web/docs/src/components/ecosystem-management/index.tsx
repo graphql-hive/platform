@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import NextLink from 'next/link';
 import {
   CallToAction,
   DecorationIsolation,
@@ -29,18 +30,34 @@ export function EcosystemManagementSection({ className }: { className?: string }
           </Heading>
           <ul className="mx-auto flex list-none flex-col gap-y-4 text-white/80 lg:gap-y-6">
             {[
-              'A complete ecosystem covering all your dev and production needs.',
-              'Full Apollo Federation Support. Drop-in replacement for Apollo GraphOS (Apollo Studio)',
+              <>A complete ecosystem covering all your dev and production needs.</>,
+              <>
+                <NextLink className="underline" href="/federation-gateway-audit">
+                  Full Apollo Federation Support
+                </NextLink>
+                . Drop-in replacement for Apollo GraphOS (Apollo Studio)
+              </>,
               <>
                 Use tools of your choice — either dive into our full GraphQL ecosystem,
-                or&nbsp;build your own stack, connecting GraphQL federation, Hive Gateway, GraphQL
-                Mesh and more.
+                or&nbsp;build your own stack, connecting{' '}
+                <NextLink className="underline" href="/federation">
+                  GraphQL federation
+                </NextLink>
+                ,{' '}
+                <NextLink className="underline" href="/docs/gateway">
+                  Hive Gateway
+                </NextLink>
+                ,{' '}
+                <NextLink className="underline" href="https://the-guild.dev/graphql/mesh">
+                  GraphQL Mesh
+                </NextLink>{' '}
+                and more.
               </>,
               'Learn how to migrate from Apollo and keep your GraphQL Federation stack vendor-unlocked.',
             ].map((text, i) => (
               <li key={i} className="flex items-start gap-4">
                 <CheckIcon className="mt-0.5 shrink-0 text-blue-400" />
-                {text}
+                <div>{text}</div>
               </li>
             ))}
           </ul>

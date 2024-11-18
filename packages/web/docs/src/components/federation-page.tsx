@@ -103,7 +103,7 @@ function Intro() {
 function WhyFederation(props: { className?: string }) {
   return (
     <section className={cn('p-6 sm:py-20 md:py-24', props.className)}>
-      <Heading as="h3" size="md" className="text-balance text-center">
+      <Heading as="h2" size="md" className="text-balance text-center">
         Why GraphQL Federation?
       </Heading>
       <ul className="mt-6 flex flex-row flex-wrap justify-center gap-2 md:mt-16 md:gap-6">
@@ -296,7 +296,7 @@ function WhyHive({ className }: { className?: string }) {
         className,
       )}
     >
-      <Heading as="h3" size="md" className="text-balance sm:px-6 sm:text-center">
+      <Heading as="h2" size="md" className="text-balance sm:px-6 sm:text-center">
         Why Choose Hive for GraphQL Federation?
       </Heading>
       <ul className="flex flex-row flex-wrap justify-center divide-y divide-solid sm:mt-6 sm:divide-x sm:divide-y-0 md:mt-16 md:px-6 xl:px-16">
@@ -325,19 +325,19 @@ function WhyHive({ className }: { className?: string }) {
         </InfoCard>
         <InfoCard
           as="li"
-          heading="Unmatched Flexibility"
+          heading="True Open Source"
           icon={<PerformanceListItemIcon />}
           className="flex-1 basis-full text-balance px-0 sm:basis-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
         >
           <div>
             <ul className="space-y-2">
               <li>
-                <span className="font-semibold">Mix and Match — </span> Every component works
+                <span className="font-semibold">No Vendor Lock-in — </span> Every component works
                 independently with other vendors (including Apollo GraphOS).
               </li>
               <li>
-                <span className="font-semibold">No Vendor Lock-in — </span> Switch components or
-                integrate with existing tools without rewriting your infrastructure.
+                <span className="font-semibold">MIT License — </span> All components are available
+                under the permissive MIT license.
               </li>
               <li>
                 <span className="font-semibold">Full Control — </span> Self-host any component or
@@ -348,23 +348,24 @@ function WhyHive({ className }: { className?: string }) {
         </InfoCard>
         <InfoCard
           as="li"
-          heading="True Open Source"
+          heading="Enterprise Tooling for GraphQL"
           icon={<PerformanceListItemIcon />}
           className="flex-1 text-balance px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
         >
           <div>
             <ul className="space-y-2">
               <li>
-                <span className="font-semibold">MIT License — </span> All components are available
-                under the permissive MIT license
+                <span className="font-semibold">Single Sign-On — </span> Integrated with popular
+                providers like Okta, to enable OpenID Connect login for maximum security.
               </li>
               <li>
-                <span className="font-semibold">Transparent Development — </span> Active community
-                participation in our development process
+                <span className="font-semibold">Security and Compliance — </span> Access control
+                with role-based access control (RBAC), JSON Web Tokens (JWT) and Persisted
+                Operations.
               </li>
               <li>
-                <span className="font-semibold">Commercial-Grade — </span> Enterprise features
-                available out-of-the-box in the open-source version
+                <span className="font-semibold">Audit logs — </span>
+                Keep track of all the changes made to your organization.
               </li>
             </ul>
           </div>
@@ -382,7 +383,7 @@ function GetStarted(props: { className?: string }) {
         props.className,
       )}
     >
-      <Heading as="h3" size="md">
+      <Heading as="h2" size="md">
         Get Started with GraphQL Federation
       </Heading>
       <p className="relative mt-4">

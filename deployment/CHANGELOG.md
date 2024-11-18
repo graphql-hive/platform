@@ -1,5 +1,24 @@
 # hive
 
+## 1.2.1
+
+### Patch Changes
+
+- [#5945](https://github.com/graphql-hive/console/pull/5945)
+  [`03f08ca`](https://github.com/graphql-hive/console/commit/03f08ca68bb675696208a31ca002c74a628edbbb)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Require "registry write" permissions for approving
+  failed schema checks, schema versions, and the laboratory.
+
+- [#5989](https://github.com/graphql-hive/console/pull/5989)
+  [`a87a541`](https://github.com/graphql-hive/console/commit/a87a541153db901fc41fae0f33cd5de52324d8dd)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Retry calls to Github API when creating
+  check-runs
+
+- [#5989](https://github.com/graphql-hive/console/pull/5989)
+  [`a87a541`](https://github.com/graphql-hive/console/commit/a87a541153db901fc41fae0f33cd5de52324d8dd)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Inform users about Github API issues
+  when creating check runs
+
 ## 1.2.0
 
 ### Minor Changes

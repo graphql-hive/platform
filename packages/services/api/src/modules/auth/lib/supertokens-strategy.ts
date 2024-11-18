@@ -283,22 +283,15 @@ function transformOrganizationMemberLegacyScopes(args: {
       case TargetAccessScope.READ: {
         policies.push({
           effect: 'allow',
-          action: [
-            'appDeployment:describe',
-            'laboratory:describe',
-            'laboratory:modify',
-            'schemaCheck:approve',
-            'schemaVersion:approve',
-            'target:create',
-          ],
+          action: ['appDeployment:describe', 'laboratory:describe', 'target:create'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;
       }
-      case TargetAccessScope.TOKENS_READ: {
+      case TargetAccessScope.REGISTRY_WRITE: {
         policies.push({
           effect: 'allow',
-          action: [],
+          action: ['schemaCheck:approve', 'schemaVersion:approve', 'laboratory:modify'],
           resource: [`hrn:${args.organizationId}:organization/${args.organizationId}`],
         });
         break;

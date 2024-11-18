@@ -1,6 +1,7 @@
 import { Inject, Injectable, InjectionToken, Scope } from 'graphql-modules';
 import { App } from '@octokit/app';
 import { Octokit } from '@octokit/core';
+import { retry } from '@octokit/plugin-retry';
 import { RequestError } from '@octokit/request-error';
 import type { GitHubIntegration } from '../../../__generated__/types';
 import { HiveError } from '../../../shared/errors';
@@ -17,13 +18,17 @@ export const GITHUB_APP_CONFIG = new InjectionToken<GitHubApplicationConfig>(
   'GitHubApplicationConfig',
 );
 
+type Constructor<T> = new (...args: any[]) => T;
+
 @Injectable({
   scope: Scope.Operation,
   global: true,
 })
 export class GitHubIntegrationManager {
   private logger: Logger;
-  private app?: App;
+  private app?: App<{
+    Octokit: typeof Octokit & Constructor<ReturnType<typeof retry>>;
+  }>;
 
   constructor(
     logger: Logger,
@@ -40,7 +45,7 @@ export class GitHubIntegrationManager {
         appId: this.config.appId,
         privateKey: this.config.privateKey,
         log: this.logger,
-        Octokit: Octokit.defaults({
+        Octokit: Octokit.plugin(retry).defaults({
           request: {
             fetch,
           },
@@ -144,7 +149,7 @@ export class GitHubIntegrationManager {
     return installationId;
   }
 
-  private async getOctokitForOrganization(selector: OrganizationSelector): Promise<Octokit | null> {
+  private async getOctokitForOrganization(selector: OrganizationSelector) {
     const installationId = await this.getInstallationId(selector);
 
     if (!installationId) {
@@ -292,6 +297,13 @@ export class GitHubIntegrationManager {
           return {
             success: false,
             error: `Your GitHub Organization has an IP allow list enabled, and our IP address is not permitted to access this resource. Please contact our support team to obtain the IP address.`,
+          };
+        }
+
+        if (error.status >= 500) {
+          return {
+            success: false,
+            error: `GitHub API couldn't respond to your request in time. Please check Github status page for more information.`,
           };
         }
 
