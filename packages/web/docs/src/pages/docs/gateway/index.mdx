@@ -8,8 +8,8 @@ import { Callout, Cards, Tabs } from '@theguild/components'
 
 # Hive Gateway
 
-Hive Gateway is a fully open-source MIT-licensed GraphQL gateway that can act as a Apollo Federation
-Gateway or a Proxy Gateway for any GraphQL services.
+Hive Gateway is a fully open-source MIT-licensed GraphQL gateway that can act as a
+[GraphQL federation](/federation) Gateway or a Proxy Gateway for any GraphQL services.
 
 The Hive Gateway can be run as a standalone binary, a Docker Image, or as a JavaScript package (e.g.
 within Node.js, Bun, Deno, Google Cloud Functions, Azure Functions or Cloudflare Workers)
@@ -87,7 +87,7 @@ npm i @graphql-hive/gateway
 
 Hive Gateway supports two different modes:
 
-- **Apollo Federation.** Serve a supergraph provided by a schema registry like
+- [**GraphQL Federation.**](/federation) Serve a supergraph provided by a schema registry like
   [Hive Registry](https://the-guild.dev/graphql/hive/docs/schema-registry), a composition tool like
   [Apollo Rover](https://www.apollographql.com/docs/rover/),
   [GraphQL Mesh](https://graphql-mesh.com/) or any other Federation compliant composition tool such
@@ -102,9 +102,9 @@ Hive Gateway supports two different modes:
 
 <Tabs.Tab>
 
-To serve a Apollo Federation Gateway, we need to point the Gateway to either a local supergraph file
-or a supergraph served by our schema registry. For this example, we will serve a supergraph from the
-Hive schema registry.
+To serve a [GraphQL federation](/federation) Gateway, we need to point the Gateway to either a local
+supergraph file or a supergraph served by our schema registry. For this example, we will serve a
+supergraph from the Hive schema registry.
 
 <Tabs items={["Binary", "Docker", "JavaScript Package"]}>
 
