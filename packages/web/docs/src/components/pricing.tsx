@@ -171,7 +171,7 @@ export function Pricing({ children }: { children?: ReactNode }): ReactElement {
                   <li className="mb-2 mt-8">Everything in Pro, plus:</li>
                   <PlanFeaturesListItem>Dedicated Slack channel for support</PlanFeaturesListItem>
                   <PlanFeaturesListItem>White-glove onboarding</PlanFeaturesListItem>
-                  <PlanFeaturesListItem>Improved pricing as you scale</PlanFeaturesListItem>
+                  <PlanFeaturesListItem>Bulk volume discount</PlanFeaturesListItem>
                   <PlanFeaturesListItem>
                     <span>
                       GraphQL / APIs support and guidance from{' '}
