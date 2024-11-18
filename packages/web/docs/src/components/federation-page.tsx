@@ -103,7 +103,7 @@ function Intro() {
 function WhyFederation(props: { className?: string }) {
   return (
     <section className={cn('p-6 sm:py-20 md:py-24', props.className)}>
-      <Heading as="h3" size="md" className="text-balance text-center">
+      <Heading as="h2" size="md" className="text-balance text-center">
         Why GraphQL Federation?
       </Heading>
       <ul className="mt-6 flex flex-row flex-wrap justify-center gap-2 md:mt-16 md:gap-6">
@@ -296,7 +296,7 @@ function WhyHive({ className }: { className?: string }) {
         className,
       )}
     >
-      <Heading as="h3" size="md" className="text-balance sm:px-6 sm:text-center">
+      <Heading as="h2" size="md" className="text-balance sm:px-6 sm:text-center">
         Why Choose Hive for GraphQL Federation?
       </Heading>
       <ul className="flex flex-row flex-wrap justify-center divide-y divide-solid sm:mt-6 sm:divide-x sm:divide-y-0 md:mt-16 md:px-6 xl:px-16">
@@ -382,7 +382,7 @@ function GetStarted(props: { className?: string }) {
         props.className,
       )}
     >
-      <Heading as="h3" size="md">
+      <Heading as="h2" size="md">
         Get Started with GraphQL Federation
       </Heading>
       <p className="relative mt-4">
