@@ -300,6 +300,13 @@ export class GitHubIntegrationManager {
           };
         }
 
+        if (error.status >= 500) {
+          return {
+            success: false,
+            error: `GitHub API couldn't respond to your request in time. Please check Github status page for more information.`,
+          };
+        }
+
         return {
           success: false,
           error:
