@@ -84,28 +84,27 @@ jobs:
   # Builds Rust crates, and creates Docker images
   dockerize:
     uses: ./.github/workflows/build-and-dockerize.yaml
+    name: image-build
     needs:
       - find-changes
     if: ${{ needs.find-changes.outputs.should_release == 'true' }}
     with:
       imageTag: ${{ needs.find-changes.outputs.release_version }}
       publishLatest: ${{ needs.find-changes.outputs.release_latest == 'true' }}
-      targets: rust
+      targets: apollo-router-hive-build
       build: false
-      publishPrComment: false
-      uploadJavaScriptArtifacts: false
+      publishPrComment: true
     secrets: inherit
 
   # Test the Docker image, if it was published
   test-image:
-    name: run-docker
+    name: test apollo-router docker image
     needs:
       - dockerize
       - find-changes
     runs-on: ubuntu-22.04
     env:
       HIVE_TOKEN: ${{ secrets.HIVE_TOKEN }}
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     steps:
       - name: Run Docker image
         run: |
