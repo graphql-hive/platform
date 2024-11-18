@@ -126,7 +126,7 @@ function EnterpriseFocusedCards({ className }: { className?: string }) {
     <section
       className={cn('bg-beige-100 rounded-3xl px-4 pt-6 sm:py-24 md:px-6 md:py-[120px]', className)}
     >
-      <Heading as="h3" size="md" className="text-balance sm:px-6 sm:text-center">
+      <Heading as="h2" size="md" className="text-balance sm:px-6 sm:text-center">
         Enterprise-Focused Tools Tailored for You
       </Heading>
       <ul className="flex flex-row flex-wrap justify-center divide-y divide-solid sm:mt-6 sm:divide-x sm:divide-y-0 md:mt-16 md:px-6 xl:px-16">
@@ -164,7 +164,7 @@ function EnterpriseFocusedCards({ className }: { className?: string }) {
 function UltimatePerformanceCards() {
   return (
     <section className="px-4 py-6 sm:py-12 md:px-6 xl:px-[120px]">
-      <Heading as="h3" size="md" className="text-balance text-center">
+      <Heading as="h2" size="md" className="text-balance text-center">
         GraphQL Federation for the Ultimate Performance
       </Heading>
       <ul className="mt-6 flex flex-row flex-wrap justify-center gap-2 md:mt-16 md:gap-6">
