@@ -8,13 +8,5 @@ export const labModule = createModule({
   dirname: __dirname,
   typeDefs,
   resolvers,
-  providers: [],
-});
-
-export const preflightScriptModule = createModule({
-  id: 'preflight-script',
-  dirname: __dirname,
-  typeDefs,
-  resolvers,
   providers: [PreflightScriptProvider],
 });

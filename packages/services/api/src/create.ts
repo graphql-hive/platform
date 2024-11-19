@@ -18,7 +18,7 @@ import {
   GITHUB_APP_CONFIG,
   GitHubApplicationConfig,
 } from './modules/integrations/providers/github-integration-manager';
-import { labModule, preflightScriptModule } from './modules/lab';
+import { labModule } from './modules/lab';
 import { oidcIntegrationsModule } from './modules/oidc-integrations';
 import { OIDC_INTEGRATIONS_ENABLED } from './modules/oidc-integrations/providers/tokens';
 import { operationsModule } from './modules/operations';
@@ -89,7 +89,6 @@ const modules = [
   schemaPolicyModule,
   collectionModule,
   appDeploymentsModule,
-  preflightScriptModule,
 ];
 
 export function createRegistry({
