@@ -150,17 +150,17 @@ export async function executeScript(
 
   preflightWorker.postMessage({ script, environmentVariables });
 
-  return new Promise(resolve => {
-    preflightWorker.onmessage = (event: MessageEvent<PreflightScriptResult>) => {
-      const { logs, environmentVariables } = event.data;
-      setEnv(JSON.stringify(environmentVariables, null, 2));
-      resolve({ logs, environmentVariables });
-    };
-    preflightWorker.onerror = error => {
-      // Using `warn` instead `error` - to not send to Sentry
-      console.warn('Error from preflight worker', error);
-    };
-  });
+  const { promise, resolve } = Promise.withResolvers<PreflightScriptResult>();
+  preflightWorker.onmessage = (event: MessageEvent<PreflightScriptResult>) => {
+    const { logs, environmentVariables } = event.data;
+    setEnv(JSON.stringify(environmentVariables, null, 2));
+    resolve({ logs, environmentVariables });
+  };
+  preflightWorker.onerror = error => {
+    // Using `warn` instead `error` - to not send to Sentry
+    console.warn('Error from preflight worker', error);
+  };
+  return promise;
 }
 
 const TargetQuery = graphql(`
@@ -343,7 +343,6 @@ function PreflightScriptModal({
   const scriptEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const envEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const [logs, setLogs] = useState<(LogMessage | { type: 'separator' })[]>([]);
-  const isScriptRan = useRef(false);
   const consoleRef = useRef<HTMLElement>(null);
 
   const handleScriptEditorDidMount: OnMount = useCallback(editor => {
@@ -361,15 +360,20 @@ function PreflightScriptModal({
   }, []);
 
   const handleRunScript = useCallback(async () => {
-    const { logs } = await executeScript(
-      scriptEditorRef.current?.getValue() ?? '',
-      envEditorRef.current?.getValue() ?? '',
-    );
-    setLogs(prev =>
-      // Add separator only after first run
-      isScriptRan.current ? [...prev, { type: 'separator' }, ...logs] : logs,
-    );
-    isScriptRan.current = true;
+    const env = envEditorRef.current?.getValue() ?? '';
+    preflightWorker.postMessage({
+      script: scriptEditorRef.current?.getValue() ?? '',
+      environmentVariables: env ? JSON.parse(env) : {},
+    });
+    preflightWorker.onmessage = ({ data }) => {
+      setLogs(prev => [
+        ...prev,
+        data.type === 'log'
+          ? //
+            data.message
+          : { type: 'separator' },
+      ]);
+    };
   }, []);
 
   useEffect(() => {

@@ -44,4 +44,5 @@ export const ALLOWED_GLOBALS = [
   'btoa',
   'atob',
   'fetch',
+  'setTimeout',
 ];

@@ -5,13 +5,11 @@ import { isJSONPrimitive, JSONPrimitive } from './json';
 
 export type LogMessage = string | Error;
 
-export async function execute({
-  environmentVariables,
-  script,
-}: {
+export async function execute(args: {
   environmentVariables: Record<string, JSONPrimitive>;
   script: string;
 }) {
+  const { environmentVariables, script } = args;
   const inWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
   // Confirm the build pipeline worked and this is running inside a worker and not the main thread
   if (!inWorker) {
@@ -60,9 +58,11 @@ export async function execute({
     (level: 'log' | 'warn' | 'error' | 'info') =>
     (...args: unknown[]) => {
       console[level](...args);
-      messages.push(
-        `${level.charAt(0).toUpperCase()}${level.slice(1)}: ${args.map(String).join(' ')}`,
-      );
+      const message = `${level.charAt(0).toUpperCase()}${level.slice(1)}: ${args.map(String).join(' ')}`;
+      messages.push(message);
+      // The messages should be streamed to the main thread as they occur not gathered and send to
+      // the main thread at the end of the execution of the preflight script
+      postMessage({ type: 'log', message });
     };
 
   function getValidEnvVariable(value: unknown) {
