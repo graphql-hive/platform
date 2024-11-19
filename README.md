@@ -1,11 +1,3 @@
-<!-- Graphql logo readme banner START -->
-<p style="float: right; margin: 0 0 10px 10px;">
-  <a href="https://the-guild.dev">
-    <img src="https://the-guild-org.github.io/press-kit/full-dark-logo.svg" alt="Created by The guild" style="width: 100px;"/>
-  </a>
-</p>
-<!-- Graphql logo readme banner END -->
-
 ![Hive GraphQL Platform](https://the-guild.dev/graphql/hive/github-org-image.png)
 
 # Hive
