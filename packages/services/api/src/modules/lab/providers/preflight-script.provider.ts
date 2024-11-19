@@ -1,7 +1,6 @@
 import { Inject, Injectable, Scope } from 'graphql-modules';
 import { sql, type DatabasePool } from 'slonik';
 import { z } from 'zod';
-import { fromZodError } from 'zod-validation-error';
 import { getLocalLang, getTokenSync } from '@nodesecure/i18n';
 import * as jsxray from '@nodesecure/js-x-ray';
 import { TargetSelectorInput, UpdatePreflightScriptInput } from '../../../__generated__/types';
@@ -11,9 +10,29 @@ import { Logger } from '../../shared/providers/logger';
 import { PG_POOL_CONFIG } from '../../shared/providers/pg-pool';
 import { Storage } from '../../shared/providers/storage';
 
+const SourceCodeModel = z.string().max(5_000);
+
+const UpdatePreflightScriptModel = z.strictObject({
+  // Use validation only on insertion
+  sourceCode: SourceCodeModel.superRefine((val, ctx) => {
+    try {
+      const { warnings } = scanner.analyse(val);
+      for (const warning of warnings) {
+        const message = getTokenSync(jsxray.warnings[warning.kind].i18n);
+        throw new Error(message);
+      }
+    } catch (error) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }),
+});
+
 const PreflightScriptModel = z.strictObject({
   id: z.string(),
-  sourceCode: z.string().max(5_000),
+  sourceCode: SourceCodeModel,
   targetId: z.string(),
   createdByUserId: z.union([z.string(), z.null()]),
   createdAt: z.string(),
@@ -22,24 +41,6 @@ const PreflightScriptModel = z.strictObject({
 
 const scanner = new jsxray.AstAnalyser();
 await getLocalLang();
-
-function validateSourceCode(code: string) {
-  try {
-    const { warnings } = scanner.analyse(code);
-    for (const warning of warnings) {
-      const message = getTokenSync(jsxray.warnings[warning.kind].i18n);
-      throw new Error(message);
-    }
-  } catch (error) {
-    console.log({ error });
-    return {
-      error: {
-        __typename: 'PreflightScriptError' as const,
-        message: error instanceof Error ? error.message : String(error),
-      },
-    };
-  }
-}
 
 @Injectable({
   global: true,
@@ -74,8 +75,15 @@ export class PreflightScriptProvider {
   }
 
   async updatePreflightScript(selector: TargetSelectorInput, input: UpdatePreflightScriptInput) {
-    const res = validateSourceCode(input.sourceCode);
-    if (res) return res;
+    const validationResult = UpdatePreflightScriptModel.safeParse(input);
+    if (validationResult.error) {
+      return {
+        error: {
+          __typename: 'PreflightScriptError' as const,
+          message: validationResult.error.errors[0].message,
+        },
+      };
+    }
 
     const [organizationId, projectId, targetId] = await Promise.all([
       this.idTranslator.translateOrganizationId(selector),
@@ -125,11 +133,10 @@ export class PreflightScriptProvider {
     const { data: preflightScript, error } = PreflightScriptModel.safeParse(result);
 
     if (error) {
-      const { message } = fromZodError(error);
       return {
         error: {
           __typename: 'PreflightScriptError' as const,
-          message,
+          message: error.errors[0].message,
         },
       };
     }
