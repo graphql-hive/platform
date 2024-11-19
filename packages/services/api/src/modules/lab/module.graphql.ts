@@ -18,20 +18,11 @@ export default gql`
     # createdBy: User!
   }
 
-  input CreatePreflightScriptInput {
-    sourceCode: String!
-  }
-
   input UpdatePreflightScriptInput {
-    id: ID!
     sourceCode: String!
   }
 
   extend type Mutation {
-    createPreflightScript(
-      selector: TargetSelectorInput!
-      input: CreatePreflightScriptInput!
-    ): PreflightScriptResult!
     updatePreflightScript(
       selector: TargetSelectorInput!
       input: UpdatePreflightScriptInput!

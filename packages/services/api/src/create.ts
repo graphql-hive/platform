@@ -89,7 +89,7 @@ const modules = [
   schemaPolicyModule,
   collectionModule,
   appDeploymentsModule,
-  preflightScriptModule
+  preflightScriptModule,
 ];
 
 export function createRegistry({

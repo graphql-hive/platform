@@ -1,7 +1,7 @@
-import { type MigrationExecutor } from '../pg-migrator';
 import path from 'node:path';
+import { type MigrationExecutor } from '../pg-migrator';
 
-const filename = path.parse(import.meta.url).base
+const filename = path.parse(import.meta.url).base;
 
 export default {
   name: filename,

@@ -175,31 +175,12 @@ const TargetQuery = graphql(`
   }
 `);
 
-const CreatePreflightScriptMutation = graphql(`
-  mutation CreatePreflightScript(
-    $selector: TargetSelectorInput!
-    $input: CreatePreflightScriptInput!
-  ) {
-    data: createPreflightScript(selector: $selector, input: $input) {
-      ok {
-        preflightScript {
-          id
-          sourceCode
-        }
-      }
-      error {
-        message
-      }
-    }
-  }
-`);
-
 const UpdatePreflightScriptMutation = graphql(`
   mutation UpdatePreflightScript(
     $selector: TargetSelectorInput!
     $input: UpdatePreflightScriptInput!
   ) {
-    data: updatePreflightScript(selector: $selector, input: $input) {
+    updatePreflightScript(selector: $selector, input: $input) {
       ok {
         preflightScript {
           id
@@ -226,8 +207,7 @@ function PreflightScriptContent() {
     query: TargetQuery,
     variables: { selector: params },
   });
-  const [, mutateCreate] = useMutation(CreatePreflightScriptMutation);
-  const [, mutateUpdate] = useMutation(UpdatePreflightScriptMutation);
+  const [, mutate] = useMutation(UpdatePreflightScriptMutation);
 
   const preflightScript = query.data?.target?.preflightScript;
   const { toast } = useToast();
@@ -235,16 +215,11 @@ function PreflightScriptContent() {
   const handleScriptChange = useCallback(
     async (newValue = '') => {
       const preflightId = preflightScript?.id;
-      const { data, error } = preflightId
-        ? await mutateUpdate({
-            selector: params,
-            input: { sourceCode: newValue, id: preflightId },
-          })
-        : await mutateCreate({
-            selector: params,
-            input: { sourceCode: newValue },
-          });
-      const err = error || data?.data?.error;
+      const { data, error } = await mutate({
+        selector: params,
+        input: { sourceCode: newValue },
+      });
+      const err = error || data?.updatePreflightScript?.error;
 
       if (err) {
         toast({
@@ -266,7 +241,7 @@ function PreflightScriptContent() {
         description: `Preflight script has been ${action} successfully`,
         variant: 'default',
       });
-      setScript(data!.data.ok!.preflightScript.sourceCode);
+      setScript(data!.updatePreflightScript.ok!.preflightScript.sourceCode);
     },
     [preflightScript],
   );
