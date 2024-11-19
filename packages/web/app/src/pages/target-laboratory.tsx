@@ -247,21 +247,19 @@ function Save(props: {
 const onModifyHeaders: ComponentProps<typeof GraphiQL>['onModifyHeaders'] = async (
   headers = {},
 ) => {
-  const { environmentVariables, logs } = await executeScript();
-  for (const logOrError of logs) {
-    if (logOrError instanceof Error) {
-      const formatError = JSON.stringify(
-        {
-          name: logOrError.constructor.name,
-          message: logOrError.message,
-        },
-        null,
-        2,
-      );
-
-      throw new Error(`Error during preflight script execution:\n\n${formatError}`);
-    }
+  const result = await executeScript();
+  if ('error' in result) {
+    const formatError = JSON.stringify(
+      {
+        name: result.error.constructor.name,
+        message: result.error.message,
+      },
+      null,
+      2,
+    );
+    throw new Error(`Error during preflight script execution:\n\n${formatError}`);
   }
+  const { environmentVariables } = result;
 
   return Object.fromEntries(
     Object.entries(headers).map(([key, value]) => {

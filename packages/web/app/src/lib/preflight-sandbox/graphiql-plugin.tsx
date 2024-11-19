@@ -33,6 +33,8 @@ import { useParams } from '@tanstack/react-router';
 import type { LogMessage } from './execute-script';
 import PreflightWorker from './worker?worker';
 
+const PREFLIGHT_TIMEOUT = 30_000; // 30,000 ms = 30 seconds
+
 const usePreflightScriptStore = createWithEqualityFn(
   persist<{
     script: string;
@@ -70,7 +72,8 @@ const usePreflightScriptActions = () =>
     setDisabled: state.setDisabled,
   }));
 
-const preflightWorker = new PreflightWorker();
+// We need to reassign to new instance after calling `.terminate()` method
+let preflightWorker = new PreflightWorker();
 
 export const preflightScriptPlugin: GraphiQLPlugin = {
   icon: () => (
@@ -132,34 +135,49 @@ const monacoProps = {
   },
 } satisfies Record<'script' | 'env', ComponentProps<typeof MonacoEditor>>;
 
-type PreflightScriptResult = {
-  logs: LogMessage[];
-  environmentVariables: Record<string, unknown>;
-};
+type ConsoleLog = { type: 'log'; message: string };
+
+type PreflightScriptResult =
+  | { environmentVariables: Record<string, unknown> }
+  | ConsoleLog
+  | { error: Error };
+
+let timerId = 0;
 
 export async function executeScript(
   script = usePreflightScriptStore.getState().script,
   env = usePreflightScriptStore.getState().env,
-): Promise<PreflightScriptResult> {
+) {
   const { disabled, setEnv } = usePreflightScriptStore.getState();
   const environmentVariables = env ? JSON.parse(env) : {};
 
   if (disabled) {
-    return { logs: [], environmentVariables };
+    return { environmentVariables };
   }
-
+  clearTimeout(timerId);
   preflightWorker.postMessage({ script, environmentVariables });
 
-  const { promise, resolve } = Promise.withResolvers<PreflightScriptResult>();
-  preflightWorker.onmessage = (event: MessageEvent<PreflightScriptResult>) => {
-    const { logs, environmentVariables } = event.data;
-    setEnv(JSON.stringify(environmentVariables, null, 2));
-    resolve({ logs, environmentVariables });
+  const { promise, resolve } = Promise.withResolvers<Exclude<PreflightScriptResult, ConsoleLog>>();
+  preflightWorker.onmessage = ({ data }: MessageEvent<PreflightScriptResult>) => {
+    if ('type' in data) return;
+    clearTimeout(timerId);
+    if ('environmentVariables' in data) {
+      const { environmentVariables } = data;
+      setEnv(JSON.stringify(environmentVariables, null, 2));
+      resolve({ environmentVariables });
+      return;
+    }
+    resolve({ error: data.error });
   };
-  preflightWorker.onerror = error => {
-    // Using `warn` instead `error` - to not send to Sentry
-    console.warn('Error from preflight worker', error);
-  };
+  timerId = window.setTimeout(() => {
+    resolve({
+      error: new Error(
+        `Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`,
+      ),
+    });
+    preflightWorker.terminate(); // This kills the worker
+    preflightWorker = new PreflightWorker();
+  }, PREFLIGHT_TIMEOUT);
   return promise;
 }
 
@@ -352,7 +370,6 @@ function PreflightScriptModal({
   const handleEnvEditorDidMount: OnMount = useCallback(editor => {
     envEditorRef.current = editor;
   }, []);
-
   const handleSubmit = useCallback(() => {
     onScriptValueChange(scriptEditorRef.current?.getValue());
     onEnvValueChange(envEditorRef.current?.getValue());
@@ -360,20 +377,37 @@ function PreflightScriptModal({
   }, []);
 
   const handleRunScript = useCallback(async () => {
+    clearTimeout(timerId);
     const env = envEditorRef.current?.getValue() ?? '';
     preflightWorker.postMessage({
       script: scriptEditorRef.current?.getValue() ?? '',
       environmentVariables: env ? JSON.parse(env) : {},
     });
-    preflightWorker.onmessage = ({ data }) => {
+    preflightWorker.onmessage = ({ data }: MessageEvent<PreflightScriptResult>) => {
+      setLogs(prev => {
+        const log =
+          'environmentVariables' in data
+            ? { type: 'separator' as const }
+            : //
+              'error' in data
+              ? data.error
+              : data.message;
+        const isTerminated = 'environmentVariables' in data || 'error' in data;
+        if (isTerminated) {
+          clearTimeout(timerId);
+        }
+        return [...prev, log, ...(isTerminated ? [{ type: 'separator' as const }] : [])];
+      });
+    };
+    timerId = window.setTimeout(() => {
+      preflightWorker.terminate(); // This kills the worker
       setLogs(prev => [
         ...prev,
-        data.type === 'log'
-          ? //
-            data.message
-          : { type: 'separator' },
+        new Error(`Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`),
+        { type: 'separator' },
       ]);
-    };
+      preflightWorker = new PreflightWorker();
+    }, PREFLIGHT_TIMEOUT);
   }, []);
 
   useEffect(() => {

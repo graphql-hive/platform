@@ -52,14 +52,11 @@ export async function execute(args: {
   // restrict window variable
   blockedGlobals.push('window');
 
-  const messages: LogMessage[] = [];
-
   const log =
     (level: 'log' | 'warn' | 'error' | 'info') =>
     (...args: unknown[]) => {
       console[level](...args);
       const message = `${level.charAt(0).toUpperCase()}${level.slice(1)}: ${args.map(String).join(' ')}`;
-      messages.push(message);
       // The messages should be streamed to the main thread as they occur not gathered and send to
       // the main thread at the end of the execution of the preflight script
       postMessage({ type: 'log', message });
@@ -121,15 +118,10 @@ export async function execute(args: {
       'undefined',
     )(labApi, consoleApi);
   } catch (error) {
-    if (error instanceof Error) {
-      messages.push(error);
-    } else {
-      throw error;
-    }
+    return { error };
   }
 
   return {
     environmentVariables: workingEnvironmentVariables,
-    logs: messages,
   };
 }
