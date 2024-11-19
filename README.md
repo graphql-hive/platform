@@ -2,8 +2,9 @@
 
 # Hive
 
-Schema registry and analytics for [GraphQL federation](https://the-guild.dev/graphql/hive/federation) and other GraphQL APIs.
-Fully open-source and MIT licensed. Use Hive Cloud (managed) or self-host it.
+Schema registry and analytics for
+[GraphQL federation](https://the-guild.dev/graphql/hive/federation) and other GraphQL APIs. Fully
+open-source and MIT licensed. Use Hive Cloud (managed) or self-host it.
 
 - Visit [the-guild.dev/graphql/hive](https://the-guild.dev/graphql/hive)
   ([status page](https://status.graphql-hive.com))
