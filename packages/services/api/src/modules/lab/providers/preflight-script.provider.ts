@@ -62,7 +62,7 @@ export class PreflightScriptProvider {
     this.logger = logger.child({ source: 'PreflightScriptProvider' });
   }
 
-  async getPreflightScript(targetSlug: string) {
+  async getPreflightScript(targetId: string) {
     const result = await this.pool.maybeOne(sql`/* getPreflightScript */
       SELECT "id"
            , "source_code"         as "sourceCode"
@@ -71,7 +71,7 @@ export class PreflightScriptProvider {
            , to_json("created_at") as "createdAt"
            , to_json("updated_at") as "updatedAt"
       FROM "document_preflight_scripts"
-      WHERE "target_id" = ${targetSlug}
+      WHERE "target_id" = ${targetId}
       `);
 
     return result && PreflightScriptModel.parse(result);

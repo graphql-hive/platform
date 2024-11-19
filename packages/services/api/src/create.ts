@@ -18,7 +18,7 @@ import {
   GITHUB_APP_CONFIG,
   GitHubApplicationConfig,
 } from './modules/integrations/providers/github-integration-manager';
-import { labModule } from './modules/lab';
+import { labModule, preflightScriptModule } from './modules/lab';
 import { oidcIntegrationsModule } from './modules/oidc-integrations';
 import { OIDC_INTEGRATIONS_ENABLED } from './modules/oidc-integrations/providers/tokens';
 import { operationsModule } from './modules/operations';
@@ -29,7 +29,6 @@ import {
   SCHEMA_POLICY_SERVICE_CONFIG,
   SchemaPolicyServiceConfig,
 } from './modules/policy/providers/tokens';
-import { preflightScriptModule } from './modules/preflight-script';
 import { projectModule } from './modules/project';
 import { rateLimitModule } from './modules/rate-limit';
 import {
@@ -90,7 +89,7 @@ const modules = [
   schemaPolicyModule,
   collectionModule,
   appDeploymentsModule,
-  preflightScriptModule,
+  preflightScriptModule
 ];
 
 export function createRegistry({
