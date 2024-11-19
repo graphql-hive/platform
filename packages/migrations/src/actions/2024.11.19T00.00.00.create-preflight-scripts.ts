@@ -1,7 +1,10 @@
 import { type MigrationExecutor } from '../pg-migrator';
+import path from 'node:path';
+
+const filename = path.parse(import.meta.url).base
 
 export default {
-  name: '2024.11.07T00.00.00.create-preflight-scripts.sql',
+  name: filename,
   run: ({ sql }) => sql`
 CREATE TABLE "document_preflight_scripts" (
   "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
