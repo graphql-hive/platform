@@ -100,7 +100,7 @@ export default {
       },
       cache: new CloudflareKVCacheStorage({
         logger,
-        namespace: env.HiveGateway
+        namespace: env.NAMESPACE
       })
     })
     ctx.waitUntil(gateway[Symbol.asyncDispose]())
