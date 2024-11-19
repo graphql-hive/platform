@@ -1,6 +1,6 @@
 import { HTMLAttributes, ReactElement, ReactNode, useState } from 'react';
 import { Arrow, Content, Root, Trigger } from '@radix-ui/react-tooltip';
-import { Button, CallToAction, cn } from '@theguild/components';
+import { CallToAction, cn } from '@theguild/components';
 import { Slider } from './slider';
 
 function Tooltip({ content, children }: { content: string; children: ReactNode }) {
