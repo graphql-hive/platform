@@ -46,7 +46,7 @@ export default defineConfig({
             await connectDB(`
 BEGIN;
 
-DELETE FROM organizations WHERE user_id = '${user.id}';
+DELETE FROM organizations WHERE clean_id = '${'foo'}';
 DELETE FROM users WHERE id = '${user.id}';
 DELETE FROM supertokens_emailpassword_user_to_tenant WHERE email = '${email}';
 
