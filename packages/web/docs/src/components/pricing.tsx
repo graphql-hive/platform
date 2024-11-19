@@ -1,6 +1,6 @@
 import { HTMLAttributes, ReactElement, ReactNode, useState } from 'react';
 import { Arrow, Content, Root, Trigger } from '@radix-ui/react-tooltip';
-import { CallToAction, cn } from '@theguild/components';
+import { Button, CallToAction, cn } from '@theguild/components';
 import { Slider } from './slider';
 
 function Tooltip({ content, children }: { content: string; children: ReactNode }) {
@@ -227,7 +227,12 @@ function PricingSlider({ className, ...rest }: { className?: string }) {
       >
         <span className="font-medium">Running {max}M+ operations?</span>
         <br />
-        Let's talk Enterprise.
+        <button
+          className="underline hover:text-blue-700"
+          onClick={() => (window as any).$crisp?.push(['do', 'chat:open'])}
+        >
+          Talk to us
+        </button>
       </p>
     </label>
   );
