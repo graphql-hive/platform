@@ -4,11 +4,7 @@ import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { getLocalLang, getTokenSync } from '@nodesecure/i18n';
 import * as jsxray from '@nodesecure/js-x-ray';
-import {
-  CreatePreflightScriptInput,
-  TargetSelectorInput,
-  UpdatePreflightScriptInput,
-} from '../../../__generated__/types';
+import { TargetSelectorInput, UpdatePreflightScriptInput } from '../../../__generated__/types';
 import { Session } from '../../auth/lib/authz';
 import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
@@ -77,72 +73,6 @@ export class PreflightScriptProvider {
     return result && PreflightScriptModel.parse(result);
   }
 
-  async createPreflightScript(
-    selector: TargetSelectorInput,
-    { sourceCode }: CreatePreflightScriptInput,
-  ) {
-    const res = validateSourceCode(sourceCode);
-    if (res) return res;
-
-    const [organizationId, projectId, targetId] = await Promise.all([
-      this.idTranslator.translateOrganizationId(selector),
-      this.idTranslator.translateProjectId(selector),
-      this.idTranslator.translateTargetId(selector),
-    ]);
-
-    await this.session.assertPerformAction({
-      action: 'laboratory:createPreflightScript',
-      organizationId,
-      params: {
-        organizationId,
-        projectId,
-        targetId,
-      },
-    });
-
-    const target = await this.storage.getTarget({
-      organizationId,
-      projectId,
-      targetId,
-    });
-
-    const currentUser = await this.session.getViewer();
-
-    const result = await this.pool.maybeOne(sql`/* createPreflightScript */
-      INSERT INTO "document_preflight_scripts" ( "source_code"
-                                               , "target_id"
-                                               , "created_by_user_id")
-      VALUES (${sourceCode},
-              ${targetId},
-              ${currentUser.id})
-      RETURNING
-          "id"
-          , "source_code" as "sourceCode"
-          , "target_id" as "targetId"
-          , "created_by_user_id" as "createdByUserId"
-          , to_json("created_at") as "createdAt"
-          , to_json("updated_at") as "updatedAt"
-      `);
-    const { data: preflightScript, error } = PreflightScriptModel.safeParse(result);
-
-    if (error) {
-      const { message } = fromZodError(error);
-      return {
-        error: {
-          __typename: 'PreflightScriptError' as const,
-          message,
-        },
-      };
-    }
-    return {
-      ok: {
-        __typename: 'PreflightScriptOkPayload' as const,
-        preflightScript,
-        updatedTarget: target,
-      },
-    };
-  }
-
   async updatePreflightScript(selector: TargetSelectorInput, input: UpdatePreflightScriptInput) {
     const res = validateSourceCode(input.sourceCode);
     if (res) return res;
@@ -154,7 +84,7 @@ export class PreflightScriptProvider {
     ]);
 
     await this.session.assertPerformAction({
-      action: 'laboratory:updatePreflightScript',
+      action: 'laboratory:modifyPreflightScript',
       organizationId,
       params: {
         organizationId,
@@ -163,18 +93,18 @@ export class PreflightScriptProvider {
       },
     });
 
-    const target = await this.storage.getTarget({
-      organizationId,
-      projectId,
-      targetId,
-    });
-
-    const result = await this.pool.maybeOne(sql`/* updatePreflightScript */
-      UPDATE
-          "document_preflight_scripts"
-      SET "source_code" = ${input.sourceCode}
-        , "updated_at"  = NOW()
-      WHERE "id" = ${input.id}
+    const currentUser = await this.session.getViewer();
+    const result = await this.pool.maybeOne(sql`/* createPreflightScript */
+      INSERT INTO "document_preflight_scripts" ( "source_code"
+                                               , "target_id"
+                                               , "created_by_user_id")
+      VALUES (${input.sourceCode},
+              ${targetId},
+              ${currentUser.id})
+      ON CONFLICT (target_id) 
+      DO UPDATE
+        SET source_code = EXCLUDED.source_code,
+            updated_at  = NOW()
       RETURNING
           "id"
           , "source_code" as "sourceCode"
@@ -192,7 +122,6 @@ export class PreflightScriptProvider {
         },
       };
     }
-
     const { data: preflightScript, error } = PreflightScriptModel.safeParse(result);
 
     if (error) {
@@ -204,6 +133,13 @@ export class PreflightScriptProvider {
         },
       };
     }
+
+    const target = await this.storage.getTarget({
+      organizationId,
+      projectId,
+      targetId,
+    });
+
     return {
       ok: {
         __typename: 'PreflightScriptOkPayload' as const,
