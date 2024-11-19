@@ -20,7 +20,6 @@ import { FrequentlyAskedQuestions } from './frequently-asked-questions';
 import { Hero, HeroFeatures, HeroLinks, TrustedBy } from './hero';
 import { InfoCard } from './info-card';
 import { Page } from './page';
-import { Pricing, PricingHeader } from './pricing';
 import { StatsItem, StatsList } from './stats';
 import { TeamSection } from './team-section';
 
@@ -80,9 +79,6 @@ export function IndexPage(): ReactElement {
       <CompanyTestimonialsSection className="mx-4 mt-6 md:mx-6" />
       <GetStartedTodaySection className="mx-4 mt-6 md:mx-6" />
       <EnterpriseFocusedCards className="mx-4 mt-6 md:mx-6" />
-      <Pricing>
-        <PricingHeader />
-      </Pricing>
       <TeamSection className="mx-4 md:mx-6" />
       <CommunitySection className="mx-4 mt-6 md:mx-6" />
       <ToolsAndLibrariesCards className="mx-4 mt-6 md:mx-6" />

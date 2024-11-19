@@ -195,20 +195,6 @@ export function Pricing({ children }: { children?: ReactNode }): ReactElement {
   );
 }
 
-export function PricingHeader() {
-  return (
-    <header className="px-6">
-      <Heading as="h2" size="md" className="text-green-1000 text-center">
-        Pricing
-      </Heading>
-      <p className="mx-auto mt-4 max-w-xl text-balance text-center text-green-800 lg:text-wrap">
-        All features are available on all plans — including the free&nbsp;plan. Our pricing is
-        honest and based only on your real usage.
-      </p>
-    </header>
-  );
-}
-
 function PricingSlider({ className, ...rest }: { className?: string }) {
   const min = 1;
   const max = 300;
