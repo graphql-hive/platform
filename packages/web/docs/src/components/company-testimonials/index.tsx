@@ -71,7 +71,7 @@ const testimonials: Testimonial[] = [
     ),
     text: (
       <>
-        Hive is essential to us handling more than 750MM GraphQL requests every month. We ship with
+        Hive is essential to us handling more than 750M GraphQL requests every month. We ship with
         certainty that schema changes will not break clients. The <code>atLeastOnceSampler</code> is
         crucial to capture telemetry from less-often run operations. The schema explorer condenses
         hours of searching through Github for client usage down to minutes.
@@ -81,7 +81,7 @@ const testimonials: Testimonial[] = [
       img: prodigyPicture,
       className: 'bg-[#a9e7f599]',
     },
-    data: [{ numbers: '>750MM', description: 'requests every month' }],
+    data: [{ numbers: '>750M', description: 'requests every month' }],
   },
 ];
 
