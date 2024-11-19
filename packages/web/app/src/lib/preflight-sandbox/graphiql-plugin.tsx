@@ -383,6 +383,7 @@ function PreflightScriptModal({
       script: scriptEditorRef.current?.getValue() ?? '',
       environmentVariables: env ? JSON.parse(env) : {},
     });
+    const { setEnv } = usePreflightScriptStore.getState();
     preflightWorker.onmessage = ({ data }: MessageEvent<PreflightScriptResult>) => {
       setLogs(prev => {
         const log =
@@ -395,6 +396,9 @@ function PreflightScriptModal({
         const isTerminated = 'environmentVariables' in data || 'error' in data;
         if (isTerminated) {
           clearTimeout(timerId);
+        }
+        if ('environmentVariables' in data) {
+          setEnv(JSON.stringify(data.environmentVariables, null, 2));
         }
         return [...prev, log, ...(isTerminated ? [{ type: 'separator' as const }] : [])];
       });
