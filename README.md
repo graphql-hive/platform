@@ -6,10 +6,12 @@
 </p>
 <!-- Graphql logo readme banner END -->
 
-# GraphQL Hive
+![Hive GraphQL Platform](https://the-guild.dev/graphql/hive/github-org-image.png)
 
-GraphQL Hive provides all the tools the get visibility of your GraphQL architecture at all stages,
-from standalone APIs to composed schemas (Federation, Stitching).
+# Hive
+
+Schema registry and analytics for GraphQL federation and other GraphQL APIs.
+Fully open-source and MIT licensed. Use Hive Cloud (managed) or self-host it.
 
 - Visit [the-guild.dev/graphql/hive](https://the-guild.dev/graphql/hive)
   ([status page](https://status.graphql-hive.com))
