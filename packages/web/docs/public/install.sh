@@ -111,6 +111,7 @@
 
         echo "Downloaded to \$DOWNLOAD_DIR"
 
+        mkdir -p /usr/local/lib
         rm -rf "/usr/local/lib/hive"
         tar xzf "\$DOWNLOAD_DIR/hive.tar.gz" -C /usr/local/lib
         rm -rf "\$DOWNLOAD_DIR"

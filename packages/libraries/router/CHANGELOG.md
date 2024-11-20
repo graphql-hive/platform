@@ -1,5 +1,30 @@
 # 16.10.2024
 
+## 1.0.0
+
+### Major Changes
+
+- [#5941](https://github.com/graphql-hive/console/pull/5941)
+  [`762bcd8`](https://github.com/graphql-hive/console/commit/762bcd83941d7854873f6670580ae109c4901dea)
+  Thanks [@dotansimha](https://github.com/dotansimha)! - Release v1 of Hive plugin for apollo-router
+
+## 0.1.2
+
+### Patch Changes
+
+- [#5991](https://github.com/graphql-hive/console/pull/5991)
+  [`1ea4df9`](https://github.com/graphql-hive/console/commit/1ea4df95b5fcef85f19caf682a827baf1849a28d)
+  Thanks [@dotansimha](https://github.com/dotansimha)! - Improvements to release pipeline and added
+  missing metadata to Cargo file
+
+## 0.1.1
+
+### Patch Changes
+
+- [#5930](https://github.com/graphql-hive/console/pull/5930)
+  [`1b7acd6`](https://github.com/graphql-hive/console/commit/1b7acd6978391e402fe04cc752b5e61ec05d0f03)
+  Thanks [@dotansimha](https://github.com/dotansimha)! - Fixes for Crate publishing flow
+
 ## 0.1.0
 
 ### Minor Changes

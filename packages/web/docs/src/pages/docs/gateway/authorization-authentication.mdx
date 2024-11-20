@@ -46,7 +46,7 @@ const signingKey = 'my-secret-key'
 export const gatewayConfig = defineConfig({
   jwt: {
     // Look and extract for the token in the 'authorization' header, with the 'Bearer' prefix.
-    lookupLocations: [extractFromHeader({ name: 'authorization', prefix: 'Bearer' })],
+    tokenLookupLocations: [extractFromHeader({ name: 'authorization', prefix: 'Bearer' })],
     // Decode and validate the token using the provided signing key.
     singingKeyProviders: [createInlineSigningKeyProvider(signingKey)],
     // Forward the verified token payload to the upstream GraphQL subgraphs.
@@ -78,7 +78,7 @@ export const gatewayConfig = defineConfig({
       ]
       // Configure where to look for the JWT token: in the headers, or cookies.
       // By default, the plugin will look for the token in the 'authorization' header only.
-      lookupLocations: [
+      tokentokenLookupLocations: [
         extractFromHeader({ name: 'authorization', prefix: 'Bearer' }),
         extractFromCookie({ name: 'auth' }),
       ],
@@ -372,7 +372,7 @@ export const gatewayConfig = defineConfig({
   // ...
   jwt: {
     // ...
-    lookupLocations: [extractFromHeader({ name: 'x-auth-token', prefix: 'Bearer' })]
+    tokenLookupLocations: [extractFromHeader({ name: 'x-auth-token', prefix: 'Bearer' })]
   }
 })
 ```
@@ -393,7 +393,7 @@ export const gatewayConfig = defineConfig({
   // ...
   jwt: {
     // ...
-    lookupLocations: [extractFromCookie({ name: 'my-cookie' })]
+    tokenLookupLocations: [extractFromCookie({ name: 'my-cookie' })]
   }
   // Make sure you enabled cookie parsing in the gateway
   cookies: true,
@@ -419,7 +419,7 @@ export const gatewayConfig = defineConfig({
   // ...
   jwt: {
     // ...
-    lookupLocations: [getToken]
+    tokenLookupLocations: [getToken]
   }
 })
 ```
@@ -440,7 +440,7 @@ export const gatewayConfig = defineConfig({
   // ...
   jwt: {
     // ...
-    lookupLocations: [
+    tokenLookupLocations: [
       extractFromHeader({ name: 'authorization', prefix: 'Bearer' }),
       extractFromHeader({ name: 'x-legacy-auth' }),
       extractFromHeader({ name: 'x-api-key', prefix: 'API-Access' }),

@@ -10,6 +10,14 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
       layout: 'raw',
     },
   },
+  federation: {
+    title: 'Federation',
+    type: 'page',
+    display: 'hidden',
+    theme: {
+      layout: 'raw',
+    },
+  },
   hive: {
     title: 'Get Started',
     type: 'page',
@@ -39,6 +47,13 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
     title: 'Products',
     type: 'menu',
     items: PRODUCTS_MENU_LIST,
+  },
+  pricing: {
+    title: 'Pricing',
+    type: 'page',
+    theme: {
+      layout: 'raw',
+    },
   },
   'product-updates': {
     type: 'page',

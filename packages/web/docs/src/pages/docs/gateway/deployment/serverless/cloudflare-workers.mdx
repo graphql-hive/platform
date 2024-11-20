@@ -29,15 +29,16 @@ import http from '@graphql-mesh/transport-http'
 import supergraph from './supergraph'
 
 export default {
-  async fetch(request, env, ctx) {
-    await using gateway = createGatewayRuntime({
+  fetch(request, env, ctx) {
+    const gateway = createGatewayRuntime({
       // All options available in `gateway.config.ts` configuration can also be passed here.
       supergraph,
       transports: {
         http // http transport is required for subgraphs using standard GraphQL over HTTP.
       }
     })
-    return await gateway(request, env, ctx)
+    ctx.waitUntil(gateway[Symbol.asyncDispose]())
+    return gateway(request, env, ctx)
   }
 }
 ```
