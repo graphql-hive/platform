@@ -15,40 +15,38 @@ export class Proxy {
   ) {}
 
   registerInternalProxy(
-    dns: { record: string },
-    routes: {
+    dnsRecord: string,
+    route: {
       path: string;
       service: k8s.core.v1.Service;
-      upstreamUrl: string;
-      host: string; // use env helpers of course
-    }[],
+      host: string;
+      customRewrite: string;
+    },
   ) {
-    new k8s.apiextensions.CustomResource(`internal-proxy-${dns.record}`, {
+    new k8s.apiextensions.CustomResource(`internal-proxy-${dnsRecord}`, {
       apiVersion: 'projectcontour.io/v1',
       kind: 'HTTPProxy',
       metadata: {
-        name: `internal-proxy-metadata-${dns.record}`,
+        name: `internal-proxy-metadata-${dnsRecord}`,
       },
       spec: {
         virtualhost: {
-          fqdn: 'lab-worker.app.graphql-hive.com',
+          fqdn: route.host,
         },
-        routes: routes.map(route => ({
-          conditions: [{ prefix: route.path }],
-          services: [
-            {
-              name: route.service,
-              port: 1234,
-            },
-          ],
-          pathRewritePolicy: {
-            replacePrefix: [
+        routes: [
+          {
+            conditions: [{ prefix: route.path }],
+            services: [
               {
-                replacement: '/public/preflight-script-worker.js',
+                name: route.service.metadata.name,
+                port: route.service.spec.ports[0].port,
               },
             ],
+            pathRewritePolicy: {
+              replacePrefix: [{ replacement: route.customRewrite }],
+            },
           },
-        })),
+        ],
       },
     });
   }

@@ -11,19 +11,19 @@ export function deployLabWorker({
   reverseProxy,
   app,
   environment,
+  path,
 }: {
   reverseProxy: Proxy;
   app: App;
   environment: Environment;
+  path: string;
 }) {
-  return reverseProxy.registerInternalProxy({ record: environment.appDns }, [
-    {
-      path: '/worker.js',
-      service: app.service,
-      upstreamUrl: `/public/preflight-script-worker.js?nocache=${Date.now()}`,
-      host: 'lab-worker.app.graphql-hive.com', // use env helpers of course
-    },
-  ]);
+  return reverseProxy.registerInternalProxy(environment.appDns, {
+    path,
+    service: app.service,
+    host: `lab-worker.${environment.appDns}`,
+    customRewrite: '/public/preflight-script-worker.js',
+  });
 }
 
 export function deployProxy({
