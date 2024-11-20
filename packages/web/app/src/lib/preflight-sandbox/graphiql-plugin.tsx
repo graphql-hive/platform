@@ -31,7 +31,7 @@ import {
 } from '@radix-ui/react-icons';
 import { useParams } from '@tanstack/react-router';
 import type { LogMessage } from './execute-script';
-import PreflightWorker from './worker?worker';
+import PreflightWorker from './preflight-script-worker?worker';
 
 const PREFLIGHT_TIMEOUT = 30_000; // 30,000 ms = 30 seconds
 
