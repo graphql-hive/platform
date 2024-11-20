@@ -30,3 +30,7 @@ docker compose -f ./docker/docker-compose.community.yml -f ./docker/docker-compo
 echo "✅ E2E tests environment is ready. To run tests now, use:"
 echo ""
 echo "    HIVE_APP_BASE_URL=http://localhost:8080 pnpm test:e2e"
+echo ""
+echo "    or to open Cypress GUI:"
+echo ""
+echo "    HIVE_APP_BASE_URL=http://localhost:8080 pnpm test:e2e:open"

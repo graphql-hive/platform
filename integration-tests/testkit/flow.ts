@@ -4,6 +4,7 @@ import type {
   AddAlertInput,
   AnswerOrganizationTransferRequestInput,
   AssignMemberRoleInput,
+  ClientStatsInput,
   CreateMemberRoleInput,
   CreateOrganizationInput,
   CreateProjectInput,
@@ -1037,6 +1038,35 @@ export function updateBaseSchema(input: UpdateBaseSchemaInput, token: string) {
   });
 }
 
+export function readClientStats(selector: ClientStatsInput, token: string) {
+  return execute({
+    document: graphql(`
+      query IntegrationTests_ClientStat($selector: ClientStatsInput!) {
+        clientStats(selector: $selector) {
+          totalRequests
+          totalVersions
+          operations {
+            nodes {
+              id
+              name
+              operationHash
+              count
+            }
+          }
+          versions(limit: 25) {
+            version
+            count
+          }
+        }
+      }
+    `),
+    token,
+    variables: {
+      selector,
+    },
+  });
+}
+
 export function readOperationsStats(input: OperationsStatsSelectorInput, token: string) {
   return execute({
     document: graphql(`
@@ -1057,6 +1087,16 @@ export function readOperationsStats(input: OperationsStatsSelectorInput, token: 
                 p95
                 p99
               }
+            }
+          }
+          clients {
+            nodes {
+              name
+              versions {
+                version
+                count
+              }
+              count
             }
           }
         }

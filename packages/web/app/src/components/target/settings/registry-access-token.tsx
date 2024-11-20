@@ -221,7 +221,10 @@ export function CreatedTokenContent(props: {
   toggleModalOpen: () => void;
 }) {
   return (
-    <DialogContent className="container w-4/5 max-w-[600px] md:w-3/5">
+    <DialogContent
+      className="container w-4/5 max-w-[600px] md:w-3/5"
+      data-cy="registry-token-created"
+    >
       <DialogHeader className="flex flex-col gap-5">
         <DialogTitle>Token successfully created!</DialogTitle>
         <DialogDescription className="flex flex-col gap-5">
@@ -233,7 +236,9 @@ export function CreatedTokenContent(props: {
         </DialogDescription>
       </DialogHeader>
       <DialogFooter>
-        <Button onClick={props.toggleModalOpen}>Ok, got it!</Button>
+        <Button data-cy="close" onClick={props.toggleModalOpen}>
+          Ok, got it!
+        </Button>
       </DialogFooter>
     </DialogContent>
   );
@@ -253,6 +258,7 @@ export function GenerateTokenContent(props: {
       <Form {...props.form}>
         <form
           className="flex grow flex-col gap-5"
+          data-cy="create-registry-token-form"
           onSubmit={props.form.handleSubmit(props.onSubmit)}
         >
           <DialogHeader>
@@ -267,7 +273,12 @@ export function GenerateTokenContent(props: {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input placeholder="Token description" autoComplete="off" {...field} />
+                  <Input
+                    placeholder="Token description"
+                    data-cy="description"
+                    autoComplete="off"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -279,6 +290,7 @@ export function GenerateTokenContent(props: {
                 <Accordion.Header>Registry & Usage</Accordion.Header>
                 <Accordion.Content>
                   <PermissionScopeItem
+                    dataCy="registry-access-scope"
                     key={props.selectedScope}
                     scope={RegistryAccessScope}
                     canManageScope={
@@ -314,6 +326,7 @@ export function GenerateTokenContent(props: {
             </Button>
             <Button
               type="submit"
+              data-cy="submit"
               disabled={!props.form.formState.isValid || props.noPermissionsSelected}
             >
               Generate Token
