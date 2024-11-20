@@ -14,8 +14,6 @@ export default gql`
     sourceCode: String!
     createdAt: DateTime!
     updatedAt: DateTime!
-    # TODO: should I add this field?
-    # createdBy: User!
   }
 
   input UpdatePreflightScriptInput {
