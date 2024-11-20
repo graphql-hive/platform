@@ -232,6 +232,13 @@ module.exports = {
     {
       files: 'cypress/**',
       extends: 'plugin:cypress/recommended',
+      overrides: [
+        {
+          rules: {
+            'cypress/no-unnecessary-waiting': 'off',
+          },
+        },
+      ],
     },
   ],
 };
