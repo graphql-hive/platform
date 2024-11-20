@@ -7,6 +7,25 @@ import { GraphQL } from './graphql';
 import { Observability } from './observability';
 import { Usage } from './usage';
 
+export function deployLabWorker({
+  reverseProxy,
+  app,
+  environment,
+}: {
+  reverseProxy: Proxy;
+  app: App;
+  environment: Environment;
+}) {
+  return reverseProxy.registerInternalProxy({ record: environment.appDns }, [
+    {
+      path: '/worker.js',
+      service: app.service,
+      upstreamUrl: `/public/preflight-script-worker.js?nocache=${Date.now()}`,
+      host: 'lab-worker.app.graphql-hive.com', // use env helpers of course
+    },
+  ]);
+}
+
 export function deployProxy({
   graphql,
   app,
