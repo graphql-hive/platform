@@ -19,6 +19,10 @@ export default function App({ Component, pageProps }: AppProps): ReactElement {
         :root {
           --font-sans: ${neueMontreal.style.fontFamily};
         }
+        ._tracking-tight,
+        .nextra-steps :is(h2, h3, h4) {
+          letter-spacing: normal;
+        }
       `}</style>
       <Component {...pageProps} />
     </>
