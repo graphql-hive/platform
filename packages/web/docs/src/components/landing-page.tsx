@@ -35,16 +35,17 @@ export function IndexPage(): ReactElement {
           Open-Source GraphQL Federation Platform
         </Heading>
         <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
-          Schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs.
+          Fully open-source schema registry, analytics, metrics and gateway for GraphQL federation
+          and other GraphQL APIs.
         </p>
         <HeroFeatures>
           <li>
             <CheckIcon className="text-blue-400" />
-            Fully open-source
+            MIT licensed
           </li>
           <li>
             <CheckIcon className="text-blue-400" />
-            No vendor lock
+            No vendor-lock
           </li>
           <li>
             <CheckIcon className="text-blue-400" />
