@@ -52,7 +52,10 @@ async function execute(args: {
     (level: 'log' | 'warn' | 'error' | 'info') =>
     (...args: unknown[]) => {
       console[level](...args);
-      const message = `${level.charAt(0).toUpperCase()}${level.slice(1)}: ${args.map(String).join(' ')}`;
+      let message = `${level.charAt(0).toUpperCase()}${level.slice(1)}: ${args.map(String).join(' ')}`;
+      message += appendLineAndColumn(new Error(), {
+        columnOffset: 'console.'.length,
+      });
       // The messages should be streamed to the main thread as they occur not gathered and send to
       // the main thread at the end of the execution of the preflight script
       postMessage({ type: 'log', message });
@@ -99,14 +102,17 @@ async function execute(args: {
     },
   });
 
+  // Wrap the users script in an async IIFE to allow the use of top level await
+  const rawJs = `return(async()=>{'use strict';
+${script}})()`;
+
   try {
     await Function(
       'lab',
       'console',
       // spreading all the variables we want to block creates an argument that shadows their names, any attempt to access them will result in `undefined`
       ...blockedGlobals,
-      // Wrap the users script in an async IIFE to allow the use of top level await
-      `return(async()=>{'use strict';${script}})()`,
+      rawJs,
       // Bind the function to a null constructor object to prevent `this` leaking scope in
     ).bind(
       // When `this` is `undefined` or `null`, we get [object DedicatedWorkerGlobalScope] in console output
@@ -114,8 +120,18 @@ async function execute(args: {
       'undefined',
     )(labApi, consoleApi);
   } catch (error) {
+    if (error instanceof Error) {
+      error.message += appendLineAndColumn(error);
+    }
     postMessage({ error });
     return;
   }
   postMessage({ environmentVariables: workingEnvironmentVariables });
+}
+
+function appendLineAndColumn(error: Error, { columnOffset = 0 } = {}): string {
+  const regex = /<anonymous>:(?<line>\d+):(?<column>\d+)/; // Regex to match the line and column numbers
+
+  const { line, column } = error.stack?.match(regex)?.groups || {};
+  return ` (Line: ${Number(line) - 3}, Column: ${Number(column) - columnOffset})`;
 }

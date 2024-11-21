@@ -47,21 +47,18 @@ const usePreflightScriptStore = createWithEqualityFn(
     script: string;
     env: string;
     disabled: boolean;
-    actions: {
-      setScript: Dispatch<string>;
-      setDisabled: Dispatch<boolean>;
-      setEnv: Dispatch<string | undefined>;
-    };
+    // We can't put method in actions object since we save in localStorage
+    setScript: Dispatch<string>;
+    setDisabled: Dispatch<boolean>;
+    setEnv: Dispatch<string | undefined>;
   }>(
     set => ({
       script: '',
       env: '',
       disabled: false,
-      actions: {
-        setScript: script => set({ script }),
-        setDisabled: disabled => set({ disabled }),
-        setEnv: env => set({ env }),
-      },
+      setScript: script => set({ script }),
+      setDisabled: disabled => set({ disabled }),
+      setEnv: env => set({ env }),
     }),
     {
       name: 'preflight-script-storage',
@@ -77,7 +74,7 @@ const usePreflightScriptState = () =>
     disabled: state.disabled,
   }));
 
-const { setScript, setDisabled, setEnv } = usePreflightScriptStore.getState().actions;
+const { setScript, setDisabled, setEnv } = usePreflightScriptStore.getState();
 
 // We need to reassign to new instance after calling `.terminate()` method
 let preflightWorker = new PreflightWorker();
@@ -377,6 +374,8 @@ function PreflightScriptModal({
   }, []);
 
   const handleRunScript = useCallback(async () => {
+    const now = Date.now();
+
     clearTimeout(timerId);
     const env = envEditorRef.current?.getValue() ?? '';
     preflightWorker.postMessage({
@@ -385,21 +384,25 @@ function PreflightScriptModal({
     });
     preflightWorker.onmessage = ({ data }: MessageEvent<PreflightScriptResult>) => {
       setLogs(prev => {
+        const last = prev.at(-1);
+        const result = [...prev];
+        if (!last || (typeof last === 'object' && 'type' in last && last.type === 'separator')) {
+          result.push('> Start running script');
+        }
         const log =
-          'environmentVariables' in data
-            ? { type: 'separator' as const }
-            : //
-              'error' in data
-              ? data.error
-              : data.message;
+          'environmentVariables' in data ? '' : 'error' in data ? data.error : data.message;
+        result.push(log);
         const isTerminated = 'environmentVariables' in data || 'error' in data;
         if (isTerminated) {
           clearTimeout(timerId);
+          result.push(`> End running script. Done in ${(Date.now() - now) / 1000}s`, {
+            type: 'separator' as const,
+          });
         }
         if ('environmentVariables' in data) {
           setEnv(JSON.stringify(data.environmentVariables, null, 2));
         }
-        return [...prev, log, ...('error' in data ? [{ type: 'separator' as const }] : [])];
+        return result;
       });
     };
     timerId = window.setTimeout(() => {
@@ -529,7 +532,7 @@ function PreflightScriptModal({
           <p className="me-5 flex items-center gap-2 text-sm">
             <InfoCircledIcon />
             Changes made to this Preflight Script will apply to all users on your team using this
-            variant.
+            target.
           </p>
           <Button type="button" onClick={toggle} data-cy="preflight-script-modal-cancel">
             Close
