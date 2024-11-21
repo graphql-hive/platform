@@ -26,14 +26,6 @@ async function execute(args: {
   // but sometimes this will be tested outside the worker, so we don't want to mutate the input in that case
   const workingEnvironmentVariables = { ...environmentVariables };
 
-  // List all variables that we want to allow users to use inside their scripts
-  const allowedGlobals = new Set([
-    ...ALLOWED_GLOBALS,
-    // We aren't allowing access to window.console, but we need to "allow" it
-    // here so a second argument isn't added for it below.
-    'console',
-  ]);
-
   // generate list of all in scope variables, we do getOwnPropertyNames and `for in` because each contain slightly different sets of keys
   const allGlobalKeys = Object.getOwnPropertyNames(globalThis);
   for (const key in globalThis) {
@@ -46,7 +38,7 @@ async function execute(args: {
       // When testing in the main thread this exists on window and is not a valid argument name.
       // because global is blocked, even if this was in the worker it's still wouldn't be available because it's not a valid variable name
       !key.includes('-') &&
-      !allowedGlobals.has(key) &&
+      !ALLOWED_GLOBALS.has(key) &&
       // window has references as indexes on the globalThis such as `globalThis[0]`, numbers are not valid arguments, so we need to filter these out
       Number.isNaN(Number(key)) &&
       // @ is not a valid argument name beginning character, so we don't need to block it and including it will cause a syntax error
