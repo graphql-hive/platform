@@ -1,4 +1,11 @@
-import { ComponentProps, Dispatch, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  Dispatch,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { clsx } from 'clsx';
 import type { editor } from 'monaco-editor';
 import { useMutation, useQuery } from 'urql';
@@ -113,7 +120,7 @@ const sharedMonacoProps = {
       verticalScrollbarSize: 6,
     },
   },
-} satisfies ComponentProps<typeof MonacoEditor>;
+} satisfies ComponentPropsWithoutRef<typeof MonacoEditor>;
 
 const monacoProps = {
   env: {
@@ -133,14 +140,13 @@ const monacoProps = {
       ...sharedMonacoProps.options,
     },
   },
-} satisfies Record<'script' | 'env', ComponentProps<typeof MonacoEditor>>;
+} satisfies Record<'script' | 'env', ComponentPropsWithoutRef<typeof MonacoEditor>>;
 
-type ConsoleLog = { type: 'log'; message: string };
+type ResultLog = { type: 'log'; message: string };
+type ResultError = { error: Error };
+type ResultEnv = { environmentVariables: Record<string, unknown> };
 
-type PreflightScriptResult =
-  | { environmentVariables: Record<string, unknown> }
-  | ConsoleLog
-  | { error: Error };
+type PreflightScriptResult = ResultEnv | ResultLog | ResultError;
 
 let timerId = 0;
 
@@ -154,7 +160,7 @@ export async function executeScript() {
   clearTimeout(timerId);
   preflightWorker.postMessage({ script, environmentVariables });
 
-  const { promise, resolve } = Promise.withResolvers<Exclude<PreflightScriptResult, ConsoleLog>>();
+  const { promise, resolve } = Promise.withResolvers<Exclude<PreflightScriptResult, ResultLog>>();
   preflightWorker.onmessage = ({ data }: MessageEvent<PreflightScriptResult>) => {
     if ('type' in data) return;
     clearTimeout(timerId);
