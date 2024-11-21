@@ -35,7 +35,7 @@ export function OSSFriendsPage(props: {
 }) {
   return (
     <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
-      <div className="bg-beige-100 relative isolate flex max-w-[90rem] flex-col gap-6 overflow-hidden rounded-3xl px-4 py-6 sm:py-12 md:gap-8 lg:py-24">
+      <div className="bg-beige-100 relative isolate mx-4 flex max-w-[90rem] flex-col gap-6 overflow-hidden rounded-3xl px-4 py-6 max-sm:mt-2 sm:py-12 md:mx-6 md:gap-8 lg:py-24">
         <DecorationIsolation>
           <ArchDecoration className="pointer-events-none absolute left-[-46px] top-[-20px] size-[200px] rotate-180 md:left-[-60px] md:top-[-188px] md:size-auto" />
           <ArchDecoration className="pointer-events-none absolute bottom-0 right-[-53px] size-[200px] md:-bottom-32 md:size-auto lg:bottom-[-188px] lg:right-0" />
@@ -98,7 +98,7 @@ export function OSSFriendsPage(props: {
           </div>
         </section>
       </div>
-      <section className="relative mt-12 overflow-hidden rounded-3xl bg-[#003834] p-12 text-center sm:p-24">
+      <section className="relative mx-4 mt-12 overflow-hidden rounded-3xl bg-[#003834] p-12 text-center sm:p-24 md:mx-6">
         <DecorationIsolation>
           <ArchDecoration className="absolute -left-1/2 -top-1/2 rotate-180 sm:-left-1/4 md:left-[-105px] md:top-[-109px] [&>path]:fill-none" />
           <HighlightDecoration className="absolute -left-1 -top-16 size-[600px] -scale-x-100 overflow-visible" />
