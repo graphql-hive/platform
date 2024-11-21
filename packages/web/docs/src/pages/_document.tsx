@@ -1,7 +1,9 @@
+import { use, useEffect } from 'react';
 import { DocumentProps, Head, Html, Main, NextScript } from 'next/document';
+import { isPageWithFaq } from '../lib';
 
 export default function Document(props: DocumentProps) {
-  // Due to a bug in Nextra (can't do <Head><html .../></Head>)
+  // Can't do <Head><html .../></Head>...
   // We need to add the structured data attributes
   // to the html tag this way.
   // We can remove this when Nextra is fixed
@@ -14,9 +16,9 @@ export default function Document(props: DocumentProps) {
   // Yes, the structured data is added to the html tag on initial page visit,
   // but when navigating to another page, the structured data is not updated,
   // and the html tag is showing the structured data from the previous page.
-  const pagesWithFAQ = ['/', '/federation', '/pricing'];
-  const isFAQPage = pagesWithFAQ.includes(props.__NEXT_DATA__.page);
-  console.log('props.__NEXT_DATA__.page', props.__NEXT_DATA__.page);
+  // That's why we need to listen to the route change and update the structured data.
+  // See: usePageFAQSchema in lib.ts
+  const isFAQPage = isPageWithFaq(props.__NEXT_DATA__.page);
 
   return (
     // We can drop it when Nextra is fixed
