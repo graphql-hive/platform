@@ -30,6 +30,7 @@ import { useToggle } from '@/lib/hooks';
 import { GraphiQLPlugin } from '@graphiql/react';
 import { Editor as MonacoEditor, OnMount } from '@monaco-editor/react';
 import {
+  Cross2Icon,
   CrossCircledIcon,
   ExclamationTriangleIcon,
   InfoCircledIcon,
@@ -359,6 +360,7 @@ function PreflightScriptModal({
   const envEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const [logs, setLogs] = useState<(LogMessage | { type: 'separator' })[]>([]);
   const consoleRef = useRef<HTMLElement>(null);
+  const [isRunning, setIsRunning] = useState(false);
 
   const handleScriptEditorDidMount: OnMount = useCallback(editor => {
     scriptEditorRef.current = editor;
@@ -373,10 +375,24 @@ function PreflightScriptModal({
     toggle();
   }, []);
 
+  const handleStopScript = useCallback(() => {
+    preflightWorker.terminate(); // This kills the worker
+    preflightWorker = new PreflightWorker();
+    setLogs(prev => [...prev, '> Preflight script interrupted by user', { type: 'separator' }]);
+    setIsRunning(false);
+  }, []);
+
   const handleRunScript = useCallback(async () => {
     const now = Date.now();
-
     clearTimeout(timerId);
+
+    if (isRunning) {
+      handleStopScript();
+      return;
+    }
+
+    setIsRunning(true);
+
     const env = envEditorRef.current?.getValue() ?? '';
     preflightWorker.postMessage({
       script: scriptEditorRef.current?.getValue() ?? '',
@@ -398,6 +414,7 @@ function PreflightScriptModal({
           result.push(`> End running script. Done in ${(Date.now() - now) / 1000}s`, {
             type: 'separator' as const,
           });
+          setIsRunning(false);
         }
         if ('environmentVariables' in data) {
           setEnv(JSON.stringify(data.environmentVariables, null, 2));
@@ -413,8 +430,9 @@ function PreflightScriptModal({
         { type: 'separator' },
       ]);
       preflightWorker = new PreflightWorker();
+      setIsRunning(false);
     }, PREFLIGHT_TIMEOUT);
-  }, []);
+  }, [isRunning]);
 
   useEffect(() => {
     const consoleEl = consoleRef.current;
@@ -446,11 +464,21 @@ function PreflightScriptModal({
               <Button
                 variant="orangeLink"
                 size="icon-sm"
-                className="size-auto"
+                className="size-auto gap-1"
                 onClick={handleRunScript}
                 data-cy="run-preflight-script"
               >
-                <TriangleRightIcon className="shrink-0" /> Run Script
+                {isRunning ? (
+                  <>
+                    <Cross2Icon className="shrink-0" />
+                    Stop Script
+                  </>
+                ) : (
+                  <>
+                    <TriangleRightIcon className="shrink-0" />
+                    Run Script
+                  </>
+                )}
               </Button>
             </div>
             <MonacoEditor
@@ -467,7 +495,19 @@ function PreflightScriptModal({
             />
           </div>
           <div className="flex h-[inherit] flex-col">
-            <Title className="p-2">Console Output</Title>
+            <div className="flex justify-between p-2">
+              <Title>Console Output</Title>
+              <Button
+                variant="orangeLink"
+                size="icon-sm"
+                className="size-auto gap-1"
+                onClick={() => setLogs([])}
+                disabled={isRunning}
+              >
+                <Cross2Icon className="shrink-0" height="12" />
+                Clear Output
+              </Button>
+            </div>
             <section
               ref={consoleRef}
               className='h-1/2 overflow-hidden overflow-y-scroll bg-[#10151f] py-2.5 pl-[26px] pr-2.5 font-[Menlo,Monaco,"Courier_New",monospace] text-xs/[18px]'

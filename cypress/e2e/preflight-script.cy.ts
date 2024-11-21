@@ -111,8 +111,8 @@ lab.environment.set('my-test', data)`,
 
     cy.dataCy('run-preflight-script').click();
     cy.dataCy('console-output').should(
-      'have.text',
-      ['Log: [object Response]', 'Info: Fixture'].join(''),
+      'contain',
+      ['Log: [object Response]', ' (Line: 3, Column: 1)', 'Info: Fixture'].join(''),
     );
     cy.dataCy('env-editor').should(
       'include.text',
