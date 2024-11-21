@@ -40,17 +40,21 @@ const usePreflightScriptStore = createWithEqualityFn(
     script: string;
     env: string;
     disabled: boolean;
-    setScript: Dispatch<string>;
-    setDisabled: Dispatch<boolean>;
-    setEnv: Dispatch<string | undefined>;
+    actions: {
+      setScript: Dispatch<string>;
+      setDisabled: Dispatch<boolean>;
+      setEnv: Dispatch<string | undefined>;
+    };
   }>(
     set => ({
       script: '',
       env: '',
       disabled: false,
-      setScript: script => set({ script }),
-      setDisabled: disabled => set({ disabled }),
-      setEnv: env => set({ env }),
+      actions: {
+        setScript: script => set({ script }),
+        setDisabled: disabled => set({ disabled }),
+        setEnv: env => set({ env }),
+      },
     }),
     {
       name: 'preflight-script-storage',
@@ -65,12 +69,8 @@ const usePreflightScriptState = () =>
     env: state.env,
     disabled: state.disabled,
   }));
-const usePreflightScriptActions = () =>
-  usePreflightScriptStore(state => ({
-    setScript: state.setScript,
-    setEnv: state.setEnv,
-    setDisabled: state.setDisabled,
-  }));
+
+const { setScript, setDisabled, setEnv } = usePreflightScriptStore.getState().actions;
 
 // We need to reassign to new instance after calling `.terminate()` method
 let preflightWorker = new PreflightWorker();
@@ -144,11 +144,8 @@ type PreflightScriptResult =
 
 let timerId = 0;
 
-export async function executeScript(
-  script = usePreflightScriptStore.getState().script,
-  env = usePreflightScriptStore.getState().env,
-) {
-  const { disabled, setEnv } = usePreflightScriptStore.getState();
+export async function executeScript() {
+  const { disabled, script, env } = usePreflightScriptStore.getState();
   const environmentVariables = env ? JSON.parse(env) : {};
 
   if (disabled) {
@@ -214,10 +211,7 @@ const UpdatePreflightScriptMutation = graphql(`
 
 function PreflightScriptContent() {
   const [showModal, toggleShowModal] = useToggle();
-  const store = usePreflightScriptState();
-  const { env, disabled } = store;
-  const { setScript, setDisabled, setEnv } = usePreflightScriptActions();
-
+  const { env, disabled } = usePreflightScriptState();
   const params = useParams({
     from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
   });
@@ -383,7 +377,6 @@ function PreflightScriptModal({
       script: scriptEditorRef.current?.getValue() ?? '',
       environmentVariables: env ? JSON.parse(env) : {},
     });
-    const { setEnv } = usePreflightScriptStore.getState();
     preflightWorker.onmessage = ({ data }: MessageEvent<PreflightScriptResult>) => {
       setLogs(prev => {
         const log =

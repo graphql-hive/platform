@@ -115,7 +115,7 @@ async function execute(args: {
     )(labApi, consoleApi);
   } catch (error) {
     postMessage({ error });
-    return
+    return;
   }
-  postMessage({ environmentVariables: workingEnvironmentVariables, });
+  postMessage({ environmentVariables: workingEnvironmentVariables });
 }
