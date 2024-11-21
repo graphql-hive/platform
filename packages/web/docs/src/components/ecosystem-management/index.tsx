@@ -116,7 +116,7 @@ export function EcosystemManagementSection({ className }: { className?: string }
 }
 
 const edgeTexts = [
-  'Apps send requests to Hive Gateway that acts as the entrypoint to data from your federated subgraphs.',
+  'Apps send requests to Hive Gateway that acts as the api gateway to data from your federated graph.',
   'Developers that build the apps/api clients will use GraphQL Codegen for generating type-safe code that makes writing apps safer and faster.',
   'Codegen uses Hive to pull the GraphQL schema for generating the code.',
   'Hive Gateway pulls the supergraph from the Hive Schema Registry that gives it all the information about the subgraphs and available data to serve to the outside world.',
