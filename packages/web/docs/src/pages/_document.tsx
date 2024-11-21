@@ -1,4 +1,3 @@
-import { use, useEffect } from 'react';
 import { DocumentProps, Head, Html, Main, NextScript } from 'next/document';
 import { isPageWithFaq } from '../lib';
 
