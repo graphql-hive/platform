@@ -214,7 +214,7 @@ const UpdatePreflightScriptMutation = graphql(`
 `);
 
 function PreflightScriptContent() {
-  const [showModal, toggleShowModal] = useToggle();
+  const [showModal, toggleShowModal] = useToggle(true);
   const { env, disabled } = usePreflightScriptState();
   const params = useParams({
     from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
@@ -441,7 +441,15 @@ function PreflightScriptModal({
   }, [logs]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={toggle}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={open => {
+        if (!open && isRunning) {
+          handleStopScript();
+        }
+        toggle();
+      }}
+    >
       <DialogContent className="w-11/12 max-w-[unset] xl:w-4/5">
         <DialogHeader>
           <DialogTitle>Edit your Preflight Script</DialogTitle>
