@@ -30,7 +30,7 @@ import {
   TriangleRightIcon,
 } from '@radix-ui/react-icons';
 import { useParams } from '@tanstack/react-router';
-import type { LogMessage } from './execute-script';
+import type { LogMessage } from './preflight-script-worker';
 import PreflightWorker from './preflight-script-worker?worker';
 
 const PREFLIGHT_TIMEOUT = 30_000; // 30,000 ms = 30 seconds
@@ -400,7 +400,7 @@ function PreflightScriptModal({
         if ('environmentVariables' in data) {
           setEnv(JSON.stringify(data.environmentVariables, null, 2));
         }
-        return [...prev, log, ...(isTerminated ? [{ type: 'separator' as const }] : [])];
+        return [...prev, log, ...('error' in data ? [{ type: 'separator' as const }] : [])];
       });
     };
     timerId = window.setTimeout(() => {
