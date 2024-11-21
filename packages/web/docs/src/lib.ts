@@ -29,28 +29,23 @@ export function isPageWithFaq(path: string) {
 export function usePageFAQSchema() {
   useEffect(() => {
     if (typeof window === 'undefined') {
-      console.log('no window');
       return;
     }
 
     const html = document.querySelector('html');
 
     if (!html) {
-      console.log('no html');
       // This should never happen
       return;
     }
 
     const path = window.location.pathname.replace('/graphql/hive', '/');
-    console.log('path', path);
 
     if (isPageWithFaq(path) && !html.hasAttribute('itemscope')) {
-      console.log('add');
       html.setAttribute('itemscope', '');
       html.setAttribute('itemtype', 'https://schema.org/FAQPage');
 
       return () => {
-        console.log('remove');
         html.removeAttribute('itemscope');
         html.removeAttribute('itemtype');
       };
