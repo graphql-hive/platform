@@ -214,7 +214,7 @@ const UpdatePreflightScriptMutation = graphql(`
 `);
 
 function PreflightScriptContent() {
-  const [showModal, toggleShowModal] = useToggle(true);
+  const [showModal, toggleShowModal] = useToggle();
   const { env, disabled } = usePreflightScriptState();
   const params = useParams({
     from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
@@ -392,6 +392,7 @@ function PreflightScriptModal({
     }
 
     setIsRunning(true);
+    setLogs(prev => [...prev, '> Start running script']);
 
     const env = envEditorRef.current?.getValue() ?? '';
     preflightWorker.postMessage({
@@ -400,20 +401,21 @@ function PreflightScriptModal({
     });
     preflightWorker.onmessage = ({ data }: MessageEvent<PreflightScriptResult>) => {
       setLogs(prev => {
-        const last = prev.at(-1);
         const result = [...prev];
-        if (!last || (typeof last === 'object' && 'type' in last && last.type === 'separator')) {
-          result.push('> Start running script');
-        }
         const log =
           'environmentVariables' in data ? '' : 'error' in data ? data.error : data.message;
         result.push(log);
         const isTerminated = 'environmentVariables' in data || 'error' in data;
         if (isTerminated) {
           clearTimeout(timerId);
-          result.push(`> End running script. Done in ${(Date.now() - now) / 1000}s`, {
-            type: 'separator' as const,
-          });
+          const last = prev.at(-1);
+          const isLastSeparator =
+            typeof last === 'object' && 'type' in last && last.type === 'separator';
+          if (!isLastSeparator) {
+            result.push(`> End running script. Done in ${(Date.now() - now) / 1000}s`, {
+              type: 'separator' as const,
+            });
+          }
           setIsRunning(false);
         }
         if ('environmentVariables' in data) {
@@ -525,7 +527,7 @@ function PreflightScriptModal({
                 let type = '';
                 if (log instanceof Error) {
                   type = 'error';
-                  log = `${log.constructor.name}: ${log.message}`;
+                  log = `${log.name}: ${log.message}`;
                 }
                 if (typeof log === 'string') {
                   type ||= log.split(':')[0].toLowerCase();

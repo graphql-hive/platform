@@ -251,7 +251,7 @@ const onModifyHeaders: ComponentProps<typeof GraphiQL>['onModifyHeaders'] = asyn
   if ('error' in result) {
     const formatError = JSON.stringify(
       {
-        name: result.error.constructor.name,
+        name: result.error.name,
         message: result.error.message,
       },
       null,

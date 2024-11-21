@@ -9,6 +9,11 @@ self.onmessage = async event => {
   await execute(event.data);
 };
 
+self.addEventListener('unhandledrejection', event => {
+  const error = 'reason' in event ? new Error(event.reason) : event;
+  postMessage({ error });
+});
+
 async function execute(args: {
   environmentVariables: Record<string, JSONPrimitive>;
   script: string;
