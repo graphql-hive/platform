@@ -69,7 +69,7 @@ describe('Preflight Script Modal', () => {
   it('should run script and show console/error output', () => {
     writeScript(script);
     cy.dataCy('run-preflight-script').click();
-    cy.dataCy('console-output').should('have.text', 'Log: Hello_world');
+    cy.dataCy('console-output').should('contain', 'Log: Hello_world (Line: 1, Column: 1)');
 
     cy.dataCy('preflight-script-editor').within(() => {
       cy.get('textarea').type('{CMD}{A}{Backspace}', { force: true });
@@ -82,16 +82,16 @@ throw new TypeError('Test')`,
       );
     });
     cy.dataCy('run-preflight-script').click();
+    // First log previous log message
+    cy.dataCy('console-output').should('contain', 'Log: Hello_world (Line: 1, Column: 1)');
+    // After the new logs
     cy.dataCy('console-output').should(
-      'have.text',
+      'contain',
       [
-        // First log previous log message
-        'Log: Hello_world',
-        // After the new logs
-        'Info: 1',
-        'Warn: true',
-        'Error: Fatal',
-        'TypeError: Test',
+        'Info: 1 (Line: 1, Column: 1)',
+        'Warn: true (Line: 2, Column: 1)',
+        'Error: Fatal (Line: 3, Column: 1)',
+        'TypeError: Test (Line: 4, Column: 7)',
       ].join(''),
     );
   });

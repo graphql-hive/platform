@@ -176,7 +176,7 @@ export async function executeScript() {
         `Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`,
       ),
     });
-    stopWorker()
+    stopWorker();
   }, PREFLIGHT_TIMEOUT);
   return promise;
 }
@@ -227,13 +227,12 @@ function PreflightScriptContent() {
     query: TargetQuery,
     variables: { selector: params },
   });
-  const { isFetching } =
-    useExecutionContext({ nonNull: true, caller: PreflightScriptContent });
+  const { isFetching } = useExecutionContext({ nonNull: true, caller: PreflightScriptContent });
 
   useEffect(() => {
     if (!isFetching) {
       // Stop worker in case user aborted execution
-      stopWorker()
+      stopWorker();
     }
   }, [isFetching]);
 
@@ -390,7 +389,7 @@ function PreflightScriptModal({
   }, []);
 
   const handleStopScript = useCallback(() => {
-    stopWorker()
+    stopWorker();
     setLogs(prev => [...prev, '> Preflight script interrupted by user', { type: 'separator' }]);
     setIsRunning(false);
   }, []);
@@ -438,7 +437,7 @@ function PreflightScriptModal({
       });
     };
     timerId = window.setTimeout(() => {
-      stopWorker()
+      stopWorker();
       setLogs(prev => [
         ...prev,
         new Error(`Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`),
