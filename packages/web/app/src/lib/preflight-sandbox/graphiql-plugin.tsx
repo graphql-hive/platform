@@ -27,7 +27,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
 import { graphql } from '@/gql';
 import { useToggle } from '@/lib/hooks';
-import { GraphiQLPlugin } from '@graphiql/react';
+import { GraphiQLPlugin, useExecutionContext } from '@graphiql/react';
 import { Editor as MonacoEditor, OnMount } from '@monaco-editor/react';
 import {
   Cross2Icon,
@@ -176,8 +176,7 @@ export async function executeScript() {
         `Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`,
       ),
     });
-    preflightWorker.terminate(); // This kills the worker
-    preflightWorker = new PreflightWorker();
+    stopWorker()
   }, PREFLIGHT_TIMEOUT);
   return promise;
 }
@@ -213,6 +212,11 @@ const UpdatePreflightScriptMutation = graphql(`
   }
 `);
 
+function stopWorker() {
+  preflightWorker.terminate(); // This kills the worker
+  preflightWorker = new PreflightWorker();
+}
+
 function PreflightScriptContent() {
   const [showModal, toggleShowModal] = useToggle();
   const { env, disabled } = usePreflightScriptState();
@@ -223,6 +227,16 @@ function PreflightScriptContent() {
     query: TargetQuery,
     variables: { selector: params },
   });
+  const { isFetching } =
+    useExecutionContext({ nonNull: true, caller: PreflightScriptContent });
+
+  useEffect(() => {
+    if (!isFetching) {
+      // Stop worker in case user aborted execution
+      stopWorker()
+    }
+  }, [isFetching]);
+
   const [, mutate] = useMutation(UpdatePreflightScriptMutation);
 
   const preflightScript = query.data?.target?.preflightScript;
@@ -376,8 +390,7 @@ function PreflightScriptModal({
   }, []);
 
   const handleStopScript = useCallback(() => {
-    preflightWorker.terminate(); // This kills the worker
-    preflightWorker = new PreflightWorker();
+    stopWorker()
     setLogs(prev => [...prev, '> Preflight script interrupted by user', { type: 'separator' }]);
     setIsRunning(false);
   }, []);
@@ -425,13 +438,12 @@ function PreflightScriptModal({
       });
     };
     timerId = window.setTimeout(() => {
-      preflightWorker.terminate(); // This kills the worker
+      stopWorker()
       setLogs(prev => [
         ...prev,
         new Error(`Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`),
         { type: 'separator' },
       ]);
-      preflightWorker = new PreflightWorker();
       setIsRunning(false);
     }, PREFLIGHT_TIMEOUT);
   }, [isRunning]);

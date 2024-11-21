@@ -1,5 +1,5 @@
 diff --git a/dist/index.mjs b/dist/index.mjs
-index 8ca339a2ba2031f0c1e22f1d099fa9a571492107..463cf8f2ef9b2c62d7a197708d6ffba4c880b036 100644
+index 8ca339a2ba2031f0c1e22f1d099fa9a571492107..1cf3e8c620dc2c3ad4cfc42e2feeb4ca4682163c 100644
 --- a/dist/index.mjs
 +++ b/dist/index.mjs
 @@ -1,6 +1,6 @@
@@ -125,16 +125,16 @@ index 8ca339a2ba2031f0c1e22f1d099fa9a571492107..463cf8f2ef9b2c62d7a197708d6ffba4
  }) {
    if (!fetcher) {
      throw new TypeError(
-@@ -777,6 +752,9 @@ function ExecutionContextProvider({
-         errorMessageParse: "Headers are invalid JSON",
-         errorMessageType: "Headers are not a JSON object."
-       });
-+      if (onModifyHeaders) {
-+        headers = await onModifyHeaders(headers);
-+      }
-     } catch (error) {
-       setResponse(error instanceof Error ? error.message : `${error}`);
-       return;
+@@ -792,6 +767,9 @@ function ExecutionContextProvider({
+     }
+     setResponse("");
+     setIsFetching(true);
++    if (onModifyHeaders) {
++      headers = await onModifyHeaders(headers);
++    }
+     const opName = operationName ?? queryEditor.operationName ?? void 0;
+     history == null ? void 0 : history.addToHistory({
+       query,
 @@ -999,9 +977,9 @@ function mergeIncrementalResult(executionResult, incrementalResult) {
      }
    }
