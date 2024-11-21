@@ -1,21 +1,28 @@
+import * as Tabs from '@radix-ui/react-tabs';
 import { DecorationIsolation, Heading } from '@theguild/components';
 import { Page } from '../page';
+import EcosystemPageContent from './content.mdx';
 
 export function EcosystemPage({ children }: { children: React.ReactNode }) {
   return (
-    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">{children}</Page>
+    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden [&>:not(header)]:px-4 lg:[&>:not(header)]:px-8 xl:[&>:not(header)]:px-[120px]">
+      {children}
+    </Page>
   );
 }
 
-export const components = Object.freeze({
+export const components = {
   EcosystemHeader: (props: React.HTMLAttributes<HTMLDivElement>) => (
     <header
-      className="relative isolate flex max-w-[90rem] flex-col items-center gap-6 overflow-hidden rounded-3xl bg-blue-400 px-4 py-6 text-center sm:py-12 md:gap-8 lg:py-24 [&>h1]:max-w-[800px] [&>p]:max-w-[520px]"
+      className="relative isolate flex max-w-[90rem] flex-col items-center gap-6 overflow-visible rounded-3xl bg-blue-400 px-4 py-6 text-center sm:py-12 md:gap-8 lg:py-24 [&>h1]:max-w-[800px] [&>p]:max-w-[520px]"
       {...props}
     >
       <span className="font-medium">The Ecosystem</span>
       {props.children}
       <CrossDecoration />
+      <nav className="absolute top-full grid -translate-y-1/2 grid-flow-col rounded-2xl bg-blue-400 [grid-auto-columns:1fr]">
+        <EcosystemPageContent components={ecosystemPageNav} />
+      </nav>
     </header>
   ),
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => <Heading as="h1" size="xl" {...props} />,
@@ -26,7 +33,8 @@ export const components = Object.freeze({
   p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
     <p className="text-green-800" {...props} />
   ),
-});
+  ul: () => null,
+};
 
 function CrossDecoration() {
   return (
@@ -62,10 +70,35 @@ function ArchDecoration({ className }: { className?: string }) {
           y2="370.89"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="white" stop-opacity="0.3" />
-          <stop offset="1" stop-color="white" stop-opacity="0.1" />
+          <stop stopColor="white" stopOpacity="0.3" />
+          <stop offset="1" stopColor="white" stopOpacity="0.1" />
         </linearGradient>
       </defs>
     </svg>
   );
 }
+
+const ecosystemPageNav = {
+  ...Object.fromEntries(Object.keys(components).map(key => [key, () => null])),
+  h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
+    <a
+      href={`#${props.id}`}
+      className="hive-focus focus-visible:text-green-1000 hover:text-green-1000 overflow-visible text-nowrap rounded-2xl px-4 py-5 font-medium text-green-800 transition hover:bg-white/10 focus:z-10 focus-visible:bg-white/10 focus-visible:ring-inset"
+      onKeyDown={event => {
+        if (event.key === 'ArrowLeft') {
+          const previousElement = event.currentTarget.previousElementSibling;
+          if (previousElement) {
+            (previousElement as HTMLElement).focus();
+          }
+        } else if (event.key === 'ArrowRight') {
+          const nextElement = event.currentTarget.nextElementSibling;
+          if (nextElement) {
+            (nextElement as HTMLElement).focus();
+          }
+        }
+      }}
+    >
+      {props.children}
+    </a>
+  ),
+};
