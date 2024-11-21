@@ -124,6 +124,7 @@ export default defineConfig({
 
       return (
         <HiveFooter
+          isHive
           className={cn(
             isLandingPage(route) ? 'light' : '[&>:first-child]:mx-0 [&>:first-child]:max-w-[90rem]',
             'pt-[72px]',
