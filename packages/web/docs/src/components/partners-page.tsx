@@ -161,7 +161,7 @@ export function PartnersPage() {
       <WhyUs />
       <SolutionsPartner />
       <FrequentlyAskedPartnersQuestions />
-      <GetYourAPIGameRightSection className="mx-4 mt-6 sm:mb-6 md:mx-6 md:mt-16" />
+      <GetYourAPIGameRightSection className="mx-4 mt-6 !overflow-visible sm:mb-6 md:mx-6 md:mt-16" />
     </Page>
   );
 }
