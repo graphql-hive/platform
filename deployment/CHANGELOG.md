@@ -1,5 +1,14 @@
 # hive
 
+## 1.2.2
+
+### Patch Changes
+
+- [#5900](https://github.com/graphql-hive/console/pull/5900)
+  [`ac37f97`](https://github.com/graphql-hive/console/commit/ac37f977a18bbad0be5bb30b52dc689be83e0aca)
+  Thanks [@saihaj](https://github.com/saihaj)! - Fix logging for invalid operation body within usage
+  reporting.
+
 ## 1.2.1
 
 ### Patch Changes
