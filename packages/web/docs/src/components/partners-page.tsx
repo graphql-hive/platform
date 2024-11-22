@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { CodeIcon, LockOpen2Icon, RocketIcon } from '@radix-ui/react-icons';
 import {
+  Anchor,
   CallToAction,
   cn,
   GetYourAPIGameRightSection,
@@ -46,7 +47,15 @@ function WhyUs({ className }: { className?: string }) {
           className="flex-1 basis-full rounded-2xl md:rounded-3xl lg:basis-0"
         >
           Enable your customers to build more reliable and observable GraphQL APIs through our
-          comprehensive schema registry, federation support, and performance monitoring tools.
+          comprehensive schema registry,{' '}
+          <Anchor
+            href="/federation"
+            title="Visit our guide to learn more about GraphQL federation"
+            className="underline decoration-slate-400 hover:decoration-slate-700"
+          >
+            federation
+          </Anchor>{' '}
+          support, and performance monitoring tools.
         </InfoCard>
       </ul>
     </section>
@@ -119,8 +128,16 @@ export function PartnersPage() {
           Accelerate Your Federation Journey
         </Heading>
         <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
-          The Hive Partner Network accelerates your federation journey, delivering expert solutions
-          and best-in-class technology for faster value realization.
+          The Hive Partner Network accelerates your{' '}
+          <Anchor
+            href="/federation"
+            title="Visit our guide to learn more about GraphQL federation"
+            className="underline decoration-white/30 underline-offset-2 hover:decoration-white/80"
+          >
+            federation
+          </Anchor>{' '}
+          journey, delivering expert solutions and best-in-class technology for faster value
+          realization.
         </p>
         <HeroLinks>
           <CallToAction
