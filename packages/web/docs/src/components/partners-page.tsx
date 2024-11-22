@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { CodeIcon, LockOpen2Icon, RocketIcon } from '@radix-ui/react-icons';
 import {
   CallToAction,
@@ -56,6 +57,13 @@ const PARTNERS = [
   {
     name: 'The Guild',
     logo: '/the-guild-logo.svg',
+    className: 'brightness-0 grayscale hover:brightness-100',
+    href: 'https://the-guild.dev',
+  },
+  {
+    name: 'Duality',
+    logo: '/duality-logo.svg',
+    href: 'https://teamduality.dev',
   },
 ];
 
@@ -77,14 +85,22 @@ function SolutionsPartner({ className }: { className?: string }) {
         get the most out of the Hive platform. From consulting to implementation, our partners are
         here to help you succeed.
       </p>
-      <ul className="mt-10">
+      <ul className="mt-10 grid grid-cols-1 place-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {PARTNERS.map(partner => (
-          <li
+          <Link
             key={partner.name}
-            className="flex h-32 max-w-56 flex-col items-center justify-center rounded-3xl border brightness-0 grayscale"
+            href={`${partner.href}?utm_source=hive&utm_medium=website&utm_campaign=partners`}
+            target="_blank"
           >
-            <img src={partner.logo} alt={partner.name} className="h-10 w-auto" />
-          </li>
+            <li
+              className={cn(
+                'flex h-32 w-56 cursor-pointer flex-col items-center justify-center rounded-3xl border border-black hover:bg-slate-300',
+                partner?.className,
+              )}
+            >
+              <img src={partner.logo} alt={partner.name} className="h-10 w-auto" />
+            </li>
+          </Link>
         ))}
       </ul>
     </section>
@@ -113,7 +129,15 @@ export function PartnersPage() {
               (window as any).$crisp?.push(['do', 'chat:open']);
             }}
           >
-            Get in touch
+            Talk to an expert
+          </CallToAction>
+          <CallToAction
+            variant="secondary"
+            onClick={() => {
+              (window as any).$crisp?.push(['do', 'chat:open']);
+            }}
+          >
+            Become a partner
           </CallToAction>
         </HeroLinks>
       </Hero>

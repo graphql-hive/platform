@@ -190,8 +190,8 @@ export function FrequentlyAskedPartnersQuestions({ className }: { className?: st
         components={{
           a,
           h2,
-          ul,
-          li,
+          ul: Accordion,
+          li: AccordionItem,
         }}
       />
     </section>
