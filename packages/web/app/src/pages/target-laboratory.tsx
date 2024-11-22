@@ -1,4 +1,4 @@
-import { ComponentProps, ReactElement, useCallback, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useMemo, useState } from 'react';
 import { cx } from 'class-variance-authority';
 import clsx from 'clsx';
 import { GraphiQL } from 'graphiql';
@@ -33,7 +33,11 @@ import {
 import { useSyncOperationState } from '@/lib/hooks/laboratory/use-sync-operation-state';
 import { useOperationFromQueryString } from '@/lib/hooks/laboratory/useOperationFromQueryString';
 import { useResetState } from '@/lib/hooks/use-reset-state';
-import { executeScript, preflightScriptPlugin } from '@/lib/preflight-sandbox/graphiql-plugin';
+import {
+  preflightScriptPlugin,
+  PreflightScriptProvider,
+  usePreflightScript,
+} from '@/lib/preflight-sandbox/graphiql-plugin';
 import { cn } from '@/lib/utils';
 import { explorerPlugin } from '@graphiql/plugin-explorer';
 import {
@@ -244,23 +248,10 @@ function Save(props: {
   );
 }
 
-const onModifyHeaders: ComponentProps<typeof GraphiQL>['onModifyHeaders'] = async (
-  headers = {},
-) => {
-  const result = await executeScript();
-  if ('error' in result) {
-    const formatError = JSON.stringify(
-      {
-        name: result.error.name,
-        message: result.error.message,
-      },
-      null,
-      2,
-    );
-    throw new Error(`Error during preflight script execution:\n\n${formatError}`);
-  }
-  const { environmentVariables } = result;
-
+function substituteVariablesInHeader(
+  headers: Record<string, string>,
+  environmentVariables: Record<string, unknown>,
+) {
   return Object.fromEntries(
     Object.entries(headers).map(([key, value]) => {
       if (typeof value === 'string') {
@@ -274,7 +265,7 @@ const onModifyHeaders: ComponentProps<typeof GraphiQL>['onModifyHeaders'] = asyn
       return [key, value];
     }),
   );
-};
+}
 
 function LaboratoryPageContent(props: {
   organizationSlug: string;
@@ -313,17 +304,45 @@ function LaboratoryPageContent(props: {
   );
 
   const mockEndpoint = `${location.origin}/api/lab/${props.organizationSlug}/${props.projectSlug}/${props.targetSlug}`;
+  const target = query.data?.target;
+
+  const preflightScript = usePreflightScript({ target: target ?? null });
 
   const fetcher = useMemo<Fetcher>(() => {
     return async (params, opts) => {
+      let headers = opts?.headers;
       const url =
-        (actualSelectedApiEndpoint === 'linkedApi'
-          ? query.data?.target?.graphqlEndpointUrl
-          : undefined) ?? mockEndpoint;
+        (actualSelectedApiEndpoint === 'linkedApi' ? target?.graphqlEndpointUrl : undefined) ??
+        mockEndpoint;
 
-      const _fetcher = createGraphiQLFetcher({ url, fetch });
+      if (preflightScript.isPreflightScriptEnabled) {
+        try {
+          const result = await preflightScript.execute();
+          if (result && headers) {
+            headers = substituteVariablesInHeader(headers, result);
+          }
+        } catch (err: unknown) {
+          if (err instanceof Error === false) {
+            throw err;
+          }
+          const formatError = JSON.stringify(
+            {
+              name: err.name,
+              message: err.message,
+            },
+            null,
+            2,
+          );
+          throw new Error(`Error during preflight script execution:\n\n${formatError}`);
+        }
+      }
 
-      const result = await _fetcher(params, opts);
+      const graphiqlFetcher = createGraphiQLFetcher({ url, fetch });
+
+      const result = await graphiqlFetcher(params, {
+        ...opts,
+        headers,
+      });
 
       // We only want to expose the error message, not the whole stack trace.
       if (isAsyncIterable(result)) {
@@ -347,7 +366,12 @@ function LaboratoryPageContent(props: {
 
       return result;
     };
-  }, [query.data?.target?.graphqlEndpointUrl, actualSelectedApiEndpoint]);
+  }, [
+    target?.graphqlEndpointUrl,
+    actualSelectedApiEndpoint,
+    preflightScript.execute,
+    preflightScript.isPreflightScriptEnabled,
+  ]);
 
   const FullScreenIcon = isFullScreen ? ExitFullScreenIcon : EnterFullScreenIcon;
 
@@ -367,8 +391,6 @@ function LaboratoryPageContent(props: {
     },
     [userOperations],
   );
-
-  const target = query.data?.target;
 
   useRedirect({
     canAccess: target?.viewerCanViewLaboratory === true,
@@ -501,47 +523,48 @@ function LaboratoryPageContent(props: {
       </Helmet>
 
       {!query.fetching && !query.stale && (
-        <GraphiQL
-          fetcher={fetcher}
-          shouldPersistHeaders
-          plugins={plugins}
-          visiblePlugin={operationCollectionsPlugin}
-          schema={schema}
-          forcedTheme="dark"
-          className={isFullScreen ? 'fixed inset-0 bg-[#030711]' : ''}
-          onTabChange={handleTabChange}
-          readOnly={!!props.selectedOperationId && target?.viewerCanModifyLaboratory === false}
-          onModifyHeaders={onModifyHeaders}
-        >
-          <GraphiQL.Logo>
-            <Button
-              onClick={() => setIsFullScreen(prev => !prev)}
-              variant="orangeLink"
-              className="gap-2 whitespace-nowrap"
-            >
-              <FullScreenIcon className="size-4" />
-              {isFullScreen ? 'Exit' : 'Enter'} Full Screen
-            </Button>
-          </GraphiQL.Logo>
-          <GraphiQL.Toolbar>
-            {({ prettify }) => (
-              <>
-                {query.data?.target?.viewerCanModifyLaboratory && (
-                  <Save
-                    organizationSlug={props.organizationSlug}
-                    projectSlug={props.projectSlug}
-                    targetSlug={props.targetSlug}
-                  />
-                )}
-                <Share />
-                {/* if people have no modify access they should still be able to format their own queries. */}
-                {(query.data?.target?.viewerCanModifyLaboratory === true ||
-                  !props.selectedOperationId) &&
-                  prettify}
-              </>
-            )}
-          </GraphiQL.Toolbar>
-        </GraphiQL>
+        <PreflightScriptProvider value={preflightScript}>
+          <GraphiQL
+            fetcher={fetcher}
+            shouldPersistHeaders
+            plugins={plugins}
+            visiblePlugin={operationCollectionsPlugin}
+            schema={schema}
+            forcedTheme="dark"
+            className={isFullScreen ? 'fixed inset-0 bg-[#030711]' : ''}
+            onTabChange={handleTabChange}
+            readOnly={!!props.selectedOperationId && target?.viewerCanModifyLaboratory === false}
+          >
+            <GraphiQL.Logo>
+              <Button
+                onClick={() => setIsFullScreen(prev => !prev)}
+                variant="orangeLink"
+                className="gap-2 whitespace-nowrap"
+              >
+                <FullScreenIcon className="size-4" />
+                {isFullScreen ? 'Exit' : 'Enter'} Full Screen
+              </Button>
+            </GraphiQL.Logo>
+            <GraphiQL.Toolbar>
+              {({ prettify }) => (
+                <>
+                  {query.data?.target?.viewerCanModifyLaboratory && (
+                    <Save
+                      organizationSlug={props.organizationSlug}
+                      projectSlug={props.projectSlug}
+                      targetSlug={props.targetSlug}
+                    />
+                  )}
+                  <Share />
+                  {/* if people have no modify access they should still be able to format their own queries. */}
+                  {(query.data?.target?.viewerCanModifyLaboratory === true ||
+                    !props.selectedOperationId) &&
+                    prettify}
+                </>
+              )}
+            </GraphiQL.Toolbar>
+          </GraphiQL>
+        </PreflightScriptProvider>
       )}
       <ConnectLabModal
         endpoint={mockEndpoint}

@@ -104,6 +104,7 @@ export const TargetLaboratoryPageQuery = graphql(`
       }
       viewerCanViewLaboratory
       viewerCanModifyLaboratory
+      ...PreflightScript_TargetFragment
     }
     ...Laboratory_IsCDNEnabledFragment
   }
