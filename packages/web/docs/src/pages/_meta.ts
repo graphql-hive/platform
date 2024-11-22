@@ -56,6 +56,13 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
     type: 'menu',
     items: PRODUCTS_MENU_LIST,
   },
+  pricing: {
+    title: 'Pricing',
+    type: 'page',
+    theme: {
+      layout: 'raw',
+    },
+  },
   'product-updates': {
     type: 'page',
     title: 'Product Updates',
@@ -64,6 +71,14 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
       toc: true,
       breadcrumb: false,
       typesetting: 'article',
+    },
+  },
+  'oss-friends': {
+    type: 'page',
+    title: 'Our Open Source Friends',
+    display: 'hidden',
+    theme: {
+      layout: 'raw',
     },
   },
   blog: {

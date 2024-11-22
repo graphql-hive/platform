@@ -1,6 +1,6 @@
 {
   "name": "hive-apollo-router-plugin",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "sync-cargo-file": "./sync-cargo-file.sh"

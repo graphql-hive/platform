@@ -7,7 +7,7 @@ import {
   useConfig,
   useTheme,
 } from '@theguild/components';
-import { NavigationMenu } from './components/navigation-menu';
+import { isLandingPage, NavigationMenu } from './components/navigation-menu';
 import { ProductUpdateBlogPostHeader } from './components/product-update-blog-post-header';
 import { cn } from './lib';
 
@@ -79,9 +79,9 @@ export default defineConfig({
     const isGatewayDocsPage = pagePath.route.includes('/docs/gateway');
     const suffix = isGatewayDocsPage ? 'Hive Gateway' : 'Hive';
     const title = `${pageTitle} - ${suffix}`;
-    const { description = `${siteName}: ${siteDescription}` } = frontMatter;
+    const { description = `${siteName}: ${siteDescription}`, canonical, ogImage } = frontMatter;
 
-    const canonicalUrl = ensureAbsolute(pagePath.route);
+    const canonicalUrl = ensureAbsolute(canonical ?? pagePath.route);
 
     return (
       <>
@@ -103,7 +103,7 @@ export default defineConfig({
         <meta property="og:locale" content="en_US" />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={ensureAbsolute('/og-image.png')} />
+        <meta property="og:image" content={ensureAbsolute(ogImage ?? '/og-image.png')} />
         <meta property="og:image:alt" content={description} />
         <meta property="og:image:width" content="1340" />
         <meta property="og:image:height" content="700" />
@@ -124,8 +124,9 @@ export default defineConfig({
 
       return (
         <HiveFooter
+          isHive
           className={cn(
-            route === '/' ? 'light' : '[&>:first-child]:mx-0 [&>:first-child]:max-w-[90rem]',
+            isLandingPage(route) ? 'light' : '[&>:first-child]:mx-0 [&>:first-child]:max-w-[90rem]',
             'pt-[72px]',
           )}
           resources={[

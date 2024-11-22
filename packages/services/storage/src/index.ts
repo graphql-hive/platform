@@ -1220,44 +1220,6 @@ export async function createStorage(
         )?.scopes || []) as Member['scopes'];
       });
     },
-    async hasOrganizationMemberPairs(pairs) {
-      const results = await pool.query<Slonik<organization_member>>(
-        sql`/* hasOrganizationMemberPairs */
-          SELECT organization_id, user_id
-          FROM organization_member
-          WHERE (organization_id, user_id) IN ((${sql.join(
-            pairs.map(p => sql`${p.organizationId}, ${p.userId}`),
-            sql`), (`,
-          )}))
-        `,
-      );
-
-      return pairs.map(({ organizationId: organization, userId: user }) =>
-        results.rows.some(row => row.organization_id === organization && row.user_id === user),
-      );
-    },
-    async hasOrganizationProjectMemberPairs(pairs) {
-      const results = await pool.query<Slonik<organization_member & { project_id: string }>>(
-        sql`/* hasOrganizationProjectMemberPairs */
-          SELECT om.organization_id, om.user_id, p.id AS project_id
-          FROM projects as p
-          LEFT JOIN organization_member as om ON (p.org_id = om.organization_id)
-          WHERE (om.organization_id, om.user_id, p.id) IN ((${sql.join(
-            pairs.map(p => sql`${p.organizationId}, ${p.userId}, ${p.projectId}`),
-            sql`), (`,
-          )}))
-        `,
-      );
-
-      return pairs.map(({ organizationId: organization, userId: user, projectId: project }) =>
-        results.rows.some(
-          row =>
-            row.organization_id === organization &&
-            row.project_id === project &&
-            row.user_id === user,
-        ),
-      );
-    },
     async updateOrganizationSlug({ slug, organizationId: organization, reservedSlugs }) {
       return pool.transaction(async t => {
         if (reservedSlugs.includes(slug)) {

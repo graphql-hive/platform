@@ -19,3 +19,36 @@ export function useTheme() {
     };
   }, []);
 }
+
+const pagesWithFAQ = ['/', '/federation', '/pricing'];
+
+export function isPageWithFaq(path: string) {
+  return pagesWithFAQ.includes(path);
+}
+
+export function usePageFAQSchema() {
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const html = document.querySelector('html');
+
+    if (!html) {
+      // This should never happen
+      return;
+    }
+
+    const path = window.location.pathname.replace('/graphql/hive', '/');
+
+    if (isPageWithFaq(path) && !html.hasAttribute('itemscope')) {
+      html.setAttribute('itemscope', '');
+      html.setAttribute('itemtype', 'https://schema.org/FAQPage');
+
+      return () => {
+        html.removeAttribute('itemscope');
+        html.removeAttribute('itemtype');
+      };
+    }
+  }, []);
+}

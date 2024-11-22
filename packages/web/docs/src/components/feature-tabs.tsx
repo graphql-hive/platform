@@ -152,7 +152,7 @@ export function FeatureTabs({ className }: { className?: string }) {
               <Feature
                 title="Schema Registry"
                 documentationLink="/docs/schema-registry"
-                description="Publish schemas, compose federated subgraphs, and detect backward-incompatible changes with ease."
+                description="Publish schemas, compose federated GraphQL api, and detect backward-incompatible changes with ease."
                 highlights={highlights['Schema Registry']}
                 setActiveHighlight={setActiveHighlight}
               />

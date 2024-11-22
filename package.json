@@ -12,10 +12,10 @@
   },
   "license": "MIT",
   "private": true,
-  "packageManager": "pnpm@9.12.3",
+  "packageManager": "pnpm@9.14.1",
   "engines": {
     "node": ">=22",
-    "pnpm": ">=9.4.0"
+    "pnpm": ">=9.14.1"
   },
   "scripts": {
     "build": "pnpm turbo build --color",
@@ -45,6 +45,7 @@
     "start": "pnpm run local:setup",
     "test": "vitest",
     "test:e2e": "CYPRESS_BASE_URL=$HIVE_APP_BASE_URL cypress run",
+    "test:e2e:open": "CYPRESS_BASE_URL=$HIVE_APP_BASE_URL cypress open",
     "test:integration": "cd integration-tests && pnpm test:integration",
     "typecheck": "pnpm run -r --filter '!hive' typecheck",
     "upload-sourcemaps": "./scripts/upload-sourcemaps.sh",
@@ -69,7 +70,7 @@
     "@next/eslint-plugin-next": "14.2.18",
     "@parcel/watcher": "2.5.0",
     "@sentry/cli": "2.38.2",
-    "@swc/core": "1.7.40",
+    "@swc/core": "1.9.2",
     "@theguild/eslint-config": "0.12.1",
     "@theguild/prettier-config": "2.0.7",
     "@types/node": "22.9.0",
@@ -119,7 +120,6 @@
       "@oclif/core@3.26.6": "patches/@oclif__core@3.26.6.patch",
       "oclif@4.13.6": "patches/oclif@4.13.6.patch",
       "@graphiql/react@1.0.0-alpha.3": "patches/@graphiql__react@1.0.0-alpha.3.patch",
-      "@theguild/components": "patches/@theguild__components.patch",
       "countup.js": "patches/countup.js.patch",
       "@oclif/core@4.0.6": "patches/@oclif__core@4.0.6.patch"
     }

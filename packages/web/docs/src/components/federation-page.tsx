@@ -1,6 +1,6 @@
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import Image from 'next/image';
-import { CallToAction, Heading } from '@theguild/components';
+import { Anchor, CallToAction, Heading } from '@theguild/components';
 import { cn } from '../lib';
 import { ArrowIcon } from './arrow-icon';
 import { FrequentlyAskedFederationQuestions } from './frequently-asked-questions';
@@ -21,8 +21,9 @@ export function FederationPage(): ReactElement {
           GraphQL Federation
         </Heading>
         <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
-          GraphQL federation simplifies API management in distributed systems, uniting multiple
-          services into a single, scalable GraphQL API.
+          Learn what GraphQL Federation is and how to combine multiple GraphQL APIs called subgraphs
+          into one unified API (supergraph), and serve data from a single endpoint using a GraphQL
+          gateway.
         </p>
 
         <HeroLinks>
@@ -53,8 +54,8 @@ function Intro() {
       <section className="border-beige-400 isolate mx-auto w-[1200px] max-w-full rounded-3xl bg-white sm:max-w-[calc(100%-4rem)] sm:border sm:p-6">
         <div className="relative mx-auto flex w-[1392px] max-w-full flex-col gap-x-4 gap-y-6 md:gap-y-12 lg:flex-row [@media(min-width:1400px)]:gap-x-[120px]">
           <div className="flex grow flex-col gap-12 px-4 md:px-0 lg:w-[650px]">
-            <Heading as="h3" size="sm" className="text-green-1000">
-              Connect and Unify APIs
+            <Heading as="h2" size="sm" className="text-green-1000">
+              Introduction
             </Heading>
             <div className="mx-auto space-y-4 leading-6 text-green-800 lg:space-y-6">
               <p>
@@ -62,12 +63,17 @@ function Intro() {
                 toes, deployments get risky, and making changes becomes slow.
               </p>
               <p>
-                GraphQL federation solves this by letting you split your GraphQL API into smaller
-                pieces that work together.
+                GraphQL federation solves this by letting you break down your monolithic GraphQL API
+                into smaller parts, called subgraphs. Each team can work on their domain
+                independently and deploy at their own pace.
               </p>
               <p>
-                Clients interact with a single endpoint that serves as one unified API. The GraphQL
-                gateway seamlessly coordinates requests between all services.
+                Thanks to a process called schema composition, the integrity of those subgraphs is
+                validated and they are combined into one unified schema, the supergraph.
+              </p>
+              <p>
+                GraphQL clients interact with a single endpoint served by GraphQL gateway (sometimes
+                called GraphQL router) that resolves data from your federated API.
               </p>
             </div>
             <div className="mx-auto flex flex-row gap-4 lg:mx-0">
@@ -106,32 +112,60 @@ function WhyFederation(props: { className?: string }) {
       <Heading as="h2" size="md" className="text-balance text-center">
         Why GraphQL Federation?
       </Heading>
+      <div className="relative mx-auto mt-4 space-y-2 text-center lg:max-w-[880px]">
+        <p>
+          Federated architecture is a powerful, yet advanced concept. <br />
+          It brings quite a lot of complexity, definitely has some learning curve, but in most
+          cases, the benefits are worth it.
+        </p>
+      </div>
       <ul className="mt-6 flex flex-row flex-wrap justify-center gap-2 md:mt-16 md:gap-6">
         <InfoCard
           as="li"
-          heading="Autonomy"
+          heading="Domain-Driven Design"
           icon={<PerformanceListItemIcon />}
-          className="flex-1 text-balance rounded-2xl md:rounded-3xl"
+          className="flex-1 rounded-2xl md:rounded-3xl"
         >
-          GraphQL federation is perfect for domain-driven design, allowing teams to work contribute
-          individual GraphQL APIs in any language to a cohesive GraphQL API.
+          <p>
+            GraphQL federation is perfect for <strong>domain-driven design</strong> or when you want
+            to write GraphQLs API in <strong>different languages</strong>. It allows teams to
+            contribute data from their isolated GraphQL APIs (subgraphs) to the shared space called{' '}
+            <strong>Supergraph</strong>.
+          </p>
+          <p>
+            This way, each team can focus on their domain and iterate faster, without being blocked
+            by other teams.
+          </p>
         </InfoCard>
         <InfoCard
           as="li"
           heading="Scalability"
           icon={<PerformanceListItemIcon />}
-          className="flex-1 basis-full text-balance rounded-2xl md:basis-0 md:rounded-3xl"
+          className="flex-1 basis-full rounded-2xl md:basis-0 md:rounded-3xl"
         >
-          Individual GraphQL APIs can be scaled independently based on their specific requirements.
+          <p>
+            Subgraphs can be scaled independently based on their specific requirements, deployed on
+            their own schedule.
+          </p>
+          <p>
+            Different parts of the API can evolve at different pace, and making changes in the
+            GraphQL schema no longer requires coordination between teams.
+          </p>
         </InfoCard>
         <InfoCard
           as="li"
           heading="Unified API"
           icon={<PerformanceListItemIcon />}
-          className="flex-1 basis-full text-balance rounded-2xl md:rounded-3xl lg:basis-0"
+          className="flex-1 basis-full rounded-2xl md:rounded-3xl lg:basis-0"
         >
-          Clients get a seamless, unified experience. The complexity is hidden behind a single
-          endpoint.
+          <p>
+            Clients interact with a single endpoint, served by a <strong>GraphQL Gateway</strong>{' '}
+            (sometimes called Router).
+          </p>
+          <p>
+            The complexity of distributed systems is hidden from the client, and the gateway ensures
+            that every query reaches its destination.
+          </p>
         </InfoCard>
       </ul>
     </section>
@@ -140,6 +174,7 @@ function WhyFederation(props: { className?: string }) {
 
 const HowFederationWorksVariants = {
   first: {
+    number: 1,
     className: 'bg-beige-100 rounded-3xl rounded-b-none',
     headingClassName: 'text-green-1000',
     paragraphClassName: 'text-green-800',
@@ -148,6 +183,7 @@ const HowFederationWorksVariants = {
     callToActionVariant: 'secondary-inverted' as const,
   },
   second: {
+    number: 2,
     className: 'bg-blue-400',
     headingClassName: 'text-green-1000',
     paragraphClassName: 'text-green-800',
@@ -156,6 +192,7 @@ const HowFederationWorksVariants = {
     callToActionVariant: 'secondary-inverted' as const,
   },
   third: {
+    number: 3,
     className: 'bg-green-1000 rounded-3xl rounded-t-none',
     headingClassName: 'text-white',
     paragraphClassName: 'text-white/80',
@@ -167,7 +204,7 @@ const HowFederationWorksVariants = {
 
 function HowFederationWorksSection(props: {
   heading: string;
-  description: string;
+  description: ReactNode;
   callToAction: string;
   callToActionLink: string;
   callToActionTitle: string;
@@ -194,6 +231,14 @@ function HowFederationWorksSection(props: {
           : null,
       )}
     >
+      <div
+        className={cn(
+          'absolute right-12 top-6 z-10 hidden text-[256px] leading-none opacity-10 lg:block',
+          variant.headingClassName,
+        )}
+      >
+        {variant.number}
+      </div>
       <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
         <Heading
           as="h3"
@@ -203,14 +248,11 @@ function HowFederationWorksSection(props: {
           {props.heading}
         </Heading>
 
-        <p
-          className={cn(
-            'mt-4 w-[700px] max-w-full text-balance lg:mt-6',
-            variant.paragraphClassName,
-          )}
+        <div
+          className={cn('mt-4 w-[700px] max-w-full space-y-2 lg:mt-6', variant.paragraphClassName)}
         >
           {props.description}
-        </p>
+        </div>
 
         <CallToAction
           variant={variant.callToActionVariant}
@@ -233,44 +275,168 @@ function HowFederationWorks(props: { className?: string }) {
         <Heading as="h2" size="md" className="text-center">
           How GraphQL Federation Works?
         </Heading>
+
+        <div className="relative mx-auto mt-4 space-y-2 text-center lg:max-w-[880px]">
+          <p>
+            Federated GraphQL API involves three components: subgraphs, composition and a gateway.
+          </p>
+          {/* todo: add more */}
+        </div>
       </div>
       <div className="mt-6 md:mt-16">
         <HowFederationWorksSection
           index="first"
-          heading="Own Your Domain, Choose Your Stack"
-          description={`
-            With GraphQL federation, each team owns their piece of the GraphQL API.
-            They gain autonomy that let's them deploy on their own schedule,
-            scale as needed and use tech stack that fits their needs.
-          `}
+          heading="Subgraphs"
+          description={
+            <>
+              <p>
+                First of the three components are subgraphs. A subgraph is a standalone GraphQL API
+                that can be <strong>developed in any language or framework</strong>, and{' '}
+                <strong>deployed independently</strong> from the rest - key benefits of federated
+                architecture.
+              </p>
+              <p>
+                The downside of a monolithic GraphQL API is that all teams have to work on the same
+                codebase, in the same language, using the same tech stack. On one hand, it's
+                actually a good thing, because now everyone shares the same knowledge and can help
+                each other.
+              </p>
+              <p>
+                On the other hand, it's a bottleneck as it can slow down the development process, as
+                the deployment queue may get longer, and one bad change can take down the whole API
+                (or decrease performance of a deployed instance).
+              </p>
+              <p>All of the mentioned problems are solved with GraphQL federation.</p>
+              <ul className="list-inside list-disc space-y-2">
+                <li>Team owns their piece of the GraphQL API</li>
+                <li>They gain autonomy</li>
+                <li>Teams deploy on their own pace</li>
+                <li>Subgraphs are scale as needed</li>
+              </ul>
+            </>
+          }
           callToAction="Publish subgraphs to Hive"
           callToActionLink="/docs/get-started/apollo-federation#publish-subgraphs"
           callToActionTitle="Start by publishing your subgraphs to Hive"
         />
         <HowFederationWorksSection
           index="second"
-          heading="Bringing It All Together"
-          description={`
-            GraphQL federation involves schema composition to combine separate GraphQL schemas into
-            one coherent API.
-            Teams can reference types from other services and the composition
-            process ensures all pieces fit together.
-            All conflicts are caught early during
-            development, saving you from production issues.
-          `}
+          heading="Schema Composition and Registry"
+          description={
+            <>
+              <p>
+                The next component,and the most important one, is the schema composition.
+                Composition is process of validating subgraph schemas, combining them into one
+                coherent API and ensuring the integrity of the supergraph.
+              </p>
+              <p>
+                This is the{' '}
+                <strong>
+                  biggest difference between GraphQL federation and other approaches for distributed
+                  schemas (like Schema Stitching)
+                </strong>
+                . With schema composition, you can be sure that all types and fields fit well, and
+                avoid surprises in production.
+              </p>
+              <p>
+                <strong>
+                  Every possible query, mutation or even a subscription that a client can perform,
+                  is checked if it can be resolved by the GraphQL gateway.
+                </strong>{' '}
+                This allows you to catch all conflicts early, and prevent unexpected exceptions or
+                incorrect data in production.
+              </p>
+              <p>
+                The schema composition is most often done with a tool called{' '}
+                <strong>Schema Registry</strong>. Schema Registry is a central place where you
+                register your subgraphs (their location and schemas), validate them and combine them
+                into a supergraph. It's a crucial part of your GraphQL workflow, and it's a{' '}
+                <Anchor
+                  className="underline underline-offset-2"
+                  title="Learn why your federated GraphQL setup needs a Schema Registry and why you shouldn't build your own"
+                  href="https://graphql.org/conf/2024/schedule/af55205b1d68ec3b3d1b1663e4bd2adf/?name=In-House%20Schema%20Registry%20-%20the%20Good%2C%20the%20Bad%2C%20and%20the%20Ugly"
+                >
+                  must-have for any GraphQL federation setup
+                </Anchor>
+                .
+              </p>
+            </>
+          }
           callToAction="Read about Schema Registry"
           callToActionLink="/docs/schema-registry"
           callToActionTitle="Learn how to use Schema Registry to compose your schema and validate it"
         />
         <HowFederationWorksSection
           index="third"
-          heading="Single, Unified API"
-          description={`
-            Thanks to GraphQL gateway, clients get a single endpoint with unified schema.
-            The complexity of distributed systems is hidden.
-            The gateway ensures every query reaches its
-            destination and returns with the right data.
-          `}
+          heading="GraphQL Gateway (Router)"
+          description={
+            <>
+              <p>
+                <strong>
+                  The promise of GraphQL federation is to have a unified API and serve data from a
+                  single endpoint.
+                </strong>{' '}
+                GraphQL gateway, sometimes called GraphQL router, enables that.
+              </p>
+              <p>
+                The result of schema composition is a supergraph schema. It's stored in the schema
+                registry, and contains all the types and fields, but also information about in which
+                subgraph and how to resolve them.
+              </p>
+              <h4 className="pt-2 text-lg font-semibold text-white">Query Planning</h4>
+              <p>
+                The process of resolving a GraphQL requests is called query planning. During the
+                query planning, the gateway decides which subgraph should resolve a given part of
+                the query, and then sends the query to the appropriate subgraph. The subgraph
+                resolves the query and returns the data. The gateway then combines all the data and
+                returns it to the client in a single response.
+              </p>
+              <h4 className="pt-2 text-lg font-semibold text-white">
+                What a Good Gateway Should Offer?
+              </h4>
+              <p>
+                GraphQL router is a crucial part of your federated GraphQL setup. It's the entry
+                point for all your GraphQL consumers. It has to be fast, reliable and secure.
+              </p>
+              <p>
+                A good GraphQL gateway should offer features like JSON Web Tokens (JWT)
+                authentication, role-based access control (RBAC), and have a good observability
+                story. It should be able to handle a large number of requests.
+              </p>
+              <h4 className="pt-2 text-lg font-semibold text-white">
+                Specification Compliance - Very Important
+              </h4>
+              <p>
+                A critical yet often overlooked aspect of the GraphQL gateway is its correctness and
+                compliance with the Apollo Federation specification. Federation's effectiveness
+                depends on the gateway's ability to correctly resolve queries, mutations and
+                subscriptions.
+              </p>
+              <p>
+                When choosing a federation gateway, verify its compliance with the Apollo Federation
+                specification. This will help you prevent unexpected runtime behavior, and data
+                resolution failures.
+              </p>
+              <p>
+                <Anchor
+                  className="underline underline-offset-2"
+                  href="https://the-guild.dev"
+                  title="Company behind Hive"
+                >
+                  The Guild
+                </Anchor>{' '}
+                maintains{' '}
+                <Anchor
+                  className="underline underline-offset-2"
+                  href="https://the-guild.dev/graphql/hive/federation-gateway-audit"
+                >
+                  an open-source Federation Testing Suite
+                </Anchor>{' '}
+                to verify gateway's specification compliance. This test suite helps ensure your
+                gateway correctly implements federation features beyond basic directive support.
+              </p>
+            </>
+          }
           callToAction="Discover Hive Gateway"
           callToActionLink="/docs/gateway"
           callToActionTitle="Learn how to use Hive Gateway to serve your supergraph to clients"

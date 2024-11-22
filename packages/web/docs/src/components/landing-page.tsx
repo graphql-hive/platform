@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import {
+  Anchor,
   ArchDecoration,
   CallToAction,
   DecorationIsolation,
@@ -20,7 +21,6 @@ import { FrequentlyAskedQuestions } from './frequently-asked-questions';
 import { Hero, HeroFeatures, HeroLinks, TrustedBy } from './hero';
 import { InfoCard } from './info-card';
 import { Page } from './page';
-import { Pricing } from './pricing';
 import { StatsItem, StatsList } from './stats';
 import { TeamSection } from './team-section';
 
@@ -36,16 +36,24 @@ export function IndexPage(): ReactElement {
           Open-Source GraphQL Federation Platform
         </Heading>
         <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
-          Schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs.
+          Fully open-source schema registry, analytics, metrics and gateway for{' '}
+          <Anchor
+            href="/federation"
+            title="Visit our guide to learn more about GraphQL federation"
+            className="underline decoration-white/30 underline-offset-2 hover:decoration-white/80"
+          >
+            GraphQL federation
+          </Anchor>{' '}
+          and other GraphQL APIs.
         </p>
         <HeroFeatures>
           <li>
             <CheckIcon className="text-blue-400" />
-            Fully open-source
+            MIT licensed
           </li>
           <li>
             <CheckIcon className="text-blue-400" />
-            No vendor lock
+            No vendor-lock
           </li>
           <li>
             <CheckIcon className="text-blue-400" />
@@ -79,8 +87,7 @@ export function IndexPage(): ReactElement {
       <UltimatePerformanceCards />
       <CompanyTestimonialsSection className="mx-4 mt-6 md:mx-6" />
       <GetStartedTodaySection className="mx-4 mt-6 md:mx-6" />
-      <EnterpriseFocusedCards className="mx-4 mt-6 md:mx-6" />
-      <Pricing />
+      <EnterpriseFocusedCards className="mx-4 my-6 md:mx-6" />
       <TeamSection className="mx-4 md:mx-6" />
       <CommunitySection className="mx-4 mt-6 md:mx-6" />
       <ToolsAndLibrariesCards className="mx-4 mt-6 md:mx-6" />
@@ -123,18 +130,16 @@ function GetStartedTodaySection({ className }: { className?: string }) {
 
 function EnterpriseFocusedCards({ className }: { className?: string }) {
   return (
-    <section
-      className={cn('bg-beige-100 rounded-3xl px-4 pt-6 sm:py-24 md:px-6 md:py-[120px]', className)}
-    >
+    <section className={cn('px-4 py-6 sm:py-12 md:px-6 lg:py-16 xl:px-[120px]', className)}>
       <Heading as="h2" size="md" className="text-balance sm:px-6 sm:text-center">
         Enterprise-Focused Tools Tailored for You
       </Heading>
-      <ul className="flex flex-row flex-wrap justify-center divide-y divide-solid sm:mt-6 sm:divide-x sm:divide-y-0 md:mt-16 md:px-6 xl:px-16">
+      <ul className="mt-6 flex flex-row flex-wrap justify-center gap-2 md:mt-16 md:gap-6">
         <InfoCard
           as="li"
           heading="Cloud and Self-Hosted"
           icon={<PerformanceListItemIcon />}
-          className="flex-1 px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
+          className="flex-1 rounded-2xl md:rounded-3xl"
         >
           Hive is completely open source, MIT licensed. You can host it on your own infrastructure.
         </InfoCard>
@@ -142,7 +147,7 @@ function EnterpriseFocusedCards({ className }: { className?: string }) {
           as="li"
           heading="Single Sign-On"
           icon={<PerformanceListItemIcon />}
-          className="flex-1 basis-full px-0 sm:basis-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
+          className="flex-1 basis-full rounded-2xl md:basis-0 md:rounded-3xl"
         >
           Integrated with popular providers like Okta, to enable OpenID Connect login for maximum
           security.
@@ -151,7 +156,7 @@ function EnterpriseFocusedCards({ className }: { className?: string }) {
           as="li"
           heading="RBAC"
           icon={<PerformanceListItemIcon />}
-          className="flex-1 px-0 sm:px-8 sm:py-0 md:px-8 md:py-0"
+          className="flex-1 basis-full rounded-2xl md:rounded-3xl lg:basis-0"
         >
           Control user access with detailed, role-based permissions for enhanced security and
           flexibility.
