@@ -144,8 +144,8 @@ function WhyFederation(props: { className?: string }) {
           className="flex-1 basis-full rounded-2xl md:basis-0 md:rounded-3xl"
         >
           <p>
-            Subgraphs can be scaled independently based on their specific requirements, and deployed on
-            their own schedule.
+            Subgraphs can be scaled independently based on their specific requirements, and deployed
+            on their own schedule.
           </p>
           <p>
             Different parts of the API can evolve at different paces, and making changes in the
@@ -290,15 +290,15 @@ function HowFederationWorks(props: { className?: string }) {
           description={
             <>
               <p>
-                The first of the three components are subgraphs. A subgraph is a standalone GraphQL API
-                that can be <strong>developed in any language or framework</strong>, and{' '}
+                The first of the three components are subgraphs. A subgraph is a standalone GraphQL
+                API that can be <strong>developed in any language or framework</strong>, and{' '}
                 <strong>deployed independently</strong> from the rest - key benefits of federated
                 architecture.
               </p>
               <p>
                 The downside of a monolithic GraphQL API is that all teams have to work on the same
-                codebase, in the same language, using the same tech stack. On the one hand, it's
-                a good thing, because now everyone shares the same knowledge and can help each other.
+                codebase, in the same language, using the same tech stack. On the one hand, it's a
+                good thing, because now everyone shares the same knowledge and can help each other.
               </p>
               <p>
                 On the other hand, it's a bottleneck as it can slow down the development process, as
@@ -384,11 +384,11 @@ function HowFederationWorks(props: { className?: string }) {
               </p>
               <h4 className="pt-2 text-lg font-semibold text-white">Query Planning</h4>
               <p>
-                The process of resolving GraphQL requests is called query planning. During the
-                query planning, the gateway decides which subgraph should resolve a given part of
-                the query, and then sends the query to the appropriate subgraph. The subgraph
-                resolves the query and returns the data. The gateway then combines all the data and
-                returns it to the client in a single response.
+                The process of resolving GraphQL requests is called query planning. During the query
+                planning, the gateway decides which subgraph should resolve a given part of the
+                query, and then sends the query to the appropriate subgraph. The subgraph resolves
+                the query and returns the data. The gateway then combines all the data and returns
+                it to the client in a single response.
               </p>
               <h4 className="pt-2 text-lg font-semibold text-white">
                 What a Good Gateway Should Offer?
@@ -399,8 +399,8 @@ function HowFederationWorks(props: { className?: string }) {
               </p>
               <p>
                 A good GraphQL gateway should offer features like JSON Web Tokens (JWT)
-                authentication, role-based access control (RBAC), and a good observability
-                story. It should be able to handle a large number of requests.
+                authentication, role-based access control (RBAC), and a good observability story. It
+                should be able to handle a large number of requests.
               </p>
               <h4 className="pt-2 text-lg font-semibold text-white">
                 Specification Compliance - Very Important
