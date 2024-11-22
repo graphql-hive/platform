@@ -65,6 +65,14 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
       typesetting: 'article',
     },
   },
+  'oss-friends': {
+    type: 'page',
+    title: 'Our Open Source Friends',
+    display: 'hidden',
+    theme: {
+      layout: 'raw',
+    },
+  },
   blog: {
     title: 'Blog',
     type: 'page',

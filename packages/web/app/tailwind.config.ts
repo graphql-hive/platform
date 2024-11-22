@@ -1,7 +1,9 @@
-const colors = require('tailwindcss/colors');
-const { fontFamily } = require('tailwindcss/defaultTheme');
-const svgToDataUri = require('mini-svg-data-uri');
-const { default: flattenColorPalette } = require('tailwindcss/lib/util/flattenColorPalette');
+import svgToDataUri from 'mini-svg-data-uri';
+import tailwindcssAnimate from 'tailwindcss-animate';
+import tailwindcssRadix from 'tailwindcss-radix';
+import colors from 'tailwindcss/colors';
+import { fontFamily } from 'tailwindcss/defaultTheme';
+import { default as flattenColorPalette } from 'tailwindcss/lib/util/flattenColorPalette';
 
 module.exports = {
   darkMode: 'class',
@@ -274,8 +276,8 @@ module.exports = {
   },
   plugins: [
     // Utilities and variants for styling Radix state
-    require('tailwindcss-radix')(),
-    require('tailwindcss-animate'),
+    tailwindcssRadix({}),
+    tailwindcssAnimate,
     addVariablesForColors,
     asd(),
   ],

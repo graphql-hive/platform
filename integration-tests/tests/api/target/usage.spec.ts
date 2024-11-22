@@ -2779,3 +2779,332 @@ test.concurrent('ensure percentage precision up to 2 decimal places', async ({ e
     .then(r => r.expectNoGraphQLErrors());
   expect(unusedCheckResult199.schemaCheck.__typename).toEqual('SchemaCheckError');
 });
+
+test.concurrent('(legacy) collect an operation from "unknown" client', async ({ expect }) => {
+  const { createOrg } = await initSeed().createOwner();
+  const { createProject } = await createOrg();
+  const { createTargetAccessToken, readOperationBody, readOperationsStats, readClientStats } =
+    await createProject(ProjectType.Single);
+  const writeToken = await createTargetAccessToken({});
+
+  const collectResult = await writeToken.collectLegacyOperations([
+    {
+      operation: 'query ping { ping }',
+      operationName: 'ping',
+      fields: ['Query', 'Query.ping'],
+      execution: {
+        ok: true,
+        duration: 200_000_000,
+        errorsTotal: 0,
+      },
+      metadata: {
+        client: {
+          name: 'unknown',
+          version: 'v1.2.3',
+        },
+      },
+    },
+  ]);
+  expect(collectResult.status).toEqual(200);
+  await waitFor(8000);
+
+  const from = formatISO(subHours(Date.now(), 6));
+  const to = formatISO(Date.now());
+  const operationsStats = await readOperationsStats(from, to);
+  expect(operationsStats.operations.nodes).toHaveLength(1);
+  const op = operationsStats.operations.nodes[0];
+
+  expect(operationsStats).toMatchInlineSnapshot(`
+    {
+      clients: {
+        nodes: [
+          {
+            count: 1,
+            name: unknown,
+            versions: [
+              {
+                count: 1,
+                version: v1.2.3,
+              },
+            ],
+          },
+        ],
+      },
+      operations: {
+        nodes: [
+          {
+            count: 1,
+            duration: {
+              p75: 200,
+              p90: 200,
+              p95: 200,
+              p99: 200,
+            },
+            id: 8f87d0bc9744ad3d50af125d20c355c0,
+            kind: query,
+            name: 798a_ping,
+            operationHash: 798ae10ebeef9f632ceec2fbe85a2052,
+            percentage: 100,
+          },
+        ],
+      },
+      totalOperations: 1,
+    }
+  `);
+
+  await expect(readOperationBody(op.operationHash!)).resolves.toEqual('query ping{ping}');
+
+  const clientStats = await readClientStats({
+    clientName: 'unknown',
+    from,
+    to,
+  });
+  expect(clientStats).toMatchInlineSnapshot(`
+    {
+      operations: {
+        nodes: [
+          {
+            count: 1,
+            id: 8f87d0bc9744ad3d50af125d20c355c0,
+            name: 798a_ping,
+            operationHash: 798ae10ebeef9f632ceec2fbe85a2052,
+          },
+        ],
+      },
+      totalRequests: 1,
+      totalVersions: 1,
+      versions: [
+        {
+          count: 1,
+          version: v1.2.3,
+        },
+      ],
+    }
+  `);
+});
+
+test.concurrent('collect an operation from "unknown" client', async ({ expect }) => {
+  const { createOrg } = await initSeed().createOwner();
+  const { createProject } = await createOrg();
+  const { createTargetAccessToken, readOperationBody, readOperationsStats, readClientStats } =
+    await createProject(ProjectType.Single);
+  const writeToken = await createTargetAccessToken({});
+
+  const collectResult = await writeToken.collectUsage({
+    size: 1,
+    map: {
+      op1: {
+        operation: 'query ping { ping }',
+        operationName: 'ping',
+        fields: ['Query', 'Query.ping'],
+      },
+    },
+    operations: [
+      {
+        operationMapKey: 'op1',
+        timestamp: Date.now(),
+        execution: {
+          ok: true,
+          duration: 200_000_000,
+          errorsTotal: 0,
+        },
+        metadata: {
+          client: {
+            name: 'unknown',
+            version: 'v1.2.3',
+          },
+        },
+      },
+    ],
+  });
+  expect(collectResult.status).toEqual(200);
+  await waitFor(8000);
+
+  const from = formatISO(subHours(Date.now(), 6));
+  const to = formatISO(Date.now());
+  const operationsStats = await readOperationsStats(from, to);
+  expect(operationsStats.operations.nodes).toHaveLength(1);
+
+  const op = operationsStats.operations.nodes[0];
+
+  expect(operationsStats).toMatchInlineSnapshot(`
+    {
+      clients: {
+        nodes: [
+          {
+            count: 1,
+            name: unknown,
+            versions: [
+              {
+                count: 1,
+                version: v1.2.3,
+              },
+            ],
+          },
+        ],
+      },
+      operations: {
+        nodes: [
+          {
+            count: 1,
+            duration: {
+              p75: 200,
+              p90: 200,
+              p95: 200,
+              p99: 200,
+            },
+            id: 8f87d0bc9744ad3d50af125d20c355c0,
+            kind: query,
+            name: 798a_ping,
+            operationHash: 798ae10ebeef9f632ceec2fbe85a2052,
+            percentage: 100,
+          },
+        ],
+      },
+      totalOperations: 1,
+    }
+  `);
+
+  await expect(readOperationBody(op.operationHash!)).resolves.toEqual('query ping{ping}');
+
+  const clientStats = await readClientStats({
+    clientName: 'unknown',
+    from,
+    to,
+  });
+  expect(clientStats).toMatchInlineSnapshot(`
+    {
+      operations: {
+        nodes: [
+          {
+            count: 1,
+            id: 8f87d0bc9744ad3d50af125d20c355c0,
+            name: 798a_ping,
+            operationHash: 798ae10ebeef9f632ceec2fbe85a2052,
+          },
+        ],
+      },
+      totalRequests: 1,
+      totalVersions: 1,
+      versions: [
+        {
+          count: 1,
+          version: v1.2.3,
+        },
+      ],
+    }
+  `);
+});
+
+test.concurrent('collect an operation from undefined client', async ({ expect }) => {
+  const { createOrg } = await initSeed().createOwner();
+  const { createProject } = await createOrg();
+  const { createTargetAccessToken, readOperationBody, readOperationsStats, readClientStats } =
+    await createProject(ProjectType.Single);
+  const writeToken = await createTargetAccessToken({});
+
+  const collectResult = await writeToken.collectUsage({
+    size: 1,
+    map: {
+      op1: {
+        operation: 'query ping { ping }',
+        operationName: 'ping',
+        fields: ['Query', 'Query.ping'],
+      },
+    },
+    operations: [
+      {
+        operationMapKey: 'op1',
+        timestamp: Date.now(),
+        execution: {
+          ok: true,
+          duration: 200_000_000,
+          errorsTotal: 0,
+        },
+        metadata: {
+          client: {
+            name: undefined as any,
+            version: 'v1.2.3',
+          },
+        },
+      },
+    ],
+  });
+  expect(collectResult.status).toEqual(200);
+  await waitFor(8000);
+
+  const from = formatISO(subHours(Date.now(), 6));
+  const to = formatISO(Date.now());
+  const operationsStats = await readOperationsStats(from, to);
+  expect(operationsStats.operations.nodes).toHaveLength(1);
+
+  const op = operationsStats.operations.nodes[0];
+
+  expect(operationsStats).toMatchInlineSnapshot(`
+    {
+      clients: {
+        nodes: [
+          {
+            count: 1,
+            name: unknown,
+            versions: [
+              {
+                count: 1,
+                version: v1.2.3,
+              },
+            ],
+          },
+        ],
+      },
+      operations: {
+        nodes: [
+          {
+            count: 1,
+            duration: {
+              p75: 200,
+              p90: 200,
+              p95: 200,
+              p99: 200,
+            },
+            id: 8f87d0bc9744ad3d50af125d20c355c0,
+            kind: query,
+            name: 798a_ping,
+            operationHash: 798ae10ebeef9f632ceec2fbe85a2052,
+            percentage: 100,
+          },
+        ],
+      },
+      totalOperations: 1,
+    }
+  `);
+
+  await expect(readOperationBody(op.operationHash!)).resolves.toEqual('query ping{ping}');
+
+  const clientStats = await readClientStats({
+    clientName: 'unknown',
+    from,
+    to,
+  });
+  expect(clientStats).toMatchInlineSnapshot(`
+    {
+      operations: {
+        nodes: [
+          {
+            count: 1,
+            id: 8f87d0bc9744ad3d50af125d20c355c0,
+            name: 798a_ping,
+            operationHash: 798ae10ebeef9f632ceec2fbe85a2052,
+          },
+        ],
+      },
+      totalRequests: 1,
+      totalVersions: 1,
+      versions: [
+        {
+          count: 1,
+          version: v1.2.3,
+        },
+      ],
+    }
+  `);
+});

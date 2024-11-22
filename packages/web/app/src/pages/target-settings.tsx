@@ -146,10 +146,17 @@ function RegistryAccessTokens(props: {
         }
       />
       {canManage && (
-        <div className="my-3.5 flex justify-between">
-          <Button onClick={toggleModalOpen}>Create new registry token</Button>
+        <div className="my-3.5 flex justify-between" data-cy="target-settings-registry-token">
+          <Button data-cy="new-button" onClick={toggleModalOpen}>
+            Create new registry token
+          </Button>
           {checked.length === 0 ? null : (
-            <Button variant="destructive" disabled={deleting} onClick={deleteTokens}>
+            <Button
+              data-cy="delete-button"
+              variant="destructive"
+              disabled={deleting}
+              onClick={deleteTokens}
+            >
               Delete ({checked.length || null})
             </Button>
           )}
@@ -1224,6 +1231,7 @@ function TargetSettingsContent(props: {
           return (
             <Button
               key={subPage.key}
+              data-cy={`target-settings-${subPage.key}-link`}
               variant="ghost"
               onClick={() => {
                 void router.navigate({

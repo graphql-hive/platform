@@ -1,21 +1,11 @@
-function randomSlug() {
-  return Math.random().toString(36).substring(2);
-}
-
-const getUser = () =>
-  ({
-    email: `${crypto.randomUUID()}@local.host`,
-    password: 'Loc@l.h0st',
-    firstName: 'Local',
-    lastName: 'Host',
-  }) as const;
+import { generateRandomSlug, getUserData } from '../support/testkit';
 
 Cypress.on('uncaught:exception', (_err, _runnable) => {
   return false;
 });
 
 describe('basic user flow', () => {
-  const user = getUser();
+  const user = getUserData();
 
   it('should be visitable', () => {
     cy.visit('/');
@@ -37,7 +27,7 @@ describe('basic user flow', () => {
   it('should log in and log out', () => {
     cy.login(user);
 
-    const slug = randomSlug();
+    const slug = generateRandomSlug();
     cy.get('input[name="slug"]').type(slug);
     cy.get('button[type="submit"]').click();
 
@@ -49,8 +39,8 @@ describe('basic user flow', () => {
 });
 
 it('create organization', () => {
-  const slug = randomSlug();
-  const user = getUser();
+  const slug = generateRandomSlug();
+  const user = getUserData();
   cy.visit('/');
   cy.signup(user);
   cy.get('input[name="slug"]').type(slug);
@@ -60,11 +50,11 @@ it('create organization', () => {
 
 describe('oidc', () => {
   it('oidc login for organization', () => {
-    const organizationAdminUser = getUser();
+    const organizationAdminUser = getUserData();
     cy.visit('/');
     cy.signup(organizationAdminUser);
 
-    const slug = randomSlug();
+    const slug = generateRandomSlug();
     cy.createOIDCIntegration(slug).then(({ loginUrl }) => {
       cy.visit('/logout');
 
@@ -82,11 +72,11 @@ describe('oidc', () => {
   });
 
   it('oidc login with organization slug', () => {
-    const organizationAdminUser = getUser();
+    const organizationAdminUser = getUserData();
     cy.visit('/');
     cy.signup(organizationAdminUser);
 
-    const slug = randomSlug();
+    const slug = generateRandomSlug();
     cy.createOIDCIntegration(slug).then(({ organizationSlug }) => {
       cy.visit('/logout');
 
@@ -108,11 +98,11 @@ describe('oidc', () => {
   });
 
   it('first time oidc login of non-admin user', () => {
-    const organizationAdminUser = getUser();
+    const organizationAdminUser = getUserData();
     cy.visit('/');
     cy.signup(organizationAdminUser);
 
-    const slug = randomSlug();
+    const slug = generateRandomSlug();
     cy.createOIDCIntegration(slug).then(({ organizationSlug }) => {
       cy.visit('/logout');
 

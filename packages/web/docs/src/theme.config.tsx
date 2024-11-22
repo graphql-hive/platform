@@ -79,9 +79,9 @@ export default defineConfig({
     const isGatewayDocsPage = pagePath.route.includes('/docs/gateway');
     const suffix = isGatewayDocsPage ? 'Hive Gateway' : 'Hive';
     const title = `${pageTitle} - ${suffix}`;
-    const { description = `${siteName}: ${siteDescription}` } = frontMatter;
+    const { description = `${siteName}: ${siteDescription}`, canonical } = frontMatter;
 
-    const canonicalUrl = ensureAbsolute(pagePath.route);
+    const canonicalUrl = ensureAbsolute(canonical ?? pagePath.route);
 
     return (
       <>
@@ -124,6 +124,7 @@ export default defineConfig({
 
       return (
         <HiveFooter
+          isHive
           className={cn(
             isLandingPage(route) ? 'light' : '[&>:first-child]:mx-0 [&>:first-child]:max-w-[90rem]',
             'pt-[72px]',

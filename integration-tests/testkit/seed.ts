@@ -7,8 +7,8 @@ import {
   RegistryModel,
   SchemaPolicyInput,
   TargetAccessScope,
-  TargetSelectorInput,
 } from 'testkit/gql/graphql';
+import type { Report } from '../../packages/libraries/core/src/client/usage.js';
 import { authenticate, userEmail } from './auth';
 import {
   CreateCollectionMutation,
@@ -46,6 +46,7 @@ import {
   inviteToOrganization,
   joinOrganization,
   publishSchema,
+  readClientStats,
   readOperationBody,
   readOperationsStats,
   readTokenInfo,
@@ -58,7 +59,7 @@ import {
 } from './flow';
 import { execute } from './graphql';
 import { UpdateSchemaPolicyForOrganization, UpdateSchemaPolicyForProject } from './schema-policy';
-import { CollectedOperation, legacyCollect } from './usage';
+import { collect, CollectedOperation, legacyCollect } from './usage';
 import { generateUnique } from './utils';
 
 export function initSeed() {
@@ -496,7 +497,12 @@ export function initSeed() {
                         authorizationHeader: headerName,
                       });
                     },
-                    async collectUsage() {},
+                    collectUsage(report: Report) {
+                      return collect({
+                        report,
+                        accessToken: secret,
+                      });
+                    },
                     async checkSchema(
                       sdl: string,
                       service?: string,
@@ -685,6 +691,23 @@ export function initSeed() {
                   ).then(r => r.expectNoGraphQLErrors());
 
                   return statsResult.operationsStats;
+                },
+                async readClientStats(params: { clientName: string; from: string; to: string }) {
+                  const statsResult = await readClientStats(
+                    {
+                      organizationSlug: organization.slug,
+                      projectSlug: project.slug,
+                      targetSlug: target.slug,
+                      client: params.clientName,
+                      period: {
+                        from: params.from,
+                        to: params.to,
+                      },
+                    },
+                    ownerToken,
+                  ).then(r => r.expectNoGraphQLErrors());
+
+                  return statsResult.clientStats;
                 },
                 async updateBaseSchema(newBase: string, ttarget: TargetOverwrite = target) {
                   const result = await updateBaseSchema(

@@ -208,7 +208,12 @@ export function OrganizationLayout({
           )}
           {currentOrganization?.viewerCanCreateProject ? (
             <>
-              <Button onClick={toggleModalOpen} variant="link" className="text-orange-500">
+              <Button
+                onClick={toggleModalOpen}
+                variant="link"
+                className="text-orange-500"
+                data-cy="new-project-button"
+              >
                 <PlusIcon size={16} className="mr-2" />
                 New project
               </Button>
@@ -370,7 +375,7 @@ export function CreateProjectModalContent(props: {
     <Dialog open={props.isOpen} onOpenChange={props.toggleModalOpen}>
       <DialogContent className="container w-4/5 max-w-[600px] md:w-3/5">
         <Form {...props.form}>
-          <form onSubmit={props.form.handleSubmit(props.onSubmit)}>
+          <form onSubmit={props.form.handleSubmit(props.onSubmit)} data-cy="create-project-form">
             <DialogHeader className="mb-8">
               <DialogTitle>Create a project</DialogTitle>
               <DialogDescription>
@@ -386,7 +391,12 @@ export function CreateProjectModalContent(props: {
                     <FormItem className="mt-0">
                       <FormLabel>Slug of your project</FormLabel>
                       <FormControl>
-                        <Input placeholder="my-project" autoComplete="off" {...field} />
+                        <Input
+                          placeholder="my-project"
+                          data-cy="slug"
+                          autoComplete="off"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -441,6 +451,7 @@ export function CreateProjectModalContent(props: {
               <Button
                 className="w-full"
                 type="submit"
+                data-cy="submit"
                 disabled={props.form.formState.isSubmitting || !props.form.formState.isValid}
               >
                 {props.form.formState.isSubmitting ? 'Submitting...' : 'Create Project'}

@@ -71,9 +71,15 @@ function PlanFeaturesListItem(props: HTMLAttributes<HTMLLIElement>) {
 const USAGE_DATA_RETENTION_EXPLAINER = 'How long your GraphQL operations are stored on Hive';
 const OPERATIONS_EXPLAINER = 'GraphQL operations reported to GraphQL Hive';
 
-export function Pricing({ children }: { children?: ReactNode }): ReactElement {
+export function Pricing({
+  children,
+  className,
+}: {
+  children?: ReactNode;
+  className?: string;
+}): ReactElement {
   return (
-    <section className="py-12 sm:py-24">
+    <section className={cn('py-12 sm:py-20', className)}>
       <div className="mx-auto box-border w-full max-w-[1200px]">
         {children}
 
