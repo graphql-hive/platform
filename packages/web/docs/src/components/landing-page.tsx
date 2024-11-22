@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import {
+  Anchor,
   ArchDecoration,
   CallToAction,
   DecorationIsolation,
@@ -35,7 +36,14 @@ export function IndexPage(): ReactElement {
           Open-Source GraphQL Federation Platform
         </Heading>
         <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
-          Fully open-source schema registry, analytics, metrics and gateway for GraphQL federation
+          Fully open-source schema registry, analytics, metrics and gateway for{' '}
+          <Anchor
+            href="/federation"
+            title="Visit our guide to learn more about GraphQL federation"
+            className="underline decoration-white/30 underline-offset-2 hover:decoration-white/80"
+          >
+            GraphQL federation
+          </Anchor>{' '}
           and other GraphQL APIs.
         </p>
         <HeroFeatures>
