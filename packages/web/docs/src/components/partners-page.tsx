@@ -65,13 +65,13 @@ function WhyUs({ className }: { className?: string }) {
 const PARTNERS = [
   {
     name: 'The Guild',
-    logo: '/the-guild-logo.svg',
+    logo: 'the-guild-logo.svg',
     className: 'brightness-0 grayscale hover:brightness-100',
     href: 'https://the-guild.dev',
   },
   {
     name: 'Duality',
-    logo: '/duality-logo.svg',
+    logo: 'duality-logo.svg',
     href: 'https://teamduality.dev',
   },
 ];
