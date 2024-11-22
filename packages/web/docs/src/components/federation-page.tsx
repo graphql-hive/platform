@@ -54,8 +54,8 @@ function Intro() {
       <section className="border-beige-400 isolate mx-auto w-[1200px] max-w-full rounded-3xl bg-white sm:max-w-[calc(100%-4rem)] sm:border sm:p-6">
         <div className="relative mx-auto flex w-[1392px] max-w-full flex-col gap-x-4 gap-y-6 md:gap-y-12 lg:flex-row [@media(min-width:1400px)]:gap-x-[120px]">
           <div className="flex grow flex-col gap-12 px-4 md:px-0 lg:w-[650px]">
-            <Heading as="h3" size="sm" className="text-green-1000">
-              Connect and Unify APIs
+            <Heading as="h2" size="sm" className="text-green-1000">
+              Introduction
             </Heading>
             <div className="mx-auto space-y-4 leading-6 text-green-800 lg:space-y-6">
               <p>
