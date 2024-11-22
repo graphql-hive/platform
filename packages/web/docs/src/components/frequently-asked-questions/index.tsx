@@ -168,7 +168,7 @@ export function FrequentlyAskedFederationQuestions({ className }: { className?: 
       <section
         className={cn(
           className,
-          'text-green-1000 md:px-104 space-y-8 px-4 py-6 lg:px-[120px] lg:py-24',
+          'text-green-1000 space-y-8 px-4 py-6 md:px-14 lg:px-[120px] lg:py-24',
         )}
       >
         <FederationQuestions components={federationComponents} />
