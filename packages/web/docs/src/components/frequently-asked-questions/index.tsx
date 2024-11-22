@@ -134,16 +134,16 @@ const federationLI = (props: ComponentPropsWithoutRef<'li'>) => {
 
   return (
     <li itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-      <div className="pb-2 text-left font-medium" itemProp="name">
+      <h3 className="pb-2 text-left font-medium" itemProp="name">
         {question}
-      </div>
+      </h3>
       <div
         className="mx-4 overflow-hidden bg-white text-green-800"
         itemScope
         itemProp="acceptedAnswer"
         itemType="https://schema.org/Answer"
       >
-        <div itemProp="text" className="space-y-2">
+        <div itemProp="text" className="max-w-[700px] space-y-2">
           {answers.map((answer, i) => (
             <p key={i}>{answer}</p>
           ))}
@@ -168,7 +168,7 @@ export function FrequentlyAskedFederationQuestions({ className }: { className?: 
       <section
         className={cn(
           className,
-          'text-green-1000 space-y-8 px-4 py-6 md:px-14 lg:px-[120px] lg:py-24',
+          'text-green-1000 flex flex-col gap-x-8 gap-y-8 px-4 py-6 md:px-14 lg:flex-row lg:px-[120px] lg:py-24',
         )}
       >
         <FederationQuestions components={federationComponents} />

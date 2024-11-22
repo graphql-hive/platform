@@ -321,7 +321,7 @@ function HowFederationWorks(props: { className?: string }) {
         />
         <HowFederationWorksSection
           index="second"
-          heading="Schema Composition"
+          heading="Schema Composition and Registry"
           description={
             <>
               <p>
