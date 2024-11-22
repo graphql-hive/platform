@@ -151,7 +151,6 @@ function WhyFederation(props: { className?: string }) {
             Different parts of the API can evolve at different pace, and making changes in the
             GraphQL schema no longer requires coordination between teams.
           </p>
-          <p></p>
         </InfoCard>
         <InfoCard
           as="li"
