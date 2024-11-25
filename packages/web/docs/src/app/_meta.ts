@@ -6,35 +6,26 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
     title: 'Home',
     type: 'page',
     display: 'hidden',
-    theme: {
-      layout: 'raw',
-    },
   },
   federation: {
     title: 'Federation',
     type: 'page',
     display: 'hidden',
-    theme: {
-      layout: 'raw',
-    },
   },
   hive: {
     title: 'Get Started',
     type: 'page',
     href: 'https://app.graphql-hive.com',
-    newWindow: true,
   },
   'contact-us': {
     title: 'Contact Us',
     type: 'page',
     href: 'https://the-guild.dev/contact',
-    newWindow: true,
   },
   status: {
     title: 'Status',
     type: 'page',
     href: 'https://status.graphql-hive.com',
-    newWindow: true,
   },
   docs: {
     title: 'Documentation',
@@ -51,9 +42,6 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
   pricing: {
     title: 'Pricing',
     type: 'page',
-    theme: {
-      layout: 'raw',
-    },
   },
   'product-updates': {
     type: 'page',
@@ -69,28 +57,20 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
     type: 'page',
     title: 'Our Open Source Friends',
     display: 'hidden',
-    theme: {
-      layout: 'raw',
-    },
   },
   ecosystem: {
     title: 'Ecosystem',
     type: 'page',
-    theme: {
-      layout: 'raw',
-    },
   },
   blog: {
     title: 'Blog',
     type: 'page',
     href: 'https://the-guild.dev/blog',
-    newWindow: true,
   },
   github: {
     title: 'GitHub',
     type: 'page',
     href: 'https://github.com/graphql-hive/platform',
-    newWindow: true,
   },
   'the-guild': {
     title: 'The Guild',
@@ -112,7 +92,6 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
     title: 'GraphQL Foundation',
     type: 'page',
     href: 'https://graphql.org/community/foundation/',
-    newWindow: true,
   },
 };
 

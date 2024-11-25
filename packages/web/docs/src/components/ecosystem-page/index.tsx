@@ -1,6 +1,4 @@
 import { DecorationIsolation, Heading, ProductCard, PRODUCTS } from '@theguild/components';
-import { FOUR_MAIN_PRODUCTS } from '@theguild/components/products';
-import { cn } from '../../lib';
 import { Page } from '../page';
 import EcosystemPageContent from './content.mdx';
 
