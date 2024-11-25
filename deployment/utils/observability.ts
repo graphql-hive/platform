@@ -343,7 +343,10 @@ export class Observability {
           },
         },
         service: {
-          extensions: this.config === 'local' ? ['health_check'] : ['health_check', 'basicauth/grafana_cloud_traces'],
+          extensions:
+            this.config === 'local'
+              ? ['health_check']
+              : ['health_check', 'basicauth/grafana_cloud_traces'],
           pipelines: {
             traces: {
               receivers: ['otlp'],
