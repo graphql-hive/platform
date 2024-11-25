@@ -86,8 +86,10 @@ const s3 = deployS3();
 const s3Mirror = deployS3Mirror();
 
 const cdn = deployCFCDN({
-  s3,
-  s3Mirror,
+  // making AWS the primary and CF secondary source
+  s3: s3Mirror,
+  s3Mirror: s3,
+  // ----------------------------------------------
   sentry,
   environment,
 });
