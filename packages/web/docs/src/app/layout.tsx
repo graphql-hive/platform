@@ -16,7 +16,6 @@ import { NavigationMenu } from '../components/navigation-menu';
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <FontStyles />
       <HiveLayout>{children}</HiveLayout>
       <ConfiguredGiscus />
     </>
@@ -37,21 +36,6 @@ const neueMontreal = localFont({
     { path: '../fonts/PPNeueMontreal-Medium.woff2', weight: '600' },
   ],
 });
-
-// TODO: Move to a normal style tag in Head instead of Styled JSX.
-function FontStyles() {
-  return (
-    <style jsx global>{`
-      :root {
-        --font-sans: ${neueMontreal.style.fontFamily};
-      }
-      ._tracking-tight,
-      .nextra-steps :is(h2, h3, h4) {
-        letter-spacing: normal;
-      }
-    `}</style>
-  );
-}
 
 const siteOrigin = 'https://the-guild.dev';
 
@@ -113,7 +97,19 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
       // Suggested by `next-themes` package https://github.com/pacocoursey/next-themes#with-app
       suppressHydrationWarning
     >
-      <Head />
+      <Head>
+        <style>{
+          /* css */ `
+          :root {
+            --font-sans: ${neueMontreal.style.fontFamily};
+          }
+          ._tracking-tight,
+          .nextra-steps :is(h2, h3, h4) {
+            letter-spacing: normal;
+          }
+        `
+        }</style>
+      </Head>
       <body>
         <Layout
           editLink="Edit this page on GitHub"

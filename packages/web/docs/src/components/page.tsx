@@ -9,8 +9,9 @@ export function Page(props: { children: ReactNode; className?: string }) {
 
   return (
     <Tooltip.Provider>
-      <style global jsx>
-        {`
+      <style>
+        {
+          /* css */ `
           html {
             scroll-behavior: smooth;
           }
@@ -23,14 +24,12 @@ export function Page(props: { children: ReactNode; className?: string }) {
           .nextra-sidebar-footer {
             display: none;
           }
-        `}
+          #crisp-chatbox { z-index: 40 !important; }
+        `
+        }
       </style>
       <div className={cn('flex h-full flex-col', props.className)}>{props.children}</div>
       {mounted && <CookiesConsent />}
-      {/* position Crisp button below the cookies banner */}
-      <style jsx global>
-        {' #crisp-chatbox { z-index: 40 !important; '}
-      </style>
     </Tooltip.Provider>
   );
 }

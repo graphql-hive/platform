@@ -1,10 +1,6 @@
 import { withGuildDocs } from '@theguild/components/next.config';
 
 export default withGuildDocs({
-  nextraConfig: /** @satisfies import("nextra").NextraConfig*/ ({
-    themeConfig: './src/theme.config.tsx',
-    // autoImportThemeStyle: false,
-  }),
   output: 'export',
   basePath: process.env.NEXT_BASE_PATH,
   eslint: {

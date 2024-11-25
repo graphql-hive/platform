@@ -1,3 +1,5 @@
+'use client';
+
 import React, { Fragment, useRef } from 'react';
 import Head from 'next/head';
 import Image, { StaticImageData } from 'next/image';
