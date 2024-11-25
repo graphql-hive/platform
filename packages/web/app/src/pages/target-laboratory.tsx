@@ -316,38 +316,37 @@ function LaboratoryPageContent(props: {
         mockEndpoint;
 
       return new Repeater(async (push, stop) => {
-        if (preflightScript.isPreflightScriptEnabled) {
-          let hasFinishedPreflightScript = false;
-          stop.then(() => {
-            if (!hasFinishedPreflightScript) {
-              preflightScript.abort();
-            }
-          });
-          try {
-            const result = await preflightScript.execute();
-            if (result && headers) {
-              headers = substituteVariablesInHeader(headers, result);
-            }
-          } catch (err: unknown) {
-            if (err instanceof Error === false) {
-              throw err;
-            }
-            const formatError = JSON.stringify(
-              {
-                name: err.name,
-                message: err.message,
-              },
-              null,
-              2,
-            );
-            const error = new Error(`Error during preflight script execution:\n\n${formatError}`);
-            // We only want to expose the error message, not the whole stack trace.
-            delete error.stack;
-            stop(error);
-            return;
-          } finally {
-            hasFinishedPreflightScript = true;
+        let hasFinishedPreflightScript = false;
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        stop.then(() => {
+          if (!hasFinishedPreflightScript) {
+            preflightScript.abort();
           }
+        });
+        try {
+          const result = await preflightScript.execute();
+          if (result && headers) {
+            headers = substituteVariablesInHeader(headers, result);
+          }
+        } catch (err: unknown) {
+          if (err instanceof Error === false) {
+            throw err;
+          }
+          const formatError = JSON.stringify(
+            {
+              name: err.name,
+              message: err.message,
+            },
+            null,
+            2,
+          );
+          const error = new Error(`Error during preflight script execution:\n\n${formatError}`);
+          // We only want to expose the error message, not the whole stack trace.
+          delete error.stack;
+          stop(error);
+          return;
+        } finally {
+          hasFinishedPreflightScript = true;
         }
 
         const graphiqlFetcher = createGraphiQLFetcher({ url, fetch });

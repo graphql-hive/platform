@@ -114,9 +114,12 @@ const UpdatePreflightScriptMutation = graphql(`
   ) {
     updatePreflightScript(selector: $selector, input: $input) {
       ok {
-        preflightScript {
+        updatedTarget {
           id
-          sourceCode
+          preflightScript {
+            id
+            sourceCode
+          }
         }
       }
       error {
@@ -138,6 +141,14 @@ const PreflightScript_TargetFragment = graphql(`
 
 type LogRecord = LogMessage | { type: 'separator' };
 
+function safeParseJSON(str: string): Record<string, unknown> | null {
+  try {
+    return JSON.parse(str);
+  } catch {
+    return null;
+  }
+}
+
 export function usePreflightScript(args: {
   target: FragmentType<typeof PreflightScript_TargetFragment> | null;
 }) {
@@ -151,19 +162,28 @@ export function usePreflightScript(args: {
     'hive:laboratory:environment',
     '',
   );
+  const latestEnvironmentVariablesRef = useRef(environmentVariables);
   const [isRunning, setIsRunning] = useState(false);
   const [logs, setLogs] = useState<LogRecord[]>([]);
   const onNextFinishRef = useRef<PromiseWithResolvers<Record<string, unknown>> | undefined>();
 
   useEffect(() => {
+    latestEnvironmentVariablesRef.current = environmentVariables;
+  });
+
+  useEffect(() => {
     worker.onmessage = (ev: MessageEvent<PreflightScriptResult>) => {
       if (ev.data.type === 'result') {
+        const mergedEnvironmentVariables = {
+          ...safeParseJSON(latestEnvironmentVariablesRef.current),
+          ...ev.data.environmentVariables,
+        };
         setIsRunning(false);
-        setEnvironmentVariables(JSON.stringify(ev.data.environmentVariables, null, 2));
+        setEnvironmentVariables(JSON.stringify(mergedEnvironmentVariables, null, 2));
         setLogs(logs => [...logs, { type: 'separator' }]);
 
         if (onNextFinishRef.current) {
-          onNextFinishRef.current.resolve(ev.data.environmentVariables);
+          onNextFinishRef.current.resolve(mergedEnvironmentVariables);
           onNextFinishRef.current = undefined;
         }
         return;
@@ -219,13 +239,13 @@ export function usePreflightScript(args: {
   const execute = useCallback(
     async (
       /** provide a script to be executed. If no script is provided, the target defined one will be used. */
-      script = target?.preflightScript?.sourceCode ?? null,
+      script = target?.preflightScript?.sourceCode ?? '',
+      /** we always want to tun the script if we are in preview mode */
+      isPreview = false,
     ) => {
-      // if no script exists we do not need to run anything...
-      if (!script) {
-        return null;
+      if (isPreview === false && !isPreflightScriptEnabled) {
+        return safeParseJSON(environmentVariables);
       }
-
       const now = Date.now();
 
       setLogs(prev => [...prev, '> Start running script']);
@@ -235,7 +255,7 @@ export function usePreflightScript(args: {
 
       worker.postMessage({
         script,
-        environmentVariables: environmentVariables ? JSON.parse(environmentVariables) : {},
+        environmentVariables: (environmentVariables && safeParseJSON(environmentVariables)) || {},
       });
 
       const timeoutTimer = setTimeout(() => {
@@ -322,7 +342,7 @@ function PreflightScriptContent() {
         toggle={toggleShowModal}
         scriptValue={preflightScript.script}
         executeScript={value =>
-          preflightScript.execute(value).catch(() => {
+          preflightScript.execute(value, true).catch(() => {
             // swallow error as it is already displayed in the logs.
           })
         }
@@ -356,7 +376,7 @@ function PreflightScriptContent() {
           checked={preflightScript.isPreflightScriptEnabled}
           onCheckedChange={v => preflightScript.setIsPreflightScriptEnabled(v)}
           className="my-4"
-          data-cy="disable-preflight-script"
+          data-cy="toggle-preflight-script"
         />
         <span className="w-6">{preflightScript.isPreflightScriptEnabled ? 'ON' : 'OFF'}</span>
       </div>
@@ -456,7 +476,15 @@ function PreflightScriptModal({
         toggle();
       }}
     >
-      <DialogContent className="w-11/12 max-w-[unset] xl:w-4/5">
+      <DialogContent
+        className="w-11/12 max-w-[unset] xl:w-4/5"
+        onEscapeKeyDown={ev => {
+          // prevent pressing escape in monaco to close the modal
+          if (ev.target instanceof HTMLTextAreaElement) {
+            ev.preventDefault();
+          }
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Edit your Preflight Script</DialogTitle>
           <DialogDescription>
@@ -577,6 +605,7 @@ function PreflightScriptModal({
             </Title>
             <MonacoEditor
               value={envValue}
+              onChange={value => onEnvValueChange(value ?? '')}
               onMount={handleEnvEditorDidMount}
               {...monacoProps.env}
               options={{
