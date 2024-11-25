@@ -315,38 +315,48 @@ function LaboratoryPageContent(props: {
         (actualSelectedApiEndpoint === 'linkedApi' ? target?.graphqlEndpointUrl : undefined) ??
         mockEndpoint;
 
-      if (preflightScript.isPreflightScriptEnabled) {
-        try {
-          const result = await preflightScript.execute();
-          if (result && headers) {
-            headers = substituteVariablesInHeader(headers, result);
+      return new Repeater(async (push, stop) => {
+        if (preflightScript.isPreflightScriptEnabled) {
+          let hasFinishedPreflightScript = false;
+          stop.then(() => {
+            if (!hasFinishedPreflightScript) {
+              preflightScript.abort();
+            }
+          });
+          try {
+            const result = await preflightScript.execute();
+            if (result && headers) {
+              headers = substituteVariablesInHeader(headers, result);
+            }
+          } catch (err: unknown) {
+            if (err instanceof Error === false) {
+              throw err;
+            }
+            const formatError = JSON.stringify(
+              {
+                name: err.name,
+                message: err.message,
+              },
+              null,
+              2,
+            );
+            const error = new Error(`Error during preflight script execution:\n\n${formatError}`);
+            // We only want to expose the error message, not the whole stack trace.
+            delete error.stack;
+            stop(error);
+            return;
+          } finally {
+            hasFinishedPreflightScript = true;
           }
-        } catch (err: unknown) {
-          if (err instanceof Error === false) {
-            throw err;
-          }
-          const formatError = JSON.stringify(
-            {
-              name: err.name,
-              message: err.message,
-            },
-            null,
-            2,
-          );
-          throw new Error(`Error during preflight script execution:\n\n${formatError}`);
         }
-      }
 
-      const graphiqlFetcher = createGraphiQLFetcher({ url, fetch });
+        const graphiqlFetcher = createGraphiQLFetcher({ url, fetch });
+        const result = await graphiqlFetcher(params, {
+          ...opts,
+          headers,
+        });
 
-      const result = await graphiqlFetcher(params, {
-        ...opts,
-        headers,
-      });
-
-      // We only want to expose the error message, not the whole stack trace.
-      if (isAsyncIterable(result)) {
-        return new Repeater(async (push, stop) => {
+        if (isAsyncIterable(result)) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           stop.then(
             () => 'return' in result && result.return instanceof Function && result.return(),
@@ -358,13 +368,15 @@ function LaboratoryPageContent(props: {
             stop();
           } catch (err) {
             const error = new Error(err instanceof Error ? err.message : 'Unexpected error.');
+            // We only want to expose the error message, not the whole stack trace.
             delete error.stack;
             stop(error);
+            return;
           }
-        });
-      }
+        }
 
-      return result;
+        return result;
+      });
     };
   }, [
     target?.graphqlEndpointUrl,

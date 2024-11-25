@@ -25,7 +25,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
 import { FragmentType, graphql, useFragment } from '@/gql';
 import { useLocalStorage, useToggle } from '@/lib/hooks';
-import { GraphiQLPlugin, useExecutionContext } from '@graphiql/react';
+import { GraphiQLPlugin } from '@graphiql/react';
 import { Editor as MonacoEditor, OnMount } from '@monaco-editor/react';
 import {
   Cross2Icon,
@@ -285,14 +285,6 @@ function PreflightScriptContent() {
   const params = useParams({
     from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
   });
-
-  const { isFetching } = useExecutionContext({ nonNull: true, caller: PreflightScriptContent });
-
-  useEffect(() => {
-    if (!isFetching) {
-      preflightScript.abort();
-    }
-  }, [isFetching]);
 
   const [, mutate] = useMutation(UpdatePreflightScriptMutation);
 
