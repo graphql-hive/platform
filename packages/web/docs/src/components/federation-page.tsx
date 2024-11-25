@@ -81,17 +81,6 @@ function Intro() {
                 called GraphQL router) that resolves data from your federated API.
               </p>
             </div>
-            <div className="mx-auto flex flex-row gap-4 lg:mx-0">
-              <CallToAction variant="secondary-inverted" href="#why-graphql-federation?">
-                Why GraphQL federation?
-              </CallToAction>
-              <CallToAction
-                variant="primary-inverted"
-                href="#why-choose-hive-for-graphql-federation?"
-              >
-                Why choose Hive?
-              </CallToAction>
-            </div>
           </div>
           <div className="relative mx-4 overflow-hidden rounded-3xl bg-blue-400 md:ml-6 md:mr-0">
             <Image
@@ -179,7 +168,6 @@ function WhyFederation(props: { className?: string }) {
 
 const HowFederationWorksVariants = {
   first: {
-    number: 1,
     className: 'bg-beige-100 rounded-3xl rounded-b-none',
     headingClassName: 'text-green-1000',
     paragraphClassName: 'text-green-800',
@@ -189,7 +177,6 @@ const HowFederationWorksVariants = {
     callToActionVariant: 'secondary-inverted' as const,
   },
   second: {
-    number: 2,
     className: 'bg-blue-400',
     headingClassName: 'text-green-1000',
     paragraphClassName: 'text-green-800',
@@ -199,7 +186,6 @@ const HowFederationWorksVariants = {
     callToActionVariant: 'secondary-inverted' as const,
   },
   third: {
-    number: 3,
     className: 'bg-green-1000 rounded-3xl rounded-t-none',
     headingClassName: 'text-white',
     paragraphClassName: 'text-white/80',
@@ -241,15 +227,7 @@ function HowFederationWorksSection(props: {
           : null,
       )}
     >
-      {/* <div
-        className={cn(
-          'absolute right-12 top-6 z-10 hidden text-[256px] leading-none opacity-10 lg:block',
-          variant.headingClassName,
-        )}
-      >
-        {variant.number}
-      </div> */}
-      <div className="mx-auto flex max-w-full flex-shrink flex-col flex-wrap justify-center gap-x-2">
+      <div className="mx-auto flex max-w-full shrink flex-col flex-wrap justify-center gap-x-2">
         <Heading
           as="h3"
           size="sm"
@@ -274,7 +252,7 @@ function HowFederationWorksSection(props: {
       </div>
       <div
         className={cn(
-          'mx-auto flex-shrink-0 lg:w-[350px] xl:w-[450px]',
+          'mx-auto shrink-0 lg:w-[350px] xl:w-[450px]',
           variant.imagesContainerClassName,
         )}
       >
@@ -335,7 +313,7 @@ function HowFederationWorks(props: { className?: string }) {
           callToActionTitle="Start by publishing your subgraphs to Hive"
         >
           <div className="flex flex-row flex-wrap justify-normal gap-4 lg:flex-col lg:justify-start lg:gap-12">
-            <div className="min-w-[300px] max-w-[450px] flex-shrink">
+            <div className="min-w-[300px] max-w-[450px] shrink">
               <Image
                 width={476} // max rendered width
                 height={260} // max rendered height
@@ -348,7 +326,7 @@ function HowFederationWorks(props: { className?: string }) {
                 alt="A code snippet of the products subgraph schema defining the Product type in the federated GraphQL API"
               />
             </div>
-            <div className="min-w-[300px] max-w-[450px] flex-shrink">
+            <div className="min-w-[300px] max-w-[450px] shrink">
               <Image
                 width={476} // max rendered width
                 height={260} // max rendered height
@@ -410,7 +388,7 @@ function HowFederationWorks(props: { className?: string }) {
           callToActionLink="/docs/schema-registry"
           callToActionTitle="Learn how to use Schema Registry to compose your schema and validate it"
         >
-          <div className="min-w-[300px] max-w-[450px] flex-shrink">
+          <div className="min-w-[300px] max-w-[450px] shrink">
             <Image
               width={476} // max rendered width
               height={390} // max rendered height
@@ -503,7 +481,7 @@ function HowFederationWorks(props: { className?: string }) {
           callToActionTitle="Learn how to use Hive Gateway to serve your supergraph to clients"
         >
           <div className="flex flex-row flex-wrap justify-normal gap-4 lg:flex-col lg:justify-start lg:gap-12">
-            <div className="min-w-[300px] max-w-[450px] flex-shrink">
+            <div className="min-w-[300px] max-w-[450px] shrink">
               <Image
                 width={476} // max rendered width
                 height={305} // max rendered height
@@ -519,7 +497,7 @@ function HowFederationWorks(props: { className?: string }) {
                 The gateway resolves the query by sending parts of it to the right subgraphs
               </p>
             </div>
-            <div className="min-w-[300px] max-w-[450px] flex-shrink">
+            <div className="min-w-[300px] max-w-[450px] shrink">
               <Image
                 width={476} // max rendered width
                 height={390} // max rendered height
