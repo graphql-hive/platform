@@ -8,6 +8,11 @@ import { Hero, HeroLinks } from './hero';
 import { InfoCard } from './info-card';
 import { Page } from './page';
 import federationDiagram from '../../public/federation-diagram.png';
+import queryResultImage from '../../public/federation/query-result.png';
+import queryImage from '../../public/federation/query.png';
+import subgraphsProductsImage from '../../public/federation/subgraphs-products.png';
+import subgraphsReviewsImage from '../../public/federation/subgraphs-reviews.png';
+import supergraphSchemaImage from '../../public/federation/supergraph-schema.png';
 
 export function FederationPage(): ReactElement {
   return (
@@ -178,6 +183,7 @@ const HowFederationWorksVariants = {
     className: 'bg-beige-100 rounded-3xl rounded-b-none',
     headingClassName: 'text-green-1000',
     paragraphClassName: 'text-green-800',
+    imagesContainerClassName: 'text-green-800',
     beforeClassName: null,
     afterClassName: null,
     callToActionVariant: 'secondary-inverted' as const,
@@ -187,6 +193,7 @@ const HowFederationWorksVariants = {
     className: 'bg-blue-400',
     headingClassName: 'text-green-1000',
     paragraphClassName: 'text-green-800',
+    imagesContainerClassName: 'text-green-800',
     beforeClassName: 'before:bg-beige-100 before:shadow-blue-400',
     afterClassName: 'after:shadow-beige-100 after:bg-blue-400',
     callToActionVariant: 'secondary-inverted' as const,
@@ -196,6 +203,7 @@ const HowFederationWorksVariants = {
     className: 'bg-green-1000 rounded-3xl rounded-t-none',
     headingClassName: 'text-white',
     paragraphClassName: 'text-white/80',
+    imagesContainerClassName: 'text-white/80',
     beforeClassName: 'before:shadow-green-1000 before:bg-blue-400',
     afterClassName: 'after:bg-green-1000 after:shadow-blue-400',
     callToActionVariant: 'secondary-inverted' as const,
@@ -209,13 +217,15 @@ function HowFederationWorksSection(props: {
   callToActionLink: string;
   callToActionTitle: string;
   index: keyof typeof HowFederationWorksVariants;
+  children?: ReactNode;
 }) {
   const variant = HowFederationWorksVariants[props.index];
 
   return (
     <section
       className={cn(
-        'relative isolate max-w-full rounded-none px-4 py-6 lg:px-8 lg:py-16 xl:px-16 xl:py-24 [@media(min-width:1358px)]:px-24',
+        'relative isolate max-w-full rounded-none px-4 py-6 lg:px-8 lg:py-24 xl:px-16 [@media(min-width:1358px)]:px-24',
+        'flex flex-col gap-6 lg:flex-row lg:gap-12',
         variant.className,
         variant.beforeClassName
           ? [
@@ -231,15 +241,15 @@ function HowFederationWorksSection(props: {
           : null,
       )}
     >
-      <div
+      {/* <div
         className={cn(
           'absolute right-12 top-6 z-10 hidden text-[256px] leading-none opacity-10 lg:block',
           variant.headingClassName,
         )}
       >
         {variant.number}
-      </div>
-      <div className="mx-auto flex max-w-full flex-col flex-wrap justify-center gap-x-2 lg:max-xl:w-max">
+      </div> */}
+      <div className="mx-auto flex max-w-full flex-shrink flex-col flex-wrap justify-center gap-x-2">
         <Heading
           as="h3"
           size="sm"
@@ -248,9 +258,7 @@ function HowFederationWorksSection(props: {
           {props.heading}
         </Heading>
 
-        <div
-          className={cn('mt-4 w-[700px] max-w-full space-y-2 lg:mt-6', variant.paragraphClassName)}
-        >
+        <div className={cn('mt-4 max-w-full space-y-2 lg:mt-6', variant.paragraphClassName)}>
           {props.description}
         </div>
 
@@ -263,6 +271,14 @@ function HowFederationWorksSection(props: {
           {props.callToAction}
           <ArrowIcon />
         </CallToAction>
+      </div>
+      <div
+        className={cn(
+          'mx-auto flex-shrink-0 lg:w-[350px] xl:w-[450px]',
+          variant.imagesContainerClassName,
+        )}
+      >
+        {props.children}
       </div>
     </section>
   );
@@ -314,10 +330,39 @@ function HowFederationWorks(props: { className?: string }) {
               </ul>
             </>
           }
-          callToAction="Publish subgraphs to Hive"
+          callToAction="How to publish subgraphs"
           callToActionLink="/docs/get-started/apollo-federation#publish-subgraphs"
           callToActionTitle="Start by publishing your subgraphs to Hive"
-        />
+        >
+          <div className="flex flex-row flex-wrap justify-normal gap-4 lg:flex-col lg:justify-start lg:gap-12">
+            <div className="min-w-[300px] max-w-[450px] flex-shrink">
+              <Image
+                width={476} // max rendered width
+                height={260} // max rendered height
+                src={subgraphsProductsImage}
+                placeholder="blur"
+                blurDataURL={subgraphsProductsImage.blurDataURL}
+                role="presentation"
+                className="z-20 block h-auto w-full rounded-xl shadow-xl"
+                title="A code snippet of the products subgraph schema defining the Product type in the federated GraphQL API"
+                alt="A code snippet of the products subgraph schema defining the Product type in the federated GraphQL API"
+              />
+            </div>
+            <div className="min-w-[300px] max-w-[450px] flex-shrink">
+              <Image
+                width={476} // max rendered width
+                height={260} // max rendered height
+                src={subgraphsReviewsImage}
+                placeholder="blur"
+                blurDataURL={subgraphsReviewsImage.blurDataURL}
+                role="presentation"
+                className="z-20 block h-auto w-full rounded-xl shadow-xl"
+                title="A code snippet of the reviews subgraph schema extending the Product type with its reviews"
+                alt="A code snippet of the reviews subgraph schema extending the Product type with its reviews"
+              />
+            </div>
+          </div>
+        </HowFederationWorksSection>
         <HowFederationWorksSection
           index="second"
           heading="Schema Composition and Registry"
@@ -361,10 +406,27 @@ function HowFederationWorks(props: { className?: string }) {
               </p>
             </>
           }
-          callToAction="Read about the Schema Registry"
+          callToAction="How to use Schema Registry"
           callToActionLink="/docs/schema-registry"
           callToActionTitle="Learn how to use Schema Registry to compose your schema and validate it"
-        />
+        >
+          <div className="min-w-[300px] max-w-[450px] flex-shrink">
+            <Image
+              width={476} // max rendered width
+              height={390} // max rendered height
+              src={supergraphSchemaImage}
+              placeholder="blur"
+              blurDataURL={supergraphSchemaImage.blurDataURL}
+              role="presentation"
+              className="z-20 block h-auto w-full rounded-xl shadow-xl"
+              title="A code snippet of the supergraph schema combining the schemas of products and reviews subgraphs"
+              alt="A code snippet of the supergraph schema combining the schemas of products and reviews subgraphs"
+            />
+            <p className="mt-4 text-center text-sm">
+              The ownership of the fields is now hidden from the clients
+            </p>
+          </div>
+        </HowFederationWorksSection>
         <HowFederationWorksSection
           index="third"
           heading="GraphQL Gateway (Router)"
@@ -436,10 +498,45 @@ function HowFederationWorks(props: { className?: string }) {
               </p>
             </>
           }
-          callToAction="Discover Hive Gateway"
+          callToAction="How to use a GraphQL Gateway"
           callToActionLink="/docs/gateway"
           callToActionTitle="Learn how to use Hive Gateway to serve your supergraph to clients"
-        />
+        >
+          <div className="flex flex-row flex-wrap justify-normal gap-4 lg:flex-col lg:justify-start lg:gap-12">
+            <div className="min-w-[300px] max-w-[450px] flex-shrink">
+              <Image
+                width={476} // max rendered width
+                height={305} // max rendered height
+                src={queryImage}
+                placeholder="blur"
+                blurDataURL={queryImage.blurDataURL}
+                role="presentation"
+                className="z-20 block h-auto w-full rounded-xl shadow-xl"
+                title="A code snippet of a query sent by a client to the GraphQL gateway"
+                alt="A code snippet of a query sent by a client to the GraphQL gateway"
+              />
+              <p className="mt-4 text-center text-sm">
+                The gateway resolves the query by sending parts of it to the right subgraphs
+              </p>
+            </div>
+            <div className="min-w-[300px] max-w-[450px] flex-shrink">
+              <Image
+                width={476} // max rendered width
+                height={390} // max rendered height
+                src={queryResultImage}
+                placeholder="blur"
+                blurDataURL={queryResultImage.blurDataURL}
+                role="presentation"
+                className="z-20 block h-auto w-full rounded-xl shadow-xl"
+                title="A code snippet of response from the gateway to the client"
+                alt="A code snippet of response from the gateway to the client"
+              />
+              <p className="mt-4 text-center text-sm">
+                Client receives the data from the gateway in a single response
+              </p>
+            </div>
+          </div>
+        </HowFederationWorksSection>
       </div>
     </div>
   );
