@@ -1,5 +1,6 @@
-import * as Tabs from '@radix-ui/react-tabs';
-import { DecorationIsolation, Heading } from '@theguild/components';
+import { DecorationIsolation, Heading, ProductCard, PRODUCTS } from '@theguild/components';
+import { FOUR_MAIN_PRODUCTS } from '@theguild/components/products';
+import { cn } from '../../lib';
 import { Page } from '../page';
 import EcosystemPageContent from './content.mdx';
 
@@ -20,20 +21,27 @@ export const components = {
       <span className="font-medium">The Ecosystem</span>
       {props.children}
       <CrossDecoration />
-      <nav className="absolute top-full grid -translate-y-1/2 grid-flow-col rounded-2xl bg-blue-400 [grid-auto-columns:1fr]">
-        <EcosystemPageContent components={ecosystemPageNav} />
-      </nav>
+      <EcosystemPageNav />
     </header>
   ),
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => <Heading as="h1" size="xl" {...props} />,
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <Heading as="h2" size="xs" className="mt-24" {...props} />
+    <Heading as="h2" size="xs" className="mb-4 mt-24" {...props} />
   ),
-  h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => null,
   p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
     <p className="text-green-800" {...props} />
   ),
-  ul: () => null,
+  ul: (props: React.HTMLAttributes<HTMLUListElement>) => {
+    return <ul className="-m-4 mt-5 grid grid-cols-4 gap-5 overflow-auto p-4" {...props} />;
+  },
+  li: (props: React.LiHTMLAttributes<HTMLLIElement>) => {
+    const productName = String(props.children).toUpperCase() as keyof typeof PRODUCTS;
+    const product = PRODUCTS[productName];
+
+    if (!product) return null;
+
+    return <ProductCard as="li" product={product} {...props} />;
+  },
 };
 
 function CrossDecoration() {
@@ -102,3 +110,11 @@ const ecosystemPageNav = {
     </a>
   ),
 };
+
+function EcosystemPageNav() {
+  return (
+    <nav className="absolute top-full grid -translate-y-1/2 grid-flow-col rounded-2xl bg-blue-400 [grid-auto-columns:1fr]">
+      <EcosystemPageContent components={ecosystemPageNav} />
+    </nav>
+  );
+}
