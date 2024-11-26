@@ -26,7 +26,7 @@ export function Slider({ counter, className, style, ...rest }: SliderProps) {
         step={0.1}
         // for Safari
         tabIndex={0}
-        className="h-10 w-full opacity-0 hover:cursor-grab active:cursor-grabbing [&::webkit-slider-thumb]:size-8"
+        className="h-10 w-full opacity-0 hover:cursor-grab active:cursor-grabbing"
         {...rest}
       />
 

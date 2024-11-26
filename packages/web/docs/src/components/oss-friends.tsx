@@ -9,7 +9,7 @@ import {
 } from '@theguild/components';
 import { Page } from './page';
 
-export async function getStaticProps() {
+async function fetchFriends() {
   const res = await fetch('https://formbricks.com/api/oss-friends');
   const body: {
     data: Array<{
@@ -19,20 +19,12 @@ export async function getStaticProps() {
     }>;
   } = await res.json();
 
-  return {
-    props: {
-      ssg: { friends: body.data },
-    },
-  };
+  return body.data;
 }
 
-export function OSSFriendsPage(props: {
-  friends: Array<{
-    name: string;
-    description: string;
-    href: string;
-  }>;
-}) {
+export async function OSSFriendsPage() {
+  const friends = await fetchFriends();
+
   return (
     <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <div className="bg-beige-100 relative isolate mx-4 flex max-w-[90rem] flex-col gap-6 overflow-hidden rounded-3xl px-4 py-6 max-sm:mt-2 sm:py-12 md:mx-6 md:gap-8 lg:py-24">
@@ -79,7 +71,7 @@ export function OSSFriendsPage(props: {
             <div className="flex grow flex-col gap-12 px-4 md:px-0 lg:w-[650px]">
               <div className="mx-auto leading-6 text-green-800">
                 <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {props.friends.map((friend, i) => (
+                  {friends.map((friend, i) => (
                     <NextLink
                       href={friend.href}
                       key={i}
