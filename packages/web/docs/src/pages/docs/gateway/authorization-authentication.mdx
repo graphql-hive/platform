@@ -164,11 +164,11 @@ The token payload will be injected into `extensions.jwt.payload` of the upstream
 }
 ```
 
-You can also pass the full token, using the `forwared.token` option:
+You can also pass the full token, using the `forwarded.token` option:
 
 ```ts
 {
-  forwared: {
+  forwarded: {
     payload: true, // optional, default is "true"
     token: true // optional, default is "false"
   }
