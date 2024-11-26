@@ -14,12 +14,7 @@ import { Footer } from '../components/footer';
 import { NavigationMenu } from '../components/navigation-menu';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  return (
-    <>
-      <HiveLayout>{children}</HiveLayout>
-      <ConfiguredGiscus />
-    </>
-  );
+  return <HiveLayout>{children}</HiveLayout>;
 }
 
 export const metadata = getDefaultMetadata({
@@ -125,6 +120,7 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
         >
           {children}
         </Layout>
+        <ConfiguredGiscus />
       </body>
     </html>
   );
