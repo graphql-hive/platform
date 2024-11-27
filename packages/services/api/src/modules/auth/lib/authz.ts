@@ -369,7 +369,7 @@ type ActionDefinitionMap = {
 
 type Actions = keyof typeof actionDefinitions;
 
-type ActionStrings = Actions | '*';
+export type ActionStrings = Actions | '*';
 
 /** Unauthenticated session that is returned by default. */
 class UnauthenticatedSession extends Session {
