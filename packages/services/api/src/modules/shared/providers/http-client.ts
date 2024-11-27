@@ -88,11 +88,6 @@ export class HttpClient {
           );
           span.setAttribute('error.message', details || '');
 
-          if (error instanceof TimeoutError) {
-            logger.error('Request to " timed out');
-          } else {
-            logger.error(error);
-          }
           Sentry.captureException(error, {
             extra: {
               details,
