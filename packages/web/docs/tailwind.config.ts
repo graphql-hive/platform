@@ -5,6 +5,7 @@ import tailwindcssRadix from 'tailwindcss-radix';
 import { fontFamily } from 'tailwindcss/defaultTheme';
 import { default as flattenColorPalette } from 'tailwindcss/lib/util/flattenColorPalette';
 import plugin from 'tailwindcss/plugin';
+import tailwindTypography from '@tailwindcss/typography';
 import baseConfig from '@theguild/tailwind-config';
 
 const config: Config = {
@@ -37,7 +38,12 @@ const config: Config = {
       },
     },
   },
-  plugins: [tailwindcssRadix({ variantPrefix: 'rdx' }), tailwindcssAnimate, blockquotesPlugin()],
+  plugins: [
+    tailwindcssRadix({ variantPrefix: 'rdx' }),
+    tailwindcssAnimate,
+    blockquotesPlugin(),
+    tailwindTypography,
+  ],
 };
 
 export default config;
