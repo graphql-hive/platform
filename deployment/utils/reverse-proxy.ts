@@ -226,7 +226,10 @@ export class Proxy {
           'user_agent',
           'x_forwarded_for',
           'x_trace_id',
-          'authorization=%REQ(AUTHORIZATION):3%***%REQ(AUTHORIZATION):-3%',
+          // X-API-TOKEN is a custom header, that contains only the token without a prefix.
+          'x_api_token=%REQ(X-API-TOKEN):4%',
+          /// Authorization header contains the token with the prefix "Bearer " (so 7+5 to get the first 4 chars).
+          'authorization=%REQ(AUTHORIZATION):12%',
         ],
         tracing:
           options.tracing && tracingExtensionService
