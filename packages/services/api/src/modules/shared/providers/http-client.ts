@@ -88,6 +88,7 @@ export class HttpClient {
           );
           span.setAttribute('error.message', details || '');
 
+          logger.error(error);
           Sentry.captureException(error, {
             extra: {
               details,
