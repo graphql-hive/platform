@@ -42,42 +42,69 @@ function ProductUpdateTeaser(props: Changelog): ReactElement {
   );
 }
 
-async function getChangelogs(): Promise<Changelog[]> {
-  const [meta, ...pageMap] = await getPageMap();
+// TODO: I'm not sure this is gonna work. We previously imported Nextra internal here.
+export async function getChangelogs(): Promise<Changelog[]> {
+  const [_meta, ...pageMap] = await getPageMap();
 
-  const productUpdatesFolder = pageMap.find(item => item.route === '/product-updates')!.children!;
+  console.dir({ pageMap }, { depth: null });
+
+  type PageMapItem = (typeof pageMap)[number];
+  type Folder = PageMapItem & { children: PageMapItem[] };
+
+  const productUpdatesFolder = pageMap.find(
+    (item): item is Folder =>
+      'route' in item && item.route === '/product-updates' && 'children' in item,
+  )!.children!;
 
   return productUpdatesFolder
     .slice(1) // cut `_meta.ts` which always comes first
     .map(item => {
-      if (!item.children) {
-        if (!('title' in item.frontMatter!)) {
+      if ('children' in item) {
+        const frontMatter = (item as any).frontMatter as {
+          title: string;
+          date: Date;
+          description: string;
+        };
+
+        if (!frontMatter.title) {
           throw new Error(`Incorrect Front matter on page ${item.route}`);
         }
 
         // Regular mdx page
         return {
-          title: item.frontMatter.title,
-          date: item.frontMatter.date.toISOString(),
-          description: item.frontMatter.description,
+          title: frontMatter.title,
+          date: frontMatter.date.toISOString(),
+          description: frontMatter.description,
           route: item.route!,
         };
       }
+
       // Folder
-      const indexPage = item.children.find(item => item.name === 'index');
+      const indexPage =
+        'children' in item
+          ? (item as Folder).children.find(item => 'name' in item && item.name === 'index')
+          : null;
+
       if (!indexPage) {
         throw new Error('Changelog folder must have an "index.mdx" page');
       }
 
-      if (!('date' in indexPage.frontMatter!)) {
-        throw new Error(`Incorrect Front matter on page ${item.route}`);
+      const route = (indexPage as typeof indexPage & { route: string }).route;
+      const frontMatter = (indexPage as any).frontMatter as {
+        title: string;
+        date: Date;
+        description: string;
+      };
+
+      if (!frontMatter.title) {
+        throw new Error(`Incorrect Front matter on page ${route}`);
       }
 
       return {
-        title: indexPage.frontMatter.title,
-        date: indexPage.frontMatter.date.toISOString(),
-        description: indexPage.frontMatter.description,
-        route: indexPage.route!,
+        title: frontMatter.title,
+        date: frontMatter.date.toISOString(),
+        description: frontMatter.description,
+        route: route!,
       };
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

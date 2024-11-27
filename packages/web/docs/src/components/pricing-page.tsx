@@ -7,13 +7,13 @@ import {
 } from '@theguild/components';
 import { CompanyTestimonialsSection } from './company-testimonials';
 import { FrequentlyAskedQuestions } from './frequently-asked-questions';
-import { Page } from './page';
+import { LandingPageContainer } from './landing-page-container';
 import { PlanComparison } from './plan-comparison';
 import { Pricing } from './pricing';
 
 export function PricingPage() {
   return (
-    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
+    <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <PricingPageHero className="mx-4 max-sm:mt-2 md:mx-6" />
 
       <Pricing className="mt-4" />
@@ -26,7 +26,7 @@ export function PricingPage() {
       <FrequentlyAskedQuestions className="mx-4 md:mx-6" />
 
       <GetYourAPIGameRightSection className="mx-4 sm:mb-6 md:mx-6" />
-    </Page>
+    </LandingPageContainer>
   );
 }
 

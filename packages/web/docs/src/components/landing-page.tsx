@@ -19,13 +19,13 @@ import { FeatureTabs } from './feature-tabs';
 import { FrequentlyAskedQuestions } from './frequently-asked-questions';
 import { Hero, HeroFeatures, HeroLinks, TrustedBy } from './hero';
 import { InfoCard } from './info-card';
-import { Page } from './page';
+import { LandingPageContainer } from './landing-page-container';
 import { StatsItem, StatsList } from './stats';
 import { TeamSection } from './team-section';
 
 export function IndexPage(): ReactElement {
   return (
-    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
+    <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <Hero className="mx-4 max-sm:mt-2 md:mx-6">
         <Heading
           as="h1"
@@ -85,7 +85,7 @@ export function IndexPage(): ReactElement {
       <ToolsAndLibrariesCards className="mx-4 mt-6 md:mx-6" />
       <FrequentlyAskedQuestions className="mx-4 md:mx-6" />
       <GetYourAPIGameRightSection className="mx-4 sm:mb-6 md:mx-6" />
-    </Page>
+    </LandingPageContainer>
   );
 }
 

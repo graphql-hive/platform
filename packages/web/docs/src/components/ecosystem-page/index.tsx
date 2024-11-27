@@ -1,12 +1,12 @@
 import { DecorationIsolation, Heading, ProductCard, PRODUCTS } from '@theguild/components';
-import { Page } from '../page';
+import { LandingPageContainer } from '../landing-page-container';
 import EcosystemPageContent from './content.mdx';
 
 export function EcosystemPage({ children }: { children: React.ReactNode }) {
   return (
-    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden [&>:not(header)]:px-4 lg:[&>:not(header)]:px-8 xl:[&>:not(header)]:px-[120px]">
+    <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden [&>:not(header)]:px-4 lg:[&>:not(header)]:px-8 xl:[&>:not(header)]:px-[120px]">
       {children}
-    </Page>
+    </LandingPageContainer>
   );
 }
 

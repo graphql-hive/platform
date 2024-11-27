@@ -1,11 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { generateStaticParamsFor, importPage } from 'nextra/pages';
-import { PageProps } from '../../../../.next/types/app/layout.js';
 import { useMDXComponents } from '../../../../mdx-components.js';
 
 export const generateStaticParams = generateStaticParamsFor('mdxPath');
 
-export async function generateMetadata(props: PageProps) {
+export async function generateMetadata(props: PageProps<'...mdxPath'>) {
   const params = await props.params;
   const { metadata } = await importPage(params.mdxPath);
   return metadata;
@@ -13,12 +12,10 @@ export async function generateMetadata(props: PageProps) {
 
 const Wrapper = useMDXComponents({}).wrapper;
 
-export default async function Page(props: PageProps) {
+export default async function Page(props: PageProps<'...mdxPath'>) {
   const params = await props.params;
   const result = await importPage(params.mdxPath);
   const { default: MDXContent, toc, metadata } = result;
-
-  console.log('docs page', { props, toc, metadata });
 
   return (
     <Wrapper toc={toc} metadata={metadata}>

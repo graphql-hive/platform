@@ -10,7 +10,10 @@ export function cn(...inputs: ClassValue[]) {
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-export function useTheme() {
+/**
+ * Add to pages without dark mode.
+ */
+export function AddLightClassToBody() {
   useIsomorphicLayoutEffect(() => {
     // We add .light class to body to style the Headless UI
     // portal containing search results.
@@ -20,6 +23,8 @@ export function useTheme() {
       document.body.classList.remove('light');
     };
   }, []);
+
+  return null;
 }
 
 const pagesWithFAQ = ['/', '/federation', '/pricing'];
