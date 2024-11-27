@@ -39,7 +39,7 @@ import { defineConfig } from '@graphql-hive/gateway'
 export const gatewayConfig = defineConfig({
   disableIntrospection: {
     disableIf: ({ context }) => {
-      return context.headers.get('x-allow-introspection') !== 'secret-access-key'
+      return context.request.headers.get('x-allow-introspection') !== 'secret-access-key'
     }
   }
 })
