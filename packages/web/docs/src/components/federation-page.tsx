@@ -4,7 +4,7 @@ import { Anchor, CallToAction, Heading } from '@theguild/components';
 import { cn } from '../lib';
 import { ArrowIcon } from './arrow-icon';
 import { FrequentlyAskedFederationQuestions } from './frequently-asked-questions';
-import { Hero, HeroLinks } from './hero';
+import { Hero } from './hero';
 import { InfoCard } from './info-card';
 import { Page } from './page';
 import federationDiagram from '../../public/federation-diagram.png';
@@ -23,25 +23,13 @@ export function FederationPage(): ReactElement {
           size="xl"
           className="mx-auto max-w-3xl text-balance text-center text-white"
         >
-          GraphQL Federation
+          What Is GraphQL Federation?
         </Heading>
         <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
           Learn what GraphQL Federation is and how to combine multiple GraphQL APIs called subgraphs
           into one unified API (supergraph), and serve data from a single endpoint using a GraphQL
           gateway.
         </p>
-
-        <HeroLinks>
-          <CallToAction variant="primary-inverted" href="/docs/get-started/apollo-federation">
-            Get started
-          </CallToAction>
-          <CallToAction
-            variant="secondary"
-            href="https://the-guild.dev/blog/federation-gateway-audit"
-          >
-            Hive is 100% compatible!
-          </CallToAction>
-        </HeroLinks>
       </Hero>
       <Intro />
       <WhyFederation />
@@ -245,7 +233,7 @@ function HowFederationWorksSection(props: {
             'prose',
             'prose-h4:pt-2 prose-h4:text-lg prose-h4:font-semibold',
             'prose-ul:list-inside prose-ul:list-disc prose-ul:space-y-2',
-            'prose-a:underline prose-a:underline-offset-2 prose-a:hover:underline-offset-3',
+            'prose-a:underline prose-a:underline-offset-2',
             variant.paragraphClassName,
           )}
         >
