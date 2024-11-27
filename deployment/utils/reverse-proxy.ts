@@ -225,6 +225,8 @@ export class Proxy {
           'upstream_service_time',
           'user_agent',
           'x_forwarded_for',
+          'x_trace_id',
+          'authorization=%REQ(AUTHORIZATION):3%***%REQ(AUTHORIZATION):-3%',
         ],
         tracing:
           options.tracing && tracingExtensionService
