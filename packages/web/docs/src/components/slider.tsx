@@ -1,5 +1,5 @@
 import { InputHTMLAttributes } from 'react';
-import { cn } from '../lib';
+import { cn } from '@theguild/components';
 
 const svgHref = new URL('./code-icon-green.svg', import.meta.url).toString();
 

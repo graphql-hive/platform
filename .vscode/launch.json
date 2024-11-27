@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "debug docs build",
+      "type": "node-terminal",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/packages/web/docs",
+      "command": "pnpm build"
+    }
+  ]
+}

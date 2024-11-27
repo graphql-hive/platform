@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { CookiesConsent } from '@theguild/components';
-import { AddLightClassToBody, cn } from '../lib';
+import { cn, CookiesConsent } from '@theguild/components';
+import { AddLightClassToBody } from '../lib';
 
 /**
  * Adds styles, cookie consent banner and Radix Tooltip provider.

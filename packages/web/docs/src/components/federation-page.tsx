@@ -1,7 +1,6 @@
 import { ReactElement } from 'react';
 import Image from 'next/image';
-import { CallToAction, Heading } from '@theguild/components';
-import { cn } from '../lib';
+import { CallToAction, cn, Heading } from '@theguild/components';
 import { ArrowIcon } from './arrow-icon';
 import { FrequentlyAskedFederationQuestions } from './frequently-asked-questions';
 import { Hero, HeroLinks } from './hero';

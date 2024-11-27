@@ -56,6 +56,8 @@ export async function getChangelogs(): Promise<Changelog[]> {
       'route' in item && item.route === '/product-updates' && 'children' in item,
   )!.children!;
 
+  debugger;
+
   return productUpdatesFolder
     .slice(1) // cut `_meta.ts` which always comes first
     .map(item => {

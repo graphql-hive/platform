@@ -1,11 +1,11 @@
 import NextLink from 'next/link';
 import {
   CallToAction,
+  cn,
   DecorationIsolation,
   Heading,
   HighlightDecoration,
 } from '@theguild/components';
-import { cn } from '../../lib';
 import { ArrowIcon } from '../arrow-icon';
 import { BookIcon } from '../book-icon';
 import { CheckIcon } from '../check-icon';

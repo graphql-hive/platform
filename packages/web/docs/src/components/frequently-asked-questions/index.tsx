@@ -1,8 +1,8 @@
 import { Children, ComponentPropsWithoutRef } from 'react';
 import * as Accordion from '@radix-ui/react-accordion';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
-import { Anchor, Heading } from '@theguild/components';
-import { cn, usePageFAQSchema } from '../../lib';
+import { Anchor, cn, Heading } from '@theguild/components';
+import { usePageFAQSchema } from '../../lib';
 import FederationQuestions from './federation-questions.mdx';
 import HomeQuestions from './home-questions.mdx';
 

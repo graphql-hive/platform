@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { cn } from '../../lib';
+import { cn } from '@theguild/components';
 import styles from './ecosystem-management.module.css';
 
 const svgHref = new URL('./ecosystem-management.svg', import.meta.url).toString();

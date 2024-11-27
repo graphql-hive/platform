@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import {
   ArchDecoration,
   CallToAction,
+  cn,
   DecorationIsolation,
   GetYourAPIGameRightSection,
   Heading,
@@ -9,7 +10,6 @@ import {
   LargeHiveIconDecoration,
   ToolsAndLibrariesCards,
 } from '@theguild/components';
-import { cn } from '../lib';
 import { CheckIcon } from './check-icon';
 import { CommunitySection } from './community-section';
 import { AligentLogo, KarrotLogo, LinktreeLogo, MeetupLogo, SoundYXZLogo } from './company-logos';
