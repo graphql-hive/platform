@@ -239,6 +239,14 @@ export default withGuildDocs({
       }),
     );
 
+    config.module.rules.push({
+      test: /\.(mp4|webm)$/,
+      type: 'asset',
+      generator: {
+        filename: 'static/chunks/[path][name].[hash][ext]',
+      },
+    });
+
     return config;
   },
 });
