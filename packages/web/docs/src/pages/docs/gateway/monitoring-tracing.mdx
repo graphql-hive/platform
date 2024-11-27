@@ -88,6 +88,10 @@ The following are available to use with this plugin:
 
 ### Usage Example
 
+<Tabs items={['CLI', 'Programmatic Usage']}>
+
+  <Tabs.Tab>
+
 ```ts filename="gateway.config.ts"
 import { createStdoutExporter, defineConfig } from '@graphql-hive/gateway'
 
@@ -114,6 +118,49 @@ export const gatewayConfig = defineConfig({
   }
 })
 ```
+
+  </Tabs.Tab>
+
+<Tabs.Tab>
+
+```sh npm2yarn
+npm i @graphql-mesh/plugin-opentelemetry
+```
+
+```ts filename="worker.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { createStdoutExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins(ctx) {
+    return [
+      useOpenTelemetry({
+        logger: ctx.logger,
+        exporters: [createStdoutExporter()],
+        serviceName: 'my-custom-service-name', // Optional, the name of your service
+        tracer: myCustomTracer, // Optional, a custom tracer to use
+        inheritContext: true, // Optional, whether to inherit the context from the incoming request
+        propagateContext: true, // Optional, whether to propagate the context to the outgoing requests
+        // Optional config to customize the spans. By default all spans are enabled.
+        spans: {
+          http: true, // Whether to track the HTTP request/response
+          graphqlParse: true, // Whether to track the GraphQL parse phase
+          graphqlValidate: true, // Whether to track the GraphQL validate phase
+          graphqlExecute: true, // Whether to track the GraphQL execute phase
+          subgraphExecute: true, // Whether to track the subgraph execution phase
+          upstreamFetch: true // Whether to track the upstream HTTP requests
+        }
+      })
+    ]
+  }
+})
+
+export default { fetch: gateway }
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 ### Exporters
 
