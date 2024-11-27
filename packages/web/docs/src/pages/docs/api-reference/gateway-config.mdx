@@ -60,11 +60,8 @@ For Hive Registry and Apollo GraphOS, you probably don't need to provide the `su
 #### Polling
 
 Let's say you have a source that can be changed after a while, it can be a CDN, schema registry or a
-local file. So by enabling this option, Hive Gateway can poll the source and update the schema
-automatically.
-
-If a function is provided as in the example above, that function will be called every time the
-polling interval is reached.
+local file. By enabling this option, Hive Gateway can poll the source and update the schema
+automatically using the set interval.
 
 ```ts filename="gateway.config.ts"
 import { defineConfig } from '@graphql-hive/gateway'
@@ -72,6 +69,33 @@ import { defineConfig } from '@graphql-hive/gateway'
 export const gatewayConfig = defineConfig({
   pollingInterval: 5_000 // Polling interval in milliseconds
 })
+```
+
+When running the Hive Gateway [serverless on the edge](/docs/gateway/deployment/serverless) and
+having [provided a cache storage](/docs/gateway/other-features/performance#providing-cache-storage),
+the remote schema will be stored in the provided cache and the `pollingInterval` option is used as a
+TTL.
+
+```ts filename="worker.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import CloudflareKVCacheStorage from '@graphql-mesh/cache-cfw-kv'
+import supergraph from './my-remote-supergraph-config'
+
+export default {
+  fetch(request, env, ctx) {
+    const gateway = createGatewayRuntime({
+      supergraph,
+      pollingInterval: 5_000, // TTL in milliseconds of the remote supergraph
+      transports: { http },
+      cache: new CloudflareKVCacheStorage({
+        logger,
+        namespace: env.NAMESPACE
+      })
+    })
+    ctx.waitUntil(gateway[Symbol.asyncDispose]())
+    return gateway(request, env, ctx)
+  }
+}
 ```
 
 #### `additionalResolvers`
