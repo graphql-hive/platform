@@ -513,7 +513,14 @@ function HowFederationWorks(props: { className?: string }) {
                 A critical yet{' '}
                 <strong>
                   often overlooked aspect of the GraphQL gateway is its correctness and compliance
-                  with the Apollo Federation specification
+                  with the{' '}
+                  <Anchor
+                    href="https://www.apollographql.com/docs/graphos/schema-design/federated-schemas/federation"
+                    title="Documentation of Apollo Federation"
+                  >
+                    Apollo Federation
+                  </Anchor>{' '}
+                  specification
                 </strong>
                 . The Federation's effectiveness depends on the gateway's ability to correctly
                 resolve queries, mutations and subscriptions.
