@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@theguild/components';
+import { ContactTextLink } from '../contact-text-link';
 import { Slider } from '../slider';
 
 export function PricingSlider({ className, ...rest }: { className?: string }) {
@@ -36,12 +37,7 @@ export function PricingSlider({ className, ...rest }: { className?: string }) {
       >
         <span className="font-medium">Running {max}M+ operations?</span>
         <br />
-        <button
-          className="underline hover:text-blue-700"
-          onClick={() => (window as any).$crisp?.push(['do', 'chat:open'])}
-        >
-          Talk to us
-        </button>
+        <ContactTextLink>Talk to us</ContactTextLink>
       </p>
     </label>
   );

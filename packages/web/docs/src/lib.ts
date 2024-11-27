@@ -27,7 +27,7 @@ export function isPageWithFaq(path: string) {
   return pagesWithFAQ.includes(path);
 }
 
-export function usePageFAQSchema() {
+export function AttachPageFAQSchema() {
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
@@ -52,4 +52,6 @@ export function usePageFAQSchema() {
       };
     }
   }, []);
+
+  return null;
 }

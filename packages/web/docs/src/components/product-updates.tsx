@@ -46,8 +46,6 @@ function ProductUpdateTeaser(props: Changelog): ReactElement {
 export async function getChangelogs(): Promise<Changelog[]> {
   const [_meta, ...pageMap] = await getPageMap();
 
-  console.dir({ pageMap }, { depth: null });
-
   type PageMapItem = (typeof pageMap)[number];
   type Folder = PageMapItem & { children: PageMapItem[] };
 
@@ -56,15 +54,27 @@ export async function getChangelogs(): Promise<Changelog[]> {
       'route' in item && item.route === '/product-updates' && 'children' in item,
   )!.children!;
 
-  debugger;
+  const getDateISOStringFromFrontmatter = (
+    item: { name: string },
+    frontMatter: { date?: Date | string; timestamp?: number },
+  ) => {
+    try {
+      return new Date(
+        frontMatter.date || frontMatter.timestamp || item.name.slice(0, 10),
+      ).toISOString();
+    } catch (error) {
+      console.error(`Error parsing date \`${frontMatter.date}\` for ${item.name}: ${error}`);
+      throw error;
+    }
+  };
 
   return productUpdatesFolder
     .slice(1) // cut `_meta.ts` which always comes first
     .map(item => {
-      if ('children' in item) {
+      if (!('children' in item) && 'route' in item) {
         const frontMatter = (item as any).frontMatter as {
           title: string;
-          date: Date;
+          date?: Date;
           description: string;
         };
 
@@ -75,7 +85,7 @@ export async function getChangelogs(): Promise<Changelog[]> {
         // Regular mdx page
         return {
           title: frontMatter.title,
-          date: frontMatter.date.toISOString(),
+          date: getDateISOStringFromFrontmatter(item, frontMatter),
           description: frontMatter.description,
           route: item.route!,
         };
@@ -104,7 +114,7 @@ export async function getChangelogs(): Promise<Changelog[]> {
 
       return {
         title: frontMatter.title,
-        date: frontMatter.date.toISOString(),
+        date: frontMatter.date!.toISOString(),
         description: frontMatter.description,
         route: route!,
       };

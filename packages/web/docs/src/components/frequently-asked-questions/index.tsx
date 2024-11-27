@@ -2,7 +2,7 @@ import { Children, ComponentPropsWithoutRef } from 'react';
 import * as Accordion from '@radix-ui/react-accordion';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { Anchor, cn, Heading } from '@theguild/components';
-import { usePageFAQSchema } from '../../lib';
+import { AttachPageFAQSchema } from '../../lib';
 import FederationQuestions from './federation-questions.mdx';
 import HomeQuestions from './home-questions.mdx';
 
@@ -90,10 +90,9 @@ const components = {
 };
 
 export function FrequentlyAskedQuestions({ className }: { className?: string }) {
-  usePageFAQSchema();
-
   return (
     <>
+      <AttachPageFAQSchema />
       <section
         className={cn(
           className,
@@ -107,10 +106,9 @@ export function FrequentlyAskedQuestions({ className }: { className?: string }) 
 }
 
 export function FrequentlyAskedFederationQuestions({ className }: { className?: string }) {
-  usePageFAQSchema();
-
   return (
     <>
+      <AttachPageFAQSchema />
       <section
         className={cn(
           className,

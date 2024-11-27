@@ -6,9 +6,9 @@ date: 2024-10-11
 authors: [dimitri]
 ---
 
-export const newTabs = new URL('./tabs-new.mp4', import.meta.url).href
-export const queryBuilder = new URL('./query-builder.mp4', import.meta.url).href
-export const fullScreenMode = new URL('./full-screen-mode.mp4', import.meta.url).href
+export const fullScreenMode = `${process.env.NEXT_BASE_PATH}/full-screen-mode.mp4`
+export const queryBuilder = `${process.env.NEXT_BASE_PATH}/query-builder.mp4`
+export const newTabs = `${process.env.NEXT_BASE_PATH}/tabs-new.mp4`
 
 export function Caption({ children }) {
   return <p className="text-center text-sm italic">{children}</p>

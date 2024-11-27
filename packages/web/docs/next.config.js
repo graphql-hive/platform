@@ -6,6 +6,11 @@ export default withGuildDocs({
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    turbo: {
+      treeShaking: true,
+    },
+  },
   redirects: async () => [
     {
       source: '/docs/get-started/organizations',
@@ -225,6 +230,9 @@ export default withGuildDocs({
       permanent: true,
     },
   ],
+  env: {
+    NEXT_BASE_PATH: process.env.NEXT_BASE_PATH,
+  },
   webpack: (config, { webpack }) => {
     config.externals['node:fs'] = 'commonjs node:fs';
     config.externals['node:path'] = 'commonjs node:path';
@@ -238,14 +246,6 @@ export default withGuildDocs({
         resource.request = resource.request.replace(/^node:/, '');
       }),
     );
-
-    config.module.rules.push({
-      test: /\.(mp4|webm)$/,
-      type: 'asset',
-      generator: {
-        filename: 'static/chunks/[path][name].[hash][ext]',
-      },
-    });
 
     return config;
   },

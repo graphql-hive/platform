@@ -9,7 +9,6 @@ import '../components/navigation-menu/navbar-global-styles.css';
 import '../selection-styles.css';
 import { PRODUCTS } from '@theguild/components';
 import { getDefaultMetadata } from '@theguild/components/server';
-import { ConfiguredGiscus } from '../components/configured-giscus';
 import { Footer } from '../components/footer';
 import { NavigationMenu } from '../components/navigation-menu';
 
@@ -120,7 +119,6 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
         >
           {children}
         </Layout>
-        <ConfiguredGiscus />
       </body>
     </html>
   );
