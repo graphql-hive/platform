@@ -68,6 +68,8 @@ const productsItems = {
 const HiveLayout = async ({ children }: { children: ReactNode }) => {
   const [meta, ...pageMap] = await getPageMap();
 
+  console.log('pageMap', pageMap);
+
   const pageMapWithCompanyMenu = [
     {
       data: {
