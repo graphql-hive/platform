@@ -1,3 +1,5 @@
+'use client';
+
 import { HTMLAttributes, ReactElement, ReactNode } from 'react';
 import { Arrow, Content, Root, Trigger } from '@radix-ui/react-tooltip';
 import { CallToAction, cn } from '@theguild/components';

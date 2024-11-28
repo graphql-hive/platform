@@ -12,7 +12,7 @@
     "@radix-ui/react-icons": "1.3.0",
     "@radix-ui/react-tabs": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.3",
-    "@theguild/components": "8.0.0-alpha-20241128125739-2f2680e350f7112a00bb3a33aa3811950d0152fb",
+    "@theguild/components": "8.0.0-alpha-20241128141653-14d63ae4f6a654fc8bf31357f2bbaf4b8292d4f7",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "next": "15.0.3",

@@ -1,14 +1,6 @@
 import { DecorationIsolation, Heading, ProductCard, PRODUCTS } from '@theguild/components';
-import { LandingPageContainer } from '../landing-page-container';
-import { EcosystemPageNav } from './ecosystem-page-nav';
-
-export function EcosystemPage({ children }: { children: React.ReactNode }) {
-  return (
-    <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden [&>:not(header)]:px-4 lg:[&>:not(header)]:px-8 xl:[&>:not(header)]:px-[120px]">
-      {children}
-    </LandingPageContainer>
-  );
-}
+import EcosystemPageContent from './content.mdx';
+import { EcosystemPageNavH2 } from './ecosystem-page-nav-h2';
 
 export const components = {
   EcosystemHeader: (props: React.HTMLAttributes<HTMLDivElement>) => (
@@ -19,7 +11,9 @@ export const components = {
       <span className="font-medium">The Ecosystem</span>
       {props.children}
       <CrossDecoration />
-      <EcosystemPageNav />
+      <nav className="absolute top-full grid -translate-y-1/2 grid-flow-col rounded-2xl bg-blue-400 [grid-auto-columns:1fr]">
+        <EcosystemPageContent components={ecosystemPageNav} />
+      </nav>
     </header>
   ),
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => <Heading as="h1" size="xl" {...props} />,
@@ -33,13 +27,22 @@ export const components = {
     return <ul className="-m-4 mt-5 grid grid-cols-4 gap-5 overflow-auto p-4" {...props} />;
   },
   li: (props: React.LiHTMLAttributes<HTMLLIElement>) => {
-    const productName = String(props.children).toUpperCase() as keyof typeof PRODUCTS;
+    const productName = String(props.children)
+      .toUpperCase()
+      .replace(' ', '_') as keyof typeof PRODUCTS;
+
     const product = PRODUCTS[productName];
+    if (!product) {
+      throw new Error(`Product ${productName} is missing`);
+    }
 
-    if (!product) return null;
-
-    return <ProductCard as="li" product={product} {...props} />;
+    return <ProductCard as="li" product={product} className="h-[222px]" {...props} />;
   },
+};
+
+const ecosystemPageNav = {
+  ...Object.fromEntries(Object.keys(components).map(key => [key, () => null])),
+  h2: EcosystemPageNavH2,
 };
 
 function CrossDecoration() {
