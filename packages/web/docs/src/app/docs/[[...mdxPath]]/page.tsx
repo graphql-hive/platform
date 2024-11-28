@@ -14,6 +14,9 @@ const Wrapper = useMDXComponents({}).wrapper;
 
 export default async function Page(props: PageProps<'...mdxPath'>) {
   const params = await props.params;
+
+  console.log('mdx page params', params);
+
   const result = await importPage(params.mdxPath);
   const { default: MDXContent, toc, metadata } = result;
 

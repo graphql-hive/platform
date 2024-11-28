@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { cn } from '@theguild/components';
-import { ContactTextLink } from '../contact-text-link';
+import { cn, ContactTextLink } from '@theguild/components';
 import { Slider } from '../slider';
 
 export function PricingSlider({ className, ...rest }: { className?: string }) {

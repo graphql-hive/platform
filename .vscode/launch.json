@@ -7,6 +7,13 @@
       "request": "launch",
       "cwd": "${workspaceFolder}/packages/web/docs",
       "command": "pnpm build"
+    },
+    {
+      "name": "attach",
+      "type": "node",
+      "request": "attach",
+      "autoAttachChildProcesses": true,
+      "port": 9230
     }
   ]
 }

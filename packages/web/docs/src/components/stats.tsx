@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactNode } from 'react';
 import CountUp from 'react-countup';
 import { cn, Heading } from '@theguild/components';
