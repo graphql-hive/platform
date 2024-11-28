@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { generateStaticParamsFor, importPage } from 'nextra/pages';
 import { useMDXComponents } from '../../../../mdx-components.js';
-import { ConfiguredGiscus } from '../../../components/configured-giscus';
 import { ProductUpdateBlogPostHeader } from '../../../components/product-update-blog-post-header';
 
 export const generateStaticParams = async () => {
@@ -31,7 +30,6 @@ export default async function Page(props: PageProps<'...mdxPath'>) {
     <Wrapper toc={toc} metadata={metadata}>
       <ProductUpdateBlogPostHeader meta={metadata} />
       <MDXContent params={params} />
-      <ConfiguredGiscus />
     </Wrapper>
   );
 }
