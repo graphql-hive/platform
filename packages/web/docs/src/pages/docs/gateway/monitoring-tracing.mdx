@@ -127,35 +127,31 @@ export const gatewayConfig = defineConfig({
 npm i @graphql-mesh/plugin-opentelemetry
 ```
 
-```ts filename="worker.ts"
+```ts filename="index.ts"
 import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
 import { createStdoutExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
 
 export const gateway = createGatewayRuntime({
-  plugins(ctx) {
-    return [
-      useOpenTelemetry({
-        logger: ctx.logger,
-        exporters: [createStdoutExporter()],
-        serviceName: 'my-custom-service-name', // Optional, the name of your service
-        tracer: myCustomTracer, // Optional, a custom tracer to use
-        inheritContext: true, // Optional, whether to inherit the context from the incoming request
-        propagateContext: true, // Optional, whether to propagate the context to the outgoing requests
-        // Optional config to customize the spans. By default all spans are enabled.
-        spans: {
-          http: true, // Whether to track the HTTP request/response
-          graphqlParse: true, // Whether to track the GraphQL parse phase
-          graphqlValidate: true, // Whether to track the GraphQL validate phase
-          graphqlExecute: true, // Whether to track the GraphQL execute phase
-          subgraphExecute: true, // Whether to track the subgraph execution phase
-          upstreamFetch: true // Whether to track the upstream HTTP requests
-        }
-      })
-    ]
-  }
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [createStdoutExporter()],
+      serviceName: 'my-custom-service-name', // Optional, the name of your service
+      tracer: myCustomTracer, // Optional, a custom tracer to use
+      inheritContext: true, // Optional, whether to inherit the context from the incoming request
+      propagateContext: true, // Optional, whether to propagate the context to the outgoing requests
+      // Optional config to customize the spans. By default all spans are enabled.
+      spans: {
+        http: true, // Whether to track the HTTP request/response
+        graphqlParse: true, // Whether to track the GraphQL parse phase
+        graphqlValidate: true, // Whether to track the GraphQL validate phase
+        graphqlExecute: true, // Whether to track the GraphQL execute phase
+        subgraphExecute: true, // Whether to track the subgraph execution phase
+        upstreamFetch: true // Whether to track the upstream HTTP requests
+      }
+    })
+  ]
 })
-
-export default { fetch: gateway }
 ```
 
 </Tabs.Tab>
@@ -182,6 +178,9 @@ and integrate it to any tracing/metric platform that supports this standard.
 
 A simple exporter that writes the spans to the `stdout` of the process.
 
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
 ```ts filename="gateway.config.ts"
 import { createStdoutExporter, defineConfig } from '@graphql-hive/gateway'
 
@@ -194,12 +193,37 @@ export const gatewayConfig = defineConfig({
 
 </Tabs.Tab>
 
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { createStdoutExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [createStdoutExporter()]
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+</Tabs.Tab>
+
 {/* OTLP (HTTP) */}
 
 <Tabs.Tab>
 
 An exporter that writes the spans to an OTLP-supported backend using HTTP.
 
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
 ```ts filename="gateway.config.ts"
 import { createOtlpHttpExporter, defineConfig } from '@graphql-hive/gateway'
 
@@ -207,7 +231,7 @@ export const gatewayConfig = defineConfig({
   openTelemetry: {
     exporters: [
       createOtlpHttpExporter({
-        url: 'http://my-otlp-backend:4318'
+        url: 'http://<otlp-endpoint>:4318'
         // ...
         // additional options to pass to @opentelemetry/exporter-trace-otlp-http
         // https://www.npmjs.com/package/@opentelemetry/exporter-trace-otlp-http
@@ -219,12 +243,44 @@ export const gatewayConfig = defineConfig({
 
 </Tabs.Tab>
 
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { createOtlpHttpExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [
+        createOtlpHttpExporter({
+          url: 'http://<otlp-endpoint>:4318'
+          // ...
+          // additional options to pass to @opentelemetry/exporter-trace-otlp-http
+          // https://www.npmjs.com/package/@opentelemetry/exporter-trace-otlp-http
+        })
+      ]
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+</Tabs.Tab>
+
 {/* OTLP (gRPC) */}
 
 <Tabs.Tab>
 
 An exporter that writes the spans to an OTLP-supported backend using gRPC.
 
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
 ```ts filename="gateway.config.ts"
 import { createOtlpGrpcExporter, defineConfig } from '@graphql-hive/gateway'
 
@@ -232,7 +288,7 @@ export const gatewayConfig = defineConfig({
   openTelemetry: {
     exporters: [
       createOtlpGrpcExporter({
-        url: 'http://my-otlp-backend:4317'
+        url: 'http://<otlp-endpoint>:4317'
         // ...
         // additional options to pass to @opentelemetry/exporter-trace-otlp-grpc
         // https://www.npmjs.com/package/@opentelemetry/exporter-trace-otlp-grpc
@@ -244,6 +300,34 @@ export const gatewayConfig = defineConfig({
 
 </Tabs.Tab>
 
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { createOtlpGrpcExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [
+        createOtlpGrpcExporter({
+          url: 'http://<otlp-endpoint>:4317'
+          // ...
+          // additional options to pass to @opentelemetry/exporter-trace-otlp-grpc
+          // https://www.npmjs.com/package/@opentelemetry/exporter-trace-otlp-grpc
+        })
+      ]
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
+</Tabs.Tab>
+
 {/* Jaeger */}
 
 <Tabs.Tab>
@@ -251,6 +335,9 @@ export const gatewayConfig = defineConfig({
 [Jaeger](https://www.jaegertracing.io/) supports [OTLP over HTTP/gRPC](#otlp-over-http), so you can
 use it by pointing the `createOtlpHttpExporter`/`createOtlpGrpcExporter` to the Jaeger endpoint:
 
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
 ```ts filename="gateway.config.ts"
 import { createOtlpHttpExporter, defineConfig } from '@graphql-hive/gateway'
 
@@ -258,16 +345,44 @@ export const gatewayConfig = defineConfig({
   openTelemetry: {
     exporters: [
       createOtlpHttpExporter({
-        url: 'http://my-jaeger-backend:4318'
+        url: 'http://<jaeger-endpoint>:4318'
       })
     ]
   }
 })
 ```
 
-> Your Jaeger instance needs to have OTLP ingestion enabeld, so verify that you have the
-> `COLLECTOR_OTLP_ENABLED=true` environment variable set, and that ports `4317` and `4318` are
-> acessible.
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { createOtlpHttpExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [
+        createOtlpHttpExporter({
+          url: 'http://<jaeger-endpoint>:4318'
+        })
+      ]
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+<Callout>
+  Your Jaeger instance needs to have OTLP ingestion enabeld, so verify that you have the
+  `COLLECTOR_OTLP_ENABLED=true` environment variable set, and that ports `4317` and `4318` are
+  acessible.
+</Callout>
 
 To test this integration, you can run a local Jaeger instance using Docker:
 
@@ -290,6 +405,9 @@ docker run -d --name jaeger \
 [NewRelic](https://newrelic.com/) supports [OTLP over HTTP/gRPC](#otlp-over-http), so you can use it
 by configuring the `createOtlpHttpExporter`/`createOtlpGrpcExporter` to the NewRelic endpoint:
 
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
 ```ts filename="gateway.config.ts"
 import { createOtlpHttpExporter, defineConfig } from '@graphql-hive/gateway'
 
@@ -304,8 +422,36 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-> For additional information and NewRelic ingestion endpoints, see
-> [**New Relic OTLP endpoint**](https://docs.newrelic.com/docs/opentelemetry/best-practices/opentelemetry-otlp/).
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { createOtlpHttpExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [
+        createOtlpHttpExporter({
+          url: 'http://<newrelic-endpoint>:4318'
+        })
+      ]
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+<Callout>
+  For additional information and NewRelic ingestion endpoints, see [**New Relic OTLP
+  endpoint**](https://docs.newrelic.com/docs/opentelemetry/best-practices/opentelemetry-otlp/).
+</Callout>
 
 </Tabs.Tab>
 
@@ -316,13 +462,16 @@ export const gatewayConfig = defineConfig({
 [DataDog Agent](https://docs.datadoghq.com/agent/) supports [OTLP over HTTP/gRPC](#otlp-over-http),
 so you can use it by pointing the `createOtlpHttpExporter` to the DataDog Agent endpoint:
 
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
 ```ts filename="gateway.config.ts"
 import { createOtlpHttpExporter, defineConfig } from '@graphql-hive/gateway'
 
 export const gatewayConfig = defineConfig({
   openTelemetry: {
     exporters: [
-      createOtlpHttpExporter({
+     createOtlpHttpExporter({
         url: 'http://<datadog-agent-host>:4318'
       })
     ]
@@ -330,8 +479,36 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-> For additional information, see
-> [**OpenTelemetry in Datadog**](https://docs.datadoghq.com/opentelemetry/interoperability/otlp_ingest_in_the_agent/?tab=host#enabling-otlp-ingestion-on-the-datadog-agent).
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { createOtlpHttpExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [
+        createOtlpHttpExporter({
+          url: 'http://<datadog-agent-host>:4318'
+        })
+      ]
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+<Callout>
+  For additional information, see [**OpenTelemetry in
+  Datadog**](https://docs.datadoghq.com/opentelemetry/interoperability/otlp_ingest_in_the_agent/?tab=host#enabling-otlp-ingestion-on-the-datadog-agent).
+</Callout>
 
 </Tabs.Tab>
 
@@ -341,6 +518,10 @@ export const gatewayConfig = defineConfig({
 
 [Zipkin](https://zipkin.io/) is using a custom protocol to send the spans, so you can use the Zipkin
 exporter to send the spans to a Zipkin backend:
+
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
 
 ```ts filename="gateway.config.ts"
 import { createZipkinExporter, defineConfig } from '@graphql-hive/gateway'
@@ -358,6 +539,35 @@ export const gatewayConfig = defineConfig({
   }
 })
 ```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { createZipkinExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [
+        createZipkinExporter({
+          url: 'http://<zipkin-host>:9411/api/v2/spans'
+          // ...
+          // additional options to pass to @opentelemetry/exporter-zipkin
+          // https://www.npmjs.com/package/@opentelemetry/exporter-zipkin
+        })
+      ]
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 </Tabs.Tab>
 
@@ -379,13 +589,20 @@ The following configuration are allowed:
 - `false` - disables batching and use
   [`SimpleSpanProcessor`](https://opentelemetry.io/docs/specs/otel/trace/sdk/#simple-processor)
 
-> By default, the batch processor will send the spans every 5 seconds or when the buffer is full.
->
-> `{ scheduledDelayMillis: 5000, maxQueueSize: 2048, exportTimeoutMillis: 30000, maxExportBatchSize: 512 }`
+By default, the batch processor will send the spans every 5 seconds or when the buffer is full.
 
-> You can learn more about the batching options in the
-> [Picking the right span processor](https://opentelemetry.io/docs/languages/js/instrumentation/#picking-the-right-span-processor)
-> page.
+```json
+{
+  "scheduledDelayMillis": 5000,
+  "maxQueueSize": 2048,
+  "exportTimeoutMillis": 30000,
+  "maxExportBatchSize": 512
+}
+```
+
+You can learn more about the batching options in the
+[Picking the right span processor](https://opentelemetry.io/docs/languages/js/instrumentation/#picking-the-right-span-processor)
+page.
 
 ### Reported Spans
 
@@ -416,10 +633,12 @@ And the following attributes for the HTTP response:
 
 - `http.status_code`: The HTTP status code
 
-> An error in the this phase will be reported as an
-> [error span](https://opentelemetry.io/docs/specs/semconv/exceptions/exceptions-spans/) with the
-> HTTP status text and as an OpenTelemetry
-> [`Exception`](https://opentelemetry.io/docs/specs/otel/trace/exceptions/).
+<Callout>
+  An error in the this phase will be reported as an [error
+  span](https://opentelemetry.io/docs/specs/semconv/exceptions/exceptions-spans/) with the HTTP
+  status text and as an OpenTelemetry
+  [`Exception`](https://opentelemetry.io/docs/specs/otel/trace/exceptions/).
+</Callout>
 
 You may disable this by setting `spans.http` to `false`:
 
@@ -460,8 +679,10 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-> The `payload` object is the same as the one passed to the
-> [`onRequest` hook](https://github.com/ardatan/whatwg-node/blob/master/packages/server/src/plugins/types.ts#L16-L25).
+<Callout>
+  The `payload` object is the same as the one passed to the [`onRequest`
+  hook](https://github.com/ardatan/whatwg-node/blob/master/packages/server/src/plugins/types.ts#L16-L25).
+</Callout>
 
 </details>
 
@@ -475,10 +696,12 @@ following attributes:
 - `graphql.document`: The GraphQL query string
 - `graphql.operation.name`: The operation name
 
-> An error in the parse phase will be reported as an
-> [error span](https://opentelemetry.io/docs/specs/semconv/exceptions/exceptions-spans/), including
-> the error message and as an OpenTelemetry
-> [`Exception`](https://opentelemetry.io/docs/specs/otel/trace/exceptions/).
+<Callout>
+  An error in the parse phase will be reported as an [error
+  span](https://opentelemetry.io/docs/specs/semconv/exceptions/exceptions-spans/), including the
+  error message and as an OpenTelemetry
+  [`Exception`](https://opentelemetry.io/docs/specs/otel/trace/exceptions/).
+</Callout>
 
 You may disable this by setting `spans.graphqlParse` to `false`:
 
@@ -519,8 +742,10 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-> The `payload` object is the same as the one passed to the
-> [`onParse` hook](https://the-guild.dev/graphql/envelop/v4/plugins/lifecycle#before).
+<Callout>
+  The `payload` object is the same as the one passed to the [`onParse`
+  hook](https://the-guild.dev/graphql/envelop/v4/plugins/lifecycle#before).
+</Callout>
 
 </details>
 
@@ -534,10 +759,12 @@ following attributes:
 - `graphql.document`: The GraphQL query string
 - `graphql.operation.name`: The operation name
 
-> An error in the validate phase will be reported as an
-> [error span](https://opentelemetry.io/docs/specs/semconv/exceptions/exceptions-spans/), including
-> the error message and as an OpenTelemetry
-> [`Exception`](https://opentelemetry.io/docs/specs/otel/trace/exceptions/).
+<Callout>
+  An error in the validate phase will be reported as an [error
+  span](https://opentelemetry.io/docs/specs/semconv/exceptions/exceptions-spans/), including the
+  error message and as an OpenTelemetry
+  [`Exception`](https://opentelemetry.io/docs/specs/otel/trace/exceptions/).
+</Callout>
 
 You may disable this by setting `spans.graphqlValidate` to `false`:
 
@@ -578,8 +805,10 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-> The `payload` object is the same as the one passed to the
-> [`onValidate` hook](https://the-guild.dev/graphql/envelop/v4/plugins/lifecycle#before-1).
+<Callout>
+  The `payload` object is the same as the one passed to the [`onValidate`
+  hook](https://the-guild.dev/graphql/envelop/v4/plugins/lifecycle#before-1).
+</Callout>
 
 </details>
 
@@ -594,10 +823,12 @@ following attributes:
 - `graphql.operation.name`: The operation name
 - `graphql.operation.type`: The operation type (`query`/`mutation`/`subscription`)
 
-> An error in the execute phase will be reported as an
-> [error span](https://opentelemetry.io/docs/specs/semconv/exceptions/exceptions-spans/), including
-> the error message and as an OpenTelemetry
-> [`Exception`](https://opentelemetry.io/docs/specs/otel/trace/exceptions/).
+<Callout>
+  An error in the execute phase will be reported as an [error
+  span](https://opentelemetry.io/docs/specs/semconv/exceptions/exceptions-spans/), including the
+  error message and as an OpenTelemetry
+  [`Exception`](https://opentelemetry.io/docs/specs/otel/trace/exceptions/).
+</Callout>
 
 You may disable this by setting `spans.graphqlExecute` to `false`:
 
@@ -638,8 +869,10 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-> The `payload` object is the same as the one passed to the
-> [`onExecute` hook](https://the-guild.dev/graphql/envelop/v4/plugins/lifecycle#before-3).
+<Callout>
+  The `payload` object is the same as the one passed to the [`onExecute`
+  hook](https://the-guild.dev/graphql/envelop/v4/plugins/lifecycle#before-3).
+</Callout>
 
 </details>
 
@@ -707,8 +940,10 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-> The `payload` object is the same as the one passed to the
-> [`onSubgraphHook` hook](/docs/gateway/other-features/custom-plugins#onsubgraphexecute).
+<Callout>
+  The `payload` object is the same as the one passed to the [`onSubgraphHook`
+  hook](/docs/gateway/other-features/custom-plugins#onsubgraphexecute).
+</Callout>
 
 </details>
 
@@ -771,8 +1006,10 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-> The `payload` object is the same as the one passed to the
-> [`onFetch` hook](/docs/gateway/other-features/custom-plugins#onfetch).
+<Callout>
+  The `payload` object is the same as the one passed to the [`onFetch`
+  hook](/docs/gateway/other-features/custom-plugins#onfetch).
+</Callout>
 
 </details>
 
@@ -1216,7 +1453,7 @@ Then, use the following `curl` command will fetch the metrics from your gateway:
 curl -v http://localhost:4000/metrics
 ```
 
-> Change `http://localhost:4000` to the actual URL of your running gateway.
+<Callout>Change `http://localhost:4000` to the actual URL of your running gateway.</Callout>
 
 ### Customizations
 
@@ -1365,7 +1602,7 @@ Available metrics:
 - `graphql.fetch.error.count` - the number of failed outgoing HTTP requests
 - `graphql.fetch.latency` - a histogram of outgoing HTTP response times (in milliseconds)
 
-> You can also customize the `graphql` prefix and add custom tags to the metrics.
+<Callout>You can also customize the `graphql` prefix and add custom tags to the metrics.</Callout>
 
 ### Usage Example
 
@@ -1401,8 +1638,10 @@ This is how it looks like in Sentry for error tracking:
 ![Example](https://raw.githubusercontent.com/n1ru4l/envelop/main/packages/plugins/sentry/error1.png)
 ![Example](https://raw.githubusercontent.com/n1ru4l/envelop/main/packages/plugins/sentry/error2.png)
 
-> The operation name, document, variables are collected on errors, and the breadcrumbs that led to
-> the error. You can also add any custom values that you need.
+<Callout>
+  The operation name, document, variables are collected on errors, and the breadcrumbs that led to
+  the error. You can also add any custom values that you need.
+</Callout>
 
 To get started with Sentry, you need to create a new project in Sentry and get the DSN:
 
