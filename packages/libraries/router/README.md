@@ -7,6 +7,8 @@ At the moment, the following are implemented:
 - [Fetching Supergraph from Hive CDN](https://the-guild.dev/graphql/hive/docs/high-availability-cdn)
 - [Sending usage information](https://the-guild.dev/graphql/hive/docs/schema-registry/usage-reporting)
   from a running Apollo Router instance to Hive
+- Persisted Operations using Hive's
+  [App Deployments](https://the-guild.dev/graphql/hive/docs/schema-registry/app-deployments)
 
 This project is constructed as a Rust project that implements Apollo-Router plugin interface.
 
