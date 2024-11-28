@@ -24,7 +24,12 @@ export const components = {
     <p className="text-green-800" {...props} />
   ),
   ul: (props: React.HTMLAttributes<HTMLUListElement>) => {
-    return <ul className="-m-4 mt-5 grid grid-cols-4 gap-5 overflow-auto p-4" {...props} />;
+    return (
+      <ul
+        className="mt-5 grid grid-cols-4 gap-5 overflow-x-auto p-4 last-of-type:mb-24"
+        {...props}
+      />
+    );
   },
   li: (props: React.LiHTMLAttributes<HTMLLIElement>) => {
     const productName = String(props.children)

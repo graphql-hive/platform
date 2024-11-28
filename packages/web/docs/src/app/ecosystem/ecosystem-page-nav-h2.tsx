@@ -1,7 +1,5 @@
 'use client';
 
-import { PRODUCTS } from '@theguild/components';
-
 export const EcosystemPageNavH2 = (props: React.HTMLAttributes<HTMLHeadingElement>) => (
   <a
     href={`#${props.id}`}
