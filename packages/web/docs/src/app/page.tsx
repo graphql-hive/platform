@@ -10,20 +10,32 @@ import {
   LargeHiveIconDecoration,
   ToolsAndLibrariesCards,
 } from '@theguild/components';
-import { CheckIcon } from './check-icon';
-import { CommunitySection } from './community-section';
-import { AligentLogo, KarrotLogo, LinktreeLogo, MeetupLogo, SoundYXZLogo } from './company-logos';
-import { CompanyTestimonialsSection } from './company-testimonials';
-import { EcosystemManagementSection } from './ecosystem-management';
-import { FeatureTabs } from './feature-tabs';
-import { FrequentlyAskedQuestions } from './frequently-asked-questions';
-import { Hero, HeroFeatures, HeroLinks, TrustedBy } from './hero';
-import { InfoCard } from './info-card';
-import { LandingPageContainer } from './landing-page-container';
-import { StatsItem, StatsList } from './stats';
-import { TeamSection } from './team-section';
+import { CheckIcon } from '../components/check-icon';
+import { CommunitySection } from '../components/community-section';
+import {
+  AligentLogo,
+  KarrotLogo,
+  LinktreeLogo,
+  MeetupLogo,
+  SoundYXZLogo,
+} from '../components/company-logos';
+import { CompanyTestimonialsSection } from '../components/company-testimonials';
+import { EcosystemManagementSection } from '../components/ecosystem-management';
+import { FeatureTabs } from '../components/feature-tabs';
+import { FrequentlyAskedQuestions } from '../components/frequently-asked-questions';
+import { Hero, HeroFeatures, HeroLinks, TrustedBy } from '../components/hero';
+import { InfoCard } from '../components/info-card';
+import { LandingPageContainer } from '../components/landing-page-container';
+import { StatsItem, StatsList } from '../components/stats';
+import { TeamSection } from '../components/team-section';
 
-export function IndexPage(): ReactElement {
+export const metadata = {
+  title: 'Open-Source GraphQL Federation Platform',
+  description:
+    'Fully Open-Source schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs',
+};
+
+export default function IndexPage(): ReactElement {
   return (
     <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <Hero className="mx-4 max-sm:mt-2 md:mx-6">

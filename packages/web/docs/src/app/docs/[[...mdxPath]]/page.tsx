@@ -13,7 +13,7 @@ export async function generateMetadata(props: PageProps<'...mdxPath'>) {
 const Wrapper = useMDXComponents({}).wrapper;
 
 export default async function Page(props: PageProps<'...mdxPath'>) {
-  const params = await props.params;
+  const [params, searchParams] = await Promise.all([props.params, props.searchParams]);
 
   console.log('mdx page params', params);
 
@@ -22,7 +22,7 @@ export default async function Page(props: PageProps<'...mdxPath'>) {
 
   return (
     <Wrapper toc={toc} metadata={metadata}>
-      <MDXContent {...props} params={params} />
+      <MDXContent params={params} searchParams={searchParams} />
       <ConfiguredGiscus />
     </Wrapper>
   );
