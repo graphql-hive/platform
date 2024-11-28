@@ -43,6 +43,10 @@ endpoint and expecting the response `200 OK`. A successful response is just `200
 
 You can change this endpoint through the `healthCheckEndpoint` option:
 
+<Tabs items={['CLI', "Programmatic Usage"]}>
+
+<Tabs.Tab>
+
 ```ts filename="gateway.config.ts"
 import { defineConfig } from '@graphql-hive/gateway'
 
@@ -50,6 +54,22 @@ export const gatewayConfig = defineConfig({
   healthCheckEndpoint: '/healthcheck'
 })
 ```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+
+export const gateway = createGatewayRuntime({
+  healthCheckEndpoint: '/healthcheck'
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 ### Readiness
 
@@ -61,6 +81,10 @@ It returns `200 OK` if all the services are ready to perform work.
 
 You can customize the readiness check endpoint through the `readinessCheckEndpoint` option:
 
+<Tabs items={['CLI', "Programmatic Usage"]}>
+
+<Tabs.Tab>
+
 ```ts filename="gateway.config.ts"
 import { defineConfig } from '@graphql-hive/gateway'
 
@@ -68,6 +92,22 @@ export const gatewayConfig = defineConfig({
   readinessCheckEndpoint: '/readiness'
 })
 ```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+
+export const gateway = createGatewayRuntime({
+  readinessCheckEndpoint: '/readiness'
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 ## OpenTelemetry Traces
 
@@ -194,6 +234,12 @@ export const gatewayConfig = defineConfig({
 </Tabs.Tab>
 
 <Tabs.Tab>
+
+<Callout>
+  Beware that OpenTelemetry JavaScript SDK writes spans using `console.dir`. Meaning,
+  serverless/on-the-edge environments that don't support `console.dir` (like [Cloudflare
+  Workers](https://developers.cloudflare.com/workers/runtime-apis/console/)) wont show any logs.
+</Callout>
 
 ```ts filename="index.ts"
 import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
@@ -642,41 +688,33 @@ And the following attributes for the HTTP response:
 
 You may disable this by setting `spans.http` to `false`:
 
-```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      http: false
-    }
+```ts
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    http: false
   }
-})
+}
 ```
 
 Or, you may filter the spans by setting the `spans` configuration to a function:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      http: payload => {
-        // Filter the spans based on the payload
-        return true
-      }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    http: payload => {
+      // Filter the spans based on the payload
+      return true
     }
   }
-})
+}
 ```
 
 <Callout>
@@ -706,40 +744,32 @@ following attributes:
 You may disable this by setting `spans.graphqlParse` to `false`:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      graphqlParse: false
-    }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    graphqlParse: false
   }
-})
+}
 ```
 
 Or, you may filter the spans by setting the `spans` configuration to a function:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      graphqlParse: payload => {
-        // Filter the spans based on the payload
-        return true
-      }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    graphqlParse: payload => {
+      // Filter the spans based on the payload
+      return true
     }
   }
-})
+}
 ```
 
 <Callout>
@@ -769,40 +799,32 @@ following attributes:
 You may disable this by setting `spans.graphqlValidate` to `false`:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      graphqlValidate: false
-    }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    graphqlValidate: false
   }
-})
+}
 ```
 
 Or, you may filter the spans by setting the `spans` configuration to a function:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      graphqlValidate: payload => {
-        // Filter the spans based on the payload
-        return true
-      }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    graphqlValidate: payload => {
+      // Filter the spans based on the payload
+      return true
     }
   }
-})
+}
 ```
 
 <Callout>
@@ -833,40 +855,32 @@ following attributes:
 You may disable this by setting `spans.graphqlExecute` to `false`:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      graphqlExecute: false
-    }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    graphqlExecute: false
   }
-})
+}
 ```
 
 Or, you may filter the spans by setting the `spans` configuration to a function:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      graphqlExecute: payload => {
-        // Filter the spans based on the payload
-        return true
-      }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    graphqlExecute: payload => {
+      // Filter the spans based on the payload
+      return true
     }
   }
-})
+}
 ```
 
 <Callout>
@@ -904,40 +918,32 @@ And the following attributes for the HTTP response:
 You may disable this by setting `spans.subgraphExecute` to `false`:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      subgraphExecute: false
-    }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    subgraphExecute: false
   }
-})
+}
 ```
 
 Or, you may filter the spans by setting the `spans.subgraphExecute` configuration to a function:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      subgraphExecute: payload => {
-        // Filter the spans based on the payload
-        return true
-      }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    subgraphExecute: payload => {
+      // Filter the spans based on the payload
+      return true
     }
   }
-})
+}
 ```
 
 <Callout>
@@ -970,40 +976,32 @@ And the following attributes for the HTTP response:
 You may disable this by setting `spans.upstreamFetch` to `false`:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      upstreamFetch: false
-    }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    upstreamFetch: false
   }
-})
+}
 ```
 
 Or, you may filter the spans by setting the `spans.upstreamFetch` configuration to a function:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  openTelemetry: {
-    exporters: [
-      /* ... */
-    ],
-    spans: {
-      /* ... */
-      upstreamFetch: payload => {
-        // Filter the spans based on the payload
-        return true
-      }
+const openTelemetryConfig = {
+  exporters: [
+    /* ... */
+  ],
+  spans: {
+    /* ... */
+    upstreamFetch: payload => {
+      // Filter the spans based on the payload
+      return true
     }
   }
-})
+}
 ```
 
 <Callout>
@@ -1021,6 +1019,10 @@ the incoming HTTP request and the outgoing HTTP requests.
 
 You may disable this by setting `inheritContext` or `propagateContext` to `false`:
 
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
+
 ```ts filename="gateway.config.ts"
 import { defineConfig } from '@graphql-hive/gateway'
 
@@ -1037,6 +1039,34 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="gateway.config.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [
+        /* ... */
+      ],
+      // Controls the propagation of the trace context between the incoming HTTP request and Hive Gateway
+      inheritContext: false,
+      // Controls the propagation of the trace context between Hive Gateway and the upstream HTTP requests
+      propagateContext: false
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
 ### Troubleshooting
 
 The default behavor of the plugin is to log errors and warnings to the console.
@@ -1045,7 +1075,11 @@ You can customize this behavior by changing the value of the
 [`OTEL_LOG_LEVEL`](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/)
 environment variable on your gateway process/runtime.
 
-In addition, you can use the `Stdout` exporter to log the traces to the console:
+In addition, you can use the stdout exporter to log the traces to the console:
+
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
 
 ```ts filename="gateway.config.ts"
 import { createStdoutExporter, defineConfig } from '@graphql-hive/gateway'
@@ -1056,6 +1090,34 @@ export const gatewayConfig = defineConfig({
   }
 })
 ```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+<Callout>
+  Beware that OpenTelemetry JavaScript SDK writes spans using `console.dir`. Meaning,
+  serverless/on-the-edge environments that don't support `console.dir` (like [Cloudflare
+  Workers](https://developers.cloudflare.com/workers/runtime-apis/console/)) wont show any logs.
+</Callout>
+
+```ts filename="gateway.config.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import { createStdoutExporter, useOpenTelemetry } from '@graphql-mesh/plugin-opentelemetry'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    useOpenTelemetry({
+      ...ctx,
+      exporters: [createStdoutExporter()]
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 This will log the traces to the console, which can be useful for debugging and troubleshooting.
 
