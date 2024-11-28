@@ -1134,7 +1134,9 @@ an HTTP endpoint (`/metrics` by default).
 
 ### Usage Example
 
-Add its configuration to your `gateway.config.ts` file.
+<Tabs items={["CLI", "Programmatic Usage"]}>
+
+<Tabs.Tab>
 
 ```ts filename="gateway.config.ts"
 import { defineConfig } from '@graphql-hive/gateway'
@@ -1163,6 +1165,50 @@ export const gatewayConfig = defineConfig({
   }
 })
 ```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```sh npm2yarn
+npm i @graphql-mesh/plugin-prometheus
+```
+
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import usePrometheus from '@graphql-mesh/plugin-prometheus'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    usePrometheus({
+      ...ctx,
+      // Enable the metrics you want to expose
+      // The following represent the default config of the plugin.
+      metrics: {
+        graphql_gateway_fetch_duration: true,
+        graphql_gateway_subgraph_execute_duration: true,
+        graphql_gateway_subgraph_execute_errors: true,
+        graphql_envelop_deprecated_field: true,
+        graphql_envelop_request: true,
+        graphql_envelop_request_duration: true,
+        graphql_envelop_request_time_summary: true,
+        graphql_envelop_phase_parse: true,
+        graphql_envelop_phase_validate: true,
+        graphql_envelop_phase_context: true,
+        graphql_envelop_error_result: true,
+        graphql_envelop_phase_execute: true,
+        graphql_envelop_phase_subscribe: true,
+        graphql_envelop_schema_change: true,
+        graphql_yoga_http_duration: true
+      }
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 You can now start your Hive Gateway and make some requests to it. The plugin will start collecting
 metrics, and you can access them by visiting the `/metrics` endpoint.
@@ -1533,15 +1579,11 @@ ignore introspection queries for all metrics prefixed by `graphql_envelop_` by s
 By default, all labels are enabled, but each one can be disabled to reduce cardinality:
 
 ```ts filename="gateway.confing.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  prometheus: {
-    labels: {
-      url: false // remove `url` labels from all relevant metrics
-    }
+const prometheusConfig = {
+  labels: {
+    url: false // remove `url` labels from all relevant metrics
   }
-})
+}
 ```
 
 </Tabs.Tab>
@@ -1552,15 +1594,11 @@ By providing a string, you can change the name of the metric. For example, to ch
 name of the `graphql_yoga_http_duration` metric to `http_request_duration`, you would use:
 
 ```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  prometheus: {
-    metrics: {
-      graphql_yoga_http_duration: 'http_request_duration'
-    }
+const prometheusConfig = {
+  metrics: {
+    graphql_yoga_http_duration: 'http_request_duration'
   }
-})
+}
 ```
 
 </Tabs.Tab>
@@ -1585,9 +1623,13 @@ Available options depend on the metric type, and full details about them can be 
 
 For example, you can customize the buckets of the `graphql_yoga_http_duration` histogram metric:
 
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
+
 ```ts filename="gateway.config.ts"
-import { defineConfig, createHistogram } from '@graphql-hive/gateway'
 import { register as registry } from 'prom-client'
+import { createHistogram, defineConfig } from '@graphql-hive/gateway'
 
 export const gatewayConfig = defineConfig({
   prometheus: {
@@ -1598,17 +1640,18 @@ export const gatewayConfig = defineConfig({
           name: 'graphql_yoga_http_duration',
           help: 'Time spent on HTTP connection',
           labels: ['method', 'statusCode', 'operationName', 'operationType'],
-          buckets: [0.1, 5, 15, 50, 100, 500],
-        }
+          buckets: [0.1, 5, 15, 50, 100, 500]
+        },
         fillLabelsFn(params, { request, response }) {
           return {
             method: request.method,
             statusCode: response.status,
             operationType: params.operationType,
-            operationName: params.operationName || 'Anonymous',
-          };
+            operationName: params.operationName || 'Anonymous'
+          }
         }
       })
+      // ... rest of metrics ...
     }
   }
 })
@@ -1618,19 +1661,60 @@ export const gatewayConfig = defineConfig({
 
 <Tabs.Tab>
 
-You can customize the client’s registry by passing a custom registry to the `registry` option.
+```ts filename="index.ts"
+import { register as registry } from 'prom-client'
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import usePrometheus, { createHistogram } from '@graphql-mesh/plugin-prometheus'
+
+export const gateway = createGatewayRuntime({
+  plugins: ctx => [
+    usePrometheus({
+      ...ctx,
+      // Enable the metrics you want to expose
+      // The following represent the default config of the plugin.
+      metrics: {
+        graphql_yoga_http_duration: createHistogram({
+          registry,
+          histogram: {
+            name: 'graphql_yoga_http_duration',
+            help: 'Time spent on HTTP connection',
+            labels: ['method', 'statusCode', 'operationName', 'operationType'],
+            buckets: [0.1, 5, 15, 50, 100, 500]
+          },
+          fillLabelsFn(params, { request, response }) {
+            return {
+              method: request.method,
+              statusCode: response.status,
+              operationType: params.operationType,
+              operationName: params.operationName || 'Anonymous'
+            }
+          }
+        })
+        // ... rest of metrics ...
+      }
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+You can customize the client's registry by passing a custom registry to the `registry` option.
 
 ```ts filename="gateway.config.ts"
 import { Registry } from 'prom-client'
-import { defineConfig } from '@graphql-hive/gateway'
 
 const myRegistry = new Registry()
 
-export const gatewayConfig = defineConfig({
-  prometheus: {
-    registry: myRegistry
-  }
-})
+const prometheusConfig = {
+  registry: myRegistry
+}
 ```
 
 </Tabs.Tab>
@@ -1668,6 +1752,10 @@ Available metrics:
 
 ### Usage Example
 
+<Tabs items={["CLI", "Programmatic Usage"]}>
+
+<Tabs.Tab>
+
 ```ts filename="gateway.config.ts"
 import { StatsD } from 'hot-shots'
 import { defineConfig } from '@graphql-hive/gateway'
@@ -1689,6 +1777,36 @@ export const gatewayConfig = defineConfig({
   ]
 })
 ```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import { StatsD } from 'hot-shots'
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import useStatsD from '@graphql-mesh/plugin-statsd'
+
+export const gateway = createGatewayRuntime({
+  plugins: pluginCtx => [
+    useStatsD({
+      ...pluginCtx,
+      // Configure `hot-shots` if only you need. You don't need to pass this if you don't need to configure it.
+      client: new StatsD({
+        port: 8020
+      }),
+      // results in `my-graphql-gateway.operations.count` instead of `graphql.operations.count`
+      prefix: 'my-graphql-gateway',
+      // If you wish to disable introspection logging
+      skipIntrospection: true
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 ## Sentry
 
@@ -1720,11 +1838,14 @@ yarn add @sentry/node @sentry/tracing @envelop/sentry
 
 ### Usage Example
 
+<Tabs items={["CLI", 'Programmatic Usage']}>
+
+<Tabs.Tab>
+
 ```ts filename="gateway.config.ts"
+import '@sentry/tracing' // import only once in you entry file!
 import { useSentry } from '@envelop/sentry'
 import { defineConfig } from '@graphql-hive/gateway'
-// do this only once in you entry file.
-import '@sentry/tracing'
 
 export const gatewayConfig = defineConfig({
   plugins: () => [
@@ -1739,6 +1860,33 @@ export const gatewayConfig = defineConfig({
   ]
 })
 ```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="index.ts"
+import '@sentry/tracing' // import only once in you entry file!
+import { useSentry } from '@envelop/sentry'
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+
+export const gateway = createGatewayRuntime({
+  plugins: () => [
+    useSentry({
+      includeRawResult: false, // set to `true` in order to include the execution result in the metadata collected
+      includeResolverArgs: false, // set to `true` in order to include the args passed to resolvers
+      includeExecuteVariables: false, // set to `true` in order to include the operation variables values
+      appendTags: args => {}, // if you wish to add custom "tags" to the Sentry transaction created per operation
+      configureScope: (args, scope) => {}, // if you wish to modify the Sentry scope
+      skip: executionArgs => {} // if you wish to modify the skip specific operations
+    })
+  ]
+})
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 ### Configuration
 
