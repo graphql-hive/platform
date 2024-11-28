@@ -2,6 +2,7 @@
 import { generateStaticParamsFor, importPage } from 'nextra/pages';
 import { useMDXComponents } from '../../../../mdx-components.js';
 import { ConfiguredGiscus } from '../../../components/configured-giscus';
+import { ProductUpdateBlogPostHeader } from '../../../components/product-update-blog-post-header';
 
 export const generateStaticParams = async () => {
   const pages = await generateStaticParamsFor('mdxPath')();
@@ -28,6 +29,7 @@ export default async function Page(props: PageProps<'...mdxPath'>) {
 
   return (
     <Wrapper toc={toc} metadata={metadata}>
+      <ProductUpdateBlogPostHeader meta={metadata} />
       <MDXContent params={params} />
       <ConfiguredGiscus />
     </Wrapper>
