@@ -2,7 +2,7 @@ import { allPermissionGroups, ResourceLevel, type PermissionRecord } from './per
 
 // some caches to avoid some iterations
 const resourceLevelToPermissions = new Map<ResourceLevel, Array<string>>();
-const permissionsById = new Map<string, PermissionRecord>();
+export const permissionsById = new Map<string, PermissionRecord>();
 
 for (const permissionGroup of allPermissionGroups) {
   for (const permission of permissionGroup.permissions) {
@@ -16,12 +16,11 @@ for (const permissionGroup of allPermissionGroups) {
   }
 }
 
-export type GrantedPermissions = { [key: string]: 'allow' | 'deny' | undefined };
+export type GrantedPermissions = { [key: string]: 'allow' | undefined };
 
 export const enum PermissionsSelectionGroupAccessMode {
   granular = 'granular',
   allowAll = 'allowAll',
-  denyAll = 'denyAll',
 }
 
 export type PermissionSelectionGroup = {
@@ -97,8 +96,6 @@ export function resolvePermissionsFromPermissionSelectionGroup(
   ) {
     if (record.permissions[permissionId] === undefined) {
       record.permissions[permissionId] = value;
-    } else if (record.permissions[permissionId] === 'allow' && value === 'deny') {
-      record.permissions[permissionId] = 'deny';
     }
   }
 
@@ -111,10 +108,7 @@ export function resolvePermissionsFromPermissionSelectionGroup(
       return resource;
     });
 
-    if (
-      group.mode === PermissionsSelectionGroupAccessMode.allowAll ||
-      group.mode === PermissionsSelectionGroupAccessMode.denyAll
-    ) {
+    if (group.mode === PermissionsSelectionGroupAccessMode.allowAll) {
       let currentLevel: ResourceLevel | null = group.level;
 
       do {
@@ -124,11 +118,7 @@ export function resolvePermissionsFromPermissionSelectionGroup(
             throw new Error(`Could not find permission with id "${permissionId}".`);
           }
 
-          const permissionValue =
-            permission.readOnly === true ||
-            group.mode === PermissionsSelectionGroupAccessMode.allowAll
-              ? 'allow'
-              : 'deny';
+          const permissionValue = 'allow';
 
           for (const resourceRecord of affectedResources) {
             if (Array.isArray(resourceRecord.resource.childResourceIds)) {
@@ -220,4 +210,29 @@ export function resourceLevelToScore(level: ResourceLevel) {
     case ResourceLevel.service:
       return 1;
   }
+}
+
+export function getInheritedPermissions(
+  level: ResourceLevel,
+  grantedPermissionsList: Array<GrantedPermissions>,
+): GrantedPermissions {
+  if (level === ResourceLevel.organization) {
+    return {};
+  }
+
+  const inheritedPermissions: GrantedPermissions = {};
+
+  for (const grantedPermission of grantedPermissionsList) {
+    for (const [permissionId, value] of Object.entries(grantedPermission)) {
+      const permission = permissionsById.get(permissionId);
+      if (!permission) {
+        throw new Error('Could not find permission ' + permissionId);
+      }
+      if (value === 'allow') {
+        inheritedPermissions[permissionId] = value;
+      }
+    }
+  }
+
+  return inheritedPermissions;
 }
