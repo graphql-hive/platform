@@ -1,7 +1,6 @@
 import { stringify } from 'csv-stringify';
 import { endOfDay, startOfDay } from 'date-fns';
 import { Inject, Injectable, Scope } from 'graphql-modules';
-import { decodeCreatedAtAndUUIDIdBasedCursor } from '@hive/storage';
 import { captureException } from '@sentry/node';
 import { Session } from '../../auth/lib/authz';
 import { ClickHouse, sql } from '../../operations/providers/clickhouse-client';
@@ -31,68 +30,6 @@ export class AuditLogManager {
     private storage: Storage,
   ) {
     this.logger = logger.child({ source: 'AuditLogManager' });
-  }
-
-  async getPaginatedAuditLogs(
-    organizationId: string,
-    first?: number | null,
-    after?: string | null,
-  ): Promise<{ data: AuditLogType[] }> {
-    await this.session.assertPerformAction({
-      action: 'auditLog:export',
-      organizationId,
-      params: {
-        organizationId,
-      },
-    });
-
-    this.logger.info(
-      'Getting audit logs (organizationId: %s, first: %s, after: %s)',
-      organizationId,
-      first,
-      after,
-    );
-    const limit = first ? (first > 0 ? Math.min(first, 25) : 25) : 25;
-    const cursor = after ? decodeCreatedAtAndUUIDIdBasedCursor(after) : null;
-
-    const where: SqlValue[] = [];
-    where.push(sql`organization_id = ${organizationId}`);
-
-    if (cursor?.createdAt) {
-      where.push(sql`timestamp >= ${cursor.createdAt}`);
-    }
-    if (cursor?.id) {
-      where.push(sql`id > ${cursor.id}`);
-    }
-
-    const whereClause = where.length > 0 ? sql`WHERE ${sql.join(where, ' AND ')}` : sql``;
-
-    const query = sql`
-      SELECT
-        id
-        , "timestamp"
-        , "organization_id" AS "organizationId"
-        , "event_action" AS "eventAction"
-        , "user_id" AS "userId"
-        , "user_email" AS "userEmail"
-        , "metadata"
-      FROM audit_logs
-      ${whereClause}
-      ORDER BY timestamp DESC, id DESC
-      ${limit ? sql`LIMIT toInt64(${String(limit)})` : sql``}
-    `;
-
-    const result = await this.clickHouse.query({
-      query,
-      queryId: 'get-audit-logs',
-      timeout: 10000,
-    });
-
-    const data = AuditLogClickhouseArrayModel.parse(result.data);
-
-    return {
-      data,
-    };
   }
 
   async getAuditLogsByDateRange(

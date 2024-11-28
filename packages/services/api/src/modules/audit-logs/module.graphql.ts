@@ -22,13 +22,6 @@ export const typeDefs = gql`
     user: User
   }
 
-  extend type Organization {
-    """
-    The organization's audit logs. This field is only available to members with the Admin role.
-    """
-    auditLogs(first: Int, after: String): AuditLogConnection!
-  }
-
   extend type Mutation {
     exportOrganizationAuditLog(
       selector: OrganizationSelectorInput!
