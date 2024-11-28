@@ -32,29 +32,19 @@ export type PermissionSelectionGroup = {
   resourceIds: Array<string>;
 };
 
-export function createPermissionSelectionGroup(args: {
-  id: string;
-  level: ResourceLevel;
-  title: string;
-  resourceIds?: Array<string>;
-}): PermissionSelectionGroup {
+export function createGrantedPermissionsObject(): GrantedPermissions {
   const permissions: GrantedPermissions = {};
 
   // add default permissions
   for (const group of allPermissionGroups) {
     for (const permission of group.permissions) {
-      if (permission.level === args.level && permission.readOnly === true) {
+      if (permission.readOnly === true) {
         permissions[permission.id] = 'allow';
       }
     }
   }
 
-  return {
-    ...args,
-    selectedPermissions: permissions,
-    mode: PermissionsSelectionGroupAccessMode.granular,
-    resourceIds: args.resourceIds ?? [],
-  };
+  return permissions;
 }
 
 export type Resource = {

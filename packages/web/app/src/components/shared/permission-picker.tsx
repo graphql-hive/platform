@@ -1,5 +1,5 @@
-import { Dispatch, useEffect, useMemo, useRef, useState } from 'react';
-import { Check, CheckIcon, ChevronRight, InfoIcon, XIcon } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { CheckIcon, InfoIcon, XIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import {
   Accordion,
@@ -39,13 +39,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import {
-  createPermissionSelectionGroup,
-  getInheritedPermissions,
+  createGrantedPermissionsObject,
   GrantedPermissions,
-  permissionsById,
-  PermissionSelectionGroup,
-  PermissionsSelectionGroupAccessMode,
-  resolvePermissionsFromPermissionSelectionGroup,
   Resource,
   resourceLevelToScore,
 } from './permission-picker/lib';
@@ -56,7 +51,6 @@ import {
 } from './permission-picker/permissions';
 
 function PermissionSelector(props: {
-  inheritedPermissions: GrantedPermissions;
   resourceLevel: ResourceLevel;
   grantedPermissions: GrantedPermissions;
   updateGrantedPermissions: (group: GrantedPermissions) => void;
@@ -65,14 +59,12 @@ function PermissionSelector(props: {
     const filteredGroups: Array<
       PermissionGroup & {
         selectedPermissionCount: number;
-        inheritedPermissionCount: number;
       }
     > = [];
     const permissionGroupMapping = new Map<string, string>();
 
     for (const group of allPermissionGroups) {
       let selectedPermissionCount = 0;
-      let inheritedPermissionCount = 0;
 
       const filteredGroupPermissions = group.permissions.filter(permission => {
         const shouldInclude =
@@ -80,10 +72,6 @@ function PermissionSelector(props: {
 
         if (shouldInclude === false) {
           return false;
-        }
-
-        if (props.inheritedPermissions[permission.id] !== undefined) {
-          inheritedPermissionCount++;
         }
 
         if (props.grantedPermissions[permission.id] !== undefined) {
@@ -102,7 +90,6 @@ function PermissionSelector(props: {
       filteredGroups.push({
         ...group,
         selectedPermissionCount,
-        inheritedPermissionCount,
         permissions: filteredGroupPermissions,
       });
     }
@@ -145,23 +132,13 @@ function PermissionSelector(props: {
                     {group.selectedPermissionCount} selected
                   </span>
                 )}
-                {group.inheritedPermissionCount > 0 && (
-                  <span className="ml-1 mr-1 text-sm">
-                    {group.inheritedPermissionCount} inherited
-                  </span>
-                )}
               </span>
             </AccordionTrigger>
-            <AccordionContent className="pl-2 pt-1" forceMount={true}>
+            <AccordionContent className="pl-2 pt-1" forceMount>
               {group.permissions.map(permission => {
                 const needsDependency =
                   !!permission.dependsOn &&
-                  props.grantedPermissions[permission.dependsOn] !== 'allow' &&
-                  props.inheritedPermissions[permission.dependsOn] !== 'allow';
-
-                if (props.resourceLevel === 'service') {
-                  console.log(props.inheritedPermissions);
-                }
+                  props.grantedPermissions[permission.dependsOn] !== 'allow';
 
                 return (
                   <div
@@ -181,7 +158,6 @@ function PermissionSelector(props: {
                       <div className="font-semibold text-white">{permission.title}</div>
                       <div className="text-xs text-gray-400">{permission.description}</div>
                     </div>
-                    {props.inheritedPermissions[permission.id] === 'allow' && <>INHERITED</>}
                     {!!permission.dependsOn && permissionGroupMapping.has(permission.dependsOn) && (
                       <div className="text-gray flex grow justify-end">
                         <TooltipProvider>
@@ -208,8 +184,7 @@ function PermissionSelector(props: {
                                     setOpenAccordions(values => {
                                       const groupName =
                                         permissionGroupMapping.get(dependencyPermission);
-                                      if (!groupName) {
-                                      }
+
                                       if (groupName && values.includes(groupName) === false) {
                                         return [...values, groupName];
                                       }
@@ -228,13 +203,9 @@ function PermissionSelector(props: {
                       </div>
                     )}
                     <Select
-                      disabled={
-                        permission.readOnly ||
-                        needsDependency ||
-                        props.inheritedPermissions[permission.id] === 'allow'
-                      }
+                      disabled={permission.readOnly || needsDependency}
                       value={
-                        permission.readOnly || props.inheritedPermissions[permission.id] === 'allow'
+                        permission.readOnly
                           ? 'allow'
                           : props.grantedPermissions[permission.id] || 'not-selected'
                       }
@@ -277,67 +248,15 @@ function PermissionSelector(props: {
   );
 }
 
-function GroupTeaser(props: {
-  title: string;
-  grantedPermissions: GrantedPermissions;
-  inheritedPermissions: GrantedPermissions;
-  onClick: () => void;
-  mode: PermissionsSelectionGroupAccessMode;
-  resourceLevel: ResourceLevel;
-}) {
-  const assignedPermissionsCount = Array.from(Object.values(props.grantedPermissions)).reduce(
-    (current, next) => {
-      if (!next) {
-        return current;
-      }
-      return current + 1;
-    },
-    0,
-  );
-
-  const inheritedPermissionsCount = Array.from(Object.entries(props.inheritedPermissions)).reduce(
-    (current, [permissionId, value]) => {
-      if (!value || permissionsById.get(permissionId)?.level !== props.resourceLevel) {
-        return current;
-      }
-      return current + 1;
-    },
-    0,
-  );
-
-  return (
-    <Button variant="outline" className="w-full" onClick={props.onClick}>
-      {props.resourceLevel && <Badge className="mr-2 capitalize">{props.resourceLevel}</Badge>}
-      <span className="ml-0 mr-auto">{props.title}</span>
-      {props.mode === PermissionsSelectionGroupAccessMode.granular && (
-        <>
-          {assignedPermissionsCount > 0 && (
-            <span className="ml-1">{assignedPermissionsCount} selected</span>
-          )}
-          {inheritedPermissionsCount > 0 && (
-            <span className="ml-1">{inheritedPermissionsCount} inherited</span>
-          )}
-        </>
-      )}
-      <ChevronRight size={16} className="ml-2" />
-    </Button>
-  );
-}
-
 type PermissionPickerProps = {
   resources: Array<Resource>;
 };
 
-type NavigationState =
-  | {
-      type: 'confirmation';
-    }
-  | {
-      type: 'group';
-      groupId: string;
-    };
+type NavigationState = {
+  type: 'confirmation';
+};
 
-export function PermissionPicker(props: PermissionPickerProps) {
+export function PermissionPicker(_props: PermissionPickerProps) {
   // TODO: should be passed via props
   const [navigationState, setNavigationState] = useState<null | NavigationState>(() => {
     try {
@@ -347,33 +266,12 @@ export function PermissionPicker(props: PermissionPickerProps) {
     }
   });
 
-  const [dynamicGroups, setDynamicGroups] = useState<Array<PermissionSelectionGroup>>(() => {
+  const [grantedPermissions, setGrantedPermissions] = useState<GrantedPermissions>(() => {
     // TODO: should be passed via props
     try {
-      return JSON.parse(localStorage.getItem('hive:prototype:permissions')!).dynamicGroups;
+      return JSON.parse(localStorage.getItem('hive:prototype:permissions')!).grantedPermissions;
     } catch (err) {
-      return [
-        createPermissionSelectionGroup({
-          id: 'organization',
-          level: ResourceLevel.organization,
-          title: 'Organization Level Permissions',
-        }),
-        createPermissionSelectionGroup({
-          id: 'project',
-          level: ResourceLevel.project,
-          title: 'Project Level Permissions',
-        }),
-        createPermissionSelectionGroup({
-          id: 'target',
-          level: ResourceLevel.target,
-          title: 'Target Level Permissions',
-        }),
-        createPermissionSelectionGroup({
-          id: 'service',
-          level: ResourceLevel.service,
-          title: 'Service Level Permissions',
-        }),
-      ];
+      return createGrantedPermissionsObject();
     }
   });
 
@@ -382,87 +280,41 @@ export function PermissionPicker(props: PermissionPickerProps) {
       'hive:prototype:permissions',
       JSON.stringify({
         navigationState,
-        dynamicGroups,
+        grantedPermissions,
       }),
     );
-  }, [navigationState, dynamicGroups]);
+  }, [navigationState, grantedPermissions]);
 
   if (navigationState?.type === 'confirmation') {
     return (
       <ConfirmationScreen
+        grantedPermissions={grantedPermissions}
+        resources={[
+          { id: 'Organization', level: ResourceLevel.organization },
+          { id: 'Project', level: ResourceLevel.project },
+          { id: 'Target', level: ResourceLevel.target },
+          { id: 'Service', level: ResourceLevel.service },
+        ]}
         goBack={() => setNavigationState(null)}
-        groups={dynamicGroups}
-        resources={props.resources}
       />
     );
   }
 
-  const inheritedPermissions = useMemo(() => {
-    return {
-      organization: {},
-      project: getInheritedPermissions(ResourceLevel.project, [
-        dynamicGroups[0].selectedPermissions,
-      ]),
-      target: getInheritedPermissions(ResourceLevel.target, [
-        dynamicGroups[0].selectedPermissions,
-        dynamicGroups[1].selectedPermissions,
-      ]),
-      service: getInheritedPermissions(ResourceLevel.service, [
-        dynamicGroups[0].selectedPermissions,
-        dynamicGroups[1].selectedPermissions,
-        dynamicGroups[2].selectedPermissions,
-      ]),
-    };
-  }, [dynamicGroups]);
-
-  if (navigationState?.type === 'group') {
-    const selectedGroup = dynamicGroups.find(group => group.id === navigationState.groupId);
-
-    if (selectedGroup) {
-      return (
-        <PermissionSelectionGroupEditor
-          close={() => setNavigationState(null)}
-          group={selectedGroup}
-          inheritedPermissions={inheritedPermissions[selectedGroup.level]}
-          updateGroup={fn => {
-            setDynamicGroups(groups =>
-              groups.map(group => {
-                if (group.id === selectedGroup.id) {
-                  return fn(group);
-                }
-
-                return group;
-              }),
-            );
-          }}
-          onDelete={() => {
-            setDynamicGroups(groups => groups.filter(group => group.id !== selectedGroup.id));
-          }}
-        />
-      );
-    }
-  }
-
   return (
     <PermissionOverview
-      navigateToGroup={groupId => setNavigationState({ type: 'group', groupId })}
       navigateToConfirmation={() => setNavigationState({ type: 'confirmation' })}
-      inheritedPermissions={inheritedPermissions}
-      groups={dynamicGroups}
+      grantedPermissions={grantedPermissions}
+      updateGrantedPermissions={permissions =>
+        setGrantedPermissions(grantedPermissions => ({ ...grantedPermissions, ...permissions }))
+      }
     />
   );
 }
 
 function PermissionOverview(props: {
-  navigateToGroup: (groupId: string) => void;
   navigateToConfirmation: () => void;
-  inheritedPermissions: {
-    organization: GrantedPermissions;
-    project: GrantedPermissions;
-    target: GrantedPermissions;
-    service: GrantedPermissions;
-  };
-  groups: Array<PermissionSelectionGroup>;
+  grantedPermissions: GrantedPermissions;
+  updateGrantedPermissions: (grantedPermissions: GrantedPermissions) => void;
 }) {
   const form = useForm({
     defaultValues: {},
@@ -472,10 +324,7 @@ function PermissionOverview(props: {
     <Card>
       <CardHeader>
         <CardTitle>Member Role Editor</CardTitle>
-        <CardDescription>
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-          invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-        </CardDescription>
+        <CardDescription>Select permissions for the member role.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-row space-x-6">
@@ -507,23 +356,12 @@ function PermissionOverview(props: {
               />
             </Form>
           </div>
-
-          <div className="grow">
-            <div className="space-y-2">
-              {props.groups.map(group => {
-                return (
-                  <GroupTeaser
-                    key={group.id}
-                    title={group.title}
-                    inheritedPermissions={props.inheritedPermissions[group.level]}
-                    grantedPermissions={group.selectedPermissions}
-                    onClick={() => props.navigateToGroup(group.id)}
-                    mode={group.mode}
-                    resourceLevel={group.level}
-                  />
-                );
-              })}
-            </div>
+          <div className={cn('max-h-[500px] w-full overflow-scroll pr-5')}>
+            <PermissionSelector
+              resourceLevel={ResourceLevel.organization}
+              grantedPermissions={props.grantedPermissions}
+              updateGrantedPermissions={props.updateGrantedPermissions}
+            />
           </div>
         </div>
       </CardContent>
@@ -536,133 +374,11 @@ function PermissionOverview(props: {
   );
 }
 
-function PermissionSelectionGroupEditor(props: {
-  close: () => void;
-  group: PermissionSelectionGroup;
-  inheritedPermissions: GrantedPermissions;
-  updateGroup: Dispatch<(group: PermissionSelectionGroup) => PermissionSelectionGroup>;
-  onDelete: () => void;
-}) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <span className="cursor-pointer" onClick={() => props.close()}>
-            Member Role Editor
-          </span>{' '}
-          <span>{'>'}</span> {props.group.title}
-        </CardTitle>
-        {props.group.id === 'default' && (
-          <CardDescription>
-            These permissions apply to all resources within the organization.
-            <br /> E.g. if you grant access to projects permissions, these apply to all projects.
-          </CardDescription>
-        )}
-        {props.group.level === ResourceLevel.project && (
-          <CardDescription>
-            These permissions apply to all the selected projects.
-            <br /> E.g. if you grant access to access the laboratory, the member is able to access
-            the laboratory on all targets within all the selected projects.
-          </CardDescription>
-        )}
-        {props.group.level === ResourceLevel.target && (
-          <CardDescription>
-            These permissions apply to all the selected targets.
-            <br /> E.g. if you grant access to approve schema checks, the member is able to approve
-            schema checks on all services within the target.
-          </CardDescription>
-        )}
-        {props.group.level === ResourceLevel.service && (
-          <CardDescription>These permission apply to all the selected services.</CardDescription>
-        )}
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-row space-x-6">
-          <div className="w-72 shrink-0 space-y-4">
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label>Mode</Label>
-              <Select
-                value={props.group.mode}
-                onValueChange={value => {
-                  props.updateGroup(group => ({
-                    ...group,
-                    mode: value as PermissionsSelectionGroupAccessMode,
-                  }));
-                }}
-              >
-                <SelectTrigger className="w-[150px] shrink-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={PermissionsSelectionGroupAccessMode.granular}>
-                    Granular
-                  </SelectItem>
-                  <SelectItem value={PermissionsSelectionGroupAccessMode.allowAll}>
-                    Allow All
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {props.group.mode === PermissionsSelectionGroupAccessMode.granular && (
-              <>
-                <p className="text-muted-foreground text-sm">
-                  Grant specific permissions for the specified resources based on your selection.
-                </p>
-              </>
-            )}
-            {props.group.mode === PermissionsSelectionGroupAccessMode.allowAll && (
-              <p className="text-muted-foreground text-sm">
-                All permissions are granted for the specified resources.
-              </p>
-            )}
-          </div>
-          <div
-            className={cn(
-              'max-h-[500px] w-full overflow-scroll pr-5',
-              !!(props.group.mode === PermissionsSelectionGroupAccessMode.allowAll) &&
-                'pointer-events-none opacity-25',
-            )}
-          >
-            <PermissionSelector
-              resourceLevel={props.group.level}
-              inheritedPermissions={props.inheritedPermissions}
-              grantedPermissions={
-                props.group.mode === PermissionsSelectionGroupAccessMode.allowAll
-                  ? {}
-                  : props.group.selectedPermissions
-              }
-              updateGrantedPermissions={updates => {
-                props.updateGroup(group => ({
-                  ...group,
-                  selectedPermissions: { ...group.selectedPermissions, ...updates },
-                }));
-              }}
-            />
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="flex justify-end space-x-2">
-        <Button onClick={props.close}>
-          <Check size={12} /> Apply
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-}
-
 function ConfirmationScreen(props: {
-  groups: Array<PermissionSelectionGroup>;
+  grantedPermissions: GrantedPermissions;
   resources: Array<Resource>;
   goBack: () => void;
 }) {
-  const resolvedPermissionsPerResource = useMemo(() => {
-    const resources = resolvePermissionsFromPermissionSelectionGroup(props.groups, props.resources);
-    return resources.map(row => ({
-      resource: props.resources.find(resource => resource.id === row.resourceId)!,
-      permissions: row.permissions,
-    }));
-  }, [props.groups]);
-
   const [showAllowOnly, setShowAllowOnly] = useState(true);
 
   return (
@@ -670,8 +386,8 @@ function ConfirmationScreen(props: {
       <CardHeader>
         <CardTitle>Member Role Editor</CardTitle>
         <CardDescription>
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-          invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+          These are the permissions that will be granted on the specified resources when attaching
+          the role to a user within the organization.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -690,12 +406,12 @@ function ConfirmationScreen(props: {
             </label>
           </div>
         </div>
-        {resolvedPermissionsPerResource.map(resource => (
+        {props.resources.map(resource => (
           <MemberRoleConfirmationGroup
-            key={resource.resource.id}
-            title={resource.resource.id}
-            level={resource.resource.level}
-            permissions={resource.permissions}
+            key={resource.id}
+            title={resource.id}
+            level={resource.level}
+            permissions={props.grantedPermissions}
             showAllowOnly={showAllowOnly}
           />
         ))}
