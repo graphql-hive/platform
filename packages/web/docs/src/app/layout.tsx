@@ -107,6 +107,7 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
       <body>
         <Layout
           editLink="Edit this page on GitHub"
+          docsRepositoryBase="https://github.com/graphql-hive/platform/tree/main/packages/web/docs"
           pageMap={pageMapWithCompanyMenu}
           feedback={{
             labels: 'kind/docs',
