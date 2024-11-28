@@ -11,7 +11,7 @@ const plugin: FastifyPluginAsync = async server => {
       scope.setUser({ ip_address: req.ip });
       const requestId = cleanRequestId(req.headers['x-request-id']);
       const tokenHeader = req.headers['x-api-token'] || req.headers.authorization;
-      const token = typeof tokenHeader === 'string' ? maskToken(tokenHeader) : '';
+      const maskedToken = typeof tokenHeader === 'string' ? maskToken(tokenHeader) : null;
       if (requestId) {
         scope.setTag('request_id', requestId);
       }
@@ -21,7 +21,9 @@ const plugin: FastifyPluginAsync = async server => {
       }
       scope.setTag('path', req.raw.url);
       scope.setTag('method', req.raw.method);
-      scope.setTag('token', token);
+      if (maskedToken) {
+        scope.setTag('masked_token', maskedToken);
+      }
       req.log.error(err);
       Sentry.captureException(err);
 
