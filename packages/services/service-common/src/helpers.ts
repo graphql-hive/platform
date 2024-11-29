@@ -33,9 +33,13 @@ export function invariant(
   throw new Error(value);
 }
 
-export function maskToken(token: string): string {
-  if (token.length <= 5) {
-    return '*'.repeat(token.length - 1) + token[token.length - 1];
+export function maskToken(token: string, visibleStart = 3, visibleEnd = 3): string {
+  if (token.length <= visibleStart + visibleEnd) {
+    return token;
   }
-  return token.substring(0, 3) + '*'.repeat(token.length - 6) + token.substring(token.length - 3);
+  return (
+    token.slice(0, visibleStart) +
+    '*'.repeat(token.length - visibleStart - visibleEnd) +
+    token.slice(-visibleEnd)
+  );
 }
