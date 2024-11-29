@@ -1,13 +1,14 @@
 diff --git a/bin.js b/bin.js
-index d970c52c4b7dfa05746b4fb1d23418025b885d78..5fa51de6f7a5e90f01a21d84fbaf6b47dd99a81a 100755
+index d970c52c4b7dfa05746b4fb1d23418025b885d78..81501d3ec72d4b46bb9ff4a561a64480d4cb02b7 100755
 --- a/bin.js
 +++ b/bin.js
 @@ -1,4 +1,4 @@
  #!/usr/bin/env node
- "use strict";
+-"use strict";
++'use strict';
  
 -require("./");
-+import("./dist/changesets-cli.esm");
++import './';
 diff --git a/dist/changesets-cli.esm.js b/dist/changesets-cli.esm.js
 index f0c19f8f1130425be51c04743abd9f8f078ea840..01aef6acabf68ee865accf68598789f579e1f1d2 100644
 --- a/dist/changesets-cli.esm.js
@@ -41,14 +42,84 @@ index f0c19f8f1130425be51c04743abd9f8f078ea840..01aef6acabf68ee865accf68598789f5
    if (releaseTag && preState && preState.mode === "pre") {
      error("Releasing under custom tag is not allowed in pre mode");
 diff --git a/package.json b/package.json
-index 8007c9c3d40f65b6de291a032e1a3bb86660e61f..8a197a6b4419a6c0efc5996478e09ad98781262a 100644
+index 8007c9c3d40f65b6de291a032e1a3bb86660e61f..e87c14b04dc5af8edcf83298e50f8685679fa237 100644
 --- a/package.json
 +++ b/package.json
-@@ -13,6 +13,7 @@
-     "changelog",
-     "commit"
-   ],
+@@ -1,18 +1,19 @@
+ {
+   "name": "@changesets/cli",
+   "version": "2.27.9",
 +  "type": "module",
+   "description": "Organise your package versioning and publishing to make both contributors and maintainers happy",
++  "repository": "https://github.com/changesets/changesets/tree/main/packages/cli",
++  "author": "Changesets Contributors",
++  "contributors": [
++    "Ben Conolly",
++    "Mitchell Hamilton",
++    "Mateusz Burzyński <mateuszburzynski@gmail.com> (https://github.com/Andarist)"
++  ],
++  "license": "MIT",
+   "bin": {
+     "changeset": "bin.js"
+   },
+-  "repository": "https://github.com/changesets/changesets/tree/main/packages/cli",
+-  "files": [
+-    "default-files",
+-    "dist",
+-    "bin.js",
+-    "changelog",
+-    "commit"
+-  ],
    "main": "dist/changesets-cli.cjs.js",
    "module": "dist/changesets-cli.esm.js",
    "exports": {
+@@ -46,25 +47,13 @@
+     "./package.json": "./package.json",
+     "./bin.js": "./bin.js"
+   },
+-  "author": "Changesets Contributors",
+-  "contributors": [
+-    "Ben Conolly",
+-    "Mitchell Hamilton",
+-    "Mateusz Burzyński <mateuszburzynski@gmail.com> (https://github.com/Andarist)"
++  "files": [
++    "bin.js",
++    "changelog",
++    "commit",
++    "default-files",
++    "dist"
+   ],
+-  "preconstruct": {
+-    "entrypoints": [
+-      "./index.ts",
+-      "./changelog.ts",
+-      "./commit/index.ts"
+-    ],
+-    "exports": {
+-      "extra": {
+-        "./bin.js": "./bin.js"
+-      }
+-    }
+-  },
+-  "license": "MIT",
+   "dependencies": {
+     "@changesets/apply-release-plan": "^7.0.5",
+     "@changesets/assemble-release-plan": "^6.0.4",
+@@ -102,5 +91,17 @@
+     "human-id": "^4.1.1",
+     "outdent": "^0.5.0",
+     "strip-ansi": "^5.2.0"
++  },
++  "preconstruct": {
++    "entrypoints": [
++      "./index.ts",
++      "./changelog.ts",
++      "./commit/index.ts"
++    ],
++    "exports": {
++      "extra": {
++        "./bin.js": "./bin.js"
++      }
++    }
+   }
+ }
