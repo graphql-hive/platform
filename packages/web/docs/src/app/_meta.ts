@@ -34,6 +34,11 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
       toc: true,
     },
   },
+  partners: {
+    title: 'Partners',
+    type: 'page',
+    display: 'hidden',
+  },
   // This seems to be broken in Nextra 4.
   // It says the `type` is wrong but it might be because it's actually validating title to be stringn not ReactNode.
   // TODO: I'll inline it and see what's up.
@@ -42,16 +47,6 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
   //   type: 'menu',
   //   items: PRODUCTS_MENU_LIST,
   // },
-  partners: {
-    title: 'Partners',
-    type: 'page',
-    display: 'hidden',
-  },
-  products: {
-    title: 'Products',
-    type: 'menu',
-    items: PRODUCTS_MENU_LIST,
-  },
   pricing: {
     title: 'Pricing',
     type: 'page',
