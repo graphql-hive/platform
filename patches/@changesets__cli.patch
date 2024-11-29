@@ -10,20 +10,47 @@ index d970c52c4b7dfa05746b4fb1d23418025b885d78..90c59530c41a653d09fb031339b11b74
 -require("./");
 +require('./');
 diff --git a/dist/changesets-cli.cjs.js b/dist/changesets-cli.cjs.js
-index 986fdf27f1d85412f8a6b2f5cc026d811ea04372..9946acbe8be7135bdc64f57729f8410cc6a897b5 100644
+index 986fdf27f1d85412f8a6b2f5cc026d811ea04372..6853b6d047c83479b24bee45c93eb1d1439e30a1 100644
 --- a/dist/changesets-cli.cjs.js
 +++ b/dist/changesets-cli.cjs.js
-@@ -787,6 +787,9 @@ async function internalPublish(pkgName, opts, twoFactorState) {
+@@ -783,24 +783,34 @@ let getOtpCode = async twoFactorState => {
+ // the call being wrapped in the npm request limit and causing the publishes to potentially never run
+ 
+ async function internalPublish(pkgName, opts, twoFactorState) {
++  console.log('pkgName:', pkgName);
+   let publishTool = await getPublishTool(opts.cwd);
    let publishFlags = opts.access ? ["--access", opts.access] : [];
    publishFlags.push("--tag", opts.tag);
  
 +  console.log('opts', JSON.stringify(opts, null, 2));
-+  console.log('publishFlags:', JSON.stringify(publishFlags, null, 2));
-+
++  
    if ((await twoFactorState.isRequired) && !ciInfo.isCI) {
      let otpCode = await getOtpCode(twoFactorState);
      publishFlags.push("--otp", otpCode);
-@@ -915,6 +918,8 @@ async function publishPackages({
+   }
+-
++  
+   if (publishTool.name === "pnpm" && publishTool.shouldAddNoGitChecks) {
+     publishFlags.push("--no-git-checks");
+   } // Due to a super annoying issue in yarn, we have to manually override this env variable
+   // See: https://github.com/yarnpkg/yarn/issues/2935#issuecomment-355292633
+-
++  
++  console.log('publishFlags:', JSON.stringify(publishFlags, null, 2));
+ 
+   const envOverride = {
+     npm_config_registry: getCorrectRegistry()
+   };
++
++  console.log("pnpm", ["publish", "--json", ...publishFlags], {
++    env: JSON.stringify(Object.assign({}, process.env, envOverride), null, 2),
++    cwd: opts.cwd
++  })
++
+   let {
+     code,
+     stdout,
+@@ -915,6 +925,8 @@ async function publishPackages({
    });
    return Promise.all(unpublishedPackagesInfo.map(pkgInfo => {
      let pkg = packagesByName.get(pkgInfo.name);
@@ -32,7 +59,15 @@ index 986fdf27f1d85412f8a6b2f5cc026d811ea04372..9946acbe8be7135bdc64f57729f8410c
      return publishAPackage(pkg, access, twoFactorState, getReleaseTag(pkgInfo, preState, tag));
    }));
  }
-@@ -1041,6 +1046,8 @@ async function publish(cwd, {
+@@ -926,6 +938,7 @@ async function publishAPackage(pkg, access, twoFactorState, tag) {
+     publishConfig
+   } = pkg.packageJson;
+   logger.info(`Publishing ${pc__default["default"].cyan(`"${name}"`)} at ${pc__default["default"].green(`"${version}"`)}`);
++  console.log('pkg', JSON.stringify(pkg, null, 2));
+   const publishConfirmation = await publish$1(name, {
+     cwd: pkg.dir,
+     publishDir: publishConfig !== null && publishConfig !== void 0 && publishConfig.directory ? path.join(pkg.dir, publishConfig.directory) : pkg.dir,
+@@ -1041,6 +1054,8 @@ async function publish(cwd, {
  }, config) {
    const releaseTag = tag && tag.length > 0 ? tag : undefined;
    let preState = await pre$1.readPreState(cwd);
@@ -42,20 +77,44 @@ index 986fdf27f1d85412f8a6b2f5cc026d811ea04372..9946acbe8be7135bdc64f57729f8410c
    if (releaseTag && preState && preState.mode === "pre") {
      logger.error("Releasing under custom tag is not allowed in pre mode");
 diff --git a/dist/changesets-cli.esm.js b/dist/changesets-cli.esm.js
-index f0c19f8f1130425be51c04743abd9f8f078ea840..01aef6acabf68ee865accf68598789f579e1f1d2 100644
+index f0c19f8f1130425be51c04743abd9f8f078ea840..cdb74dbe0b10e21f5572948666979a805cba4412 100644
 --- a/dist/changesets-cli.esm.js
 +++ b/dist/changesets-cli.esm.js
-@@ -749,6 +749,9 @@ async function internalPublish(pkgName, opts, twoFactorState) {
+@@ -745,10 +745,13 @@ let getOtpCode = async twoFactorState => {
+ // the call being wrapped in the npm request limit and causing the publishes to potentially never run
+ 
+ async function internalPublish(pkgName, opts, twoFactorState) {
++  console.log('pkgName:', pkgName);
+   let publishTool = await getPublishTool(opts.cwd);
    let publishFlags = opts.access ? ["--access", opts.access] : [];
    publishFlags.push("--tag", opts.tag);
  
 +  console.log('opts', JSON.stringify(opts, null, 2));
-+  console.log('publishFlags:', JSON.stringify(publishFlags, null, 2));
 +
    if ((await twoFactorState.isRequired) && !isCI) {
      let otpCode = await getOtpCode(twoFactorState);
      publishFlags.push("--otp", otpCode);
-@@ -877,6 +880,8 @@ async function publishPackages({
+@@ -758,11 +761,18 @@ async function internalPublish(pkgName, opts, twoFactorState) {
+     publishFlags.push("--no-git-checks");
+   } // Due to a super annoying issue in yarn, we have to manually override this env variable
+   // See: https://github.com/yarnpkg/yarn/issues/2935#issuecomment-355292633
+-
++  
++  console.log('publishFlags:', JSON.stringify(publishFlags, null, 2));
+ 
+   const envOverride = {
+     npm_config_registry: getCorrectRegistry()
+   };
++
++  console.log("pnpm", ["publish", "--json", ...publishFlags], {
++    env: JSON.stringify(Object.assign({}, process.env, envOverride), null, 2),
++    cwd: opts.cwd
++  })
++
+   let {
+     code,
+     stdout,
+@@ -877,6 +887,8 @@ async function publishPackages({
    });
    return Promise.all(unpublishedPackagesInfo.map(pkgInfo => {
      let pkg = packagesByName.get(pkgInfo.name);
@@ -64,7 +123,15 @@ index f0c19f8f1130425be51c04743abd9f8f078ea840..01aef6acabf68ee865accf68598789f5
      return publishAPackage(pkg, access, twoFactorState, getReleaseTag(pkgInfo, preState, tag));
    }));
  }
-@@ -1003,6 +1008,8 @@ async function publish(cwd, {
+@@ -888,6 +900,7 @@ async function publishAPackage(pkg, access, twoFactorState, tag) {
+     publishConfig
+   } = pkg.packageJson;
+   info(`Publishing ${pc.cyan(`"${name}"`)} at ${pc.green(`"${version}"`)}`);
++  console.log('pkg', JSON.stringify(pkg, null, 2));
+   const publishConfirmation = await publish$1(name, {
+     cwd: pkg.dir,
+     publishDir: publishConfig !== null && publishConfig !== void 0 && publishConfig.directory ? join(pkg.dir, publishConfig.directory) : pkg.dir,
+@@ -1003,6 +1016,8 @@ async function publish(cwd, {
  }, config) {
    const releaseTag = tag && tag.length > 0 ? tag : undefined;
    let preState = await readPreState(cwd);
