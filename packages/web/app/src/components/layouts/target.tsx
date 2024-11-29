@@ -524,27 +524,18 @@ function FederationModalContent(props: {
   );
   return (
     <Tabs className="mt-2 flex min-h-[300px] grow flex-col text-sm" defaultValue="hive-gateway">
-      <TabsList className="m-0 block h-auto w-full rounded-none border-b bg-transparent p-0">
-        <TabsTrigger
-          value="hive-gateway"
-          className="mb-[-1px] rounded-none border-b pl-0 text-white data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
-        >
+      <TabsList variant="content">
+        <TabsTrigger value="hive-gateway" variant="content">
           Hive Gateway
         </TabsTrigger>
-        <TabsTrigger
-          value="apollo-router"
-          className="mb-[-1px] rounded-none border-b text-white data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
-        >
+        <TabsTrigger value="apollo-router" variant="content">
           Apollo Router
         </TabsTrigger>
-        <TabsTrigger
-          value="cdn"
-          className="mb-[-1px] rounded-none border-b text-white data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
-        >
+        <TabsTrigger value="cdn" variant="content">
           Custom / HTTP
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="hive-gateway" className="space-y-2 pt-2">
+      <TabsContent value="hive-gateway" variant="content">
         <p>
           Start up a Hive Gateway instance polling the supergraph from the Hive CDN using the
           following command.
@@ -564,7 +555,7 @@ function FederationModalContent(props: {
           .
         </p>
       </TabsContent>
-      <TabsContent value="apollo-router" className="space-y-2 pt-2">
+      <TabsContent value="apollo-router" variant="content">
         <p>
           Start up a Hive Gateway instance polling the supergraph from the Hive CDN using the
           following command.
@@ -589,7 +580,7 @@ function FederationModalContent(props: {
           .
         </p>
       </TabsContent>
-      <TabsContent value="cdn" className="space-y-2 pt-2">
+      <TabsContent value="cdn" className="space-y-2 pt-2" variant="content">
         <p>For other tooling you can access the raw supergraph by sending a HTTP request.</p>
         <p>To access your schema from Hive's CDN, use the following endpoint:</p>
         <CodeBlock>{`${props.cdnUrl}/supergraph`}</CodeBlock>
