@@ -1,4 +1,4 @@
-import { Children, ComponentPropsWithoutRef, ReactNode } from 'react';
+import { Children, ComponentPropsWithoutRef, ReactElement, ReactNode } from 'react';
 import * as Accordion from '@radix-ui/react-accordion';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { Anchor, cn, Heading } from '@theguild/components';
@@ -88,7 +88,7 @@ const components = {
   h2,
   ul,
   li,
-  p: (props: { children: ReactNode }) => props.children,
+  p: (props: { children: ReactNode }) => props.children as unknown as ReactElement,
 };
 
 export function FrequentlyAskedQuestions({ className }: { className?: string }) {
