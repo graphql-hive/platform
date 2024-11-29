@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import type { FC, ReactElement } from 'react';
 import { format } from 'date-fns';
 import { Anchor } from '@theguild/components';
 import { authors } from '../authors';
@@ -11,7 +11,7 @@ type Meta = {
   description: string;
 };
 
-const Authors = ({ meta }: { meta: Meta }): ReactElement => {
+const Authors: FC<{ meta: Meta }> = ({ meta }) => {
   const date = meta.date ? new Date(meta.date) : new Date();
 
   if (!meta.authors) {

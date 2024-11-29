@@ -88,7 +88,7 @@ const components = {
   h2,
   ul,
   li,
-  p: (props: { children: ReactNode }) => props.children as unknown as ReactElement,
+  p: (props: { children?: ReactNode }) => props.children as unknown as ReactElement,
 };
 
 export function FrequentlyAskedQuestions({ className }: { className?: string }) {
