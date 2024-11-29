@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "private": true,
-  "packageManager": "pnpm@9.14.1",
+  "packageManager": "pnpm@9.14.2",
   "engines": {
     "node": ">=22",
     "pnpm": ">=9.14.1"
@@ -121,8 +121,7 @@
       "oclif@4.13.6": "patches/oclif@4.13.6.patch",
       "@graphiql/react@1.0.0-alpha.3": "patches/@graphiql__react@1.0.0-alpha.3.patch",
       "countup.js": "patches/countup.js.patch",
-      "@oclif/core@4.0.6": "patches/@oclif__core@4.0.6.patch",
-      "@changesets/cli": "patches/@changesets__cli.patch"
+      "@oclif/core@4.0.6": "patches/@oclif__core@4.0.6.patch"
     }
   }
 }

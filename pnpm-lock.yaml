@@ -16,9 +16,6 @@ patchedDependencies:
   '@apollo/federation@0.38.1':
     hash: rjgakkkphrejw6qrtph4ar24zq
     path: patches/@apollo__federation@0.38.1.patch
-  '@changesets/cli':
-    hash: jtbi64zodxwislqjwvmk6u5tde
-    path: patches/@changesets__cli.patch
   '@graphiql/react@1.0.0-alpha.3':
     hash: gnbo5nw2wgehkfq2yrmuhrx4im
     path: patches/@graphiql__react@1.0.0-alpha.3.patch
@@ -68,7 +65,7 @@ importers:
         version: 0.5.0(encoding@0.1.13)
       '@changesets/cli':
         specifier: 2.27.9
-        version: 2.27.9(patch_hash=jtbi64zodxwislqjwvmk6u5tde)
+        version: 2.27.9
       '@eddeee888/gcg-typescript-resolver-files':
         specifier: 0.11.0
         version: 0.11.0(encoding@0.1.13)(graphql@16.9.0)
@@ -16310,8 +16307,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16418,11 +16415,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.596.0(@aws-sdk/client-sts@3.596.0)':
+  '@aws-sdk/client-sso-oidc@3.596.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16461,7 +16458,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
-      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso-oidc@3.693.0(@aws-sdk/client-sts@3.693.0)':
@@ -16595,11 +16591,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.596.0':
+  '@aws-sdk/client-sts@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16638,6 +16634,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
+      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/client-sts@3.693.0':
@@ -16751,7 +16748,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.596.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -16870,7 +16867,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/types': 3.6.0
@@ -17045,7 +17042,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/shared-ini-file-loader': 3.1.9
@@ -17567,7 +17564,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@changesets/cli@2.27.9(patch_hash=jtbi64zodxwislqjwvmk6u5tde)':
+  '@changesets/cli@2.27.9':
     dependencies:
       '@changesets/apply-release-plan': 7.0.5
       '@changesets/assemble-release-plan': 6.0.4
