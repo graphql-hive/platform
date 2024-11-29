@@ -1,5 +1,5 @@
 diff --git a/bin.js b/bin.js
-index d970c52c4b7dfa05746b4fb1d23418025b885d78..7eafd0d70a8abe94326ebf923bd478dee8cd4d3e 100755
+index d970c52c4b7dfa05746b4fb1d23418025b885d78..5fa51de6f7a5e90f01a21d84fbaf6b47dd99a81a 100755
 --- a/bin.js
 +++ b/bin.js
 @@ -1,4 +1,4 @@
@@ -7,7 +7,7 @@ index d970c52c4b7dfa05746b4fb1d23418025b885d78..7eafd0d70a8abe94326ebf923bd478de
  "use strict";
  
 -require("./");
-+import("./changesets-cli.esm");
++import("./dist/changesets-cli.esm");
 diff --git a/dist/changesets-cli.esm.js b/dist/changesets-cli.esm.js
 index f0c19f8f1130425be51c04743abd9f8f078ea840..01aef6acabf68ee865accf68598789f579e1f1d2 100644
 --- a/dist/changesets-cli.esm.js
