@@ -1,5 +1,5 @@
 import type { Item, MenuItem, PageItem } from 'nextra/normalize-pages';
-import { PRODUCTS_MENU_LIST } from './temp';
+import { PRODUCTS_MENU_LIST } from '@theguild/components/products';
 
 const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
   index: {

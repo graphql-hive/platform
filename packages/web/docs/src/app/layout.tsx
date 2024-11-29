@@ -56,16 +56,16 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
           :root {
             --font-sans: ${neueMontreal.style.fontFamily};
           }
-          .light body {
-            --nextra-primary-hue: 191deg;
-            --nextra-primary-saturation: 40%;
-            --nextra-bg: 255, 255, 255;
-          }
-          .dark body {
+          body {
             --nextra-primary-hue: 67.1deg;
             --nextra-primary-saturation: 100%;
             --nextra-primary-lightness: 55%;
             --nextra-bg: 17, 17, 17;
+          }
+          body.light, .light body {
+            --nextra-primary-hue: 191deg;
+            --nextra-primary-saturation: 40%;
+            --nextra-bg: 255, 255, 255;
           }
           ._tracking-tight,
           .nextra-steps :is(h2, h3, h4) {
