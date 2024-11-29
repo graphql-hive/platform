@@ -239,4 +239,7 @@ File.displayName = 'File';
 
 export const FileTree = Object.assign(Tree, { Folder, File });
 
-function mask(token: string) {}
+function mask(token: string) {
+  if (token.length < 6) {
+  }
+}
