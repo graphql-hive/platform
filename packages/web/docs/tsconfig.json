@@ -21,6 +21,12 @@
     ],
     "strictNullChecks": true
   },
-  "include": ["next-env.d.ts", "src/app-router.d.ts", "src", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "src/app-router.d.ts",
+    "src",
+    ".next/types/**/*.ts",
+    "tailwind.config.ts"
+  ],
   "exclude": ["node_modules"]
 }

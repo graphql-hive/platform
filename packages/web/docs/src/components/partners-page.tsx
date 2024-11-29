@@ -10,7 +10,7 @@ import {
 } from '@theguild/components';
 import { FrequentlyAskedPartnersQuestions } from './frequently-asked-questions';
 import { Hero, HeroLinks } from './hero';
-import { Page } from './page';
+import { LandingPageContainer } from './landing-page-container';
 
 function WhyUs({ className }: { className?: string }) {
   return (
@@ -118,7 +118,7 @@ function SolutionsPartner({ className }: { className?: string }) {
 
 export function PartnersPage() {
   return (
-    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
+    <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <Hero className="mx-4 h-[22%] max-sm:mt-2 md:mx-6">
         <Heading
           as="h1"
@@ -162,6 +162,6 @@ export function PartnersPage() {
       <SolutionsPartner />
       <FrequentlyAskedPartnersQuestions />
       <GetYourAPIGameRightSection className="mx-4 mt-6 !overflow-visible sm:mb-6 md:mx-6 md:mt-16" />
-    </Page>
+    </LandingPageContainer>
   );
 }

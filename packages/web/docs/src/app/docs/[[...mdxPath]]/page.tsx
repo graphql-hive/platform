@@ -22,7 +22,7 @@ export async function generateMetadata(props: PageProps<'...mdxPath'>) {
   return metadata;
 }
 
-const Wrapper = useMDXComponents({}).wrapper;
+const Wrapper = useMDXComponents().wrapper;
 
 export default async function Page(props: PageProps<'...mdxPath'>) {
   const params = await props.params;
