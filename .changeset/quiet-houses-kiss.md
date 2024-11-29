@@ -7,4 +7,4 @@
 '@graphql-hive/cli': patch
 ---
 
-Update README
+Explain what Hive is in README
