@@ -319,7 +319,11 @@ async function callExternalService(
         span.setAttribute('error.message', error.message);
         span.setAttribute('error.type', error.name);
 
-        logger.error('Network error without response. (%s, %s)', error.name, error.message);
+        logger.error(
+          'Network error without response. (errorName=%s, errorMessage=%s)',
+          error.name,
+          error.message,
+        );
 
         return {
           type: 'failure',
