@@ -26,7 +26,7 @@ jobs:
           actor: website
           cacheTurbo: false
 
-      - uses: the-guild-org/shared-config/website-cf@main
+      - uses: the-guild-org/shared-config/website-cf@kamil-redirects-fix
         if: steps.website-files.outputs.any_changed == 'true'
         name: build and deploy website
         env:
