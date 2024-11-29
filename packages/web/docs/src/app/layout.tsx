@@ -31,57 +31,15 @@ const neueMontreal = localFont({
   ],
 });
 
-const siteOrigin = 'https://the-guild.dev';
-
-const companyItem = {
-  type: 'menu',
-  title: 'Company',
-  items: {
-    about: { title: 'About', href: `${siteOrigin}/about-us` },
-    blog: { title: 'Blog', href: `${siteOrigin}/blog` },
-    contact: { title: 'Contact', href: `${siteOrigin}/#get-in-touch` },
-  },
-};
-
-const productsItems = {
-  type: 'menu',
-  title: 'Products',
-  items: Object.fromEntries(
-    Object.values(PRODUCTS).map(product => [
-      product.name,
-      {
-        title: (
-          <span className="inline-flex items-center gap-2" title={product.title}>
-            <product.logo className="size-7 shrink-0" />
-            {product.name}
-          </span>
-        ),
-        href: product.href,
-      },
-    ]),
-  ),
-};
-
 /**
  * Alternative to `GuildLayout` for Hive and Hive Gateway websites.
  */
 const HiveLayout = async ({ children }: { children: ReactNode }) => {
   const [meta, ...pageMap] = await getPageMap();
 
-  const pageMapWithCompanyMenu = [
-    {
-      data: {
-        company: companyItem,
-        products: productsItems,
-        // @ts-expect-error -- fixme (copied from Dima's v8 PR (sorry))
-        ...meta.data,
-      },
-    },
-    // Add for every website except The Guild Blog
-    { name: 'company', route: '#', ...companyItem },
-    { name: 'products', route: '#', ...productsItems },
-    ...pageMap,
-  ];
+  const productsPage = pageMap.find(p => 'name' in p && p.name === 'products')!;
+  // @ts-expect-error -- this should be fixed in Nextra, without route, the collapsible doesn't work
+  productsPage.route = '#';
 
   return (
     <html
@@ -120,7 +78,15 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
         <Layout
           editLink="Edit this page on GitHub"
           docsRepositoryBase="https://github.com/graphql-hive/platform/tree/main/packages/web/docs"
-          pageMap={pageMapWithCompanyMenu}
+          pageMap={[
+            {
+              data: {
+                // @ts-expect-error -- fixme (copied from Dima's v8 PR (sorry))
+                ...meta.data,
+              },
+            },
+            ...pageMap,
+          ]}
           feedback={{
             labels: 'kind/docs',
           }}
