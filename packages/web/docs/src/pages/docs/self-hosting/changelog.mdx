@@ -1,0 +1,35 @@
+import { readFileSync } from 'node:fs';
+import { buildDynamicMDX } from 'nextra/remote';
+import { RemoteContent } from '@theguild/components';
+
+export async function getStaticProps () {
+  const data = readFileSync(
+    __dirname + '/../../../../../../../../deployment/CHANGELOG.md',
+    'utf-8',
+  )
+    // remove the heading
+    .split('\n')
+    .slice(1)
+    .join('\n');
+
+  const dynamicMdx = await buildDynamicMDX(data);
+
+  return {
+    props: {
+      ...dynamicMdx,
+        __nextra_dynamic_opts: {
+          title: 'Self Hosting Changelog',
+          frontMatter: {
+            description: 'Changelog for self-hosting Hive',
+          },
+        },
+    },
+  };
+}
+
+# Self-Hosting Changelog
+
+Here you can find all the recent improvements and updates about the self-hosting images.
+The Docker images published to the GitHub registry using the same tags.
+
+<RemoteContent suppressHydrationWarning />
