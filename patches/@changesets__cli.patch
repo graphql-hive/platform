@@ -1,5 +1,5 @@
 diff --git a/bin.js b/bin.js
-index d970c52c4b7dfa05746b4fb1d23418025b885d78..81501d3ec72d4b46bb9ff4a561a64480d4cb02b7 100755
+index d970c52c4b7dfa05746b4fb1d23418025b885d78..90c59530c41a653d09fb031339b11b749b2fa40b 100755
 --- a/bin.js
 +++ b/bin.js
 @@ -1,4 +1,4 @@
@@ -8,7 +8,39 @@ index d970c52c4b7dfa05746b4fb1d23418025b885d78..81501d3ec72d4b46bb9ff4a561a64480
 +'use strict';
  
 -require("./");
-+import './';
++require('./');
+diff --git a/dist/changesets-cli.cjs.js b/dist/changesets-cli.cjs.js
+index 986fdf27f1d85412f8a6b2f5cc026d811ea04372..9946acbe8be7135bdc64f57729f8410cc6a897b5 100644
+--- a/dist/changesets-cli.cjs.js
++++ b/dist/changesets-cli.cjs.js
+@@ -787,6 +787,9 @@ async function internalPublish(pkgName, opts, twoFactorState) {
+   let publishFlags = opts.access ? ["--access", opts.access] : [];
+   publishFlags.push("--tag", opts.tag);
+ 
++  console.log('opts', JSON.stringify(opts, null, 2));
++  console.log('publishFlags:', JSON.stringify(publishFlags, null, 2));
++
+   if ((await twoFactorState.isRequired) && !ciInfo.isCI) {
+     let otpCode = await getOtpCode(twoFactorState);
+     publishFlags.push("--otp", otpCode);
+@@ -915,6 +918,8 @@ async function publishPackages({
+   });
+   return Promise.all(unpublishedPackagesInfo.map(pkgInfo => {
+     let pkg = packagesByName.get(pkgInfo.name);
++    console.log('pkgInfo', JSON.stringify(pkgInfo, null, 2));
++    console.log('preState', JSON.stringify(preState, null, 2));
+     return publishAPackage(pkg, access, twoFactorState, getReleaseTag(pkgInfo, preState, tag));
+   }));
+ }
+@@ -1041,6 +1046,8 @@ async function publish(cwd, {
+ }, config) {
+   const releaseTag = tag && tag.length > 0 ? tag : undefined;
+   let preState = await pre$1.readPreState(cwd);
++  console.log('releaseTag', releaseTag);
++  console.log('preState', JSON.stringify(preState, null, 2));
+ 
+   if (releaseTag && preState && preState.mode === "pre") {
+     logger.error("Releasing under custom tag is not allowed in pre mode");
 diff --git a/dist/changesets-cli.esm.js b/dist/changesets-cli.esm.js
 index f0c19f8f1130425be51c04743abd9f8f078ea840..01aef6acabf68ee865accf68598789f579e1f1d2 100644
 --- a/dist/changesets-cli.esm.js
@@ -42,14 +74,12 @@ index f0c19f8f1130425be51c04743abd9f8f078ea840..01aef6acabf68ee865accf68598789f5
    if (releaseTag && preState && preState.mode === "pre") {
      error("Releasing under custom tag is not allowed in pre mode");
 diff --git a/package.json b/package.json
-index 8007c9c3d40f65b6de291a032e1a3bb86660e61f..e87c14b04dc5af8edcf83298e50f8685679fa237 100644
+index 8007c9c3d40f65b6de291a032e1a3bb86660e61f..47360a8234225295869bd7b671ea73d85ee2fa2b 100644
 --- a/package.json
 +++ b/package.json
-@@ -1,18 +1,19 @@
- {
+@@ -2,17 +2,17 @@
    "name": "@changesets/cli",
    "version": "2.27.9",
-+  "type": "module",
    "description": "Organise your package versioning and publishing to make both contributors and maintainers happy",
 +  "repository": "https://github.com/changesets/changesets/tree/main/packages/cli",
 +  "author": "Changesets Contributors",
@@ -73,7 +103,7 @@ index 8007c9c3d40f65b6de291a032e1a3bb86660e61f..e87c14b04dc5af8edcf83298e50f8685
    "main": "dist/changesets-cli.cjs.js",
    "module": "dist/changesets-cli.esm.js",
    "exports": {
-@@ -46,25 +47,13 @@
+@@ -46,25 +46,13 @@
      "./package.json": "./package.json",
      "./bin.js": "./bin.js"
    },
@@ -105,7 +135,7 @@ index 8007c9c3d40f65b6de291a032e1a3bb86660e61f..e87c14b04dc5af8edcf83298e50f8685
    "dependencies": {
      "@changesets/apply-release-plan": "^7.0.5",
      "@changesets/assemble-release-plan": "^6.0.4",
-@@ -102,5 +91,17 @@
+@@ -102,5 +90,17 @@
      "human-id": "^4.1.1",
      "outdent": "^0.5.0",
      "strip-ansi": "^5.2.0"
