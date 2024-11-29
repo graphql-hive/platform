@@ -3,6 +3,12 @@ import { generateStaticParamsFor, importPage } from 'nextra/pages';
 import { useMDXComponents } from '../../../../mdx-components.js';
 import { ConfiguredGiscus } from '../../../components/configured-giscus';
 
+/**
+ * You might have an urge to try to refactor this to a separate file and reuse between product-updates and docs.
+ * I had the same urge. It's absurdly finicky. I warned you.
+ *
+ * BTW, even if we moved the product updates to page.mdx pattern, we still need this nesting to fix links in sidebar.
+ */
 export const generateStaticParams = async () => {
   const pages = await generateStaticParamsFor('mdxPath')();
   return pages

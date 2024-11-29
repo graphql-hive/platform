@@ -90,12 +90,24 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
       dir="ltr"
       // Suggested by `next-themes` package https://github.com/pacocoursey/next-themes#with-app
       suppressHydrationWarning
+      className="font-sans"
     >
       <Head>
         <style>{
           /* css */ `
           :root {
             --font-sans: ${neueMontreal.style.fontFamily};
+          }
+          .light body {
+            --nextra-primary-hue: 191deg;
+            --nextra-primary-saturation: 40%;
+            --nextra-bg: 255, 255, 255;
+          }
+          .dark body {
+            --nextra-primary-hue: 67.1deg;
+            --nextra-primary-saturation: 100%;
+            --nextra-primary-lightness: 55%;
+            --nextra-bg: 17, 17, 17;
           }
           ._tracking-tight,
           .nextra-steps :is(h2, h3, h4) {

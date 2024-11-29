@@ -18,9 +18,6 @@ export function LandingPageContainer(props: { children: ReactNode; className?: s
           }
           body {
             background: #fff;
-            --nextra-primary-hue: 191deg;
-            --nextra-primary-saturation: 40%;
-            --nextra-bg: 255, 255, 255;
           }
           .nextra-sidebar-footer {
             display: none;

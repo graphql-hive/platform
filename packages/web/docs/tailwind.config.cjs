@@ -17,8 +17,7 @@ module.exports = {
     extend: {
       ...config.theme.extend,
       fontFamily: {
-        sans: ['var(--font-sans)', ...fontFamily.sans],
-        display: ['var(--font-sans)', ...fontFamily.sans],
+        sans: ['var(--font-sans, ui-sans-serif)', ...fontFamily.sans],
       },
       colors: {
         ...config.theme.extend.colors,
