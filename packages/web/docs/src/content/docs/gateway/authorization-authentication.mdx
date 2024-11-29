@@ -50,7 +50,7 @@ export const gatewayConfig = defineConfig({
     // Decode and validate the token using the provided signing key.
     singingKeyProviders: [createInlineSigningKeyProvider(signingKey)],
     // Forward the verified token payload to the upstream GraphQL subgraphs.
-    forwared: {
+    forwarded: {
       payload: true
     }
   }
@@ -67,9 +67,9 @@ export const gatewayConfig = defineConfig({
   jwt: {
       // Forward the extracted token and claims to the upstream GraphQL subgraphs.
       forwarded: {
-        payload: true, // optional, defualt is "true"
-        token: false, // optional, defualt is "false"
-        extensionsFieldName: "jwt", // optional, defualt is "jwt"
+        payload: true, // optional, default is "true"
+        token: false, // optional, default is "false"
+        extensionsFieldName: "jwt", // optional, default is "jwt"
       },
       // Configure your signing providers: either a local signing-key or a remote JWKS are supported.
       singingKeyProviders: [
@@ -144,7 +144,7 @@ To pass the full token payload, you can use the `forwarded.claims` option:
 ```ts
 {
   forwarded: {
-    payload: true // optional, defualt is "true"
+    payload: true // optional, default is "true"
   }
 }
 ```
@@ -164,13 +164,13 @@ The token payload will be injected into `extensions.jwt.payload` of the upstream
 }
 ```
 
-You can also pass the full token, using the `forwared.token` option:
+You can also pass the full token, using the `forwarded.token` option:
 
 ```ts
 {
-  forwared: {
-    payload: true, // optional, defualt is "true"
-    token: true // optional, defualt is "false"
+  forwarded: {
+    payload: true, // optional, default is "true"
+    token: true // optional, default is "false"
   }
 }
 ```
@@ -201,7 +201,7 @@ Additionally, if you wish to change the name of the `jwt` field in the extension
 ```ts
 {
   forwarded: {
-    extensionsFieldName: 'myJwt' // optional, defualt is "jwt"
+    extensionsFieldName: 'myJwt' // optional, default is "jwt"
   }
 }
 ```

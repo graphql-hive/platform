@@ -86,18 +86,27 @@ Gateway. [Learn more about KV](https://developers.cloudflare.com/workers/runtime
   documentation](/docs/gateway/deployment/serverless/cloudflare-workers).
 </Callout>
 
-```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
+```ts filename="index.ts"
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
+import CloudflareKVCacheStorage from '@graphql-mesh/cache-cfw-kv'
 
-export const gatewayConfig = defineConfig({
-  cache: {
-    type: 'cfw-kv',
-    namespace: 'HiveGateway' // The namespace of the KV
+export default {
+  fetch(request, env, ctx) {
+    const gateway = createGatewayRuntime({
+      supergraph,
+      transports: { http },
+      responseCaching: {
+        session: () => null
+      },
+      cache: new CloudflareKVCacheStorage({
+        logger,
+        namespace: env.NAMESPACE
+      })
+    })
+    ctx.waitUntil(gateway[Symbol.asyncDispose]())
+    return gateway(request, env, ctx)
   }
-  responseCaching: {
-    session: () => null
-  }
-})
+}
 ```
 
 ## Custom Cache Storage

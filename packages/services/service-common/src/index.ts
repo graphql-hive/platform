@@ -6,4 +6,4 @@ export * from './heartbeats';
 export * from './trpc';
 export * from './tracing';
 export { registerShutdown } from './graceful-shutdown';
-export { cleanRequestId } from './helpers';
+export { cleanRequestId, maskToken } from './helpers';

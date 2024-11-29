@@ -69,7 +69,6 @@ export interface Storage {
   isReady(): Promise<boolean>;
   ensureUserExists(_: {
     superTokensUserId: string;
-    externalAuthUserId?: string | null;
     email: string;
     oidcIntegration: null | {
       id: string;
@@ -189,14 +188,6 @@ export interface Storage {
   ): Promise<
     ReadonlyArray<ReadonlyArray<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>>
   >;
-
-  hasOrganizationMemberPairs(
-    _: readonly (OrganizationSelector & { userId: string })[],
-  ): Promise<readonly boolean[]>;
-
-  hasOrganizationProjectMemberPairs(
-    _: readonly (ProjectSelector & { userId: string })[],
-  ): Promise<readonly boolean[]>;
 
   addOrganizationMemberViaInvitationCode(
     _: OrganizationSelector & {
@@ -855,11 +846,6 @@ export interface Storage {
   }): Promise<Map<string, SchemaChangeType>>;
 
   getTargetBreadcrumbForTargetId(_: { targetId: string }): Promise<TargetBreadcrumb | null>;
-
-  /**
-   * Get an user that belongs to a specific organization by id.
-   */
-  getOrganizationUser(_: { organizationId: string; userId: string }): Promise<User | null>;
 
   // Zendesk
   setZendeskUserId(_: { userId: string; zendeskId: string }): Promise<void>;

@@ -27,7 +27,7 @@ create a new server route in `my-project/src/routes/graphql/+server.ts` to expos
 at `/graphql` and implement using the Hive Gateway runtime like this:
 
 ```ts filename="my-project/src/routes/graphql/+server.ts"
-import { createGatewayRuntime } from '@graphql-hive/gateway'
+import { createGatewayRuntime } from '@graphql-hive/gateway-runtime'
 
 const serve = createGatewayRuntime({
   supergraph: 'supergraph.graphql', // working directory is root of the project

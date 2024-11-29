@@ -2,13 +2,13 @@
 import { hostname } from 'os';
 import {
   createServer,
+  maskToken,
   registerShutdown,
   reportReadiness,
   startMetrics,
 } from '@hive/service-common';
 import * as Sentry from '@sentry/node';
 import { env } from './environment';
-import { maskToken } from './helpers';
 import {
   collectDuration,
   droppedReports,

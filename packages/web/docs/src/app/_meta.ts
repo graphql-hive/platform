@@ -42,6 +42,16 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
   //   type: 'menu',
   //   items: PRODUCTS_MENU_LIST,
   // },
+  partners: {
+    title: 'Partners',
+    type: 'page',
+    display: 'hidden',
+  },
+  products: {
+    title: 'Products',
+    type: 'menu',
+    items: PRODUCTS_MENU_LIST,
+  },
   pricing: {
     title: 'Pricing',
     type: 'page',

@@ -203,7 +203,7 @@ module.exports = {
       settings: {
         tailwindcss: {
           callees: tailwindCallees,
-          config: path.join(__dirname, './packages/web/app/tailwind.config.cjs'),
+          config: path.join(__dirname, './packages/web/app/tailwind.config.ts'),
           whitelist: ['drag-none'],
           cssFiles: ['packages/web/app/src/index.css', 'node_modules/graphiql/dist/style.css'],
         },
@@ -225,7 +225,7 @@ module.exports = {
         tailwindcss: {
           callees: tailwindCallees,
           whitelist: ['light', 'hive-focus', 'hive-focus-within'],
-          config: path.join(__dirname, './packages/web/docs/tailwind.config.cjs'),
+          config: path.join(__dirname, './packages/web/docs/tailwind.config.ts'),
         },
       },
     },

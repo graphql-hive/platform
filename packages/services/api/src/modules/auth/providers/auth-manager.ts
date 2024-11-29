@@ -1,7 +1,6 @@
 import { Injectable, Scope } from 'graphql-modules';
 import type { User } from '../../../shared/entities';
 import { AccessError } from '../../../shared/errors';
-import { share } from '../../../shared/helpers';
 import { Storage } from '../../shared/providers/storage';
 import { Session } from '../lib/authz';
 import { TargetAccessTokenSession } from '../lib/target-access-token-strategy';
@@ -95,21 +94,6 @@ export class AuthManager {
       throw new AccessError('You are not an owner or organization does not exist');
     }
   }
-
-  getOrganizationOwnerByToken: () => Promise<User | never> = share(async () => {
-    const result = this.session.getLegacySelector();
-
-    await this.ensureOrganizationAccess({
-      organizationId: result.organizationId,
-      scope: OrganizationAccessScope.READ,
-    });
-
-    const member = await this.storage.getOrganizationOwner({
-      organizationId: result.organizationId,
-    });
-
-    return member.user;
-  });
 
   async getCurrentUserAccessScopes(organizationId: string) {
     const user = await this.session.getViewer();
