@@ -1,5 +1,4 @@
 import { createModule } from 'graphql-modules';
-import { AuditLogRecorder } from '../audit-logs/providers/audit-log-recorder';
 import { AuditLogManager } from '../audit-logs/providers/audit-logs-manager';
 import { ClickHouse } from '../operations/providers/clickhouse-client';
 import { CdnProvider } from './providers/cdn.provider';
