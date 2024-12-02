@@ -6,6 +6,7 @@ import { WEBHOOKS_CONFIG, WebhooksConfig } from './modules/alerts/providers/toke
 import { appDeploymentsModule } from './modules/app-deployments';
 import { APP_DEPLOYMENTS_ENABLED } from './modules/app-deployments/providers/app-deployments-enabled-token';
 import { auditLogsModule } from './modules/audit-logs';
+import { AuditLogRecorder } from './modules/audit-logs/providers/audit-log-recorder';
 import { authModule } from './modules/auth';
 import { Session } from './modules/auth/lib/authz';
 import { billingModule } from './modules/billing';
@@ -185,6 +186,7 @@ export function createRegistry({
   const artifactStorageWriter = new ArtifactStorageWriter(s3Config, logger);
 
   const providers: Provider[] = [
+    AuditLogRecorder,
     ActivityManager,
     HttpClient,
     IdTranslator,
