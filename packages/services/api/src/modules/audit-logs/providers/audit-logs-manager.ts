@@ -240,7 +240,14 @@ export class AuditLogManager {
     }
   }
 
-  async maskTokenForAuditLog(token: string): Promise<string> {
-    return token.substring(0, 3) + '*'.repeat(token.length - 6) + token.substring(token.length - 3);
+  async maskTokenForAuditLog(token: string, visibleStart = 3, visibleEnd = 3): Promise<string> {
+    if (token.length <= visibleStart + visibleEnd) {
+      return token;
+    }
+    return (
+      token.slice(0, visibleStart) +
+      '*'.repeat(token.length - visibleStart - visibleEnd) +
+      token.slice(-visibleEnd)
+    );
   }
 }
