@@ -2024,8 +2024,8 @@ importers:
         specifier: 0.5.15
         version: 0.5.15(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3)))
       '@theguild/components':
-        specifier: 8.0.0-alpha-20241129181455-c37ef552840b1f7252dcd86a8eb72f297d9c91b2
-        version: 8.0.0-alpha-20241129181455-c37ef552840b1f7252dcd86a8eb72f297d9c91b2(@theguild/tailwind-config@0.6.0(postcss-import@16.1.0(postcss@8.4.49))(postcss-lightningcss@1.0.1(postcss@8.4.49))(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3))))(@types/react-dom@18.3.1)(@types/react@18.3.12)(immer@10.1.1)(next@15.0.3(@babel/core@7.25.2)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1))(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)(typescript@5.6.3)(use-sync-external-store@1.2.0(react@19.0.0-rc.1))
+        specifier: 8.0.0-alpha-20241129182308-3c0383b6cbe353adc4c9c3f08685491e05c054ea
+        version: 8.0.0-alpha-20241129182308-3c0383b6cbe353adc4c9c3f08685491e05c054ea(@theguild/tailwind-config@0.6.0(postcss-import@16.1.0(postcss@8.4.49))(postcss-lightningcss@1.0.1(postcss@8.4.49))(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3))))(@types/react-dom@18.3.1)(@types/react@18.3.12)(immer@10.1.1)(next@15.0.3(@babel/core@7.25.2)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1))(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)(typescript@5.6.3)(use-sync-external-store@1.2.0(react@19.0.0-rc.1))
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -8258,8 +8258,8 @@ packages:
     resolution: {integrity: sha512-kUiFyUQDiVdpeeL/qwOZAdDZrYFTwqppwNZDxOXcPSKeqGCZe8ajbbN64OAS7VlGMnXWxEEHcjhyFzB9gtHn5w==}
     hasBin: true
 
-  '@theguild/components@8.0.0-alpha-20241129181455-c37ef552840b1f7252dcd86a8eb72f297d9c91b2':
-    resolution: {integrity: sha512-B+kv6Fkr0aGNVWjtvfeoU55bBOhJ0KQJlcK76FtSdYuotsLOy3TQOiTve3GCfUxBzq3s4JPHKYNT/QKCEyAa/g==}
+  '@theguild/components@8.0.0-alpha-20241129182308-3c0383b6cbe353adc4c9c3f08685491e05c054ea':
+    resolution: {integrity: sha512-gimUcqLYKII9ImfPJ8o1siZteBpusNsIOYL4o9Ey3kCWu+ZDJKp1Bsj5ZFaKJYHeQdsyjXAM/niyDWB9KFLY4w==}
     peerDependencies:
       '@theguild/tailwind-config': ^0.6.0
       next: ^13 || ^14 || ^15.0.0
@@ -25770,7 +25770,7 @@ snapshots:
       typescript: 4.9.5
       yargs: 16.2.0
 
-  '@theguild/components@8.0.0-alpha-20241129181455-c37ef552840b1f7252dcd86a8eb72f297d9c91b2(@theguild/tailwind-config@0.6.0(postcss-import@16.1.0(postcss@8.4.49))(postcss-lightningcss@1.0.1(postcss@8.4.49))(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3))))(@types/react-dom@18.3.1)(@types/react@18.3.12)(immer@10.1.1)(next@15.0.3(@babel/core@7.25.2)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1))(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)(typescript@5.6.3)(use-sync-external-store@1.2.0(react@19.0.0-rc.1))':
+  '@theguild/components@8.0.0-alpha-20241129182308-3c0383b6cbe353adc4c9c3f08685491e05c054ea(@theguild/tailwind-config@0.6.0(postcss-import@16.1.0(postcss@8.4.49))(postcss-lightningcss@1.0.1(postcss@8.4.49))(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3))))(@types/react-dom@18.3.1)(@types/react@18.3.12)(immer@10.1.1)(next@15.0.3(@babel/core@7.25.2)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1))(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)(typescript@5.6.3)(use-sync-external-store@1.2.0(react@19.0.0-rc.1))':
     dependencies:
       '@giscus/react': 3.0.0(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)
       '@next/bundle-analyzer': 15.0.3
