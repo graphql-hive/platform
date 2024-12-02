@@ -1,4 +1,5 @@
 import { createModule } from 'graphql-modules';
+import { AuditLogManager } from '../audit-logs/providers/audit-logs-manager';
 import { TokenManager } from './providers/token-manager';
 import { TokenStorage } from './providers/token-storage';
 import { resolvers } from './resolvers.generated';
@@ -9,5 +10,5 @@ export const tokenModule = createModule({
   dirname: __dirname,
   typeDefs,
   resolvers,
-  providers: [TokenManager, TokenStorage],
+  providers: [TokenManager, TokenStorage, AuditLogManager],
 });
