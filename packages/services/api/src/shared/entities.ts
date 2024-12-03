@@ -192,7 +192,6 @@ export interface Organization {
     appDeployments: boolean;
   };
   zendeskId: string | null;
-  ownerId: string;
 }
 
 export interface OrganizationInvitation {
@@ -331,6 +330,7 @@ export interface User {
   provider: AuthProvider;
   superTokensUserId: string | null;
   isAdmin: boolean;
+  externalAuthUserId: string | null;
   oidcIntegrationId: string | null;
   zendeskId: string | null;
 }

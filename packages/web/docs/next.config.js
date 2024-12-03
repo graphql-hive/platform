@@ -229,6 +229,16 @@ export default withGuildDocs({
       destination: '/docs/other-integrations/graphql-yoga',
       permanent: true,
     },
+    {
+      source: '/docs/gateway/deployment/node-frameworks',
+      destination: '/docs/gateway/deployment/runtimes/nodejs',
+      permanent: true,
+    },
+    {
+      source: '/docs/gateway/deployment/node-frameworks/nestjs',
+      destination: '/docs/gateway/deployment/runtimes/nodejs',
+      permanent: true,
+    },
   ],
   env: {
     NEXT_BASE_PATH: process.env.NEXT_BASE_PATH,

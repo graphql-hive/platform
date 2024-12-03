@@ -35,10 +35,9 @@ export const Organization: Pick<
     });
   },
   viewerCanModifyGitHubIntegration: async (organization, _arg, { session, injector }) => {
-    const isAvailable = await injector.get(GitHubIntegrationManager).isAvailable({
-      organizationId: organization.id,
-    });
-    if (!isAvailable) {
+    const isEnabled = injector.get(GitHubIntegrationManager).isEnabled();
+
+    if (!isEnabled) {
       return false;
     }
 
@@ -50,14 +49,7 @@ export const Organization: Pick<
       },
     });
   },
-  viewerCanModifySlackIntegration: async (organization, _arg, { session, injector }) => {
-    const isAvailable = await injector.get(SlackIntegrationManager).isAvailable({
-      organizationId: organization.id,
-    });
-    if (!isAvailable) {
-      return false;
-    }
-
+  viewerCanModifySlackIntegration: async (organization, _arg, { session }) => {
     return session.canPerformAction({
       action: 'slackIntegration:modify',
       organizationId: organization.id,
