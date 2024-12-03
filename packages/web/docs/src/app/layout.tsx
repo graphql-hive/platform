@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ReactNode } from 'react';
 import localFont from 'next/font/local';
-import { Layout, useConfig } from 'nextra-theme-docs';
+import { Layout } from 'nextra-theme-docs';
 import { Head } from 'nextra/components';
 import { getPageMap } from 'nextra/page-map';
 import '@theguild/components/style.css';

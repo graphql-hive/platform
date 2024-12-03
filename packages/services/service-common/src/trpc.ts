@@ -28,7 +28,7 @@ export const handleTRPCError = experimental_standaloneMiddleware<{
   ctx: {
     req: FastifyRequest;
   };
-  input: {};
+  input: object;
 }>().create(async opts => {
   const result = await opts.next();
 

@@ -1034,6 +1034,7 @@ export const InsertConditionalBreakingChangeMetadataModel =
     },
   })).nullable();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SchemaCheckInputModel = z.union([
   z.intersection(
     z.object({

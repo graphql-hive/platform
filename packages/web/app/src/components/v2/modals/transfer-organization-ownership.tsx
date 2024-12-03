@@ -52,6 +52,7 @@ const TransferOrganizationOwnership_Members = graphql(`
   }
 `);
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MemberFields = graphql(`
   fragment MemberFields on Member {
     id

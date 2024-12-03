@@ -14,6 +14,7 @@ interface Email {
   body: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emailProviders = {
   postmark,
   mock,

@@ -68,7 +68,7 @@ const handler: ExportedHandler<Env> = {
     };
 
     function flush() {
-      loki && ctx.waitUntil(loki.flush());
+      if (loki) ctx.waitUntil(loki.flush());
     }
 
     try {
