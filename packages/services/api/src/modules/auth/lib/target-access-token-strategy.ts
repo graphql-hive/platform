@@ -1,4 +1,9 @@
-import type { FastifyReply, FastifyRequest, ServiceLogger } from '@hive/service-common';
+import {
+  maskToken,
+  type FastifyReply,
+  type FastifyRequest,
+  type ServiceLogger,
+} from '@hive/service-common';
 import { Logger } from '../../shared/providers/logger';
 import { TokenStorage } from '../../token/providers/token-storage';
 import { TokensConfig } from '../../token/providers/tokens';
@@ -142,14 +147,6 @@ export class TargetAccessTokenStrategy extends AuthNStrategy<TargetAccessTokenSe
       },
     );
   }
-}
-
-function maskToken(token: string) {
-  if (token.length > 6) {
-    return token.substring(0, 3) + '*'.repeat(token.length - 6) + token.substring(token.length - 3);
-  }
-
-  return '*'.repeat(token.length);
 }
 
 function transformAccessTokenLegacyScopes(args: {

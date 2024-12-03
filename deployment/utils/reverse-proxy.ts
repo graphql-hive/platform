@@ -4,7 +4,7 @@ import { ContourValues } from './contour.types';
 import { helmChart } from './helm';
 
 // prettier-ignore
-export const CONTOUR_CHART = helmChart('https://charts.bitnami.com/bitnami', 'contour', '18.2.11');
+export const CONTOUR_CHART = helmChart('https://charts.bitnami.com/bitnami', 'contour', '19.3.1');
 
 export class Proxy {
   private lbService: Output<k8s.core.v1.Service> | null = null;
@@ -225,6 +225,11 @@ export class Proxy {
           'upstream_service_time',
           'user_agent',
           'x_forwarded_for',
+          'x_trace_id',
+          // X-API-TOKEN is a custom header, that contains only the token without a prefix.
+          'x_api_token=%REQ(X-API-TOKEN):3%',
+          /// Authorization header contains the token with the prefix "Bearer " (so 7+4 to get the first 4 chars).
+          'authorization=%REQ(AUTHORIZATION):11%',
         ],
         tracing:
           options.tracing && tracingExtensionService

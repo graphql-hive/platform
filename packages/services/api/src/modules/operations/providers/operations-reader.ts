@@ -1295,10 +1295,6 @@ export class OperationsReader {
       }>
     >
   > {
-    const ORs = args.typeNames.map(
-      typeName => sql`( cdi.coordinate = ${typeName} OR cdi.coordinate LIKE ${typeName + '.%'} )`,
-    );
-
     const result = await this.clickHouse.query<{
       total: string;
       hash: string;
@@ -1319,7 +1315,10 @@ export class OperationsReader {
                 ${this.createFilter({
                   target: args.targetId,
                   period: args.period,
-                  extra: [sql`cdi.coordinate NOT LIKE '%.%.%'`, sql`(${sql.join(ORs, ' OR ')})`],
+                  extra: [
+                    sql`cdi.coordinate NOT LIKE '%.%.%'`,
+                    sql`substringIndex(cdi.coordinate, '.', 1) IN (${sql.array(args.typeNames, 'String')})`,
+                  ],
                   namespace: 'cdi',
                 })}
               GROUP BY cdi.hash, cdi.coordinate ORDER by total DESC, cdi.hash ASC LIMIT ${sql.raw(
