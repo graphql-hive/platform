@@ -7,6 +7,9 @@ import {
   useContext,
   useState,
 } from 'react';
+import { ChevronRightIcon } from 'lucide-react';
+import { Resource } from '@/components/shared/permission-picker/lib';
+import { ResourceLevel } from '@/components/shared/permission-picker/permissions';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,7 +21,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const P = () => null;
@@ -32,10 +34,47 @@ export default meta;
 // export default meta;
 type Story = StoryObj<typeof P>;
 
-export const Default: Story = {
-  render: () => (
+const projects: Array<Resource> = [
+  {
+    id: 'graphql-hive',
+    level: ResourceLevel.project,
+  },
+  {
+    id: 'project-a',
+    level: ResourceLevel.project,
+  },
+  {
+    id: 'project-xyz',
+    level: ResourceLevel.project,
+  },
+  {
+    id: 'accounter',
+    level: ResourceLevel.project,
+  },
+];
+
+const targets: Array<Resource> = projects
+  .map(project => [
+    { id: project.id + '/development', level: ResourceLevel.target },
+    { id: project.id + '/staging', level: ResourceLevel.target },
+    { id: project.id + '/production', level: ResourceLevel.target },
+  ])
+  .flatMap(value => value);
+
+const services: Array<Resource> = targets
+  .map(project => [
+    { id: project.id + '/users', level: ResourceLevel.service },
+    { id: project.id + '/orders', level: ResourceLevel.service },
+    { id: project.id + '/products', level: ResourceLevel.service },
+  ])
+  .flatMap(value => value);
+
+function Implementation() {
+  const [state, setState] = useState();
+
+  return (
     <div className="p-5">
-      <Tabs defaultValue="full" className="w-[400px]">
+      <Tabs defaultValue="granular" className="max-w-[700px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="full">Organization Wide</TabsTrigger>
           <TabsTrigger value="granular">Granular Resource Based</TabsTrigger>
@@ -48,9 +87,6 @@ export const Default: Story = {
                 The permissions are applied for all resources within the organization.
               </CardDescription>
             </CardHeader>
-            {/* <CardContent className="space-y-2">
-              The permissions are applied for all resources within the organization.
-            </CardContent> */}
             <CardFooter>
               <Button>Save changes</Button>
             </CardFooter>
@@ -64,41 +100,52 @@ export const Default: Story = {
                 Permissions are only assigned to specified resources.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <FileTree>
-                <FileTree.Folder name="graphql-hive" defaultOpen>
-                  <FileTree.Folder
-                    name="production"
-                    defaultOpen
-                    label={
-                      <>
-                        <span className="mr-1">production</span>
-                        <Badge className="ml-auto mr-0">Project</Badge>
-                      </>
-                    }
-                  ></FileTree.Folder>
-                  <FileTree.Folder
-                    name="staging"
-                    label={
-                      <>
-                        <span className="mr-1">staging</span>
-                        <Badge className="ml-auto mr-0">Project</Badge>
-                      </>
-                    }
-                    defaultOpen
-                  ></FileTree.Folder>
-                  <FileTree.Folder
-                    name="development"
-                    label={
-                      <>
-                        <span className="mr-1">development</span>
-                        <Badge className="ml-auto mr-0">Project</Badge>
-                      </>
-                    }
-                    defaultOpen
-                  ></FileTree.Folder>
-                </FileTree.Folder>
-              </FileTree>
+            <CardContent>
+              <div className="flex text-sm">
+                <div className="flex-1 border-x border-transparent px-2 pb-1">Projects</div>
+                <div className="flex-1 border-transparent px-2 pb-1">Targets</div>
+                <div className="flex-1 border-x border-transparent px-2 pb-1">Service</div>
+              </div>
+              <div className="flex min-h-[250px] flex-wrap rounded-sm rounded-t-none border">
+                <div className="flex flex-1 flex-col border-r pt-3">
+                  <div className="mb-1 px-2 text-xs uppercase text-gray-500">access granted</div>
+                  <Row title="graphql-hive (2 targets)" isActive />
+                  <Row title="project-a" isActive={false} />
+                  <Row title="project-xzy" isActive={false} />
+                  <Row title="accounter" isActive={false} />
+                  <Row title="graphql-hive" isActive={false} />
+
+                  <div className="mb-1 mt-3 px-2 text-xs uppercase text-gray-500">Unselected</div>
+                  <div className="px-2 text-xs">None</div>
+                </div>
+                <div className="flex flex-1 flex-col border-r pt-3">
+                  <div className="mb-1 px-2 text-xs uppercase text-gray-500">access granted</div>
+                  <Row title="development" isActive={false} />
+                  <Row title="staging" isActive />
+                  <div className="mb-1 mt-3 px-2 text-xs uppercase text-gray-500">Unselected</div>
+                  <Row title="production" isActive={false} />
+                  <div className="mb-0 mt-auto border-t p-1 text-right text-xs">
+                    Mode <button className="mr-1 text-orange-500">Granular</button>
+                    <button>All</button>
+                  </div>
+                </div>
+                <div className="flex flex-1 flex-col pt-3">
+                  <div className="mb-1 px-2 text-xs uppercase text-gray-500">access granted</div>
+                  <div className="px-2 text-xs">None</div>
+                  <div className="mb-1 mt-3 px-2 text-xs uppercase text-gray-500">Unselected</div>
+                  <Row title="users" isActive={false} />
+                  <Row title="sales" isActive={false} />
+                  <Row title="products" isActive={false} />
+                  <input
+                    placeholder="Add service by name"
+                    className="mx-2 mt-1 max-w-[70%] border-b text-sm"
+                  />
+                  <div className="mb-0 mt-auto border-t p-1 text-right text-xs">
+                    Mode <button className="mr-1 text-orange-500">Granular</button>
+                    <button>All</button>
+                  </div>
+                </div>
+              </div>
             </CardContent>
             <CardFooter>
               <Button>Assign Role</Button>
@@ -107,139 +154,23 @@ export const Default: Story = {
         </TabsContent>
       </Tabs>
     </div>
-  ),
+  );
+}
+
+export const Default: Story = {
+  render() {
+    return <Implementation />;
+  },
 };
 
-const ctx = createContext(0);
-
-function useIndent() {
-  return useContext(ctx);
-}
-
-interface FolderProps {
-  name: string;
-  label?: ReactElement;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onToggle?: (open: boolean) => void;
-  children: ReactNode;
-}
-
-interface FileProps {
-  name: string;
-  label?: ReactElement;
-  active?: boolean;
-}
-
-function Tree({ children }: { children: ReactNode }): ReactElement {
+function Row(props: { title: string; isActive: boolean }) {
   return (
     <div
-      className={cn(
-        'nextra-filetree mt-6 select-none text-sm text-gray-800 dark:text-gray-300',
-        '_not-prose', // for nextra-theme-blog
-      )}
+      className="flex cursor-pointer items-center space-x-1 px-2 py-1 data-[active=true]:cursor-default data-[active=true]:bg-white data-[active=true]:text-black"
+      data-active={props.isActive}
     >
-      <ul className="dark:border-primary-100/10 inline-block rounded-lg border border-neutral-200/70 px-4 py-2 contrast-more:border-neutral-400 contrast-more:dark:border-neutral-400">
-        {children}
-      </ul>
+      <span className="text-sm">{props.title}</span>
+      {props.isActive && <ChevronRightIcon size={12} />}
     </div>
   );
-}
-
-function Ident(): ReactElement {
-  const length = useIndent();
-  return (
-    <>
-      {Array.from({ length }, (_, i) => (
-        // Text can shrink indent
-        <span className="w-5 shrink-0" key={i} />
-      ))}
-    </>
-  );
-}
-
-const Folder = memo<FolderProps>(
-  ({ label, name, open, children, defaultOpen = false, onToggle }) => {
-    const indent = useIndent();
-    const [isOpen, setIsOpen] = useState(defaultOpen);
-
-    const toggle = useCallback(() => {
-      onToggle?.(!isOpen);
-      setIsOpen(!isOpen);
-    }, [isOpen, onToggle]);
-
-    const isFolderOpen = open === undefined ? isOpen : open;
-
-    return (
-      <li className="flex w-full list-none flex-col">
-        <button
-          onClick={toggle}
-          title={name}
-          className={cn('inline-flex w-full items-center py-1 hover:opacity-60')}
-        >
-          <Ident />
-          <svg
-            width="1em"
-            height="1em"
-            viewBox="0 0 24 24"
-            // Text can shrink icon
-            className="shrink-0"
-          >
-            <path
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d={
-                isFolderOpen
-                  ? 'M5 19a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2 2h4a2 2 0 0 1 2 2v1M5 19h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2Z'
-                  : 'M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2Z'
-              }
-            />
-          </svg>
-          <span className="ml-1 inline-flex grow text-left">{label ?? name}</span>
-        </button>
-        {isFolderOpen && (
-          <ul>
-            <ctx.Provider value={indent + 1}>{children}</ctx.Provider>
-          </ul>
-        )}
-      </li>
-    );
-  },
-);
-Folder.displayName = 'Folder';
-
-const File = memo<FileProps>(({ label, name, active }) => (
-  <li className={cn('flex list-none', active && 'text-primary-600 contrast-more:underline')}>
-    <span className="inline-flex cursor-default items-center py-1">
-      <Ident />
-      <svg
-        width="1em"
-        height="1em"
-        viewBox="0 0 24 24"
-        // Text can shrink icon
-        className="shrink-0"
-      >
-        <path
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"
-        />
-      </svg>
-      <span className="ml-1">{label ?? name}</span>
-    </span>
-  </li>
-));
-File.displayName = 'File';
-
-export const FileTree = Object.assign(Tree, { Folder, File });
-
-function mask(token: string) {
-  if (token.length < 6) {
-  }
 }
