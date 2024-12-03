@@ -1,6 +1,6 @@
 import type { Action } from '../clickhouse';
 
-const action: Action = async (exec, _query, isGraphQLHiveCloud) => {
+const action: Action = async (exec, _query, hiveCloudEnvironment) => {
   // Create materialized views
   await Promise.all(
     [
@@ -96,7 +96,7 @@ const action: Action = async (exec, _query, isGraphQLHiveCloud) => {
   );
 
   // Run the rest of the migration only for self-hosted instances, not for Cloud.
-  if (isGraphQLHiveCloud) {
+  if (hiveCloudEnvironment === 'prod') {
     console.log('Detected GraphQL Hive Cloud. Skipping the rest of the migration.');
     // You need to run these two queries and then execute all the statements they output
 
