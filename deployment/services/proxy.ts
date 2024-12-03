@@ -120,5 +120,4 @@ export function deployProxy({
         retriable: true,
       },
     ])
-    .get();
 }
