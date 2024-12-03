@@ -139,7 +139,7 @@ export function EcosystemIllustration(props: { className?: string }) {
             highlightedEdge={highlightedEdge}
             onHighlight={onHighlightNode}
           >
-            <svg className="size-[var(--big-logo-size)]">
+            <svg className="size-[--big-logo-size]">
               <use width="100%" height="100%" xlinkHref={`${svgHref}#hive`} />
             </svg>
           </Node>
