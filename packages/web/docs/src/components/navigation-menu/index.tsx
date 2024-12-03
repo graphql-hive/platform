@@ -5,7 +5,7 @@ import { GraphQLConfCard, HiveNavigation, PRODUCTS } from '@theguild/components'
 import graphQLConfLocalImage from './graphql-conf-image.webp';
 
 export function NavigationMenu() {
-  const route = usePathname() || '/';
+  const route = usePathname();
 
   return (
     <HiveNavigation

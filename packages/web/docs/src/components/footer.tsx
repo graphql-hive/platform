@@ -5,7 +5,7 @@ import { cn, HiveFooter } from '@theguild/components';
 import { isLandingPage } from './navigation-menu';
 
 export function Footer() {
-  const route = usePathname()!;
+  const route = usePathname();
 
   return (
     <HiveFooter
