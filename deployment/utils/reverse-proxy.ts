@@ -14,6 +14,43 @@ export class Proxy {
     private staticIp?: { address?: string; aksReservedIpResourceGroup?: string },
   ) {}
 
+  registerInternalProxy(
+    dnsRecord: string,
+    route: {
+      path: string;
+      service: k8s.core.v1.Service;
+      host: string;
+      customRewrite: string;
+    },
+  ) {
+    new k8s.apiextensions.CustomResource(`internal-proxy-${dnsRecord}`, {
+      apiVersion: 'projectcontour.io/v1',
+      kind: 'HTTPProxy',
+      metadata: {
+        name: `internal-proxy-metadata-${dnsRecord}`,
+      },
+      spec: {
+        virtualhost: {
+          fqdn: route.host,
+        },
+        routes: [
+          {
+            conditions: [{ prefix: route.path }],
+            services: [
+              {
+                name: route.service.metadata.name,
+                port: route.service.spec.ports[0].port,
+              },
+            ],
+            pathRewritePolicy: {
+              replacePrefix: [{ replacement: route.customRewrite }],
+            },
+          },
+        ],
+      },
+    });
+  }
+
   registerService(
     dns: { record: string; apex?: boolean },
     routes: {
