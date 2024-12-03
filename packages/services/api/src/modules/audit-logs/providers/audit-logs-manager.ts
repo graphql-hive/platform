@@ -4,7 +4,6 @@ import { Inject, Injectable, Scope } from 'graphql-modules';
 import { captureException } from '@sentry/node';
 import { Session } from '../../auth/lib/authz';
 import { ClickHouse, sql } from '../../operations/providers/clickhouse-client';
-import { SqlValue } from '../../operations/providers/sql';
 import { Emails, mjml } from '../../shared/providers/emails';
 import { Logger } from '../../shared/providers/logger';
 import { S3_CONFIG, type S3Config } from '../../shared/providers/s3-config';
@@ -45,27 +44,25 @@ export class AuditLogManager {
     });
 
     this.logger.info('Getting audit logs (organizationId=%s, filter=%o)', organizationId, filter);
-    const where: SqlValue[] = [];
-    where.push(sql`organization_id = ${organizationId}`);
-
-    const from = formatToClickhouseDateTime(startOfDay(filter.startDate));
-    const to = formatToClickhouseDateTime(endOfDay(filter.endDate));
-    where.push(sql`timestamp >= ${from} AND timestamp <= ${to}`);
-
-    const whereClause = where.length > 0 ? sql`WHERE ${sql.join(where, ' AND ')}` : sql``;
 
     const query = sql`
       SELECT
-        id
+        "id"
         , "timestamp"
         , "organization_id" AS "organizationId"
         , "event_action" AS "eventAction"
         , "user_id" AS "userId"
         , "user_email" AS "userEmail"
         , "metadata"
-      FROM audit_logs
-      ${whereClause}
-      ORDER BY timestamp DESC, id DESC
+      FROM
+        "audit_logs"
+      WHERE 
+        "organization_id" = ${organizationId}
+        AND "timestamp" >= ${formatToClickhouseDateTime(startOfDay(filter.startDate))}
+        AND "timestamp" <= ${formatToClickhouseDateTime(endOfDay(filter.endDate))}
+      ORDER BY
+        "timestamp" DESC
+        , "id" DESC
     `;
 
     const result = await this.clickHouse.query({
@@ -84,14 +81,20 @@ export class AuditLogManager {
   async exportAndSendEmail(
     organizationId: string,
     filter: { startDate: Date; endDate: Date },
-  ): Promise<{
-    ok: {
-      url: string;
-    } | null;
-    error: {
-      message: string;
-    } | null;
-  }> {
+  ): Promise<
+    | {
+        ok: {
+          url: string;
+        };
+        error?: never;
+      }
+    | {
+        ok?: never;
+        error: {
+          message: string;
+        } | null;
+      }
+  > {
     await this.session.assertPerformAction({
       action: 'auditLog:export',
       organizationId,
@@ -104,7 +107,6 @@ export class AuditLogManager {
 
     if (!getAllAuditLogs || !getAllAuditLogs.data || getAllAuditLogs.data.length === 0) {
       return {
-        ok: null,
         error: {
           message: 'No audit logs found for the given date range',
         },
@@ -163,7 +165,6 @@ export class AuditLogManager {
           error: {
             message: 'Failed to generate the audit logs CSV',
           },
-          ok: null,
         };
       }
 
@@ -186,7 +187,6 @@ export class AuditLogManager {
           error: {
             message: 'Failed to generate the audit logs CSV',
           },
-          ok: null,
         };
       }
 
@@ -218,7 +218,6 @@ export class AuditLogManager {
       });
 
       return {
-        error: null,
         ok: {
           url: getPresignedUrl.url,
         },
@@ -235,19 +234,7 @@ export class AuditLogManager {
         error: {
           message: 'Failed to generate the audit logs CSV',
         },
-        ok: null,
       };
     }
-  }
-
-  async maskTokenForAuditLog(token: string, visibleStart = 3, visibleEnd = 3): Promise<string> {
-    if (token.length <= visibleStart + visibleEnd) {
-      return token;
-    }
-    return (
-      token.slice(0, visibleStart) +
-      '*'.repeat(token.length - visibleStart - visibleEnd) +
-      token.slice(-visibleEnd)
-    );
   }
 }

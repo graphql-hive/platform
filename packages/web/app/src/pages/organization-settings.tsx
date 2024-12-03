@@ -645,11 +645,8 @@ export function DeleteOrganizationModalContent(props: {
 }
 
 const AuditLogsOrganizationSettingsPageMutation = graphql(`
-  mutation AuditLogsOrganizationSettingsPageMutation(
-    $selector: OrganizationSelectorInput!
-    $filter: AuditLogFilter!
-  ) {
-    exportOrganizationAuditLog(selector: $selector, filter: $filter) {
+  mutation AuditLogsOrganizationSettingsPageMutation($input: ExportOrganizationAuditLogInput!) {
+    exportOrganizationAuditLog(input: $input) {
       ok {
         url
       }
@@ -694,12 +691,14 @@ function AuditLogsOrganizationModal(props: {
     const formattedEndDate = new Date(data.endDate).toISOString();
 
     const result = await exportAuditLogs({
-      selector: {
-        organizationSlug: organization,
-      },
-      filter: {
-        startDate: formattedStartDate,
-        endDate: formattedEndDate,
+      input: {
+        selector: {
+          organizationSlug: organization,
+        },
+        filter: {
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+        },
       },
     });
 

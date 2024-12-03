@@ -2,10 +2,10 @@ import bcryptjs from 'bcryptjs';
 import { Inject, Injectable, Scope } from 'graphql-modules';
 import { z } from 'zod';
 import { encodeCdnToken, generatePrivateKey } from '@hive/cdn-script/cdn-token';
+import { maskToken } from '@hive/service-common';
 import { HiveError } from '../../../shared/errors';
 import { isUUID } from '../../../shared/is-uuid';
 import { AuditLogRecorder } from '../../audit-logs/providers/audit-log-recorder';
-import { AuditLogManager } from '../../audit-logs/providers/audit-logs-manager';
 import { Session } from '../../auth/lib/authz';
 import type { Contract } from '../../schema/providers/contracts';
 import { Logger } from '../../shared/providers/logger';
@@ -26,7 +26,6 @@ export class CdnProvider {
     logger: Logger,
     private session: Session,
     private auditLog: AuditLogRecorder,
-    private auditLogManager: AuditLogManager,
     @Inject(CDN_CONFIG) private config: CDNConfig,
     @Inject(S3_CONFIG) private s3Config: S3Config,
     @Inject(Storage) private storage: Storage,
@@ -226,7 +225,7 @@ export class CdnProvider {
       cdnAccessTokenRecord.id,
     );
 
-    const maskedToken = await this.auditLogManager.maskTokenForAuditLog(cdnAccessToken);
+    const maskedToken = maskToken(cdnAccessToken);
     await this.auditLog.record({
       eventType: 'TARGET_CDN_ACCESS_TOKEN_CREATED',
       organizationId: args.organizationId,

@@ -1,9 +1,9 @@
 import { Injectable, Scope } from 'graphql-modules';
+import { maskToken } from '@hive/service-common';
 import type { Token } from '../../../shared/entities';
 import { HiveError } from '../../../shared/errors';
 import { diffArrays, pushIfMissing } from '../../../shared/helpers';
 import { AuditLogRecorder } from '../../audit-logs/providers/audit-log-recorder';
-import { AuditLogManager } from '../../audit-logs/providers/audit-logs-manager';
 import { Session } from '../../auth/lib/authz';
 import { OrganizationAccessScope } from '../../auth/providers/organization-access';
 import { ProjectAccessScope } from '../../auth/providers/project-access';
@@ -36,7 +36,6 @@ export class TokenManager {
     private tokenStorage: TokenStorage,
     private storage: Storage,
     private auditLog: AuditLogRecorder,
-    private auditLogManager: AuditLogManager,
     logger: Logger,
   ) {
     this.logger = logger.child({
@@ -94,7 +93,7 @@ export class TokenManager {
       scopes,
     });
 
-    const maskedToken = await this.auditLogManager.maskTokenForAuditLog(result.token);
+    const maskedToken = maskToken(result.token);
     await this.auditLog.record({
       eventType: 'TARGET_TOKEN_CREATED',
       organizationId: input.organizationId,
