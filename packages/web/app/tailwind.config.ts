@@ -1,11 +1,13 @@
 import svgToDataUri from 'mini-svg-data-uri';
+import type { Config } from 'tailwindcss';
 import tailwindcssAnimate from 'tailwindcss-animate';
 import tailwindcssRadix from 'tailwindcss-radix';
 import colors from 'tailwindcss/colors';
 import { fontFamily } from 'tailwindcss/defaultTheme';
 import { default as flattenColorPalette } from 'tailwindcss/lib/util/flattenColorPalette';
+import type { PluginAPI, PluginCreator } from 'tailwindcss/types/config';
 
-module.exports = {
+const config: Config = {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.ts{,x}'],
   important: true,
@@ -133,78 +135,78 @@ module.exports = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
-      ringColor: theme => ({
+      ringColor: ({ theme }) => ({
         DEFAULT: theme('colors.orange.500/75'),
         ...theme('colors'),
       }),
       keyframes: {
         // Dropdown menu
         'scale-in': {
-          '0%': { opacity: 0, transform: 'scale(0)' },
-          '100%': { opacity: 1, transform: 'scale(1)' },
+          '0%': { opacity: '0', transform: 'scale(0)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
         'slide-down': {
-          '0%': { opacity: 0, transform: 'translateY(-10px)' },
-          '100%': { opacity: 1, transform: 'translateY(0)' },
+          '0%': { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'slide-up': {
-          '0%': { opacity: 0, transform: 'translateY(10px)' },
-          '100%': { opacity: 1, transform: 'translateY(0)' },
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         // Tooltip
         'slide-up-fade': {
-          '0%': { opacity: 0, transform: 'translateY(2px)' },
-          '100%': { opacity: 1, transform: 'translateY(0)' },
+          '0%': { opacity: '0', transform: 'translateY(2px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'slide-right-fade': {
-          '0%': { opacity: 0, transform: 'translateX(-2px)' },
-          '100%': { opacity: 1, transform: 'translateX(0)' },
+          '0%': { opacity: '0', transform: 'translateX(-2px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
         },
         'slide-down-fade': {
-          '0%': { opacity: 0, transform: 'translateY(-2px)' },
-          '100%': { opacity: 1, transform: 'translateY(0)' },
+          '0%': { opacity: '0', transform: 'translateY(-2px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'slide-left-fade': {
-          '0%': { opacity: 0, transform: 'translateX(2px)' },
-          '100%': { opacity: 1, transform: 'translateX(0)' },
+          '0%': { opacity: '0', transform: 'translateX(2px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
         },
         // Navigation menu
         'enter-from-right': {
-          '0%': { transform: 'translateX(200px)', opacity: 0 },
-          '100%': { transform: 'translateX(0)', opacity: 1 },
+          '0%': { transform: 'translateX(200px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
         },
         'enter-from-left': {
-          '0%': { transform: 'translateX(-200px)', opacity: 0 },
-          '100%': { transform: 'translateX(0)', opacity: 1 },
+          '0%': { transform: 'translateX(-200px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
         },
         'exit-to-right': {
-          '0%': { transform: 'translateX(0)', opacity: 1 },
-          '100%': { transform: 'translateX(200px)', opacity: 0 },
+          '0%': { transform: 'translateX(0)', opacity: '1' },
+          '100%': { transform: 'translateX(200px)', opacity: '0' },
         },
         'exit-to-left': {
-          '0%': { transform: 'translateX(0)', opacity: 1 },
-          '100%': { transform: 'translateX(-200px)', opacity: 0 },
+          '0%': { transform: 'translateX(0)', opacity: '1' },
+          '100%': { transform: 'translateX(-200px)', opacity: '0' },
         },
         'scale-in-content': {
-          '0%': { transform: 'rotateX(-30deg) scale(0.9)', opacity: 0 },
-          '100%': { transform: 'rotateX(0deg) scale(1)', opacity: 1 },
+          '0%': { transform: 'rotateX(-30deg) scale(0.9)', opacity: '0' },
+          '100%': { transform: 'rotateX(0deg) scale(1)', opacity: '1' },
         },
         'scale-out-content': {
-          '0%': { transform: 'rotateX(0deg) scale(1)', opacity: 1 },
-          '100%': { transform: 'rotateX(-10deg) scale(0.95)', opacity: 0 },
+          '0%': { transform: 'rotateX(0deg) scale(1)', opacity: '1' },
+          '100%': { transform: 'rotateX(-10deg) scale(0.95)', opacity: '0' },
         },
         'fade-in': {
-          '0%': { opacity: 0 },
-          '100%': { opacity: 1 },
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
         },
         'fade-out': {
-          '0%': { opacity: 1 },
-          '100%': { opacity: 0 },
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
         // Toast
         'toast-hide': {
-          '0%': { opacity: 1 },
-          '100%': { opacity: 0 },
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
         'toast-slide-in-right': {
           '0%': { transform: 'translateX(calc(100% + 1rem))' },
@@ -223,12 +225,12 @@ module.exports = {
           '100%': { transform: 'translateY(calc(100% + 1rem))' },
         },
         'accordion-down': {
-          from: { height: 0 },
+          from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
           from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: 0 },
+          to: { height: '0' },
         },
         shimmer: {
           from: {
@@ -283,7 +285,7 @@ module.exports = {
   ],
 };
 
-function asd() {
+function asd(): PluginCreator {
   return function ({ matchUtilities, theme }) {
     matchUtilities(
       {
@@ -308,7 +310,7 @@ function asd() {
   };
 }
 
-function addVariablesForColors({ addBase, theme }) {
+function addVariablesForColors({ addBase, theme }: PluginAPI) {
   const allColors = flattenColorPalette(theme('colors'));
   const newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val]),
@@ -318,3 +320,5 @@ function addVariablesForColors({ addBase, theme }) {
     ':root': newVars,
   });
 }
+
+export default config;
