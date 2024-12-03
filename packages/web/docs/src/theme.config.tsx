@@ -79,7 +79,7 @@ export default defineConfig({
     const isGatewayDocsPage = pagePath.route.includes('/docs/gateway');
     const suffix = isGatewayDocsPage ? 'Hive Gateway' : 'Hive';
     const title = `${pageTitle} - ${suffix}`;
-    const { description = `${siteName}: ${siteDescription}`, canonical } = frontMatter;
+    const { description = `${siteName}: ${siteDescription}`, canonical, ogImage } = frontMatter;
 
     const canonicalUrl = ensureAbsolute(canonical ?? pagePath.route);
 
@@ -103,7 +103,7 @@ export default defineConfig({
         <meta property="og:locale" content="en_US" />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={ensureAbsolute('/og-image.png')} />
+        <meta property="og:image" content={ensureAbsolute(ogImage ?? '/og-image.png')} />
         <meta property="og:image:alt" content={description} />
         <meta property="og:image:width" content="1340" />
         <meta property="og:image:height" content="700" />

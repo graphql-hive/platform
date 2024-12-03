@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import {
+  Anchor,
   ArchDecoration,
   CallToAction,
   DecorationIsolation,
@@ -35,7 +36,14 @@ export function IndexPage(): ReactElement {
           Open-Source GraphQL Federation Platform
         </Heading>
         <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
-          Fully open-source schema registry, analytics, metrics and gateway for GraphQL federation
+          Fully open-source schema registry, analytics, metrics and gateway for{' '}
+          <Anchor
+            href="/federation"
+            title="Visit our guide to learn more about GraphQL federation"
+            className="underline decoration-white/30 underline-offset-2 hover:decoration-white/80"
+          >
+            GraphQL federation
+          </Anchor>{' '}
           and other GraphQL APIs.
         </p>
         <HeroFeatures>
@@ -77,6 +85,7 @@ export function IndexPage(): ReactElement {
         <StatsItem label="Collected operations" value={350} suffix="B" />
       </StatsList>
       <UltimatePerformanceCards />
+      <LearnGraphQLFederationSection className="mx-4 md:mx-6" />
       <CompanyTestimonialsSection className="mx-4 mt-6 md:mx-6" />
       <GetStartedTodaySection className="mx-4 mt-6 md:mx-6" />
       <EnterpriseFocusedCards className="mx-4 my-6 md:mx-6" />
@@ -192,6 +201,29 @@ function UltimatePerformanceCards() {
           endpoint.
         </InfoCard>
       </ul>
+    </section>
+  );
+}
+
+function LearnGraphQLFederationSection(props: { className?: string }) {
+  return (
+    <section className={cn('bg-green-1000 rounded-3xl p-24 text-center', props.className)}>
+      <Heading as="h2" size="md" className="flex items-center justify-center gap-4 text-white">
+        What Is GraphQL Federation?
+      </Heading>
+
+      <p className="mt-8 font-medium text-white/80">
+        Understand what federated GraphQL API is, how it works, and why it may be the right choice
+        for your API.
+      </p>
+      <CallToAction
+        variant="secondary"
+        href="/federation"
+        className="mx-auto mt-8"
+        title="Introduction to federated GraphQL APIs"
+      >
+        Introduction to Federation
+      </CallToAction>
     </section>
   );
 }

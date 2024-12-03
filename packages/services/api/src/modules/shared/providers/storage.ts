@@ -190,14 +190,6 @@ export interface Storage {
     ReadonlyArray<ReadonlyArray<OrganizationAccessScope | ProjectAccessScope | TargetAccessScope>>
   >;
 
-  hasOrganizationMemberPairs(
-    _: readonly (OrganizationSelector & { userId: string })[],
-  ): Promise<readonly boolean[]>;
-
-  hasOrganizationProjectMemberPairs(
-    _: readonly (ProjectSelector & { userId: string })[],
-  ): Promise<readonly boolean[]>;
-
   addOrganizationMemberViaInvitationCode(
     _: OrganizationSelector & {
       code: string;
