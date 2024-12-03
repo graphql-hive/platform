@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import type { FastifyRequest } from 'fastify';
 import { Lru as LruType } from 'tiny-lru';
 import { z } from 'zod';
-import { createErrorHandler, handleTRPCError, metrics } from '@hive/service-common';
+import { createErrorHandler, handleTRPCError, maskToken, metrics } from '@hive/service-common';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { initTRPC } from '@trpc/server';
 import { useCache } from './cache';
@@ -22,10 +22,6 @@ const httpRequestDuration = new metrics.Histogram({
 
 function hashToken(token: string) {
   return createHash('sha256').update(token).digest('hex');
-}
-
-function maskToken(token: string) {
-  return token.substring(0, 3) + '•'.repeat(token.length - 6) + token.substring(token.length - 3);
 }
 
 function generateToken() {

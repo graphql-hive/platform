@@ -80,9 +80,11 @@ export function Slider({ counter, className, style, ...rest }: SliderProps) {
           }
         }
 
-        div,
-        div:after {
-          transition: transform var(--ease) 500ms;
+        @supports not (font: -apple-system-body) {
+          div,
+          div:after {
+            transition: transform var(--ease) 500ms;
+          }
         }
       `}</style>
     </div>
@@ -114,7 +116,6 @@ function polyfillSlider(element: HTMLElement, cssProperty: `--${string}`) {
     const vertical = height > width;
     const range = Number(input.max) - Number(input.min);
     const ratio = vertical ? (y - top) / height : (x - left) / width;
-    // alert(ratio, val)
     const val = Number(input.min) + Math.floor(range * ratio);
     input.value = val.toString();
     sync();

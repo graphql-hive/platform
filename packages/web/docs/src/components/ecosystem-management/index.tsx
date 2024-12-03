@@ -96,8 +96,12 @@ export function EcosystemManagementSection({ className }: { className?: string }
             ))}
           </ul>
           <div className="bottom-0 flex w-full flex-col gap-x-4 gap-y-2 max-lg:absolute max-lg:translate-y-[calc(100%+24px)]">
-            <CallToAction href="/federation" variant="primary-inverted">
-              Get started with Federation
+            <CallToAction
+              href="/federation"
+              variant="primary-inverted"
+              title="Learn what GraphQL Federation is and when to use it."
+            >
+              Learn GraphQL Federation
               <ArrowIcon />
             </CallToAction>
             <CallToAction href="/docs/use-cases/apollo-studio" variant="secondary">

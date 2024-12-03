@@ -228,6 +228,16 @@ export default withGuildDocs({
       destination: '/docs/other-integrations/graphql-yoga',
       permanent: true,
     },
+    {
+      source: '/docs/gateway/deployment/node-frameworks',
+      destination: '/docs/gateway/deployment/runtimes/nodejs',
+      permanent: true,
+    },
+    {
+      source: '/docs/gateway/deployment/node-frameworks/nestjs',
+      destination: '/docs/gateway/deployment/runtimes/nodejs',
+      permanent: true,
+    },
   ],
   swcMinify: true,
   webpack: (config, { webpack }) => {
