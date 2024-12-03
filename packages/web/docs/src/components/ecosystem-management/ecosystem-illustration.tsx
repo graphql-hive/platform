@@ -229,7 +229,7 @@ export function EcosystemIllustration(props: { className?: string }) {
         {edgeTexts.map((text, i) => {
           return (
             <span
-              key={i}
+              key={text}
               className={cn(
                 'absolute inset-0',
                 // Makes it accessible by crawlers.
