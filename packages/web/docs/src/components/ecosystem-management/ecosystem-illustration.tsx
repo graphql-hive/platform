@@ -132,7 +132,7 @@ export function EcosystemIllustration(props: { className?: string }) {
             <div className="ml-[calc(var(--label-h)/2-.5px)] h-[calc((var(--gap)-var(--label-h))/2)]" />
           </Edge>
           <Node
-            className="h-[var(--big-node-h)] w-[var(--node-w)] flex-col text-center"
+            className="h-[--big-node-h] w-[--node-w] flex-col text-center"
             title="Hive"
             description="Registry and CDN"
             edges={[3, 4, 6]}
