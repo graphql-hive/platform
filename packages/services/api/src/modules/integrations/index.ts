@@ -1,5 +1,4 @@
 import { createModule } from 'graphql-modules';
-import { AuditLogManager } from '../audit-logs/providers/audit-logs-manager';
 import { GitHubIntegrationManager } from './providers/github-integration-manager';
 import { SlackIntegrationManager } from './providers/slack-integration-manager';
 import { resolvers } from './resolvers.generated';
@@ -10,5 +9,5 @@ export const integrationsModule = createModule({
   dirname: __dirname,
   typeDefs,
   resolvers,
-  providers: [SlackIntegrationManager, GitHubIntegrationManager, AuditLogManager],
+  providers: [SlackIntegrationManager, GitHubIntegrationManager],
 });

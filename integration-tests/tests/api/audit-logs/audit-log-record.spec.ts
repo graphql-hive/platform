@@ -16,8 +16,8 @@ const s3Client = new S3Client({
 });
 
 const ExportAllAuditLogs = graphql(`
-  mutation exportAllAuditLogs($selector: OrganizationSelectorInput!, $filter: AuditLogFilter!) {
-    exportOrganizationAuditLog(selector: $selector, filter: $filter) {
+  mutation exportAllAuditLogs($input: ExportOrganizationAuditLogInput!) {
+    exportOrganizationAuditLog(input: $input) {
       ok {
         url
       }
@@ -44,12 +44,14 @@ test.concurrent(
     await execute({
       document: ExportAllAuditLogs,
       variables: {
-        selector: {
-          organizationSlug: organization.id,
-        },
-        filter: {
-          startDate: lastYear.toISOString(),
-          endDate: today.toISOString(),
+        input: {
+          selector: {
+            organizationSlug: organization.id,
+          },
+          filter: {
+            startDate: lastYear.toISOString(),
+            endDate: today.toISOString(),
+          },
         },
       },
       token: secondToken,
@@ -65,12 +67,14 @@ test.concurrent('Try to export Audit Logs from an Organization with authorized u
   const exportAuditLogs = await execute({
     document: ExportAllAuditLogs,
     variables: {
-      selector: {
-        organizationSlug: organization.id,
-      },
-      filter: {
-        startDate: lastYear.toISOString(),
-        endDate: today.toISOString(),
+      input: {
+        selector: {
+          organizationSlug: organization.id,
+        },
+        filter: {
+          startDate: lastYear.toISOString(),
+          endDate: today.toISOString(),
+        },
       },
     },
     token: ownerToken,
