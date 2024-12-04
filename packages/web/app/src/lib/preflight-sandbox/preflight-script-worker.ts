@@ -11,7 +11,7 @@ self.onmessage = async event => {
 
 self.addEventListener('unhandledrejection', event => {
   const error = 'reason' in event ? new Error(event.reason) : event;
-  postMessage({ error });
+  postMessage({ type: 'error', error });
 });
 
 async function execute(args: {
@@ -128,10 +128,10 @@ ${script}})()`;
     if (error instanceof Error) {
       error.message += appendLineAndColumn(error);
     }
-    postMessage({ error });
+    postMessage({ type: 'error', error });
     return;
   }
-  postMessage({ environmentVariables: workingEnvironmentVariables });
+  postMessage({ type: 'result', environmentVariables: workingEnvironmentVariables });
 }
 
 function appendLineAndColumn(error: Error, { columnOffset = 0 } = {}): string {

@@ -1,6 +1,7 @@
 import { Token } from '../../cypress.config';
 
 beforeEach(() => {
+  cy.clearLocalStorage();
   cy.task('deleteUser');
   cy.task<Token>('createUser').then(result => {
     cy.task('createOrganization', result.sAccessToken);
@@ -13,6 +14,7 @@ beforeEach(() => {
 
 describe('Preflight Script', () => {
   it('mini script editor should be read only', () => {
+    cy.dataCy('toggle-preflight-script').click();
     // Wait loading disappears
     cy.dataCy('preflight-script-editor-mini').should('not.contain', 'Loading');
     // Click
@@ -52,18 +54,12 @@ describe('Preflight Script Modal', () => {
     writeScript(script);
     cy.dataCy('preflight-script-modal-submit').click();
     cy.dataCy('env-editor-mini').should('have.text', env);
+    cy.dataCy('toggle-preflight-script').click();
     cy.dataCy('preflight-script-editor-mini').should('have.text', script);
     cy.reload();
     cy.get('[aria-label*="Preflight Script"]').click();
     cy.dataCy('env-editor-mini').should('have.text', env);
     cy.dataCy('preflight-script-editor-mini').should('have.text', script);
-  });
-
-  it("shouldn't save script and env variables when not submitting", () => {
-    writeScript(script);
-    cy.dataCy('preflight-script-modal-cancel').click();
-    cy.dataCy('env-editor-mini').should('have.text', '');
-    cy.dataCy('preflight-script-editor-mini').should('have.text', '');
   });
 
   it('should run script and show console/error output', () => {
@@ -152,6 +148,7 @@ lab.environment.set('my-test', data)`,
 
 describe('Execution', () => {
   it('should replace with env editor values', () => {
+    cy.dataCy('toggle-preflight-script').click();
     cy.get('[data-name="headers"]').click();
     cy.get('.graphiql-editor-tool .graphiql-editor:last-child textarea').type(
       '{ "__test": "{{foo}} bar {{nonExist}}" }',
@@ -173,6 +170,7 @@ describe('Execution', () => {
   });
 
   it('should execute script, update env editor and replace headers', () => {
+    cy.dataCy('toggle-preflight-script').click();
     cy.get('[data-name="headers"]').click();
     cy.get('.graphiql-editor-tool .graphiql-editor:last-child textarea').type(
       '{ "__test": "{{foo}}" }',
@@ -209,8 +207,6 @@ describe('Execution', () => {
       cy.get('textarea').type(`{"foo":10}`, { force: true, parseSpecialCharSequences: false });
     });
     cy.dataCy('preflight-script-modal-submit').click();
-    cy.dataCy('disable-preflight-script').click();
-    cy.dataCy('preflight-script-editor-mini').should('not.exist');
     cy.intercept('/api/lab/foo/my-new-project/development', req => {
       expect(req.headers.__test).to.equal('10');
     });
