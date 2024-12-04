@@ -64,9 +64,6 @@ export class Proxy {
                   port: route.service.spec.ports[0].port,
                 },
               ],
-              pathRewritePolicy: {
-                replacePrefix: [{ replacement: route.customRewrite }],
-              },
             },
           ],
         },
