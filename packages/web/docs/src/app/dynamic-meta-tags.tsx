@@ -68,20 +68,10 @@ export function DynamicMetaTags() {
 
   return (
     <>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
       <link rel="canonical" href={canonicalUrl} />
       <meta content="en" httpEquiv="Content-Language" />
       <title>{title}</title>
-      <meta name="robots" content="index,follow" />
       <meta name="description" content={description} />
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@TheGuildDev" />
-      <meta name="twitter:creator" content="@TheGuildDev" />
-      {/* OG */}
-      <meta property="og:site_name" content="Hive" />
-      <meta property="og:type" content="website" />
       <meta property="og:title" content={title} />
       <meta property="og:locale" content="en_US" />
       <meta property="og:description" content={description} />

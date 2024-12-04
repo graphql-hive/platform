@@ -72,7 +72,9 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
           }
         `
         }</style>
-        <StaticMetaTags />
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <meta content="en" httpEquiv="Content-Language" />
       </Head>
       <body>
         <Layout
@@ -102,24 +104,3 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
     </html>
   );
 };
-
-function StaticMetaTags() {
-  return (
-    <>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-      <meta content="en" httpEquiv="Content-Language" />
-      <meta name="robots" content="index,follow" />
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@TheGuildDev" />
-      <meta name="twitter:creator" content="@TheGuildDev" />
-      {/* OG */}
-      <meta property="og:site_name" content="Hive" />
-      <meta property="og:type" content="website" />
-      <meta property="og:locale" content="en_US" />
-      <meta property="og:image:width" content="1340" />
-      <meta property="og:image:height" content="700" />
-    </>
-  );
-}
