@@ -8,32 +8,32 @@ authors: [dimitri]
 
 import { Callout } from '@theguild/components'
 
+export const figcaptionClass = 'text-center text-sm italic mt-2'
+
 We've added Preflight Scripts to Laboratory! These scripts allow you to automatically run custom
 authentication processes before executing your GraphQL operations. They're especially useful for
 handling authentication flows like OAuth, where you may need to refresh an access token. Let's
 explore how it works.
-
-export function Caption({ children }) {
-  return <p className="text-center text-sm italic">{children}</p>
-}
 
 ## Configuring Preflight Script
 
 To create a script click on the command line icon (right after Operation Collections plugin icon) in
 GraphiQL sidebar section.
 
-![Command line icon](./command-line-icon.png)
-
-{/* prettier-ignore */}
-<Caption>The preflight script is accessible by clicking on the Command line icon in the GraphiQL sidebar</Caption>
+<figure className="mt-6">
+  <>![Command line icon](./command-line-icon.png)</>
+  {/* prettier-ignore */}
+  <figcaption className={figcaptionClass}>The preflight script is accessible by clicking on the Command line icon in the GraphiQL sidebar</figcaption>
+</figure>
 
 You will see Script editor (JavaScript language) which is read-only and present for a quick view of
 your saved script and Environment variables editor (JSON language) which is persistent in
 localStorage.
 
-![Preflight script plugin view](./preflight-script-plugin.png)
-
-<Caption>Preflight script plugin view</Caption>
+<figure className="mt-6">
+  <>![](./preflight-script-plugin.png)</>
+  <figcaption className={figcaptionClass}>Preflight script plugin view</figcaption>
+</figure>
 
 ## Editing Preflight Script
 
@@ -57,26 +57,30 @@ lab.environment.get('myKey')
 lab.environment.set('myKey', myValue)
 ```
 
-![Demo how to get and set environment variables](./get-and-set-env-vars.png)
-
-<Caption>Demo how to get and set environment variables</Caption>
+<figure className="mt-6">
+  <>![](./get-and-set-env-vars.png)</>
+  <figcaption className={figcaptionClass}>Demo how to get and set environment variables</figcaption>
+</figure>
 
 ## CryptoJS
 
 Additionally, you can access the CryptoJS library by accessing the `CryptoJS` property on the `lab`
 global variable.
 
-![CryptoJS](./crypto-js.png)
-
-<Caption>CryptoJS</Caption>
+<figure className="mt-6">
+  <>![](./crypto-js.png)</>
+  <figcaption className={figcaptionClass}>CryptoJS</figcaption>
+</figure>
 
 ## Global Variables and Errors
 
-Access to global variables such as `this`, `window` or `globalThis` is restricted. Errors thrown by the script will be displayed in Console Output.
+Access to global variables such as `this`, `window` or `globalThis` is restricted. Errors thrown by
+the script will be displayed in Console Output.
 
-![Demo restricted access to global variables](./unable-to-access-global-variables.png)
-
-<Caption>Demo restricted access to global variables</Caption>
+<figure className="mt-6">
+  <>![](./unable-to-access-global-variables.png)</>
+  <figcaption className={figcaptionClass}>Demo restricted access to global variables</figcaption>
+</figure>
 
 ## Using Environment Variables
 
@@ -89,6 +93,8 @@ double-curly braces, e.g.:
 }
 ```
 
-![Replace syntax in action](./replace-syntax.png)
-
-<Caption>Replace syntax is done via double open/closed curly braces, e.g. `{{ myEnvVar }}`</Caption>
+<figure className="mt-6">
+  <>![Replace syntax in action](./replace-syntax.png)</>
+  {/* prettier-ignore */}
+  <figcaption className={figcaptionClass}>Replace syntax is done via double open/closed curly braces, e.g. `{{ myEnvVar }}`</figcaption>
+</figure>
