@@ -226,11 +226,16 @@ const action: Action = async (exec, _query, hiveCloudEnvironment) => {
       expires_at
   `);
 
-  await exec(`
+  await Promise.all([
+    exec(`
     RENAME TABLE
-      default.operations_daily TO default.operations_daily_old,
-      default.operations_daily_new TO default.operations_daily
-  `);
+      default.operations_daily TO default.operations_daily_old
+    `),
+    exec(`
+      RENAME TABLE
+        default.operations_daily_new TO default.operations_daily
+    `),
+  ]);
 
   await exec(`
     INSERT INTO
@@ -266,11 +271,16 @@ const action: Action = async (exec, _query, hiveCloudEnvironment) => {
       expires_at
   `);
 
-  await exec(`
-    RENAME TABLE
-      default.operations_hourly TO default.operations_hourly_old,
-      default.operations_hourly_new TO default.operations_hourly
-  `);
+  await Promise.all([
+    exec(`
+      RENAME TABLE
+        default.operations_hourly TO default.operations_hourly_old
+    `),
+    exec(`
+      RENAME TABLE
+        default.operations_hourly_new TO default.operations_hourly
+    `),
+  ]);
 
   await Promise.all([
     exec(`DROP VIEW default.operations_daily_old`),
