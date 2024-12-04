@@ -100,7 +100,7 @@ export class AuditLogManager {
         ok?: never;
         error: {
           message: string;
-        } | null;
+        };
       }
   > {
     await this.session.assertPerformAction({

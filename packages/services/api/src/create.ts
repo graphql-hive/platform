@@ -202,10 +202,10 @@ export function createRegistry({
           sessionToken: s3AuditLogs.sessionToken,
           service: 's3',
         }),
-        s3.bucketName,
         s3.endpoint,
+        s3.bucketName,
       )
-    : new AuditLogS3Config(s3Config[0].client, s3Config[0].bucket, s3Config[0].endpoint);
+    : new AuditLogS3Config(s3Config[0].client, s3Config[0].endpoint, s3Config[0].bucket);
 
   const providers: Provider[] = [
     AuditLogRecorder,
