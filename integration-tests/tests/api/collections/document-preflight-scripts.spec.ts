@@ -2,7 +2,7 @@ import { ProjectType } from 'testkit/gql/graphql';
 import { initSeed } from '../../../testkit/seed';
 
 describe('Preflight Script', () => {
-  describe.only('CRUD', () => {
+  describe('CRUD', () => {
     const rawJs = 'console.log("Hello World")';
 
     it.concurrent('Update a Preflight Script', async () => {
