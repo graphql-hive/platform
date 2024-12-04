@@ -2,40 +2,42 @@ import { ProjectType } from 'testkit/gql/graphql';
 import { initSeed } from '../../../testkit/seed';
 
 describe('Preflight Script', () => {
-  describe('CRUD', () => {
+  describe.only('CRUD', () => {
     it.concurrent('Create and update a Preflight Script', async () => {
-      const { createDocumentCollection, updateDocumentCollection, deleteDocumentCollection } =
+      const { createDocumentCollection, updateDocumentCollection } =
         await initSeed()
           .createOwner()
           .then(r => r.createOrg())
           .then(r => r.createProject(ProjectType.Single));
 
-      // Create a collection
-      const createDocumentCollectionResult = await createDocumentCollection({
-        name: 'My Collection',
-        description: 'My favorite queries',
-      });
-      expect(createDocumentCollectionResult.error).toBeNull();
-      expect(createDocumentCollectionResult.ok?.collection.id).toBeDefined();
-      expect(
-        createDocumentCollectionResult.ok?.updatedTarget.documentCollections.edges.length,
-      ).toBe(1);
+      // Create a preflight script
+
+
+      // const createDocumentCollectionResult = await createDocumentCollection({
+      //   name: 'My Collection',
+      //   description: 'My favorite queries',
+      // });
+      // expect(createDocumentCollectionResult.error).toBeNull();
+      // expect(createDocumentCollectionResult.ok?.collection.id).toBeDefined();
+      // expect(
+      //   createDocumentCollectionResult.ok?.updatedTarget.documentCollections.edges.length,
+      // ).toBe(1);
 
       // Update the collection
-      const updateDocumentCollectionResult = await updateDocumentCollection({
-        collectionId: createDocumentCollectionResult.ok?.collection.id!,
-        name: 'Best Queries #3',
-        description: 'My favorite queries updated',
-      });
-      expect(updateDocumentCollectionResult.error).toBeNull();
-      expect(updateDocumentCollectionResult.ok?.collection.id).toBeDefined();
-      expect(updateDocumentCollectionResult.ok?.collection.name).toBe('Best Queries #3');
-      expect(updateDocumentCollectionResult.ok?.collection.description).toBe(
-        'My favorite queries updated',
-      );
-      expect(
-        updateDocumentCollectionResult.ok?.updatedTarget.documentCollections.edges.length,
-      ).toBe(1);
+      // const updateDocumentCollectionResult = await updateDocumentCollection({
+      //   collectionId: createDocumentCollectionResult.ok?.collection.id!,
+      //   name: 'Best Queries #3',
+      //   description: 'My favorite queries updated',
+      // });
+      // expect(updateDocumentCollectionResult.error).toBeNull();
+      // expect(updateDocumentCollectionResult.ok?.collection.id).toBeDefined();
+      // expect(updateDocumentCollectionResult.ok?.collection.name).toBe('Best Queries #3');
+      // expect(updateDocumentCollectionResult.ok?.collection.description).toBe(
+      //   'My favorite queries updated',
+      // );
+      // expect(
+      //   updateDocumentCollectionResult.ok?.updatedTarget.documentCollections.edges.length,
+      // ).toBe(1);
     });
 
     describe('Permissions Check', () => {

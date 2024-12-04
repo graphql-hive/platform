@@ -17,6 +17,7 @@ import {
   DeleteOperationMutation,
   UpdateCollectionMutation,
   UpdateOperationMutation,
+  UpdatePreflightScriptMutation,
 } from './collections';
 import { ensureEnv } from './env';
 import {
@@ -295,6 +296,28 @@ export function initSeed() {
                   }).then(r => r.expectNoGraphQLErrors());
 
                   return result.createDocumentCollection;
+                },
+                async updatePreflightScript({
+                  sourceCode,
+                  token = ownerToken,
+                }: {
+                  sourceCode: string,
+                  token?: string;
+                }) {
+                  const result = await execute({
+                    document: UpdatePreflightScriptMutation,
+                    variables: {
+                      input: { sourceCode },
+                      selector: {
+                        organizationSlug: organization.slug,
+                        projectSlug: project.slug,
+                        targetSlug: target.slug,
+                      },
+                    },
+                    authToken: token,
+                  }).then(r => r.expectNoGraphQLErrors());
+
+                  return result.updatePreflightScript;
                 },
                 async updateDocumentCollection({
                   collectionId,
