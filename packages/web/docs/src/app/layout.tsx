@@ -73,9 +73,6 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
           }
         `
         }</style>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-        <meta content="en" httpEquiv="Content-Language" />
       </Head>
       <body>
         <Layout
