@@ -32,6 +32,7 @@ const neueMontreal = localFont({
 
 /**
  * Alternative to `GuildLayout` for Hive and Hive Gateway websites.
+ * TODO: Move this to `@theguild/components`
  */
 const HiveLayout = async ({ children }: { children: ReactNode }) => {
   const [meta, ...pageMap] = await getPageMap();
