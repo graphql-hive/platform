@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type { ParseOptions, Source } from 'graphql';
 import type { Plugin } from 'graphql-yoga';
 import promClient from 'prom-client';
