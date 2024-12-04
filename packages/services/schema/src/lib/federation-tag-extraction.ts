@@ -502,9 +502,7 @@ export function applyTagFilterOnSubgraphs<
   });
 
   if (!intersectionOfTypesWhereAllFieldsAreInaccessible.size) {
-    // FIXME: This can probably be removed?
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    filteredSubgraphs;
+    return filteredSubgraphs;
   }
 
   return filteredSubgraphs.map(subgraph => ({
