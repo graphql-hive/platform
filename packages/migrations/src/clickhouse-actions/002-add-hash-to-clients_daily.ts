@@ -153,10 +153,8 @@ const action: Action = async (exec, _query, hiveCloudEnvironment) => {
       expires_at
   `);
 
-  await Promise.all([
-    exec(`RENAME TABLE default.clients_daily TO default.clients_daily_old`),
-    exec(`RENAME TABLE default.clients_daily_new TO default.clients_daily`),
-  ]);
+  await exec(`RENAME TABLE default.clients_daily TO default.clients_daily_old`);
+  await exec(`RENAME TABLE default.clients_daily_new TO default.clients_daily`);
 
   await Promise.all([
     exec(`DROP VIEW default.clients_daily_old`),

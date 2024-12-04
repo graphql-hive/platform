@@ -271,16 +271,15 @@ const action: Action = async (exec, _query, hiveCloudEnvironment) => {
       expires_at
   `);
 
-  await Promise.all([
-    exec(`
-      RENAME TABLE
-        default.operations_hourly TO default.operations_hourly_old
-    `),
-    exec(`
-      RENAME TABLE
-        default.operations_hourly_new TO default.operations_hourly
-    `),
-  ]);
+  await exec(`
+    RENAME TABLE
+      default.operations_hourly TO default.operations_hourly_old
+  `);
+
+  await exec(`
+    RENAME TABLE
+      default.operations_hourly_new TO default.operations_hourly
+  `);
 
   await Promise.all([
     exec(`DROP VIEW default.operations_daily_old`),
