@@ -301,7 +301,7 @@ export function initSeed() {
                   sourceCode,
                   token = ownerToken,
                 }: {
-                  sourceCode: string,
+                  sourceCode: string;
                   token?: string;
                 }) {
                   const result = await execute({
