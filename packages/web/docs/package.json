@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build && next-sitemap",
-    "dev": "next --turbo",
+    "dev": "next --turbopack",
     "postbuild": "pagefind --site .next/server/app --output-path out/_pagefind"
   },
   "dependencies": {
