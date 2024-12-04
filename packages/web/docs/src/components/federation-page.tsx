@@ -23,7 +23,7 @@ export function FederationPage(): ReactElement {
           size="xl"
           className="mx-auto max-w-3xl text-balance text-center text-white"
         >
-          What Is GraphQL Federation?
+          GraphQL Federation
         </Heading>
         <p className="mx-auto w-[512px] max-w-[80%] text-center leading-6 text-white/80">
           Learn what GraphQL Federation is and how to combine multiple GraphQL APIs called subgraphs
@@ -48,7 +48,7 @@ function Intro() {
         <div className="relative mx-auto flex w-[1392px] max-w-full flex-col gap-x-4 gap-y-6 md:gap-y-12 lg:flex-row [@media(min-width:1400px)]:gap-x-[120px]">
           <div className="flex grow flex-col gap-12 px-4 md:px-0 lg:w-[650px]">
             <Heading as="h2" size="sm" className="text-green-1000">
-              Introduction
+              What is GraphQL Federation?
             </Heading>
             <div className="mx-auto space-y-4 leading-6 text-green-800 lg:space-y-6">
               <p>
