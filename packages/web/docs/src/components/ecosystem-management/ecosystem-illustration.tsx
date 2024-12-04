@@ -278,11 +278,7 @@ interface EdgeLabelProps extends React.HTMLAttributes<HTMLElement> {
 function EdgeLabel(props: EdgeLabelProps) {
   return (
     <div
-      className={
-        'flex size-8 h-[var(--label-h)] items-center justify-center' +
-        ' cursor-default rounded bg-green-700 text-sm font-medium leading-5' +
-        ' hover:ring-2 hover:ring-green-700'
-      }
+      className="flex size-8 h-[--label-h] cursor-default items-center justify-center rounded bg-green-700 text-sm font-medium leading-5 hover:ring-2 hover:ring-green-700"
       {...props}
     />
   );
