@@ -6,6 +6,7 @@ description:
 # Preflight Scripts
 
 import { Callout } from '@theguild/components'
+import { Screenshot } from '../../../../components/screenshot'
 
 export const figcaptionClass = 'text-center text-sm mt-2'
 
@@ -19,7 +20,7 @@ To create a script click on the command line icon (right after Operation Collect
 GraphiQL sidebar section.
 
 <figure className="mt-6">
-  <>![Command line icon](./command-line-icon.png)</>
+  <Screenshot>![Command line icon](./command-line-icon.png)</Screenshot>
   {/* prettier-ignore */}
   <figcaption className={figcaptionClass}>The preflight script is accessible by clicking on the Command line icon in the GraphiQL sidebar</figcaption>
 </figure>
@@ -29,7 +30,7 @@ your saved script and Environment variables editor (JSON language) which is pers
 localStorage.
 
 <figure className="mt-6">
-  <>![](./preflight-script-plugin.png)</>
+  <Screenshot>![](./preflight-script-plugin.png)</Screenshot>
   <figcaption className={figcaptionClass}>Preflight script plugin view</figcaption>
 </figure>
 
@@ -56,17 +57,17 @@ lab.environment.set('myKey', myValue)
 ```
 
 <figure className="mt-6">
-  <>![](./get-and-set-env-vars.png)</>
+  <Screenshot>![](./get-and-set-env-vars.png)</Screenshot>
   <figcaption className={figcaptionClass}>Demo how to get and set environment variables</figcaption>
 </figure>
 
 ## CryptoJS
 
-Additionally, you can access the CryptoJS library by accessing the `CryptoJS` property on the `lab`
-global variable.
+Additionally, you can access [the CryptoJS library](https://github.com/brix/crypto-js) by accessing
+the `CryptoJS` property on the `lab` global variable.
 
 <figure className="mt-6">
-  <>![](./crypto-js.png)</>
+  <Screenshot>![](./crypto-js.png)</Screenshot>
   <figcaption className={figcaptionClass}>CryptoJS</figcaption>
 </figure>
 
@@ -76,7 +77,7 @@ Access to global variables such as `this`, `window` or `globalThis` is restricte
 the script will be displayed in Console Output.
 
 <figure className="mt-6">
-  <>![](./unable-to-access-global-variables.png)</>
+  <Screenshot>![](./unable-to-access-global-variables.png)</Screenshot>
   <figcaption className={figcaptionClass}>Demo restricted access to global variables</figcaption>
 </figure>
 
@@ -92,7 +93,7 @@ double-curly braces, e.g.:
 ```
 
 <figure className="mt-6">
-  <>![Replace syntax in action](./replace-syntax.png)</>
+  <Screenshot>![Replace syntax in action](./replace-syntax.png)</Screenshot>
   {/* prettier-ignore */}
   <figcaption className={figcaptionClass}>Replace syntax is done via double open/closed curly braces, e.g. `{{ myEnvVar }}`</figcaption>
 </figure>
