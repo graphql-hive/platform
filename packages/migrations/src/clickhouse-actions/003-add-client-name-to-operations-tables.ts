@@ -226,16 +226,15 @@ const action: Action = async (exec, _query, hiveCloudEnvironment) => {
       expires_at
   `);
 
-  await Promise.all([
-    exec(`
+  await exec(`
     RENAME TABLE
       default.operations_daily TO default.operations_daily_old
-    `),
-    exec(`
-      RENAME TABLE
-        default.operations_daily_new TO default.operations_daily
-    `),
-  ]);
+    `);
+
+  await exec(`
+    RENAME TABLE
+      default.operations_daily_new TO default.operations_daily
+  `);
 
   await exec(`
     INSERT INTO
