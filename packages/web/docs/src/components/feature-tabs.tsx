@@ -119,9 +119,7 @@ export function FeatureTabs({ className }: { className?: string }) {
         }}
         value={currentTab}
       >
-        <Tabs.List
-          className='sm:bg-beige-200 group relative z-10 mx-4 my-6 flex flex-col overflow-hidden focus-within:overflow-visible max-sm:h-[58px] max-sm:focus-within:pointer-events-none max-sm:focus-within:rounded-b-none max-sm:focus-within:has-[>:nth-child(2)[data-state="active"]]:translate-y-[-100%] max-sm:focus-within:has-[>:nth-child(3)[data-state="active"]]:translate-y-[-200%] sm:flex-row sm:rounded-2xl md:mx-0 md:mb-12 md:mt-0'
-        >
+        <Tabs.List className='sm:bg-beige-200 group relative z-10 mx-4 my-6 flex flex-col overflow-hidden focus-within:overflow-visible max-sm:h-[58px] max-sm:focus-within:pointer-events-none max-sm:focus-within:rounded-b-none max-sm:focus-within:has-[>:nth-child(2)[data-state="active"]]:translate-y-[-100%] max-sm:focus-within:has-[>:nth-child(3)[data-state="active"]]:translate-y-[-200%] sm:flex-row sm:rounded-2xl md:mx-0 md:mb-12 md:mt-0'>
           {tabs.map((tab, i) => {
             return (
               <Tabs.Trigger

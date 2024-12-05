@@ -5,7 +5,7 @@ import colors from 'tailwindcss/colors';
 import { fontFamily } from 'tailwindcss/defaultTheme';
 import { default as flattenColorPalette } from 'tailwindcss/lib/util/flattenColorPalette';
 
-module.exports = {
+export default {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.ts{,x}'],
   important: true,
