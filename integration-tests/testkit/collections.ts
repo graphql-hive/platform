@@ -202,3 +202,25 @@ export const DeleteOperationMutation = graphql(`
     }
   }
 `);
+
+export const UpdatePreflightScriptMutation = graphql(`
+  mutation UpdatePreflightScript(
+    $selector: TargetSelectorInput!
+    $input: UpdatePreflightScriptInput!
+  ) {
+    updatePreflightScript(selector: $selector, input: $input) {
+      ok {
+        updatedTarget {
+          id
+          preflightScript {
+            id
+            sourceCode
+          }
+        }
+      }
+      error {
+        message
+      }
+    }
+  }
+`);
