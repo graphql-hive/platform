@@ -333,7 +333,7 @@ function Node({
           ' cursor-pointer transition-colors duration-500 [&>svg]:flex-shrink-0',
         // todo: linear gradients don't transition, so we should add white/10 background layer'
         highlighted &&
-          'bg-[linear-gradient(135deg,rgb(255_255_255_/0.2),rgb(255_255_255/0.3))] ring ring-green-300',
+          'bg-[linear-gradient(135deg,rgb(255_255_255/.2),rgb(255_255_255/.3))] ring ring-green-300',
         className,
       )}
       {...rest}
