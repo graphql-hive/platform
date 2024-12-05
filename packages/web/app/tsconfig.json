@@ -25,6 +25,6 @@
       }
     ]
   },
-  "include": ["src", "vite.config.ts", "tailwind.config.ts"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }
