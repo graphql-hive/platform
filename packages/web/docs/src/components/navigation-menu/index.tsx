@@ -16,19 +16,19 @@ import graphQLConfLocalImage from './graphql-conf-image.webp';
 const developerMenu = [
   {
     href: '/docs',
-    icon: PaperIcon,
+    icon: <PaperIcon />,
     children: 'Documentation',
   },
   { href: 'https://status.graphql-hive.com/', icon: TargetIcon, children: 'Status' },
   {
     href: '/product-updates',
-    icon: RightCornerIcon,
+    icon: <RightCornerIcon />,
     children: 'Product Updates',
   },
   { href: 'https://the-guild.dev/blog', icon: PencilIcon, children: 'Blog' },
   {
     href: 'https://github.com/graphql-hive/console',
-    icon: GitHubIcon,
+    icon: <GitHubIcon />,
     children: 'GitHub',
   },
 ];
