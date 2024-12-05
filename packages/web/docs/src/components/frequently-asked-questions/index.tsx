@@ -25,7 +25,7 @@ const UnwrapChild = (props: { children?: ReactNode }) => props.children as unkno
 
 const Accordion = (props: ComponentPropsWithoutRef<'ul'>) => (
   <RadixAccordion.Root asChild type="single" collapsible>
-    <ul className="basis-1/2 divide-y max-xl:grow" {...props} />
+    <ul className="divide-beige-400 basis-1/2 divide-y max-xl:grow" {...props} />
   </RadixAccordion.Root>
 );
 
