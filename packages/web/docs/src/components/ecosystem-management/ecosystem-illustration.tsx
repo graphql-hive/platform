@@ -258,7 +258,7 @@ function Edge({ highlighted, top, bottom, left, className, ...rest }: EdgeProps)
       style={{ '--bw': highlighted ? '2px' : '1px' }}
       className={cn(
         className,
-        '[&>*]:transition-colors [&>*]:duration-500 [&>:nth-child(odd)]:border-green-700',
+        '*:transition-colors *:duration-500 [&>:nth-child(odd)]:border-green-700',
         top &&
           (bottom
             ? '[&>:nth-child(1)]:border-t-[length:var(--bw)] [&>:nth-child(3)]:border-b-[length:var(--bw)]'
