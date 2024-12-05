@@ -5,7 +5,7 @@ import tailwindcssRadix from 'tailwindcss-radix';
 import colors from 'tailwindcss/colors';
 import { fontFamily } from 'tailwindcss/defaultTheme';
 // @ts-expect-error -- types are missing
-import flattenColorPalette from 'tailwindcss/lib/util/flattenColorPalette';
+import { default as flattenColorPalette } from 'tailwindcss/lib/util/flattenColorPalette';
 import type { PluginAPI, PluginCreator } from 'tailwindcss/types/config';
 
 const config: Config = {
