@@ -10,7 +10,6 @@ import baseConfig from '@theguild/tailwind-config';
 
 const config: Config = {
   ...baseConfig,
-  content: [...baseConfig.content, './mdx-components.js'],
   theme: {
     ...baseConfig.theme,
     extend: {
