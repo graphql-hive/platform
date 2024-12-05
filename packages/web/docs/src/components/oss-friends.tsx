@@ -29,7 +29,7 @@ export async function OSSFriendsPage() {
     <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <div className="bg-beige-100 relative isolate mx-4 flex flex-col gap-6 overflow-hidden rounded-3xl px-4 py-6 max-sm:mt-2 sm:py-12 md:mx-6 md:gap-8 lg:py-24">
         <DecorationIsolation>
-          <ArchDecoration className="pointer-events-none absolute left-[-46px] -top-5 size-[200px] rotate-180 md:left-[-60px] md:top-[-188px] md:size-auto" />
+          <ArchDecoration className="pointer-events-none absolute -top-5 left-[-46px] size-[200px] rotate-180 md:left-[-60px] md:top-[-188px] md:size-auto" />
           <ArchDecoration className="pointer-events-none absolute bottom-0 right-[-53px] size-[200px] md:-bottom-32 md:size-auto lg:bottom-[-188px] lg:right-0" />
           <svg width="432" height="432" viewBox="0 0 432 432" className="absolute -z-10">
             <defs>
