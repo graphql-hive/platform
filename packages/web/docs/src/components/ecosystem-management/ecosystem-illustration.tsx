@@ -343,7 +343,7 @@ function Node({
         <div className="font-medium text-green-100">{title}</div>
         {description && (
           <div
-            className="mt-0.5 text-sm leading-5 text-green-200"
+            className="mt-0.5 text-sm/5 text-green-200"
             style={{
               display: 'var(--node-desc-display)',
             }}
