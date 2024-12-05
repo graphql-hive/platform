@@ -65,8 +65,8 @@ export function GotAnIdeaSection() {
               y2="245.934"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#A2C1C4" stop-opacity="0" />
-              <stop offset="1" stop-color="#A2C1C4" stop-opacity="0.8" />
+              <stop stopColor="#A2C1C4" stopOpacity="0" />
+              <stop offset="1" stopColor="#A2C1C4" stopOpacity="0.8" />
             </linearGradient>
             <linearGradient
               id="paint1_linear_2003_9879"
@@ -76,8 +76,8 @@ export function GotAnIdeaSection() {
               y2="245.934"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#A2C1C4" stop-opacity="0" />
-              <stop offset="1" stop-color="#A2C1C4" stop-opacity="0.8" />
+              <stop stopColor="#A2C1C4" stopOpacity="0" />
+              <stop offset="1" stopColor="#A2C1C4" stopOpacity="0.8" />
             </linearGradient>
             <linearGradient
               id="paint2_linear_2003_9879"
@@ -87,8 +87,8 @@ export function GotAnIdeaSection() {
               y2="126.066"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#A2C1C4" stop-opacity="0" />
-              <stop offset="1" stop-color="#A2C1C4" stop-opacity="0.8" />
+              <stop stopColor="#A2C1C4" stopOpacity="0" />
+              <stop offset="1" stopColor="#A2C1C4" stopOpacity="0.8" />
             </linearGradient>
             <linearGradient
               id="paint3_linear_2003_9879"
@@ -98,8 +98,8 @@ export function GotAnIdeaSection() {
               y2="126.066"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#A2C1C4" stop-opacity="0" />
-              <stop offset="1" stop-color="#A2C1C4" stop-opacity="0.8" />
+              <stop stopColor="#A2C1C4" stopOpacity="0" />
+              <stop offset="1" stopColor="#A2C1C4" stopOpacity="0.8" />
             </linearGradient>
           </defs>
         </svg>
