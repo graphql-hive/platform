@@ -52,7 +52,7 @@ const TransferOrganizationOwnership_Members = graphql(`
   }
 `);
 
-const MemberFields = graphql(`
+const _MemberFields = graphql(`
   fragment MemberFields on Member {
     id
     user {
@@ -69,7 +69,7 @@ const MemberFields = graphql(`
 `);
 
 type Member = NonNullable<
-  FragmentType<typeof MemberFields>[' $fragmentRefs']
+  FragmentType<typeof _MemberFields>[' $fragmentRefs']
 >['MemberFieldsFragment'];
 
 const TransferOrganizationOwnershipModal_OrganizationFragment = graphql(`
