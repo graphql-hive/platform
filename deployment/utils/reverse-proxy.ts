@@ -57,13 +57,16 @@ export class Proxy {
           },
           routes: [
             {
-              conditions: [{ prefix: route.path }],
+              conditions: [{ exact: route.path }],
               services: [
                 {
                   name: route.service.metadata.name,
                   port: route.service.spec.ports[0].port,
                 },
               ],
+              pathRewritePolicy: {
+                replacePrefix: [{ replacement: route.customRewrite }],
+              },
             },
           ],
         },
