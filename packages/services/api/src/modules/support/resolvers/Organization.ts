@@ -49,7 +49,7 @@ export const Organization: Pick<
   viewerCanManageSupportTickets: async (organization, _arg, { session, injector }) => {
     try {
       injector.get(SupportManager);
-    } catch (err) {
+    } catch {
       return false;
     }
     return await session.canPerformAction({

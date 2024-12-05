@@ -50,7 +50,7 @@ export function createTokens(config: { endpoint: string; logger: ServiceLogger }
         return result;
       }
       return TokenStatus.NotFound;
-    } catch (error) {
+    } catch {
       return TokenStatus.NotFound;
     }
   }
