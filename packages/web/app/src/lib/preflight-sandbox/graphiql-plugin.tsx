@@ -37,7 +37,13 @@ import {
 } from '@radix-ui/react-icons';
 import { useParams } from '@tanstack/react-router';
 import type { LogMessage } from './preflight-script-worker';
-import PreflightWorker from './preflight-script-worker?worker';
+import _PreflightWorker from './preflight-script-worker?worker';
+
+const PreflightWorker =
+  // eslint-disable-next-line no-process-env -- Static analyzer replace process.env.NODE_ENV at build time
+  process.env.NODE_ENV === 'production'
+    ? Worker.bind(null, 'https://lab-worker.dev.graphql-hive.com/worker.js')
+    : _PreflightWorker;
 
 export const preflightScriptPlugin: GraphiQLPlugin = {
   icon: () => (
