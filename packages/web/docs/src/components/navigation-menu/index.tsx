@@ -5,6 +5,7 @@ import {
   GitHubIcon,
   GraphQLConfCard,
   HiveNavigation,
+  HiveNavigationProps,
   PaperIcon,
   PencilIcon,
   PRODUCTS,
@@ -13,19 +14,19 @@ import {
 } from '@theguild/components';
 import graphQLConfLocalImage from './graphql-conf-image.webp';
 
-const developerMenu = [
+const developerMenu: HiveNavigationProps['developerMenu'] = [
   {
     href: '/docs',
     icon: <PaperIcon />,
     children: 'Documentation',
   },
-  { href: 'https://status.graphql-hive.com/', icon: TargetIcon, children: 'Status' },
+  { href: 'https://status.graphql-hive.com/', icon: <TargetIcon />, children: 'Status' },
   {
     href: '/product-updates',
     icon: <RightCornerIcon />,
     children: 'Product Updates',
   },
-  { href: 'https://the-guild.dev/blog', icon: PencilIcon, children: 'Blog' },
+  { href: 'https://the-guild.dev/blog', icon: <PencilIcon />, children: 'Blog' },
   {
     href: 'https://github.com/graphql-hive/console',
     icon: <GitHubIcon />,
