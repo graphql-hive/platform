@@ -13,7 +13,7 @@
     "@radix-ui/react-tabs": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.3",
     "@tailwindcss/typography": "0.5.15",
-    "@theguild/components": "8.0.0-alpha-20241205185359-d1dcb7bf03382bc61e997350987200ff4fc17019",
+    "@theguild/components": "8.0.0-alpha-20241205193129-6cfdd0b7d99f5c892e3ea7926c5ad287bc6c67f4",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "next": "15.0.3",
