@@ -25,9 +25,9 @@ const developerMenu = [
     icon: RightCornerIcon,
     children: 'Product Updates',
   },
-  { href: '/blog', icon: PencilIcon, children: 'Blog' },
+  { href: 'https://the-guild.dev/blog', icon: PencilIcon, children: 'Blog' },
   {
-    href: 'https://github.com/dotansimha/graphql-code-generator',
+    href: 'https://github.com/graphql-hive/console',
     icon: GitHubIcon,
     children: 'GitHub',
   },
