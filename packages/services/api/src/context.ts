@@ -12,6 +12,6 @@ export interface RegistryContext {
 
 declare global {
   namespace GraphQLModules {
-    type GlobalContext = RegistryContext
+    type GlobalContext = RegistryContext;
   }
 }
