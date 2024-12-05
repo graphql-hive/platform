@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { generateStaticParamsFor, importPage } from 'nextra/pages';
-import { useMDXComponents } from '../../../../mdx-components.j';
+import { useMDXComponents } from '../../../../mdx-components.js';
 import { ConfiguredGiscus } from '../../../components/configured-giscus';
 
 /**
