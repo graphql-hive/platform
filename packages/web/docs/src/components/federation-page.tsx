@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Anchor, CallToAction, cn, Heading } from '@theguild/components';
 import { ArrowIcon } from './arrow-icon';
 import { FrequentlyAskedFederationQuestions } from './frequently-asked-questions';
-import { Hero } from './hero';
+import { Hero, HeroLinks } from './hero';
 import { InfoCard } from './info-card';
 import { LandingPageContainer } from './landing-page-container';
 import federationDiagram from '../../public/federation-diagram.png';
@@ -29,6 +29,24 @@ export function FederationPage(): ReactElement {
           into one unified API (supergraph), and serve data from a single endpoint using a GraphQL
           gateway.
         </p>
+        <HeroLinks>
+          <CallToAction
+            variant="primary-inverted"
+            href="/"
+            title="Learn about our Open-Source GraphQL Federation Solution - Hive"
+          >
+            Try Hive for Federation
+          </CallToAction>
+          <CallToAction
+            variant="secondary"
+            title="Contact our experts to learn more about GraphQL Federation"
+            onClick={() => {
+              (window as any).$crisp?.push(['do', 'chat:open']);
+            }}
+          >
+            Contact an Expert
+          </CallToAction>
+        </HeroLinks>
       </Hero>
       <Intro />
       <WhyFederation />
