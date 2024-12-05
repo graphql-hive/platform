@@ -57,7 +57,7 @@ export class Proxy {
           },
           routes: [
             {
-              conditions: [{ exact: route.path }],
+              conditions: [{ prefix: route.path }],
               services: [
                 {
                   name: route.service.metadata.name,
@@ -65,7 +65,7 @@ export class Proxy {
                 },
               ],
               pathRewritePolicy: {
-                replacePrefix: [{ replacement: route.customRewrite }],
+                replacePrefix: [{ prefix: route.path, replacement: route.customRewrite }],
               },
             },
           ],

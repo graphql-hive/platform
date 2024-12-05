@@ -23,7 +23,7 @@ export function deployLabWorker({
     path,
     service: app.service,
     host: dnsName,
-    customRewrite: path,
+    customRewrite: '/preflight-script-worker.js',
   });
 
   return {
