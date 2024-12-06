@@ -14,8 +14,7 @@ interface Email {
   body: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const emailProviders = {
+const _emailProviders = {
   postmark,
   mock,
   smtp,
@@ -23,7 +22,7 @@ const emailProviders = {
 };
 
 export interface EmailProvider {
-  id: keyof typeof emailProviders;
+  id: keyof typeof _emailProviders;
   send(email: Email): Promise<void>;
   history: Email[];
 }

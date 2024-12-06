@@ -1034,8 +1034,7 @@ export const InsertConditionalBreakingChangeMetadataModel =
     },
   })).nullable();
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const SchemaCheckInputModel = z.union([
+const _SchemaCheckInputModel = z.union([
   z.intersection(
     z.object({
       isSuccess: z.literal(false),
@@ -1107,7 +1106,7 @@ export const SchemaCheckModel = z.union([
   ),
 ]);
 
-export type SchemaCheckInput = z.TypeOf<typeof SchemaCheckInputModel>;
+export type SchemaCheckInput = z.TypeOf<typeof _SchemaCheckInputModel>;
 export type SchemaCheck = z.TypeOf<typeof SchemaCheckModel>;
 
 export const TargetBreadcrumbModel = z

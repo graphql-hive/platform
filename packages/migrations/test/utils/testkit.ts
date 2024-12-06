@@ -1,5 +1,5 @@
 /* eslint-disable import/first */
- 
+
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from 'dotenv';
@@ -25,11 +25,11 @@ export async function initMigrationTestingEnvironment() {
     ...env.postgres,
     db: 'postgres',
   }));
-  
+
   const dbName = 'migration_test_' + Date.now() + Math.random().toString(16).substring(2);
   console.log('db name:', dbName)
   await db.query(`CREATE DATABASE ${dbName};`);
-  
+
   const connectionString = createConnectionString({
     ...env.postgres,
     db: dbName,
@@ -113,7 +113,9 @@ export async function initMigrationTestingEnvironment() {
       await runPGMigrations({ slonik });
     },
     async done(deleteDb = true) {
-      if (deleteDb) await db.query(`DROP DATABASE ${dbName};`);
+      if (deleteDb) {
+        await db.query(`DROP DATABASE ${dbName};`);
+      }
       await db.$pool.end().catch();
     },
   };
