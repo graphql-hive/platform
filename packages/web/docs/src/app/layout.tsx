@@ -67,7 +67,7 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
             --nextra-primary-saturation: 40%;
             --nextra-bg: 255, 255, 255;
           }
-          ._tracking-tight,
+          .x\\:tracking-tight,
           .nextra-steps :is(h2, h3, h4) {
             letter-spacing: normal;
           }
