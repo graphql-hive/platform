@@ -8,9 +8,18 @@ import {
   Heading,
   InfoCard,
 } from '@theguild/components';
-import { FrequentlyAskedPartnersQuestions } from './frequently-asked-questions';
-import { Hero, HeroLinks } from './hero';
-import { LandingPageContainer } from './landing-page-container';
+import { FrequentlyAskedPartnersQuestions } from '../../components/frequently-asked-questions';
+import { Hero, HeroLinks } from '../../components/hero';
+import { LandingPageContainer } from '../../components/landing-page-container';
+
+export const metadata = {
+  title: 'Partnerships',
+  description:
+    'Accelerate GraphQL Federation adoption with the Hive Partner Network. Access enterprise-grade tools and expertise to build scalable, unified APIs across distributed systems. Join our network of federation experts.',
+  openGraph: {
+    images: ['/hive-partners-og.png'],
+  },
+};
 
 function WhyUs({ className }: { className?: string }) {
   return (
@@ -116,7 +125,7 @@ function SolutionsPartner({ className }: { className?: string }) {
   );
 }
 
-export function PartnersPage() {
+export default function PartnersPage() {
   return (
     <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <Hero className="mx-4 h-[22%] max-sm:mt-2 md:mx-6">
