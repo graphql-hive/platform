@@ -17,17 +17,12 @@ import azureAdNewApp from '../../../../public/docs/pages/management/sso/azure-ad
 import azureAdAppRegister from '../../../../public/docs/pages/management/sso/azure-ad-register-application.webp'
 import azureAdEmail1 from '../../../../public/docs/pages/management/sso/azure-ad-users-tab.webp'
 import azureAdEmail2 from '../../../../public/docs/pages/management/sso/azure-ad-users-table.webp'
-import oktaControlledImage from '../../../../public/docs/pages/management/sso/controlled-access-of-okta-app.webp'
-import oktaAppIntegrationImage from '../../../../public/docs/pages/management/sso/create-new-app-integration-options.webp'
 import hiveOidcModalImage from '../../../../public/docs/pages/management/sso/hive-connect-openid-provider-modal.png'
 import hiveOidcImage from '../../../../public/docs/pages/management/sso/hive-connect-openid-provider.png'
 import hiveManageOidcImage from '../../../../public/docs/pages/management/sso/hive-manage-openid-connect-modal.png'
 import hiveLoginUrlImage from '../../../../public/docs/pages/management/sso/hive-manage-openid-okta-login-url.png'
-import oktaAdminButtonImage from '../../../../public/docs/pages/management/sso/okta-admin-button.webp'
-import oktaAppConfigClientIdImage from '../../../../public/docs/pages/management/sso/okta-app-config-client-id.webp'
 import oktaAppConfigClientSecretImage from '../../../../public/docs/pages/management/sso/okta-app-config-client-secret.webp'
 import oktaAppGeneralSettingsImage from '../../../../public/docs/pages/management/sso/okta-app-general-settings-section.webp'
-import oktaCreateAppImage from '../../../../public/docs/pages/management/sso/okta-create-app-integration.webp'
 
 # Single Sign On via OIDC (Open ID Connect Provider)
 
@@ -120,47 +115,27 @@ organization's slug, and you will then be redirected to your OIDC provider.
 Once you're logged in to your account, click the **Admin** button in the header to navigate to the
 admin view.
 
-<NextImage
-  alt="Okta Admin Button"
-  src={oktaAdminButtonImage}
-  className="mt-8 max-w-3xl rounded-lg drop-shadow-md"
-/>
+![Okta Admin Button](/docs/pages/management/sso/okta-admin-button.webp)
 
 After you're redirected click on the **Applications** tab in the sidebar then click on the **Create
 App Integration** button:
 
-<NextImage
-  alt="Okta Create App"
-  src={oktaCreateAppImage}
-  className="mt-8 max-w-3xl rounded-lg drop-shadow-md"
-/>
+![Okta Create App](/docs/pages/management/sso/okta-create-app-integration.webp)
 
 Choose **OIDC - OpenID Connect** as for the Sign-in method and **Web Application** for the
 **Application type**, then click **Next**.
 
-<NextImage
-  alt="Okta App Integration"
-  src={oktaAppIntegrationImage}
-  className="mt-8 max-w-3xl rounded-lg drop-shadow-md"
-/>
+![Okta App Integration](/docs/pages/management/sso/create-new-app-integration-options.webp)
 
 Next you're gonna be able to customize your app's name and logo if you want to, then choose the
 option that suits you for the "Controlled access", I'm gonna go with "Allow everyone" as this's just
 a guide, after you're done click "Save".
 
-<NextImage
-  alt="Okta Controlled Access"
-  src={oktaControlledImage}
-  className="mt-8 max-w-3xl rounded-lg drop-shadow-md"
-/>
+![Okta Controlled Access](/docs/pages/management/sso/controlled-access-of-okta-app.webp)
 
 From the Okta dashboard, grab and store the **Client ID** and **Client Secret**:
 
-<NextImage
-  alt="Okta Client ID"
-  src={oktaAppConfigClientIdImage}
-  className="mt-8 max-w-3xl rounded-lg drop-shadow-md"
-/>
+![Okta Client ID](/docs/pages/management/sso/okta-app-config-client-id.webp)
 
 <NextImage
   alt="Okta Client Secret"
@@ -365,9 +340,9 @@ After you're done, click the **Add permissions** button.
 
 <Callout type="info">
   **Azure AD and `email` field access**
-  
+
   Granting the permission for `email` unfortunately doesn't guarantee a successful login, because in Azure AD, the `email` field is marked as optional, while it's required for a successful integration with Hive.
-  
+
   If your Azure AD members does not have the `email` field set, the login will fail. You can follow the steps in the screenshots below to be able to add an `email` for an existing user record.
 
 <NextImage alt="Azure AD" src={azureAdEmail1} className="mt-8 max-w-sm rounded-lg drop-shadow-md" />
