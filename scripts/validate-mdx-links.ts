@@ -26,9 +26,15 @@ const files = globSync(args.values.files);
 if (files.length === 0) {
   console.error('No files found. Please pass the --cwd or navigate to the proper directory.');
   process.exit(1);
+} else {
+  console.log(`Found ${files.length} files to validate.`);
 }
 
 const scanned = await scanURLs();
+
+console.log('Scanned routes from the file system:');
+console.log(scanned);
+
 let validations = await validateFiles(files, { scanned });
 
 const withoutFalsePositives = await Promise.all(
