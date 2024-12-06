@@ -1,9 +1,5 @@
 import NextImage from 'next/image'
 import { Callout, Steps } from '@theguild/components'
-import azureAddAppCreds from '../../../../public/docs/pages/management/sso/azure-ad-app-creds.webp'
-import azureAdAppSecret from '../../../../public/docs/pages/management/sso/azure-ad-app-new-client-secret.webp'
-import azureAdAppSecretValue from '../../../../public/docs/pages/management/sso/azure-ad-client-secret-value.webp'
-import azureAdLogoutUrl from '../../../../public/docs/pages/management/sso/azure-ad-configure-logout-url.webp'
 import azureAdCreateApp from '../../../../public/docs/pages/management/sso/azure-ad-create-application-panel.webp'
 import azureAdEnterpriseApplication from '../../../../public/docs/pages/management/sso/azure-ad-enterprise-applications.webp'
 import azureAdNewApp from '../../../../public/docs/pages/management/sso/azure-ad-new-application-button.webp'
@@ -242,21 +238,17 @@ Now, create a new client secret for your app by navigating as the screenshot ill
 right panel add a description for your secret and configure your expiration configuration or leave
 it as the default recommended value which is `6 months`, then click **Add**:
 
-<NextImage src={azureAdAppSecret} className="mt-8 max-w-xl rounded-lg drop-shadow-md" />
+![](/docs/pages/management/sso/azure-ad-app-new-client-secret.webp)
 
 Copy and store your client secret value. Make sure to copy the value immediately, as you're not
 gonna be able to see it again after navigating.
 
-<NextImage src={azureAdAppSecretValue} className="mt-8 max-w-xl rounded-lg drop-shadow-md" />
+![](/docs/pages/management/sso/azure-ad-client-secret-value.webp)
 
 Use the pointers in the screenshot to help you find your credentials to be able to fill Hive's
 connection inputs:
 
-<NextImage
-  alt="Azure AD"
-  src={azureAddAppCreds}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Azure AD](/docs/pages/management/sso/azure-ad-app-creds.webp)
 
 - **Token Endpoint**: From the screenshot above
 - **User Info Endpoint**: `https://graph.microsoft.com/oidc/userinfo`
@@ -270,11 +262,7 @@ And we're almost done, go to the "**Authentication**" tab and scroll done to the
 logout URL**" section, and fill in the input with the following URL:
 `https://app.graphql-hive.com/logout`, then click **Save**.
 
-<NextImage
-  alt="Azure AD"
-  src={azureAdLogoutUrl}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Azure AD](/docs/pages/management/sso/azure-ad-configure-logout-url.webp)
 
 And for the last step, we need to add the permissions for Azure AD to be able to access the user
 info after authentication, so use the "**API permissions** section on AD portal, then click the
