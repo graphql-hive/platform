@@ -6,9 +6,9 @@ date: 2024-10-11
 authors: [dimitri]
 ---
 
-import fullScreenMode from './full-screen-mode.mp4'
-import queryBuilder from './query-builder.mp4'
-import newTabs from './tabs-new.mp4'
+export const fullScreenMode = `${process.env.NEXT_BASE_PATH}/product-updates/full-screen-mode.mp4`
+export const queryBuilder = `${process.env.NEXT_BASE_PATH}/product-updates/query-builder.mp4`
+export const newTabs = `${process.env.NEXT_BASE_PATH}/product-updates/tabs-new.mp4`
 
 export function Caption({ children }) {
   return <p className="text-center text-sm italic">{children}</p>
