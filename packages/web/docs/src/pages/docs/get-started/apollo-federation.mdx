@@ -1,15 +1,11 @@
 import NextImage from 'next/image'
 import { Callout, Cards, FileTree, Steps, Tabs } from '@theguild/components'
 import cdnAccessTokenSettings from '../../../../public/docs/pages/get-started/apollo-federation/cdn-access-token-settings.png'
-import createAccessToken from '../../../../public/docs/pages/get-started/apollo-federation/create-access-token.png'
 import cdnAccessTokenCreate from '../../../../public/docs/pages/get-started/apollo-federation/create-cdn-access-token.png'
-import createdAccessToken from '../../../../public/docs/pages/get-started/apollo-federation/created-access-token.png'
 import cdnAccessTokenCreated from '../../../../public/docs/pages/get-started/apollo-federation/created-cdn-access-token.png'
 import publishFirstSchemaVersionUi from '../../../../public/docs/pages/get-started/apollo-federation/publish-first-schema-version-ui.png'
 import publishSecondSchemaVersionUi from '../../../../public/docs/pages/get-started/apollo-federation/publish-second-schema-version-ui.png'
 import publishThirdSchemaVersionUi from '../../../../public/docs/pages/get-started/apollo-federation/publish-third-schema-version-ui.png'
-import registryTokenSettings from '../../../../public/docs/pages/get-started/apollo-federation/registry-token-settings.png'
-import targetOverview from '../../../../public/docs/pages/get-started/apollo-federation/target-overview.png'
 
 # Get started with Apollo Federation
 
@@ -115,11 +111,7 @@ As you may have noticed, Hive has created three targets under your project: `dev
 `staging`, and `production`. Each of these targets represent a different environment. You can remove
 or create new targets as needed, for modelling the different environments of your project.
 
-<NextImage
-  src={targetOverview}
-  alt="Project overview showing the available targets"
-  className="mt-10 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Project overview showing the available targets](/docs/pages/get-started/apollo-federation/target-overview.png)
 
 For this guide we will use the `development` target.
 
@@ -129,29 +121,17 @@ access token with the necessary permissions for the Hive CLI.
 Select the `development` target under your Hive project and then choose the **Settings** tab. On the
 Settings screen, you can manage your target's settings and access tokens.
 
-<NextImage
-  src={registryTokenSettings}
-  alt="Target settings for registry token management"
-  className="mt-10 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Target settings for registry token management](/docs/pages/get-started/apollo-federation/registry-token-settings.png)
 
 Under the **Registry Access Tokens** section, click the **Create new registry token** button. Give
 your access token a name and select **Read & Write** for the permissions:
 
-<NextImage
-  alt="Create Registry Token Form"
-  src={createAccessToken}
-  className="mt-10 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Create Registry Token Form](/docs/pages/get-started/apollo-federation/create-access-token.png)
 
 Click on **Generate Token** button and you should get your CLI token created, with permissions to
 publish GraphQL schemas.
 
-<NextImage
-  alt="Created Registry Token Form"
-  src={createdAccessToken}
-  className="mt-10 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Created Registry Token Form](/docs/pages/get-started/apollo-federation/created-access-token.png)
 
 Make sure to copy your token and keep it safe. **You won't be able to see it again.**
 
