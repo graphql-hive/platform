@@ -1,0 +1,23 @@
+on:
+  pull_request:
+    paths:
+      - 'packages/web/docs/**/*.mdx'
+
+jobs:
+  eslint-and-prettier:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: setup environment
+        uses: ./.github/actions/setup
+        with:
+          actor: validate-mdx-links
+          cacheTurbo: false
+
+      - name: Validate Docs MDX Links
+        run: ./scripts/validate-mdx-links.ts --cwd packages/web/docs
