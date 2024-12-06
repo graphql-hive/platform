@@ -7,7 +7,7 @@ on:
       - 'packages/web/docs/src/app/**'
 
 jobs:
-  eslint-and-prettier:
+  validate-mdx-links:
     runs-on: ubuntu-22.04
 
     steps:
