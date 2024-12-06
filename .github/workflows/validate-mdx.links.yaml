@@ -10,6 +10,10 @@ on:
 jobs:
   validate-mdx-links:
     runs-on: ubuntu-22.04
+    timeout-minutes: 4
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
     steps:
       - name: checkout
@@ -23,5 +27,5 @@ jobs:
           actor: validate-mdx-links
           cacheTurbo: false
 
-      - name: Validate Docs MDX Links
+      - name: validate links in docs
         run: ./scripts/validate-mdx-links.ts --cwd packages/web/docs
