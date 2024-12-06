@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-strip-types --no-warnings=ExperimentalWarning
+#! pnpm tsx
 
 /**
  * @file This script validates the internal links in the MDX files.
@@ -13,8 +13,6 @@ import { dirname, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { printErrors, scanURLs, validateFiles, type DetectedError } from 'next-validate-link';
 
-console.log('Validating MDX links in', process.cwd());
-
 const args = parseArgs({
   options: {
     cwd: { type: 'string', default: process.cwd() },
@@ -22,22 +20,29 @@ const args = parseArgs({
   },
 });
 
-process.chdir(args.values.cwd);
-const files = globSync(args.values.files);
+console.log(`\nvalidate-mdx-links --cwd ${args.values.cwd} --files ${args.values.files}\n`);
 
-console.log(`validate-mdx-links --cwd ${args.values.cwd} --files ${args.values.files}`);
+process.chdir(args.values.cwd);
+
+const files = globSync(args.values.files);
 
 if (files.length === 0) {
   console.error('No files found. Please pass the --cwd or navigate to the proper directory.');
   process.exit(1);
 } else {
-  console.log(`Found ${files.length} files to validate.`);
+  console.log(`Found ${files.length} files to validate.\n`);
 }
 
 const scanned = await scanURLs();
 
-console.log('Scanned routes from the file system:');
-console.log(scanned);
+console.log(
+  '\n' +
+    'Scanned routes from the file system:\n' +
+    [...scanned.urls.keys(), ...scanned.fallbackUrls.map(x => x.url)]
+      .map(x => `"${x}"`)
+      .join(', ') +
+    '\n',
+);
 
 let validations = await validateFiles(files, { scanned });
 
