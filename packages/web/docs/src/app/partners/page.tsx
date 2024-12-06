@@ -2,15 +2,24 @@ import Link from 'next/link';
 import { CodeIcon, LockOpen2Icon, RocketIcon } from '@radix-ui/react-icons';
 import {
   Anchor,
-  CallToAction,
   cn,
+  ContactButton,
   GetYourAPIGameRightSection,
   Heading,
   InfoCard,
 } from '@theguild/components';
-import { FrequentlyAskedPartnersQuestions } from './frequently-asked-questions';
-import { Hero, HeroLinks } from './hero';
-import { Page } from './page';
+import { FrequentlyAskedPartnersQuestions } from '../../components/frequently-asked-questions';
+import { Hero, HeroLinks } from '../../components/hero';
+import { LandingPageContainer } from '../../components/landing-page-container';
+
+export const metadata = {
+  title: 'Partnerships',
+  description:
+    'Accelerate GraphQL Federation adoption with the Hive Partner Network. Access enterprise-grade tools and expertise to build scalable, unified APIs across distributed systems. Join our network of federation experts.',
+  openGraph: {
+    images: ['/hive-partners-og.png'],
+  },
+};
 
 function WhyUs({ className }: { className?: string }) {
   return (
@@ -116,10 +125,10 @@ function SolutionsPartner({ className }: { className?: string }) {
   );
 }
 
-export function PartnersPage() {
+export default function PartnersPage() {
   return (
-    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
-      <Hero className="mx-4 h-[22%] max-sm:mt-2 md:mx-6">
+    <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
+      <Hero className="mx-4 h-[22%] max-sm:mt-2 md:mx-6 lg:py-24">
         <Heading
           as="h1"
           size="xl"
@@ -140,28 +149,14 @@ export function PartnersPage() {
           realization.
         </p>
         <HeroLinks>
-          <CallToAction
-            variant="primary-inverted"
-            onClick={() => {
-              (window as any).$crisp?.push(['do', 'chat:open']);
-            }}
-          >
-            Talk to an expert
-          </CallToAction>
-          <CallToAction
-            variant="secondary"
-            onClick={() => {
-              (window as any).$crisp?.push(['do', 'chat:open']);
-            }}
-          >
-            Become a partner
-          </CallToAction>
+          <ContactButton variant="primary-inverted">Talk to an expert</ContactButton>
+          <ContactButton variant="secondary">Become a partner</ContactButton>
         </HeroLinks>
       </Hero>
       <WhyUs />
       <SolutionsPartner />
       <FrequentlyAskedPartnersQuestions />
       <GetYourAPIGameRightSection className="mx-4 mt-6 !overflow-visible sm:mb-6 md:mx-6 md:mt-16" />
-    </Page>
+    </LandingPageContainer>
   );
 }

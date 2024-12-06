@@ -5,15 +5,21 @@ import {
   GetYourAPIGameRightSection,
   Heading,
 } from '@theguild/components';
-import { CompanyTestimonialsSection } from './company-testimonials';
-import { FrequentlyAskedQuestions } from './frequently-asked-questions';
-import { Page } from './page';
-import { PlanComparison } from './plan-comparison';
-import { Pricing } from './pricing';
+import { CompanyTestimonialsSection } from '../../components/company-testimonials';
+import { FrequentlyAskedQuestions } from '../../components/frequently-asked-questions';
+import { LandingPageContainer } from '../../components/landing-page-container';
+import { PlanComparison } from '../../components/plan-comparison';
+import { Pricing } from '../../components/pricing';
 
-export function PricingPage() {
+export const metadata = {
+  title: 'Hive Platform Pricing',
+  description:
+    'Honest pricing plans for GraphQL Federation and other GraphQL APIs, supporting developers to enterprise with Open-Source schema registry, analytics, and gateway solutions',
+};
+
+export default function PricingPage() {
   return (
-    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
+    <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <PricingPageHero className="mx-4 max-sm:mt-2 md:mx-6" />
 
       <Pricing className="mt-4" />
@@ -26,7 +32,7 @@ export function PricingPage() {
       <FrequentlyAskedQuestions className="mx-4 md:mx-6" />
 
       <GetYourAPIGameRightSection className="mx-4 sm:mb-6 md:mx-6" />
-    </Page>
+    </LandingPageContainer>
   );
 }
 

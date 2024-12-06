@@ -3,7 +3,6 @@ import type { Config } from 'tailwindcss';
 import tailwindcssAnimate from 'tailwindcss-animate';
 import tailwindcssRadix from 'tailwindcss-radix';
 import { fontFamily } from 'tailwindcss/defaultTheme';
-// @ts-expect-error -- types are missing
 import { default as flattenColorPalette } from 'tailwindcss/lib/util/flattenColorPalette';
 import plugin from 'tailwindcss/plugin';
 import type { PluginAPI } from 'tailwindcss/types/config';
@@ -12,13 +11,13 @@ import baseConfig from '@theguild/tailwind-config';
 
 const config: Config = {
   ...baseConfig,
+  content: [...baseConfig.content, './mdx-components.js'],
   theme: {
     ...baseConfig.theme,
     extend: {
       ...baseConfig.theme.extend,
       fontFamily: {
-        sans: ['var(--font-sans)', ...fontFamily.sans],
-        display: ['var(--font-sans)', ...fontFamily.sans],
+        sans: ['var(--font-sans, ui-sans-serif)', ...fontFamily.sans],
       },
       colors: {
         ...baseConfig.theme.extend.colors,

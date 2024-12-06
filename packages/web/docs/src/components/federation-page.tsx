@@ -1,12 +1,11 @@
 import { ReactElement, ReactNode } from 'react';
 import Image from 'next/image';
-import { Anchor, CallToAction, Heading } from '@theguild/components';
-import { cn } from '../lib';
+import { Anchor, CallToAction, cn, Heading } from '@theguild/components';
 import { ArrowIcon } from './arrow-icon';
 import { FrequentlyAskedFederationQuestions } from './frequently-asked-questions';
 import { Hero, HeroLinks } from './hero';
 import { InfoCard } from './info-card';
-import { Page } from './page';
+import { LandingPageContainer } from './landing-page-container';
 import federationDiagram from '../../public/federation-diagram.png';
 import queryResultImage from '../../public/federation/query-result.png';
 import queryImage from '../../public/federation/query.png';
@@ -16,7 +15,7 @@ import supergraphSchemaImage from '../../public/federation/supergraph-schema.png
 
 export function FederationPage(): ReactElement {
   return (
-    <Page className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
+    <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <Hero className="mx-4 max-sm:mt-2 md:mx-6">
         <Heading
           as="h1"
@@ -55,7 +54,7 @@ export function FederationPage(): ReactElement {
       <WhyHive className="mx-4 md:mx-6" />
       <FrequentlyAskedFederationQuestions className="mx-4 md:mx-6" />
       <GetStarted className="mx-4 md:mx-6" />
-    </Page>
+    </LandingPageContainer>
   );
 }
 

@@ -28,7 +28,8 @@ export const handleTRPCError = experimental_standaloneMiddleware<{
   ctx: {
     req: FastifyRequest;
   };
-  input: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  input: {};
 }>().create(async opts => {
   const result = await opts.next();
 

@@ -1,18 +1,22 @@
-import type { ReactElement } from 'react';
+import type { FC, ReactElement } from 'react';
 import { format } from 'date-fns';
 import { Anchor } from '@theguild/components';
 import { authors } from '../authors';
 import { SocialAvatar } from './social-avatar';
 
 type Meta = {
-  authors: string[];
+  authors?: string[];
   date: string;
   title: string;
   description: string;
 };
 
-const Authors = ({ meta }: { meta: Meta }): ReactElement => {
+const Authors: FC<{ meta: Meta }> = ({ meta }) => {
   const date = meta.date ? new Date(meta.date) : new Date();
+
+  if (!meta.authors) {
+    return null;
+  }
 
   if (meta.authors.length === 1) {
     const author = authors[meta.authors[0]];
@@ -66,7 +70,7 @@ const Authors = ({ meta }: { meta: Meta }): ReactElement => {
 export const ProductUpdateBlogPostHeader = ({ meta }: { meta: Meta }): ReactElement => {
   return (
     <>
-      <h1>{meta.title}</h1>
+      {meta.title !== 'Product Updates' && <h1>{meta.title}</h1>}
       <Authors meta={meta} />
     </>
   );
