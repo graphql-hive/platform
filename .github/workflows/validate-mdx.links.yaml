@@ -1,7 +1,10 @@
 on:
   pull_request:
     paths:
-      - 'packages/web/docs/**/*.mdx'
+      # we run to check if the links are wrong
+      - 'packages/web/docs/src/**/*.mdx'
+      # or if a page disappeared
+      - 'packages/web/docs/src/app/**'
 
 jobs:
   eslint-and-prettier:
