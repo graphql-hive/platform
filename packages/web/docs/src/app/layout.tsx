@@ -65,7 +65,7 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
           :root.dark *::selection {
             background-color: hsl(191deg 95% 72% / 0.25)
           }
-          :root.light {
+          :root.light, body.light {
             --nextra-primary-hue: 191deg;
             --nextra-primary-saturation: 40%;
             --nextra-bg: 255, 255, 255;
