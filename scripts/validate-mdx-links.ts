@@ -77,6 +77,4 @@ const errors = withoutFalsePositives.filter(
 
 printErrors(errors);
 
-if (errors.length > 0) {
-  process.exit(1);
-}
+process.exit(errors.length === 0 ? 0 : 1);
