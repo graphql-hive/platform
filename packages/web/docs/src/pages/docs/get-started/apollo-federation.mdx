@@ -1,11 +1,4 @@
-import NextImage from 'next/image'
 import { Callout, Cards, FileTree, Steps, Tabs } from '@theguild/components'
-import cdnAccessTokenSettings from '../../../../public/docs/pages/get-started/apollo-federation/cdn-access-token-settings.png'
-import cdnAccessTokenCreate from '../../../../public/docs/pages/get-started/apollo-federation/create-cdn-access-token.png'
-import cdnAccessTokenCreated from '../../../../public/docs/pages/get-started/apollo-federation/created-cdn-access-token.png'
-import publishFirstSchemaVersionUi from '../../../../public/docs/pages/get-started/apollo-federation/publish-first-schema-version-ui.png'
-import publishSecondSchemaVersionUi from '../../../../public/docs/pages/get-started/apollo-federation/publish-second-schema-version-ui.png'
-import publishThirdSchemaVersionUi from '../../../../public/docs/pages/get-started/apollo-federation/publish-third-schema-version-ui.png'
 
 # Get started with Apollo Federation
 
@@ -215,11 +208,7 @@ schema version on the Hive dashboard.
 If you'll get to your target's page on Hive dashboard, you should see that it was updated with the
 new schema you just published 🎉
 
-<NextImage
-  alt="First published schema version on the Hive dashboard"
-  src={publishFirstSchemaVersionUi}
-  className="mt-10 max-w-2xl rounded-lg drop-shadow-md"
-/>
+![First published schema version on the Hive dashboard](/docs/pages/get-started/apollo-federation/publish-first-schema-version-ui.png)
 
 <Callout type="info">
   You should also check out the **Explorer** tab: you can see the schema you just published, and
@@ -295,11 +284,7 @@ If everything goes well, you should see the following output:
 After the publish process, if we had over to the Hive dashboard, we can see our new schema version
 published.
 
-<NextImage
-  alt="Second published schema version on the Hive dashboard"
-  src={publishSecondSchemaVersionUi}
-  className="mt-10 max-w-2xl rounded-lg drop-shadow-md"
-/>
+![Second published schema version on the Hive dashboard](/docs/pages/get-started/apollo-federation/publish-second-schema-version-ui.png)
 
 Last, we will publish the **Reviews** subgraph schema to Hive. Again, let's start by copying the
 schema to a local file.
@@ -371,11 +356,7 @@ Again, if everything goes well, you should see the following output:
 
 On your target's **Explorer** page now, you'll be able to see the schema of all three subgraphs 🎉
 
-<NextImage
-  alt="Third published schema version on the Hive dashboard"
-  src={publishThirdSchemaVersionUi}
-  className="mt-10 max-w-2xl rounded-lg drop-shadow-md"
-/>
+![Third published schema version on the Hive dashboard](/docs/pages/get-started/apollo-federation/publish-third-schema-version-ui.png)
 
 Congratulations on publishing and composing your first subgraphs with the Hive schema registry!
 
@@ -420,28 +401,16 @@ For accessing the supergraph, we need to create the CDN access token from the Hi
 
 Navigate to your target's settings page and select the **CDN Tokens** tab.
 
-<NextImage
-  alt="CDN Token Form"
-  src={cdnAccessTokenSettings}
-  className="mt-10 max-w-2xl rounded-lg drop-shadow-md"
-/>
+![CDN Token Form](/docs/pages/get-started/apollo-federation/cdn-access-token-settings.png)
 
 Click the **Create new CDN token** button, give your token a name and click **Create**.
 
-<NextImage
-  alt="CDN Token Form"
-  src={cdnAccessTokenCreate}
-  className="mt-10 max-w-2xl rounded-lg drop-shadow-md"
-/>
+![CDN Token Form](/docs/pages/get-started/apollo-federation/create-cdn-access-token.png)
 
 There will be a confirmation screen showing the CDN token you just created. Make sure to copy it and
 keep it safe.
 
-<NextImage
-  alt="CDN Token Form"
-  src={cdnAccessTokenCreated}
-  className="mt-10 max-w-2xl rounded-lg drop-shadow-md"
-/>
+![CDN Token Form](/docs/pages/get-started/apollo-federation/created-cdn-access-token.png)
 
 #### Run the Gateway
 
@@ -528,24 +497,12 @@ npx hive-gateway supergraph \
 If you now navigate to `http://localhost:4000`, you should see the Hive Gateway page with
 information about the supergraph and subgraphs.
 
-import HiveGatewayLandingPageImage from '../../../../public/docs/pages/get-started/apollo-federation/hive-gateway-landing-page.png'
-
-<NextImage
-  alt="Hive Gateway Landing Page"
-  src={HiveGatewayLandingPageImage}
-  className="mt-10 max-w-2xl rounded-lg drop-shadow-md"
-/>
+![Hive Gateway Landing Page](/docs/pages/get-started/apollo-federation/hive-gateway-landing-page.png)
 
 Now, if you navigate to `http://localhost:4000/graphql`, you should see the GraphiQL interface where
 you can write and execute queries against the supergraph.
 
-import HiveGatewayGraphiqlImage from '../../../../public/docs/pages/get-started/apollo-federation/hive-gateway-graphiql.png'
-
-<NextImage
-  alt="Hive Gateway GraphiQL"
-  src={HiveGatewayGraphiqlImage}
-  className="mt-10 max-w-2xl rounded-lg drop-shadow-md"
-/>
+![Hive Gateway GraphiQL](/docs/pages/get-started/apollo-federation/hive-gateway-graphiql.png)
 
 Here you can execute GraphQL operations against the supergraph, which will be delegate to the single
 subgraph services.
@@ -669,13 +626,7 @@ query TopProductsWithReview {
 After executing the query, a few times, let's switch back to the Hive dashboard and navigate to the
 insights page.
 
-import HiveDashboardInsightsImage from '../../../../public/docs/pages/get-started/apollo-federation/hive-dashboard-insights.png'
-
-<NextImage
-  alt="Hive Gateway GraphiQL"
-  src={HiveDashboardInsightsImage}
-  className="mt-10 max-w-2xl rounded-lg drop-shadow-md"
-/>
+![Hive Gateway GraphiQL](/docs/pages/get-started/apollo-federation/hive-dashboard-insights.png)
 
 Here we can now see the GraphQL operations from our Gateway being reported to the registry.
 
