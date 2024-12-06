@@ -2024,8 +2024,8 @@ importers:
         specifier: 0.5.15
         version: 0.5.15(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3)))
       '@theguild/components':
-        specifier: 8.0.0-alpha-20241205193129-6cfdd0b7d99f5c892e3ea7926c5ad287bc6c67f4
-        version: 8.0.0-alpha-20241205193129-6cfdd0b7d99f5c892e3ea7926c5ad287bc6c67f4(@theguild/tailwind-config@0.6.0(postcss-import@16.1.0(postcss@8.4.49))(postcss-lightningcss@1.0.1(postcss@8.4.49))(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3))))(@types/react-dom@18.3.1)(@types/react@18.3.12)(immer@10.1.1)(next@15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1))(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)(typescript@5.6.3)(use-sync-external-store@1.2.0(react@19.0.0-rc.1))
+        specifier: 8.0.0-alpha-20241206100653-e3101f5b94712d9fed27f767b4190b4167baa82e
+        version: 8.0.0-alpha-20241206100653-e3101f5b94712d9fed27f767b4190b4167baa82e(@theguild/tailwind-config@0.6.0(postcss-import@16.1.0(postcss@8.4.49))(postcss-lightningcss@1.0.1(postcss@8.4.49))(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3))))(@types/react-dom@18.3.1)(@types/react@18.3.12)(immer@10.1.1)(next@15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1))(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)(typescript@5.6.3)(use-sync-external-store@1.2.0(react@19.0.0-rc.1))
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -8201,8 +8201,8 @@ packages:
     resolution: {integrity: sha512-kUiFyUQDiVdpeeL/qwOZAdDZrYFTwqppwNZDxOXcPSKeqGCZe8ajbbN64OAS7VlGMnXWxEEHcjhyFzB9gtHn5w==}
     hasBin: true
 
-  '@theguild/components@8.0.0-alpha-20241205193129-6cfdd0b7d99f5c892e3ea7926c5ad287bc6c67f4':
-    resolution: {integrity: sha512-vOizMqfTjH9ZARO3BnLePIJ4iyw0cu7F991essKTghbsQmJyet4xNszpEyLUsML0mforj9uuG+bD+38P5D9oIQ==}
+  '@theguild/components@8.0.0-alpha-20241206100653-e3101f5b94712d9fed27f767b4190b4167baa82e':
+    resolution: {integrity: sha512-frzJRG+aQPwW0xypTf2jzCMK9b+ghGxyQlkyk4SZczmyZQMKRoghG8SbBhx7wq4Om0YAy4R/zYo5EfMYhX2ufA==}
     peerDependencies:
       '@theguild/tailwind-config': ^0.6.1
       next: ^13 || ^14 || ^15.0.0
@@ -17117,8 +17117,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -17225,11 +17225,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.596.0(@aws-sdk/client-sts@3.596.0)':
+  '@aws-sdk/client-sso-oidc@3.596.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -17268,7 +17268,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
-      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso-oidc@3.693.0(@aws-sdk/client-sts@3.693.0)':
@@ -17402,11 +17401,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.596.0':
+  '@aws-sdk/client-sts@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -17445,6 +17444,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
+      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/client-sts@3.693.0':
@@ -17558,7 +17558,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.596.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -17677,7 +17677,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0
+      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/types': 3.6.0
@@ -17852,7 +17852,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/shared-ini-file-loader': 3.1.9
@@ -21757,7 +21757,7 @@ snapshots:
       promise-all-reject-late: 1.0.1
       promise-call-limit: 3.0.1
       read-package-json-fast: 3.0.2
-      semver: 7.6.2
+      semver: 7.6.3
       ssri: 10.0.5
       treeverse: 3.0.0
       walk-up-path: 3.0.1
@@ -22607,7 +22607,7 @@ snapshots:
       '@types/shimmer': 1.2.0
       import-in-the-middle: 1.8.1
       require-in-the-middle: 7.3.0
-      semver: 7.6.2
+      semver: 7.6.3
       shimmer: 1.2.1
     transitivePeerDependencies:
       - supports-color
@@ -25402,7 +25402,7 @@ snapshots:
       typescript: 4.9.5
       yargs: 16.2.0
 
-  '@theguild/components@8.0.0-alpha-20241205193129-6cfdd0b7d99f5c892e3ea7926c5ad287bc6c67f4(@theguild/tailwind-config@0.6.0(postcss-import@16.1.0(postcss@8.4.49))(postcss-lightningcss@1.0.1(postcss@8.4.49))(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3))))(@types/react-dom@18.3.1)(@types/react@18.3.12)(immer@10.1.1)(next@15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1))(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)(typescript@5.6.3)(use-sync-external-store@1.2.0(react@19.0.0-rc.1))':
+  '@theguild/components@8.0.0-alpha-20241206100653-e3101f5b94712d9fed27f767b4190b4167baa82e(@theguild/tailwind-config@0.6.0(postcss-import@16.1.0(postcss@8.4.49))(postcss-lightningcss@1.0.1(postcss@8.4.49))(tailwindcss@3.4.15(ts-node@10.9.2(@swc/core@1.9.2(@swc/helpers@0.5.13))(@types/node@22.9.3)(typescript@5.6.3))))(@types/react-dom@18.3.1)(@types/react@18.3.12)(immer@10.1.1)(next@15.0.3(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1))(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)(typescript@5.6.3)(use-sync-external-store@1.2.0(react@19.0.0-rc.1))':
     dependencies:
       '@giscus/react': 3.0.0(react-dom@19.0.0-rc.1(react@19.0.0-rc.1))(react@19.0.0-rc.1)
       '@next/bundle-analyzer': 15.0.3
