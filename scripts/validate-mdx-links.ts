@@ -1,4 +1,9 @@
 #!/usr/bin/env node --experimental-strip-types --no-warnings=ExperimentalWarning
+
+/**
+ * @file This script validates the internal links in the MDX files.
+ * Note that it does not validate external links (e.g. to GitHub).
+ */
 import { globSync } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
