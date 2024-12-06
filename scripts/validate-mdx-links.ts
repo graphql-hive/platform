@@ -3,6 +3,9 @@
 /**
  * @file This script validates the internal links in the MDX files.
  * Note that it does not validate external links (e.g. to GitHub).
+ *
+ * Usage:
+ * ./scripts/validate-mdx-links.ts --cwd packages/web/docs
  */
 import { globSync } from 'node:fs';
 import { stat } from 'node:fs/promises';
