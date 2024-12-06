@@ -1,3 +1,4 @@
+name: validate-mdx-links
 on:
   pull_request:
     paths:
