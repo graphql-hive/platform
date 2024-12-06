@@ -3,8 +3,6 @@ import { generateStaticParamsFor, importPage } from 'nextra/pages';
 import { useMDXComponents } from '../../../../mdx-components.js';
 import { ConfiguredGiscus } from '../../../components/configured-giscus';
 
-console.log('Hello there!');
-
 /**
  * You might have an urge to try to refactor this to a separate file and reuse between product-updates and docs.
  * I had the same urge. It's absurdly finicky. I warned you.
