@@ -4,7 +4,6 @@ import azureAdCreateApp from '../../../../public/docs/pages/management/sso/azure
 import azureAdEnterpriseApplication from '../../../../public/docs/pages/management/sso/azure-ad-enterprise-applications.webp'
 import azureAdNewApp from '../../../../public/docs/pages/management/sso/azure-ad-new-application-button.webp'
 import azureAdAppRegister from '../../../../public/docs/pages/management/sso/azure-ad-register-application.webp'
-import hiveOidcModalImage from '../../../../public/docs/pages/management/sso/hive-connect-openid-provider-modal.png'
 import hiveManageOidcImage from '../../../../public/docs/pages/management/sso/hive-manage-openid-connect-modal.png'
 import oktaAppConfigClientSecretImage from '../../../../public/docs/pages/management/sso/okta-app-config-client-secret.webp'
 import oktaAppGeneralSettingsImage from '../../../../public/docs/pages/management/sso/okta-app-general-settings-section.webp'
@@ -136,11 +135,7 @@ settings tab and hit the **Connect Open ID Connect Provider** button
 And now you'd have to fill in a couple of inputs to connect your OpenID Okta's provider as the
 following:
 
-<NextImage
-  alt="OIDC Modal in Hive"
-  src={hiveOidcModalImage}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![OIDC Modal in Hive](/docs/pages/management/sso/hive-connect-openid-provider-modal.png)
 
 - **Token Endpoint**: `https://YOUR_OKTA_DOMAIN_HERE/oauth2/v1/token`
 - **User Info Endpoint**: `https://YOUR_OKTA_DOMAIN_HERE/oauth2/v1/userinfo`
@@ -228,11 +223,7 @@ button:
 
 And now you'd have to fill in a couple of inputs to connect your OpenID Azure AD's provider.
 
-<NextImage
-  alt="OIDC Provider in Hive"
-  src={hiveOidcModalImage}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![OIDC Modal in Hive](/docs/pages/management/sso/hive-connect-openid-provider-modal.png)
 
 Now, create a new client secret for your app by navigating as the screenshot illustrates then on the
 right panel add a description for your secret and configure your expiration configuration or leave
