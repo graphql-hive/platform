@@ -1,4 +1,4 @@
-#! pnpm tsx
+#! /usr/bin/env node --experimental-strip-types --no-warnings=ExperimentalWarning
 
 /**
  * @file This script validates the internal links in the MDX files.
