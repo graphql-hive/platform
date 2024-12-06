@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { CodeIcon, LockOpen2Icon, RocketIcon } from '@radix-ui/react-icons';
 import {
   Anchor,
-  CallToAction,
   cn,
+  ContactButton,
   GetYourAPIGameRightSection,
   Heading,
   InfoCard,
@@ -149,22 +149,8 @@ export default function PartnersPage() {
           realization.
         </p>
         <HeroLinks>
-          <CallToAction
-            variant="primary-inverted"
-            onClick={() => {
-              (window as any).$crisp?.push(['do', 'chat:open']);
-            }}
-          >
-            Talk to an expert
-          </CallToAction>
-          <CallToAction
-            variant="secondary"
-            onClick={() => {
-              (window as any).$crisp?.push(['do', 'chat:open']);
-            }}
-          >
-            Become a partner
-          </CallToAction>
+          <ContactButton variant="primary-inverted">Talk to an expert</ContactButton>
+          <ContactButton variant="secondary">Become a partner</ContactButton>
         </HeroLinks>
       </Hero>
       <WhyUs />
