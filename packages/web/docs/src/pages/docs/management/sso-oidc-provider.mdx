@@ -20,7 +20,6 @@ import azureAdEmail2 from '../../../../public/docs/pages/management/sso/azure-ad
 import hiveOidcModalImage from '../../../../public/docs/pages/management/sso/hive-connect-openid-provider-modal.png'
 import hiveOidcImage from '../../../../public/docs/pages/management/sso/hive-connect-openid-provider.png'
 import hiveManageOidcImage from '../../../../public/docs/pages/management/sso/hive-manage-openid-connect-modal.png'
-import hiveLoginUrlImage from '../../../../public/docs/pages/management/sso/hive-manage-openid-okta-login-url.png'
 import oktaAppConfigClientSecretImage from '../../../../public/docs/pages/management/sso/okta-app-config-client-secret.webp'
 import oktaAppGeneralSettingsImage from '../../../../public/docs/pages/management/sso/okta-app-general-settings-section.webp'
 
@@ -193,11 +192,7 @@ And congrats, you now have Okta connected! 🥳🎉
 
 You can use the link provided in the modal left section to let your users login via Okta.
 
-<NextImage
-  alt="Hive Login URL"
-  src={hiveLoginUrlImage}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Hive Login URL](/docs/pages/management/sso/hive-manage-openid-okta-login-url.png)
 
 ### Azure
 
@@ -269,7 +264,7 @@ And now you'd have to fill in a couple of inputs to connect your OpenID Azure AD
   className="mt-8 max-w-xl rounded-lg drop-shadow-md"
 />
 
-Now, reate a new client secret for your app by navigating as the screenshot illustrates then on the
+Now, create a new client secret for your app by navigating as the screenshot illustrates then on the
 right panel add a description for your secret and configure your expiration configuration or leave
 it as the default recommended value which is `6 months`, then click **Add**:
 
@@ -356,8 +351,4 @@ And congrats, you now have Azure AD connected! 🎉
 
 You can use the link provided in the modal right section to let your users login via Azure AD.
 
-<NextImage
-  alt="Hive Login URL"
-  src={hiveLoginUrlImage}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Hive Login URL](/docs/pages/management/sso/hive-manage-openid-okta-login-url.png)
