@@ -234,10 +234,16 @@ module.exports = {
       parser: 'eslint-mdx',
       parserOptions: {
         ecmaVersion: 2024,
-        sourceType: 'module'
+        sourceType: 'module',
       },
       rules: {
-        'no-restricted-imports': ['error', { name: 'next/image', message: 'Use markdown syntax - ![Your image alt attribute](/path/to/your/image)' }],
+        'no-restricted-imports': [
+          'error',
+          {
+            name: 'next/image',
+            message: 'Use markdown syntax - ![Your image alt attribute](/path/to/your/image)',
+          },
+        ],
       },
     },
     {
