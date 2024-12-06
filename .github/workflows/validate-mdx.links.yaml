@@ -28,4 +28,6 @@ jobs:
           cacheTurbo: false
 
       - name: validate links in docs
-        run: bash -c './scripts/validate-mdx-links.ts --cwd packages/web/docs'
+        run: |
+          node -v && \
+          bash -c './scripts/validate-mdx-links.ts --cwd packages/web/docs'
