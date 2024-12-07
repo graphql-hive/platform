@@ -41,6 +41,7 @@ import { Combobox } from '@/components/v2/combobox';
 import { Switch } from '@/components/v2/switch';
 import { Table, TBody, Td, Tr } from '@/components/v2/table';
 import { Tag } from '@/components/v2/tag';
+import { DEFAULT_RETENTION_DAYS, MINIMUM_DAYS } from '@/constants';
 import { env } from '@/env/frontend';
 import { FragmentType, graphql, useFragment } from '@/gql';
 import { ProjectType } from '@/gql/graphql';
@@ -461,7 +462,6 @@ function floorDate(date: Date): Date {
   const time = 1000 * 60;
   return new Date(Math.floor(date.getTime() / time) * time);
 }
-
 const ConditionalBreakingChanges = (props: {
   organizationSlug: string;
   projectSlug: string;
@@ -496,6 +496,11 @@ const ConditionalBreakingChanges = (props: {
   const isEnabled = settings?.enabled || false;
   const possibleTargets = targetSettings.data?.targets.nodes;
   const { toast } = useToast();
+  const retentionInDays =
+    targetSettings.data?.organization?.organization?.rateLimit.retentionInDays ??
+    DEFAULT_RETENTION_DAYS;
+  const defaultDays =
+    retentionInDays >= DEFAULT_RETENTION_DAYS ? DEFAULT_RETENTION_DAYS : MINIMUM_DAYS;
 
   const {
     handleSubmit,
@@ -511,7 +516,7 @@ const ConditionalBreakingChanges = (props: {
     enableReinitialize: true,
     initialValues: {
       percentage: settings?.percentage || 0,
-      period: settings?.period || 0,
+      period: settings?.period || defaultDays,
       targetIds: settings?.targets.map(t => t.id) || [],
       excludedClients: settings?.excludedClients ?? [],
     },
@@ -519,15 +524,13 @@ const ConditionalBreakingChanges = (props: {
       percentage: Yup.number().min(0).max(100).required(),
       period: Yup.number()
         .min(1)
-        .max(targetSettings.data?.organization?.organization?.rateLimit.retentionInDays ?? 30)
+        .max(retentionInDays)
         .test('double-precision', 'Invalid precision', num => {
           if (typeof num !== 'number') {
             return false;
           }
-
           // Round the number to two decimal places
-          // and check if it is equal to the original number
-          return Number(num.toFixed(2)) === num;
+          // and check if it is equal to the original number return Number(num.toFixed(2)) === num;
         })
         .required(),
       targetIds: Yup.array().of(Yup.string()).min(1),
