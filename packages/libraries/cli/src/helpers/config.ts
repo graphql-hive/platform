@@ -221,7 +221,7 @@ export class Config {
           throw new Error('Invalid config.');
         }
       }
-    } catch (error) {
+    } catch {
       this.cache = {
         registry: {
           endpoint: undefined,
@@ -241,7 +241,7 @@ export class Config {
     this.cache = map;
     try {
       mkdirp(path.dirname(this.filepath));
-    } catch (e) {}
+    } catch {}
     fs.writeFileSync(this.filepath, JSON.stringify(this.cache));
   }
 }

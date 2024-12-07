@@ -282,7 +282,7 @@ export function isValidOperationBody(operation: string) {
     });
     validOperationBodyCache.set(operation, true);
     return true;
-  } catch (error) {
+  } catch {
     validOperationBodyCache.set(operation, false);
     return false;
   }

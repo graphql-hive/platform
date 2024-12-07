@@ -152,7 +152,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       // If we are able to parse it, it means it's a valid JSON, let's use it as-is
 
       return metadata;
-    } catch (e) {
+    } catch {
       // If we can't parse it, we can try to load it from FS
       const exists = existsSync(metadata);
 
@@ -167,7 +167,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         JSON.parse(fileContent);
 
         return fileContent;
-      } catch (e) {
+      } catch {
         throw new Error(
           `Failed to load metadata from file "${metadata}": Please make sure the file is readable and contains a valid JSON`,
         );
