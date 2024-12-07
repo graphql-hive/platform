@@ -1,6 +1,7 @@
 import { createModule } from 'graphql-modules';
 import { AuthManager } from './providers/auth-manager';
 import { OrganizationAccess } from './providers/organization-access';
+import { OrganizationMembers } from './providers/organization-members';
 import { ProjectAccess } from './providers/project-access';
 import { TargetAccess } from './providers/target-access';
 import { UserManager } from './providers/user-manager';
@@ -12,5 +13,12 @@ export const authModule = createModule({
   dirname: __dirname,
   typeDefs,
   resolvers,
-  providers: [AuthManager, UserManager, OrganizationAccess, ProjectAccess, TargetAccess],
+  providers: [
+    AuthManager,
+    UserManager,
+    OrganizationAccess,
+    ProjectAccess,
+    TargetAccess,
+    OrganizationMembers,
+  ],
 });

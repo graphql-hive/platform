@@ -26,6 +26,9 @@
     "strict": true,
     "paths": {
       "@hive/api": ["./packages/services/api/src/index.ts"],
+      "@hive/api/src/modules/auth/providers/organization-members": [
+        "./packages/services/api/src/modules/auth/providers/organization-members.ts"
+      ],
       "@hive/api/src/modules/schema/providers/artifact-storage-reader": [
         "./packages/services/api/src/modules/schema/providers/artifact-storage-reader.ts"
       ],
