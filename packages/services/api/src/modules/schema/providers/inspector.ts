@@ -35,6 +35,29 @@ export class Inspector {
     this.logger.debug('Comparing Schemas');
 
     const changes = await diff(existing, incoming);
+    const getAllUsageDirectiveFromIncomingSchema = incoming.getDirectives();
+    this.logger.debug(
+      `Usage Directives: ${JSON.stringify(getAllUsageDirectiveFromIncomingSchema, null, 2)}`,
+    );
+    const getAllUsageDirectiveFromExistingSchema = existing.getDirectives();
+    this.logger.debug(
+      `Usage Directives: ${JSON.stringify(getAllUsageDirectiveFromExistingSchema, null, 2)}`,
+    );
+    this.logger.debug(`Changes: ${JSON.stringify(changes, null, 2)}`);
+    this.logger.debug(`Existing Schema: ${JSON.stringify(existing, null, 2)}`);
+    this.logger.debug(`Incoming Schema: ${JSON.stringify(incoming, null, 2)}`);
+    const definitionsExistingSchema = existing.astNode?.directives;
+    const definitionsIncomingSchema = incoming.astNode?.directives;
+    this.logger.debug(
+      `Existing Schema Definitions: ${JSON.stringify(definitionsExistingSchema, null, 2)}`,
+    );
+    this.logger.debug(
+      `Incoming Schema Definitions: ${JSON.stringify(definitionsIncomingSchema, null, 2)}`,
+    );
+    const getTypesExisting = existing.getTypeMap();
+    const getTypesIncoming = incoming.getTypeMap();
+    this.logger.debug(`Types Existing: ${JSON.stringify(getTypesExisting, null, 2)}`);
+    this.logger.debug(`Types Incoming: ${JSON.stringify(getTypesIncoming, null, 2)}`);
 
     return changes
       .filter(dropTrimmedDescriptionChangedChange)

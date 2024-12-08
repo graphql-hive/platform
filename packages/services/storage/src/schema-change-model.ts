@@ -1193,6 +1193,7 @@ export const HiveSchemaChangeModel = z
       } | null;
       readonly breakingChangeSchemaCoordinate: string | null;
     } => {
+      console.log('rawChange', rawChange);
       const change = schemaChangeFromSerializableChange(rawChange as any);
 
       /** The schema coordinate used for detecting whether something is a breaking change can be different based on the change type. */
