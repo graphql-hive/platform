@@ -31,8 +31,8 @@ export function publishAppDeployment(args: {
             'curl',
             // wait a maximum amount of 40 seconds (according to docs it takes 30 seconds for waking up)
             '--max-time',
-            '40',
-            '$CLICKHOUSE_PROTOCOL://$CLICKHOUSE_USERNAME:$CLICKHOUSE_PASSWORD@$CLICKHOUSE_HOST:$CLICKHOUSE_PORT?query=SELECT%201',
+            '60',
+            '$(CLICKHOUSE_PROTOCOL)://$(CLICKHOUSE_USERNAME):$(CLICKHOUSE_PASSWORD)@$(CLICKHOUSE_HOST):$(CLICKHOUSE_PORT)?query=SELECT%201',
           ],
         },
         args.dependsOn,
