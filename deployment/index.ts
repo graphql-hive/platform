@@ -280,13 +280,12 @@ if (hiveAppPersistedDocumentsAbsolutePath) {
       commit: imagesTag,
     },
     persistedDocumentsPath: hiveAppPersistedDocumentsAbsolutePath,
-    wakeupClickhouse:
-      environment.envName !== 'production'
-        ? {
-            clickhouse: clickhouse.secret,
-            dockerSecret: docker.secret,
-          }
-        : null,
+    wakeupClickhouse: environment.isProduction
+      ? null
+      : {
+          clickhouse: clickhouse.secret,
+          dockerSecret: docker.secret,
+        },
     // We need to wait until the new GraphQL schema is published before we can publish the app deployment.
     dependsOn: [publishGraphQLSchemaCommand],
   });
