@@ -58,7 +58,7 @@ export function publishAppDeployment(args: {
         ` --name ${args.appName} --version ${args.version.commit} ./persisted-documents.json`,
     },
     {
-      dependsOn: wakeupCommandJob ?? args.dependsOn,
+      dependsOn: [wakeupCommandJob, ...(args.dependsOn || [])].filter(v => v !== null),
     },
   );
 
