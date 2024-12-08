@@ -10,7 +10,7 @@ import {
   type GraphQLSchema,
 } from 'graphql';
 import { Injectable, Scope } from 'graphql-modules';
-import { Change, ChangeType, diff } from '@graphql-inspector/core';
+import { Change, ChangeType, diff, TypeOfChangeType } from '@graphql-inspector/core';
 import { traceFn } from '@hive/service-common';
 import { HiveSchemaChangeModel } from '@hive/storage';
 import { Logger } from '../../shared/providers/logger';
@@ -35,6 +35,29 @@ export class Inspector {
     this.logger.debug('Comparing Schemas');
 
     const changes = await diff(existing, incoming);
+    const getAllUsageDirectiveFromIncomingSchema = incoming.getDirectives();
+    this.logger.debug(
+      `Usage Directives: ${JSON.stringify(getAllUsageDirectiveFromIncomingSchema, null, 2)}`,
+    );
+    const getAllUsageDirectiveFromExistingSchema = existing.getDirectives();
+    this.logger.debug(
+      `Usage Directives: ${JSON.stringify(getAllUsageDirectiveFromExistingSchema, null, 2)}`,
+    );
+    this.logger.debug(`Changes: ${JSON.stringify(changes, null, 2)}`);
+    this.logger.debug(`Existing Schema: ${JSON.stringify(existing, null, 2)}`);
+    this.logger.debug(`Incoming Schema: ${JSON.stringify(incoming, null, 2)}`);
+    const definitionsExistingSchema = existing.astNode?.directives;
+    const definitionsIncomingSchema = incoming.astNode?.directives;
+    this.logger.debug(
+      `Existing Schema Definitions: ${JSON.stringify(definitionsExistingSchema, null, 2)}`,
+    );
+    this.logger.debug(
+      `Incoming Schema Definitions: ${JSON.stringify(definitionsIncomingSchema, null, 2)}`,
+    );
+    const getTypesExisting = existing.getTypeMap();
+    const getTypesIncoming = incoming.getTypeMap();
+    this.logger.debug(`Types Existing: ${JSON.stringify(getTypesExisting, null, 2)}`);
+    this.logger.debug(`Types Incoming: ${JSON.stringify(getTypesIncoming, null, 2)}`);
 
     return changes
       .filter(dropTrimmedDescriptionChangedChange)
@@ -54,7 +77,7 @@ export class Inspector {
  * If they are equal, it means that the change is no longer relevant and can be dropped.
  * All other changes are kept.
  */
-function dropTrimmedDescriptionChangedChange(change: Change<ChangeType>): boolean {
+function dropTrimmedDescriptionChangedChange(change: Change<TypeOfChangeType>): boolean {
   return (
     matchChange(change, {
       [ChangeType.DirectiveArgumentDescriptionChanged]: change =>
@@ -112,7 +135,7 @@ function trimDescription(description: unknown): string {
 type PropEndsWith<T, E extends string> = T extends `${any}${E}` ? T : never;
 
 function shouldKeepDescriptionChangedChange<
-  T extends ChangeType,
+  T extends TypeOfChangeType,
   TO extends PropEndsWith<keyof Change<T>['meta'], 'Description'>,
   // Prevents comparing values of the same key (e.g. newDescription, newDescription will result in TS error)
   TN extends Exclude<PropEndsWith<keyof Change<T>['meta'], 'Description'>, TO>,
@@ -120,7 +143,7 @@ function shouldKeepDescriptionChangedChange<
   return trimDescription(change.meta[oldKey]) !== trimDescription(change.meta[newKey]);
 }
 
-function matchChange<R, T extends ChangeType>(
+function matchChange<R, T extends TypeOfChangeType>(
   change: Change<T>,
   pattern: {
     [K in T]?: (change: Change<K>) => R;
