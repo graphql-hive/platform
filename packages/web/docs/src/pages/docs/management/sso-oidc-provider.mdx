@@ -1,12 +1,4 @@
-import NextImage from 'next/image'
 import { Callout, Steps } from '@theguild/components'
-import azureAdCreateApp from '../../../../public/docs/pages/management/sso/azure-ad-create-application-panel.webp'
-import azureAdEnterpriseApplication from '../../../../public/docs/pages/management/sso/azure-ad-enterprise-applications.webp'
-import azureAdNewApp from '../../../../public/docs/pages/management/sso/azure-ad-new-application-button.webp'
-import azureAdAppRegister from '../../../../public/docs/pages/management/sso/azure-ad-register-application.webp'
-import hiveManageOidcImage from '../../../../public/docs/pages/management/sso/hive-manage-openid-connect-modal.png'
-import oktaAppConfigClientSecretImage from '../../../../public/docs/pages/management/sso/okta-app-config-client-secret.webp'
-import oktaAppGeneralSettingsImage from '../../../../public/docs/pages/management/sso/okta-app-general-settings-section.webp'
 
 # Single Sign On via OIDC (Open ID Connect Provider)
 
@@ -121,11 +113,7 @@ From the Okta dashboard, grab and store the **Client ID** and **Client Secret**:
 
 ![Okta Client ID](/docs/pages/management/sso/okta-app-config-client-id.webp)
 
-<NextImage
-  alt="Okta Client Secret"
-  src={oktaAppConfigClientSecretImage}
-  className="mt-8 max-w-3xl rounded-lg drop-shadow-md"
-/>
+![Okta Client Secret](/docs/pages/management/sso/okta-app-config-client-secret.webp)
 
 And now you're almost good to go with Okta's configuration, now head to your Hive organization
 settings tab and hit the **Connect Open ID Connect Provider** button
@@ -153,17 +141,9 @@ In your Okta's app SSO configuration and scroll down to the **General Settings**
 URI and the Sign-out redirect URI from Hive into their responding inputs and click **Save** when
 you're done.
 
-<NextImage
-  alt="Manage OIDC in Hive"
-  src={hiveManageOidcImage}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Manage OIDC in Hive](/docs/pages/management/sso/hive-manage-openid-connect-modal.png)
 
-<NextImage
-  alt="Okta General Settings"
-  src={oktaAppGeneralSettingsImage}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Okta General Settings](/docs/pages/management/sso/okta-app-general-settings-section.webp)
 
 And congrats, you now have Okta connected! 🥳🎉
 
@@ -176,35 +156,23 @@ You can use the link provided in the modal left section to let your users login 
 After you're logged in to [Azure Portal](https://portal.azure.com/), find the **Azure Entra ID**. On
 the left sidebar, click on the **Enterprise applications** under the **Manage** section:
 
-<NextImage
-  alt="Azure AD"
-  src={azureAdEnterpriseApplication}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Azure AD](/docs/pages/management/sso/azure-ad-enterprise-applications.webp)
 
 Then click on the **New Application** button and then click on the **Create your own application**
 button afterwards, you're gonna see the panel on the right where you should provide a name and
 select "**Register an application to integrate with Azure AD (App you're developing)**" as for the
 application purpose, then hit the **Create** button.
 
-<NextImage alt="Azure AD" src={azureAdNewApp} className="mt-8 max-w-xl rounded-lg drop-shadow-md" />
+![Azure AD](/docs/pages/management/sso/azure-ad-new-application-button.webp)
 
-<NextImage
-  alt="Azure AD"
-  src={azureAdCreateApp}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Azure AD](/docs/pages/management/sso/azure-ad-create-application-panel.webp)
 
 And now the last step to register your app is to define "**Who can use this application or access
 this API?**" according to your needs, then choose **Web** as for the selecting the platform and
 input `https://app.graphql-hive.com/auth/callback/oidc` in the input next to it, and finally click
 **Register**.
 
-<NextImage
-  alt="Azure AD"
-  src={azureAdAppRegister}
-  className="mt-8 max-w-xl rounded-lg drop-shadow-md"
-/>
+![Azure AD](/docs/pages/management/sso/azure-ad-register-application.webp)
 
 Once you see the successfully created application popup, go back to your enterprise applications by
 navigating through the history structure from the top, then navigate to the **App registrations**
