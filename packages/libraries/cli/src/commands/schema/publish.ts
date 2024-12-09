@@ -256,10 +256,8 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       try {
         const rawSdl = await loadSchema(file);
         invariant(typeof rawSdl === 'string' && rawSdl.length > 0, 'Schema seems empty');
-        this.log('changes after rawSdl', rawSdl);
         const transformedSDL = print(transformCommentsToDescriptions(rawSdl));
         sdl = minifySchema(transformedSDL);
-        this.log('changes after minifySchema', sdl);
       } catch (err) {
         if (err instanceof GraphQLError) {
           const location = err.locations?.[0];
@@ -272,7 +270,6 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       }
 
       let result: DocumentType<typeof schemaPublishMutation> | null = null;
-      this.log(`Publishing schema to ${endpoint}...`);
 
       do {
         result = await this.registryApi(endpoint, accessToken).request({
@@ -297,11 +294,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         });
 
         if (result.schemaPublish.__typename === 'SchemaPublishSuccess') {
-          this.log(`Publishing schema result ${JSON.stringify(result, null, 2)}`);
-
           const changes = result.schemaPublish.changes;
-          this.log(`Publishing schema changes ${JSON.stringify(changes, null, 2)}`);
-
           if (result.schemaPublish.initial) {
             this.success('Published initial schema.');
           } else if (result.schemaPublish.successMessage) {

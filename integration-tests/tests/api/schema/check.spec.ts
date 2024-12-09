@@ -1998,7 +1998,7 @@ test.concurrent('Added custom directives', async () => {
       directive @unionCustomDirectiveTest on UNION
 
       type Query {
-        a: String
+        ping: String
       }
 
       type ObjectTest @objectCustomDirectiveTest {
@@ -2039,7 +2039,7 @@ test.concurrent('Added custom directives', async () => {
 
   const schemaCheck = checkResult.schemaCheck;
 
-  if (schemaCheck.__typename !== 'SchemaCheckError') {
+  if (schemaCheck.__typename !== 'SchemaCheckSuccess') {
     throw new Error(`Expected SchemaCheckError, got ${schemaCheck.__typename}`);
   }
 
@@ -2048,6 +2048,7 @@ test.concurrent('Added custom directives', async () => {
   if (schemaCheckId == null) {
     throw new Error('Missing schema check id.');
   }
+
   expect(schemaCheck.changes?.total).toEqual(21);
   expect(schemaCheck.changes?.nodes).toEqual([
     { message: "Field 'ping' was removed from object type 'Query'", criticality: 'Breaking' },
@@ -2156,88 +2157,108 @@ test.concurrent('Removed custom directives', async () => {
   // Check schema with removed custom directives
   const checkResult = await readToken
     .checkSchema(/* GraphQL */ `
+      directive @scalarCustomDirectiveTest on SCALAR
+      directive @objectCustomDirectiveTest on OBJECT
+      directive @interfaceCustomDirectiveTest on INTERFACE
+      directive @inputObjectCustomDirectiveTest on INPUT_OBJECT
+      directive @argumentDefinitionCustomDirectiveTest on ARGUMENT_DEFINITION
+      directive @enumCustomDirectiveTest on ENUM
+      directive @enumValueCustomDirectiveTest on ENUM_VALUE
+      directive @fieldDefinitionCustomDirectiveTest on FIELD_DEFINITION
+      directive @inputFieldDefinitionCustomDirectiveTest on INPUT_FIELD_DEFINITION
+      directive @unionCustomDirectiveTest on UNION
+
       type Query {
-        ping: String
+        a: String
       }
+
+      type ObjectTest {
+        a: String
+      }
+
+      scalar NewScalar
+
+      interface InterfaceTest {
+        a: String
+      }
+
+      input InputTest {
+        a: String
+        b: String
+      }
+
+      type ArgumentDefinitionTest {
+        a(a: String): String
+      }
+
+      enum EnumTest {
+        A
+        B
+      }
+
+      type A {
+        a: String!
+      }
+
+      type B {
+        b: String!
+      }
+
+      union UnionTest = A | B
     `)
     .then(r => r.expectNoGraphQLErrors());
 
   const schemaCheck = checkResult.schemaCheck;
 
-  if (schemaCheck.__typename !== 'SchemaCheckError') {
-    throw new Error(`Expected SchemaCheckError, got ${schemaCheck.__typename}`);
+  if (schemaCheck.__typename !== 'SchemaCheckSuccess') {
+    throw new Error(`Expected SchemaCheckSuccess, got ${schemaCheck.__typename}`);
   }
-
   const schemaCheckId = schemaCheck.schemaCheck?.id;
 
   if (schemaCheckId == null) {
     throw new Error('Missing schema check id.');
   }
-
-  expect(schemaCheck.changes?.total).toEqual(21);
+  expect(schemaCheck.changes?.total).toEqual(9);
   expect(schemaCheck.changes?.nodes).toEqual([
-    { message: "Type 'A' was removed", criticality: 'Breaking' },
     {
-      message: "Type 'ArgumentDefinitionTest' was removed",
-      criticality: 'Breaking',
-    },
-    { message: "Type 'B' was removed", criticality: 'Breaking' },
-    { message: "Type 'EnumTest' was removed", criticality: 'Breaking' },
-    { message: "Type 'InputTest' was removed", criticality: 'Breaking' },
-    {
-      message: "Type 'InterfaceTest' was removed",
-      criticality: 'Breaking',
-    },
-    { message: "Type 'NewScalar' was removed", criticality: 'Breaking' },
-    { message: "Type 'ObjectTest' was removed", criticality: 'Breaking' },
-    { message: "Type 'UnionTest' was removed", criticality: 'Breaking' },
-    {
-      message: "Field 'a' was removed from object type 'Query'",
-      criticality: 'Breaking',
+      message: "Directive 'objectCustomDirectiveTest' was removed from object 'ObjectTest'",
+      criticality: 'Dangerous',
     },
     {
-      message: "Directive 'argumentDefinitionCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
+      message: "Directive 'scalarCustomDirectiveTest' was removed from scalar 'NewScalar'",
+      criticality: 'Dangerous',
     },
     {
-      message: "Directive 'enumCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
+      message:
+        "Directive 'interfaceCustomDirectiveTest' was removed from interface 'InterfaceTest'",
+      criticality: 'Dangerous',
     },
     {
-      message: "Directive 'enumValueCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
+      message:
+        "Directive 'inputFieldDefinitionCustomDirectiveTest' was removed from input field 'b' in input object 'InputTest'",
+      criticality: 'Dangerous',
     },
     {
-      message: "Directive 'fieldDefinitionCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
+      message:
+        "Directive 'inputObjectCustomDirectiveTest' was removed from input object 'InputTest'",
+      criticality: 'Dangerous',
     },
     {
-      message: "Directive 'inputFieldDefinitionCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
+      message:
+        "Directive 'argumentDefinitionCustomDirectiveTest' was removed from argument 'a' of field 'a' in type 'ArgumentDefinitionTest'",
+      criticality: 'Dangerous',
     },
     {
-      message: "Directive 'inputObjectCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
+      message: "Directive 'enumValueCustomDirectiveTest' was removed from enum value 'EnumTest.B'",
+      criticality: 'Dangerous',
     },
     {
-      message: "Directive 'interfaceCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
+      message: "Directive 'enumCustomDirectiveTest' was removed from enum 'EnumTest'",
+      criticality: 'Dangerous',
     },
     {
-      message: "Directive 'objectCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
-    },
-    {
-      message: "Directive 'scalarCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
-    },
-    {
-      message: "Directive 'unionCustomDirectiveTest' was removed",
-      criticality: 'Breaking',
-    },
-    {
-      message: "Field 'ping' was added to object type 'Query'",
-      criticality: 'Safe',
+      message: "Directive 'unionCustomDirectiveTest' was removed from union member 'UnionTest'",
+      criticality: 'Dangerous',
     },
   ]);
 });

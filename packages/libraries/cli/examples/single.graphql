@@ -1,50 +1,6 @@
-directive @scalarCustomDirectiveTest on SCALAR
-directive @objectCustomDirectiveTest on OBJECT
-directive @interfaceCustomDirectiveTest on INTERFACE
-directive @inputObjectCustomDirectiveTest on INPUT_OBJECT
-directive @argumentDefinitionCustomDirectiveTest on ARGUMENT_DEFINITION
-directive @enumCustomDirectiveTest on ENUM
-directive @enumValueCustomDirectiveTest on ENUM_VALUE
-directive @fieldDefinitionCustomDirectiveTest on FIELD_DEFINITION
-directive @inputFieldDefinitionCustomDirectiveTest on INPUT_FIELD_DEFINITION
-directive @unionCustomDirectiveTest on UNION
-
 type Query {
   foo: Int!
   bar: String
   test: String
 }
-
-type ObjectTest @objectCustomDirectiveTest {
-  a: String
-}
-
-scalar NewScalar @scalarCustomDirectiveTest
-
-interface InterfaceTest @interfaceCustomDirectiveTest {
-  a: String
-}
-
-input InputTest @inputObjectCustomDirectiveTest {
-  a: String
-  b: String @inputFieldDefinitionCustomDirectiveTest
-}
-
-type ArgumentDefinitionTest {
-  a(a: String @argumentDefinitionCustomDirectiveTest): String
-}
-
-enum EnumTest @enumCustomDirectiveTest {
-  A
-  B @enumValueCustomDirectiveTest
-}
-
-type A {
-  a: String!
-}
-
-type B {
-  b: String!
-}
-
-union UnionTest @unionCustomDirectiveTest = A | B
+# test 3

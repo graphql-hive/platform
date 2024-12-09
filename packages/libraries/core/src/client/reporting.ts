@@ -264,7 +264,6 @@ function isSchemaOfCommonNames(schema: GraphQLSchema): boolean {
 
 function printSchemaWithDirectives(schema: GraphQLSchema) {
   const doc = getDocumentNodeFromSchema(schema);
-  console.log('printSchemaWithDirectives', doc);
 
   if (schema.description == null && isSchemaOfCommonNames(schema)) {
     // remove the schema definition if it's the default one
