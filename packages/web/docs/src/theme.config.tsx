@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import NextImage, { ImageProps } from 'next/image';
 import { useRouter } from 'next/router';
 import {
