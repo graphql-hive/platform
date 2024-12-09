@@ -17,7 +17,7 @@ export function normalizeOperation(operation: {
   let parsed: DocumentNode;
   try {
     parsed = parse(operation.document);
-  } catch (error) {
+  } catch {
     // No need to log this, it's already logged by the usage service
     // We do check for parse errors here (in addition to the usage service),
     // because the usage service was not parsing the operations before and we got corrupted documents in the Kafka loop.

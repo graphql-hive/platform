@@ -352,7 +352,7 @@ export class AwsV4Signer {
       try {
         /** @type {string} */
         this.encodedPath = decodeURIComponent(this.url.pathname.replace(/\+/g, ' '));
-      } catch (e) {
+      } catch {
         this.encodedPath = this.url.pathname;
       }
     } else {

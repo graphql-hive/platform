@@ -41,7 +41,7 @@ export function decodeCdnAccessTokenSafe(token: string) {
 
   try {
     str = globalThis.atob(token);
-  } catch (error) {
+  } catch {
     return decodeError;
   }
 

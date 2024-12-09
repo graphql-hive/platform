@@ -8,7 +8,6 @@ import type { ProviderInput } from 'supertokens-node/recipe/thirdparty/types';
 import ThirdPartyEmailPasswordNode from 'supertokens-node/recipe/thirdpartyemailpassword/index.js';
 import type { TypeInput as ThirdPartEmailPasswordTypeInput } from 'supertokens-node/recipe/thirdpartyemailpassword/types';
 import type { TypeInput } from 'supertokens-node/types';
-import zod from 'zod';
 import { type Storage } from '@hive/api';
 import type { EmailsApi } from '@hive/emails';
 import { createTRPCProxyClient, httpLink } from '@trpc/client';
@@ -20,14 +19,6 @@ import {
   type BroadcastOIDCIntegrationLog,
 } from './supertokens/oidc-provider';
 import { createThirdPartyEmailPasswordNodeOktaProvider } from './supertokens/okta-provider';
-
-const SuperTokenAccessTokenModel = zod.object({
-  version: zod.literal('1'),
-  superTokensUserId: zod.string(),
-  email: zod.string(),
-});
-
-export type SupertokensSession = zod.TypeOf<typeof SuperTokenAccessTokenModel>;
 
 export const backendConfig = (requirements: {
   storage: Storage;

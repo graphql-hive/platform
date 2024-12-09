@@ -5,7 +5,7 @@ export function useLocalStorage<T>(key: string, defaultValue: T) {
     const json = localStorage.getItem(key);
     try {
       return json ? JSON.parse(json) : defaultValue;
-    } catch (_) {
+    } catch {
       return defaultValue;
     }
   });

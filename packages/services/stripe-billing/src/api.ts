@@ -70,7 +70,7 @@ export const stripeBillingApiRouter = t.router({
         });
 
         return upcomingInvoice;
-      } catch (e) {
+      } catch {
         return null;
       }
     }),

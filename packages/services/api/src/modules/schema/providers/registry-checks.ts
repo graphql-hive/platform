@@ -443,7 +443,7 @@ export class RegistryChecks {
             }),
           )
         : null;
-    } catch (error) {
+    } catch {
       this.logger.error('Failed to build schema for diff. Skip diff check.');
       return {
         status: 'skipped',
