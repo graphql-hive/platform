@@ -295,6 +295,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
 
         if (result.schemaPublish.__typename === 'SchemaPublishSuccess') {
           const changes = result.schemaPublish.changes;
+
           if (result.schemaPublish.initial) {
             this.success('Published initial schema.');
           } else if (result.schemaPublish.successMessage) {
