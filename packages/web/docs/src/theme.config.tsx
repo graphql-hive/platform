@@ -150,7 +150,7 @@ export default defineConfig({
                 href: 'https://the-guild.dev/graphql/hive/terms-of-use.pdf',
                 title: 'Terms of Use',
               },
-            ]
+            ],
           }}
         />
       );
