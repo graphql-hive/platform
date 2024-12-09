@@ -237,6 +237,15 @@ module.exports = {
         sourceType: 'module',
       },
       rules: {
+        'import/no-duplicates': 'error',
+        'react/jsx-uses-vars': 'error', // should be enabled, otherwise @typescript-eslint/no-unused-vars gives false positive
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          {
+            argsIgnorePattern: '^_',
+            varsIgnorePattern: '^_', // allow underscores in destructuring
+          },
+        ],
         'no-restricted-imports': [
           'error',
           {
