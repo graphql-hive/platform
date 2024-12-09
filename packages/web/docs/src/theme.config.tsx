@@ -17,7 +17,7 @@ const Image: FC<ImageProps> = props => {
   const ComponentToUse = typeof props.src === 'object' ? NextImage : 'img';
   return (
     // @ts-expect-error -- fixme
-    <ComponentToUse {...props} className={cn('mt-6 rounded-lg drop-shadow-md', props.className)} />
+    <ComponentToUse {...props} className={cn('rounded-lg drop-shadow-md', props.className)} />
   );
 };
 
