@@ -13,14 +13,6 @@ import { isLandingPage, NavigationMenu } from './components/navigation-menu';
 import { ProductUpdateBlogPostHeader } from './components/product-update-blog-post-header';
 import { cn } from './lib';
 
-const Image: FC<ImageProps> = props => {
-  const ComponentToUse = typeof props.src === 'object' ? NextImage : 'img';
-  return (
-    // @ts-expect-error -- fixme
-    <ComponentToUse {...props} className={cn('rounded-lg drop-shadow-md', props.className)} />
-  );
-};
-
 const HiveLogo = PRODUCTS.HIVE.logo;
 
 const siteDescription =
@@ -196,6 +188,12 @@ export default defineConfig({
   logo: <HiveLogo className="text-green-1000" />,
   components: {
     // @ts-expect-error -- fixme
-    img: Image,
+    img(props: ImageProps) {
+      const ComponentToUse = typeof props.src === 'object' ? NextImage : 'img';
+      return (
+        // @ts-expect-error -- fixme
+        <ComponentToUse {...props} className={cn('rounded-lg drop-shadow-md', props.className)} />
+      );
+    },
   },
 });
