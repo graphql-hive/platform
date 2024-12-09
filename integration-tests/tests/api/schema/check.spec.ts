@@ -2049,25 +2049,48 @@ test.concurrent('Added custom directives', async () => {
     throw new Error('Missing schema check id.');
   }
 
-  expect(schemaCheck.changes?.total).toEqual(21);
+  expect(schemaCheck.changes?.total).toEqual(19);
   expect(schemaCheck.changes?.nodes).toEqual([
-    { message: "Field 'ping' was removed from object type 'Query'", criticality: 'Breaking' },
-    { message: "Type 'A' was added", criticality: 'Safe' },
-    { message: "Type 'ArgumentDefinitionTest' was added", criticality: 'Safe' },
-    { message: "Type 'B' was added", criticality: 'Safe' },
-    { message: "Type 'EnumTest' was added", criticality: 'Safe' },
-    { message: "Type 'InputTest' was added", criticality: 'Safe' },
-    { message: "Type 'InterfaceTest' was added", criticality: 'Safe' },
-    { message: "Type 'NewScalar' was added", criticality: 'Safe' },
     { message: "Type 'ObjectTest' was added", criticality: 'Safe' },
+    { message: "Type 'NewScalar' was added", criticality: 'Safe' },
+    { message: "Type 'InterfaceTest' was added", criticality: 'Safe' },
+    { message: "Type 'InputTest' was added", criticality: 'Safe' },
+    {
+      message: "Type 'ArgumentDefinitionTest' was added",
+      criticality: 'Safe',
+    },
+    { message: "Type 'EnumTest' was added", criticality: 'Safe' },
+    { message: "Type 'A' was added", criticality: 'Safe' },
+    { message: "Type 'B' was added", criticality: 'Safe' },
     { message: "Type 'UnionTest' was added", criticality: 'Safe' },
-    { message: "Field 'a' was added to object type 'Query'", criticality: 'Safe' },
+    {
+      message: "Directive 'scalarCustomDirectiveTest' was added",
+      criticality: 'Safe',
+    },
+    {
+      message: "Directive 'objectCustomDirectiveTest' was added",
+      criticality: 'Safe',
+    },
+    {
+      message: "Directive 'interfaceCustomDirectiveTest' was added",
+      criticality: 'Safe',
+    },
+    {
+      message: "Directive 'inputObjectCustomDirectiveTest' was added",
+      criticality: 'Safe',
+    },
     {
       message: "Directive 'argumentDefinitionCustomDirectiveTest' was added",
       criticality: 'Safe',
     },
-    { message: "Directive 'enumCustomDirectiveTest' was added", criticality: 'Safe' },
-    { message: "Directive 'enumValueCustomDirectiveTest' was added", criticality: 'Safe' },
+    {
+      message: "Directive 'enumCustomDirectiveTest' was added",
+      criticality: 'Safe',
+    },
+    {
+      message: "Directive 'enumValueCustomDirectiveTest' was added",
+      criticality: 'Safe',
+    },
     {
       message: "Directive 'fieldDefinitionCustomDirectiveTest' was added",
       criticality: 'Safe',
@@ -2076,11 +2099,10 @@ test.concurrent('Added custom directives', async () => {
       message: "Directive 'inputFieldDefinitionCustomDirectiveTest' was added",
       criticality: 'Safe',
     },
-    { message: "Directive 'inputObjectCustomDirectiveTest' was added", criticality: 'Safe' },
-    { message: "Directive 'interfaceCustomDirectiveTest' was added", criticality: 'Safe' },
-    { message: "Directive 'objectCustomDirectiveTest' was added", criticality: 'Safe' },
-    { message: "Directive 'scalarCustomDirectiveTest' was added", criticality: 'Safe' },
-    { message: "Directive 'unionCustomDirectiveTest' was added", criticality: 'Safe' },
+    {
+      message: "Directive 'unionCustomDirectiveTest' was added",
+      criticality: 'Safe',
+    },
   ]);
 });
 
