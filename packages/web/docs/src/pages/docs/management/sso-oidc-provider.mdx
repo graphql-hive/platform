@@ -243,14 +243,18 @@ After you're done, click the **Add permissions** button.
 <Callout type="info">
   **Azure AD and `email` field access**
 
-  Granting the permission for `email` unfortunately doesn't guarantee a successful login, because in Azure AD, the `email` field is marked as optional, while it's required for a successful integration with Hive.
+Granting the permission for `email` unfortunately doesn't guarantee a successful login, because in
+Azure AD, the `email` field is marked as optional, while it's required for a successful integration
+with Hive.
 
-  If your Azure AD members does not have the `email` field set, the login will fail. You can follow the steps in the screenshots below to be able to add an `email` for an existing user record.
+If your Azure AD members does not have the `email` field set, the login will fail. You can follow
+the steps in the screenshots below to be able to add an `email` for an existing user record.
 
 ![Azure AD](/docs/pages/management/sso/azure-ad-users-tab.webp)
 ![Azure AD](/docs/pages/management/sso/azure-ad-users-table.webp)
 ![Azure AD](/docs/pages/management/sso/azure-ad-edit-user-properties.webp)
 ![Azure AD](/docs/pages/management/sso/azure-ad-edit-user-email-field.webp)
+
 </Callout>
 
 And congrats, you now have Azure AD connected! 🎉

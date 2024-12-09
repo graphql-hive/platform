@@ -1,3 +1,5 @@
+import { FC } from 'react';
+import NextImage, { ImageProps } from 'next/image';
 import { useRouter } from 'next/router';
 import {
   defineConfig,
@@ -10,16 +12,14 @@ import {
 import { isLandingPage, NavigationMenu } from './components/navigation-menu';
 import { ProductUpdateBlogPostHeader } from './components/product-update-blog-post-header';
 import { cn } from './lib';
-import NextImage, { ImageProps } from 'next/image'
-import { FC } from 'react';
 
-const Image: FC<ImageProps> = (props) => {
+const Image: FC<ImageProps> = props => {
   const ComponentToUse = typeof props.src === 'object' ? NextImage : 'img';
   return (
     // @ts-expect-error -- fixme
     <ComponentToUse {...props} className={cn('mt-6 rounded-lg drop-shadow-md', props.className)} />
   );
-}
+};
 
 const HiveLogo = PRODUCTS.HIVE.logo;
 
@@ -195,6 +195,6 @@ export default defineConfig({
   logo: <HiveLogo className="text-green-1000" />,
   components: {
     // @ts-expect-error -- fixme
-    img: Image
+    img: Image,
   },
 });
