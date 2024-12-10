@@ -5,7 +5,6 @@ import { Layout } from 'nextra-theme-docs';
 import { Head } from 'nextra/components';
 import '@theguild/components/style.css';
 import '../components/navigation-menu/navbar-global-styles.css';
-import '../selection-styles.css';
 import { PRODUCTS } from '@theguild/components';
 import { getDefaultMetadata, getPageMap } from '@theguild/components/server';
 import { Footer } from '../components/footer';
@@ -64,6 +63,9 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
           }
           :root.dark *::selection {
             background-color: hsl(191deg 95% 72% / 0.25)
+          }
+          .light *::selection {
+            background-color: rgb(134 182 193 / 0.2);
           }
           :root.light, body.light {
             --nextra-primary-hue: 191deg;
