@@ -101,7 +101,7 @@ export async function schemaPolicyCheck(input: {
         parser,
         parserOptions: {
           graphQLConfig: {
-            schema: input.schema
+            schema: input.schema,
           },
         },
       },

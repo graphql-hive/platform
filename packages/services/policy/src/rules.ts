@@ -1,4 +1,8 @@
-import { GraphQLESLintRule, rules, type CategoryType } from '@graphql-eslint/eslint-plugin/programmatic';
+import {
+  GraphQLESLintRule,
+  rules,
+  type CategoryType,
+} from '@graphql-eslint/eslint-plugin/programmatic';
 
 type AllRulesType = typeof rules;
 type RuleName = keyof AllRulesType;
@@ -34,19 +38,13 @@ function patchRulesConfig<T extends RuleName>(
       // Get rid of "definitions" references because it's breaking Monaco editor in the frontend
       Object.entries(schema.items.properties).forEach(([, propDef]) => {
         if (propDef && typeof propDef === 'object' && 'oneOf' in propDef) {
-          propDef.oneOf = [
-            schema.definitions.asObject,
-            schema.definitions.asString,
-          ];
+          propDef.oneOf = [schema.definitions.asObject, schema.definitions.asString];
         }
       });
       schema.items.patternProperties = {
         '^(Argument|DirectiveDefinition|EnumTypeDefinition|EnumValueDefinition|FieldDefinition|InputObjectTypeDefinition|InputValueDefinition|InterfaceTypeDefinition|ObjectTypeDefinition|ScalarTypeDefinition|UnionTypeDefinition)(.+)?$':
           {
-            oneOf: [
-              schema.definitions.asObject,
-              schema.definitions.asString,
-            ],
+            oneOf: [schema.definitions.asObject, schema.definitions.asString],
           },
       };
       delete schema.definitions;
