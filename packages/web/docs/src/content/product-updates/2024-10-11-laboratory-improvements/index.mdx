@@ -6,9 +6,7 @@ date: 2024-10-11
 authors: [dimitri]
 ---
 
-export const fullScreenMode = `${process.env.NEXT_BASE_PATH}/product-updates/full-screen-mode.mp4`
-export const queryBuilder = `${process.env.NEXT_BASE_PATH}/product-updates/query-builder.mp4`
-export const newTabs = `${process.env.NEXT_BASE_PATH}/product-updates/tabs-new.mp4`
+import { addBasePath } from 'next/dist/client/add-base-path'
 
 export function Caption({ children }) {
   return <p className="text-center text-sm italic">{children}</p>
@@ -18,7 +16,7 @@ export function Video({ src, alt }) {
   return (
     <>
       <video autoPlay="autoplay" loop muted playsInline>
-        <source src={src} type="video/mp4" />
+        <source src={addBasePath(src)} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
       <Caption>{alt}</Caption>
@@ -46,7 +44,7 @@ query" were removed, "Prettify query" button was moved to the end of the toolbar
 Users with wide screens can now benefit from the fullscreen mode. The button is located in place of
 the GraphiQL logo.
 
-<Video src={fullScreenMode} alt="Full screen mode demo" />
+<Video src="/product-updates/full-screen-mode.mp4" alt="Full screen mode demo" />
 
 ### Tabs Support
 
@@ -54,7 +52,7 @@ Laboratory now supports multiple tabs, you can test as many queries as needed at
 There is no longer a requirement to mandatory save the query in one of the collections, you can have
 a draft query which will be stored in local storage.
 
-<Video src={newTabs} alt="Tabs demo" />
+<Video src="/product-updates/tabs-new.mp4" alt="Tabs demo" />
 
 The UI of the tabs is inspired by the functionality of Google Chrome tabs, tabs will be shown even
 if there is only a single tab as per Chrome tabs UX.
@@ -64,7 +62,7 @@ if there is only a single tab as per Chrome tabs UX.
 The laboratory now also has a query builder, which you can use to explore schema and easily
 construct GraphQL queries.
 
-<Video src={queryBuilder} alt="Query builder demo" />
+<Video src="/product-updates/query-builder.mp4" alt="Query builder demo" />
 
 ## GraphiQL v4 Alpha
 
