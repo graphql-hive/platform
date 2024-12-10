@@ -12,6 +12,7 @@ const __dirname = new URL('.', import.meta.url).pathname;
  * Whether the server is running in development mode.
  * See the ./dev.ts file
  */
+// eslint-disable-next-line no-process-env
 const isDev = process.env.NODE_ENV === 'development';
 
 const server = Fastify({
