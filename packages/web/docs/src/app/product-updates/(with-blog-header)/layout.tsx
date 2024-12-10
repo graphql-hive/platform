@@ -4,6 +4,7 @@ import type { FC, ReactNode } from 'react';
 import { format } from 'date-fns';
 import { Anchor, useConfig } from '@theguild/components';
 import { authors } from '../../../authors';
+import { ConfiguredGiscus } from '../../../components/configured-giscus';
 import { SocialAvatar } from '../../../components/social-avatar';
 
 type Meta = {
@@ -71,10 +72,13 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <>
       <div className="x:max-w-[90rem] mx-auto">
-        <h1 className="mb-4 mt-6 text-center text-4xl">{metadata.title}</h1>
+        <h1 className="mt-12 text-center text-4xl">{metadata.title}</h1>
         <Authors meta={metadata} />
       </div>
       {children}
+      <div className="container !max-w-[65rem]">
+        <ConfiguredGiscus />
+      </div>
     </>
   );
 };
