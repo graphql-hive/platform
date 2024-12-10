@@ -7,22 +7,27 @@ import {
   HighlightDecoration,
   LargeHiveIconDecoration,
 } from '@theguild/components';
-import { LandingPageContainer } from './landing-page-container';
+import { LandingPageContainer } from '../../components/landing-page-container';
+
+export const metadata = {
+  title: 'Our Open Source Friends',
+  description: 'We love open source. Meet our friends who share the same passion.',
+};
 
 async function fetchFriends() {
-  const res = await fetch('https://formbricks.com/api/oss-friends');
+  const response = await fetch('https://formbricks.com/api/oss-friends');
   const body: {
-    data: Array<{
+    data: {
       name: string;
       description: string;
       href: string;
-    }>;
-  } = await res.json();
+    }[];
+  } = await response.json();
 
   return body.data;
 }
 
-export async function OSSFriendsPage() {
+export default async function OSSFriendsPage() {
   const friends = await fetchFriends();
 
   return (
