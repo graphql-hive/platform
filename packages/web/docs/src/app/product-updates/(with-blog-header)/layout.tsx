@@ -1,11 +1,13 @@
-import type { FC, ReactElement } from 'react';
+'use client'
+
+import type { FC, ReactNode } from 'react';
 import { format } from 'date-fns';
-import { Anchor } from '@theguild/components';
-import { authors } from '../authors';
-import { SocialAvatar } from './social-avatar';
+import { Anchor, useConfig } from '@theguild/components';
+import { authors } from '../../../authors';
+import { SocialAvatar } from '../../../components/social-avatar';
 
 type Meta = {
-  authors?: string[];
+  authors: string[];
   date: string;
   title: string;
   description: string;
@@ -14,15 +16,11 @@ type Meta = {
 const Authors: FC<{ meta: Meta }> = ({ meta }) => {
   const date = meta.date ? new Date(meta.date) : new Date();
 
-  if (!meta.authors) {
-    return null;
-  }
-
   if (meta.authors.length === 1) {
     const author = authors[meta.authors[0]];
 
     return (
-      <div className="my-5 flex flex-row items-center justify-center">
+      <div className="my-5 flex items-center justify-center">
         <Anchor href={author.link} title={author.name}>
           <SocialAvatar author={author} />
         </Anchor>
@@ -67,11 +65,18 @@ const Authors: FC<{ meta: Meta }> = ({ meta }) => {
   );
 };
 
-export const ProductUpdateBlogPostHeader = ({ meta }: { meta: Meta }): ReactElement => {
+const Layout: FC<{ children: ReactNode }> = ({ children }) => {
+  const { normalizePagesResult } = useConfig();
+  const metadata = normalizePagesResult.activeMetadata!;
   return (
     <>
-      {meta.title !== 'Product Updates' && <h1>{meta.title}</h1>}
-      <Authors meta={meta} />
+      <div className='mx-auto x:max-w-[90rem]'>
+        <h1 className='text-center text-4xl mb-4 mt-6'>{metadata.title}</h1>
+        <Authors meta={metadata} />
+      </div>
+      {children}
     </>
   );
 };
+
+export default Layout;

@@ -1,19 +1,26 @@
 import { ReactElement, ReactNode } from 'react';
 import Image from 'next/image';
 import { Anchor, CallToAction, cn, Heading } from '@theguild/components';
-import { ArrowIcon } from './arrow-icon';
-import { FrequentlyAskedFederationQuestions } from './frequently-asked-questions';
-import { Hero, HeroLinks } from './hero';
-import { InfoCard } from './info-card';
-import { LandingPageContainer } from './landing-page-container';
-import federationDiagram from '../../public/federation-diagram.png';
-import queryResultImage from '../../public/federation/query-result.png';
-import queryImage from '../../public/federation/query.png';
-import subgraphsProductsImage from '../../public/federation/subgraphs-products.png';
-import subgraphsReviewsImage from '../../public/federation/subgraphs-reviews.png';
-import supergraphSchemaImage from '../../public/federation/supergraph-schema.png';
+import { ArrowIcon } from '../../components/arrow-icon';
+import { FrequentlyAskedFederationQuestions } from '../../components/frequently-asked-questions';
+import { Hero, HeroLinks } from '../../components/hero';
+import { InfoCard } from '../../components/info-card';
+import { LandingPageContainer } from '../../components/landing-page-container';
+import federationDiagram from '../../../public/federation-diagram.png';
+import queryResultImage from '../../../public/federation/query-result.png';
+import queryImage from '../../../public/federation/query.png';
+import subgraphsProductsImage from '../../../public/federation/subgraphs-products.png';
+import subgraphsReviewsImage from '../../../public/federation/subgraphs-reviews.png';
+import supergraphSchemaImage from '../../../public/federation/supergraph-schema.png';
+import { ContactAnExpertButton } from './contact-an-expert-button';
 
-export function FederationPage(): ReactElement {
+export const metadata = {
+  title: 'What is GraphQL Federation?',
+  description:
+    'Discover what GraphQL Federation is, how it unifies multiple APIs into a Supergraph, its core benefits, and the building blocks like subgraphs, schema composition and gateway.',
+};
+
+export default function FederationPage(): ReactElement {
   return (
     <LandingPageContainer className="text-green-1000 light mx-auto max-w-[90rem] overflow-hidden">
       <Hero className="mx-4 max-sm:mt-2 md:mx-6">
@@ -37,15 +44,7 @@ export function FederationPage(): ReactElement {
           >
             Try Hive for Federation
           </CallToAction>
-          <CallToAction
-            variant="secondary"
-            title="Contact our experts to learn more about GraphQL Federation"
-            onClick={() => {
-              (window as any).$crisp?.push(['do', 'chat:open']);
-            }}
-          >
-            Contact an Expert
-          </CallToAction>
+          <ContactAnExpertButton/>
         </HeroLinks>
       </Hero>
       <Intro />
