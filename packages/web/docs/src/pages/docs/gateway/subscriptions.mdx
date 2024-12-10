@@ -86,6 +86,9 @@ If your subgraph doesn't implement subscriptions over SSE, you can configure Hiv
 or
 [HTTP Callback](https://www.apollographql.com/docs/router/executing-operations/subscription-callback-protocol/).
 
+Whichever protocol is used by Hive Gateway to subscribe to the upstream subgraphs, downstream
+clients can subscribe to the gateway using any supported protocol.
+
 ### Subscriptions using WebSockets
 
 If your subgraph uses WebSockets for subscriptions support
@@ -114,6 +117,11 @@ export const gatewayConfig = defineConfig({
   }
 })
 ```
+
+<Callout>
+  WebSocket for communications between Hive Gateway and subgraphs are suboptimal compared to other
+  possible transports. We recommend using either SSE or HTTP Callbacks instead.
+</Callout>
 
 #### Propagation of authorization
 
@@ -301,6 +309,29 @@ export const gatewayConfig = defineConfig({
   }
 })
 ```
+
+## Closing active subscriptions on schema change
+
+When the schema changes in Hive Gateway, all active subscriptions will be completed after emitting
+the following execution error:
+
+```json
+{
+  "errors": [
+    {
+      "message": "subscription has been closed due to a schema reload",
+      "extensions": {
+        "code": "SUBSCRIPTION_SCHEMA_RELOAD"
+      }
+    }
+  ]
+}
+```
+
+<Callout>
+  This is also what Apollo Router when [terminating subscriptions on schema
+  update](https://www.apollographql.com/docs/router/executing-operations/subscription-support/#termination-on-schema-update).
+</Callout>
 
 ## Example
 
@@ -510,11 +541,17 @@ You can subscribe to the gateway through Server-Sent Events (SSE) (in JavaScript
 [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) or
 [graphql-sse](https://the-guild.dev/graphql/sse)).
 
+Most clients offers a way to use subscriptions over SSE. You can find here examples for Apollo
+Client and Relay, please refer to the
+[Recipes for Clients Usage section of `graphql-sse` documentation](https://the-guild.dev/graphql/sse/recipes#client-usage)
+for other clients setups.
+
 <Tabs items={["curl", "Apollo Client", "Relay"]}>
 
 <Tabs.Tab>
 
-For the sake of brevity, we'll subscribe using `curl`:
+To quickly test subscriptions, you can use `curl` in your terminal to subscribe to the gateway.
+`curl` has native support of SSE.
 
 ```sh
 curl 'http://localhost:4000/graphql' \
@@ -527,8 +564,9 @@ curl 'http://localhost:4000/graphql' \
 
 <Tabs.Tab>
 
-Apollo Client is not compatible with SSE out of the box, but it's straightforward to add an Apollo
-Link to enable this feature by using [`graphql-sse`](https://the-guild.dev/graphql/sse) library.
+To enable SSE support using Apollo Client, you can create a simple
+[Apollo Link](https://www.apollographql.com/docs/react/api/link/introduction) using
+[`graphql-sse`](https://the-guild.dev/graphql/sse) library.
 
 ```ts filename="client.ts"
 import { ApolloLink, Operation, FetchResult, Observable } from '@apollo/client/core';
@@ -564,12 +602,16 @@ export const client = new ApolloClient({
 });
 ```
 
+<Callout type="info">
+[Learn more on `graphql-sse` documentation.](https://the-guild.dev/graphql/sse/recipes#with-apollo)
+</Callout>
+
 </Tabs.Tab>
 
 <Tabs.Tab>
 
-Relay doesn't support SSE out of the box, but you can easily enable this feature by setting up a
-[Network Layer](https://relay.dev/docs/guides/network-layer/) using
+To enable support of SSE using Relay, you can create a custom
+[Network Layer](https://relay.dev/docs/guides/network-layer/) with
 [`graphql-sse`](https://the-guild.dev/graphql/sse) library.
 
 ```ts filename="network.ts"
@@ -596,6 +638,10 @@ function fetchOrSubscribe(operation: RequestParameters, variables: Variables) {
 export const network = Network.create(fetchOrSubscribe, fetchOrSubscribe);
 ```
 
+<Callout type="info">
+[Learn more on `graphql-sse` documentation.](https://the-guild.dev/graphql/sse/recipes#with-relay)
+</Callout>
+
 </Tabs.Tab>
 
 </Tabs>
@@ -604,8 +650,8 @@ export const network = Network.create(fetchOrSubscribe, fetchOrSubscribe);
 
 <Tabs.Tab>
 
-You can subscribe to the gateway through WebSockets. For the sake of brevity, we'll subscribe using
-`wscat`:
+To quickly test subscriptions, you can use [`wscat`](https://github.com/websockets/wscat) in your
+terminal to subscribe to the gateway.
 
 <Tabs items={["wscat", "Apollo Client", "Relay"]}>
 
@@ -617,7 +663,7 @@ First, begin the connection with:
 npx wscat \
   -c http://localhost:4000/graphql \
   -s graphql-ws \
-  -x '{"type": "connection_init"}' --wait 600
+  --wait 600 -x '{"type": "connection_init"}' # Send this message directly, to avoid initialization timeout
 ```
 
 Once connected, you can start a subscription:
@@ -630,12 +676,14 @@ Once connected, you can start a subscription:
 
 <Tabs.Tab>
 
-Apollo Client supports WebSocket subscriptions over WebSocket by using the
+To enable subscriptions over WebSockets with Apollo Client, you have to use the
 [`GraphQLWsLink`](https://www.apollographql.com/docs/react/api/link/apollo-link-subscriptions),
 which relies on [`graphql-ws`](https://github.com/enisdenjo/graphql-ws) library.
 
-You will need to use a `split` link to either use classic HTTP for queries and mutation, or
-WebSockets for subscriptions.
+You will need to use a
+[`split`](https://www.apollographql.com/docs/react/api/link/introduction#directional-composition)
+link to either use classic HTTP for queries and mutation, or WebSockets for subscriptions if you
+don't want to use WebSockets for all operations (which is the most common approach).
 
 ```ts filename="client.ts"
 import { split, HttpLink } from '@apollo/client';
@@ -659,6 +707,10 @@ export const client = new ApolloClient({
   ),
 });
 ```
+
+<Callout type="info">
+[Learn more about this on official documentation.](https://www.apollographql.com/docs/react/api/link/apollo-link-subscriptions)
+</Callout>
 
 </Tabs.Tab>
 
@@ -692,6 +744,10 @@ const subscribe = (operation, variables) => {
 export const network = Network.create(fetchQuery, subscribe);
 ```
 
+<Callout type="info">
+[Learn more on official Relay documentation.](https://relay.dev/docs/guided-tour/updating-data/graphql-subscriptions/#configuring-the-network-layer)
+</Callout>
+
 </Tabs.Tab>
 
 </Tabs>
@@ -699,85 +755,3 @@ export const network = Network.create(fetchQuery, subscribe);
 </Tabs.Tab>
 
 </Tabs>
-
-## Subgraph subscriptions using WebSockets
-
-If your subgraph uses WebSockets for subscriptions support
-([like with Apollo Server](https://www.apollographql.com/docs/apollo-server/data/subscriptions/)),
-Hive Gateway will need additional configuration pointing to the WebSocket server path on the
-subgraph.
-
-And configure Hive Gateway to use the `/subscriptions` path on the "products" subgraph for WebSocket
-connections:
-
-```ts filename="gateway.config.ts"
-import { defineConfig, type WSTransportOptions } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  supergraph: 'supergraph.graphql',
-  transportEntries: {
-    // use "*.http" to apply options to all subgraphs with HTTP
-    '*.http': {
-      options: {
-        subscriptions: {
-          kind: 'ws',
-          location: '/subscriptions'
-        } satisfies WSTransportOptions
-      }
-    }
-  }
-})
-```
-
-Now simply start Hive Gateway with:
-
-```sh
-hive-gateway supergraph
-```
-
-Downstream clients are subscribing to Hive Gateway gateway through the
-[GraphQL over SSE protocol](https://github.com/graphql/graphql-over-http/blob/main/rfcs/GraphQLOverSSE.md),
-but upstream Hive Gateway will use long-living WebSocket connections to the "products" service.
-
-<Callout>
-  WebSocket for communications between Hive Gateway and subgraphs are suboptimal compared to other
-  possible transports. We recommend using either SSE or HTTP Callbacks instead.
-</Callout>
-
-## Advanced subscriptions transport configuration
-
-By default, subscriptions will use the same transport than queries and mutation. This can be change
-using the `transportEntries` option.
-
-The key of each entry determine which subgraph will be impacted:
-
-- `*`: all subgraphs
-- `*.{transportKind}`: all subgraphs using `transportKind`. For example, `*.http` will impact all
-  subgraph using the `http` transport.
-- `{subgraphName}`: a specific subgraph.
-
-Configuration are inherited and merged from the least specific to the most specific matcher. Only
-exception is the `headers` which is not inherited for the `ws` transport.
-
-## Closing active subscriptions on schema change
-
-When the schema changes in Hive Gateway, all active subscriptions will be completed after emitting
-the following execution error:
-
-```json
-{
-  "errors": [
-    {
-      "message": "subscription has been closed due to a schema reload",
-      "extensions": {
-        "code": "SUBSCRIPTION_SCHEMA_RELOAD"
-      }
-    }
-  ]
-}
-```
-
-<Callout>
-  This is also what Apollo Router when [terminating subscriptions on schema
-  update](https://www.apollographql.com/docs/router/executing-operations/subscription-support/#termination-on-schema-update).
-</Callout>
