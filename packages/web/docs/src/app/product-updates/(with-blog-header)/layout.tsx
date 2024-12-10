@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import type { FC, ReactNode } from 'react';
 import { format } from 'date-fns';
@@ -70,8 +70,8 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const metadata = normalizePagesResult.activeMetadata!;
   return (
     <>
-      <div className='mx-auto x:max-w-[90rem]'>
-        <h1 className='text-center text-4xl mb-4 mt-6'>{metadata.title}</h1>
+      <div className="x:max-w-[90rem] mx-auto">
+        <h1 className="mb-4 mt-6 text-center text-4xl">{metadata.title}</h1>
         <Authors meta={metadata} />
       </div>
       {children}

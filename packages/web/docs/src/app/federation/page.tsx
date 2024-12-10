@@ -6,13 +6,13 @@ import { FrequentlyAskedFederationQuestions } from '../../components/frequently-
 import { Hero, HeroLinks } from '../../components/hero';
 import { InfoCard } from '../../components/info-card';
 import { LandingPageContainer } from '../../components/landing-page-container';
+import { ContactAnExpertButton } from './contact-an-expert-button';
 import federationDiagram from '../../../public/federation-diagram.png';
 import queryResultImage from '../../../public/federation/query-result.png';
 import queryImage from '../../../public/federation/query.png';
 import subgraphsProductsImage from '../../../public/federation/subgraphs-products.png';
 import subgraphsReviewsImage from '../../../public/federation/subgraphs-reviews.png';
 import supergraphSchemaImage from '../../../public/federation/supergraph-schema.png';
-import { ContactAnExpertButton } from './contact-an-expert-button';
 
 export const metadata = {
   title: 'What is GraphQL Federation?',
@@ -44,7 +44,7 @@ export default function FederationPage(): ReactElement {
           >
             Try Hive for Federation
           </CallToAction>
-          <ContactAnExpertButton/>
+          <ContactAnExpertButton />
         </HeroLinks>
       </Hero>
       <Intro />

@@ -8,7 +8,6 @@ export default {
   troubleshooting: 'Troubleshooting',
   'external-composition': 'External Composition',
   changelog: {
-    title: 'Changelog',
     theme: {
       toc: false,
     },

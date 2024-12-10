@@ -1,23 +1,12 @@
 ---
 title: Self Hosting Changelog
+sidebarTitle: Changelog
 description: Changelog for self-hosting Hive
 ---
 
-import * as fs from 'node:fs/promises'
-import * as path from 'node:path'
-import { MDXRemote } from 'nextra/mdx-remote'
-import { RemoteContent } from '@theguild/components'
-import { compileMdx, useMDXComponents } from '@theguild/components/server'
-
-export async function compileChangelogMdx() {
-  // NOTE: if you add any white space between lines in this function, prettier will destroy this file
-  let source = await fs.readFile(
-    path.join(process.cwd(), '../../../deployment/CHANGELOG.md'),
-    'utf-8'
-  )
-  source = source.split('\n').slice(1).join('\n') // remove the heading
-  return compileMdx(source)
-}
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { compileMdx, MDXRemote } from '@theguild/components/server'
 
 # Self-Hosting Changelog
 
@@ -25,4 +14,6 @@ Here you can find all the recent improvements and updates about the self-hosting
 images published to the GitHub registry using the same tags. For a high-level overview of
 improvements please refer to [our product updates](/product-updates).
 
-<MDXRemote compiledSource={await compileChangelogMdx()} />
+export const source = await fs.readFile(path.resolve('../../../deployment/CHANGELOG.md'), 'utf8')
+
+<MDXRemote compiledSource={await compileMdx(source.replace('# hive', ''))} />

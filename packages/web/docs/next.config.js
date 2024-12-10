@@ -12,7 +12,7 @@ export default withGuildDocs({
     },
   },
   nextraConfig: {
-    contentDirBasePath: '/docs'
+    contentDirBasePath: '/docs',
   },
   redirects: async () => [
     {
