@@ -3,13 +3,13 @@ import { ReactNode } from 'react';
 import localFont from 'next/font/local';
 import { Layout } from 'nextra-theme-docs';
 import { Head } from 'nextra/components';
-import '@theguild/components/style.css';
-import '../components/navigation-menu/navbar-global-styles.css';
-import '../selection-styles.css';
 import { PRODUCTS } from '@theguild/components';
 import { getDefaultMetadata, getPageMap } from '@theguild/components/server';
 import { Footer } from '../components/footer';
 import { NavigationMenu } from '../components/navigation-menu';
+import '@theguild/components/style.css';
+import '../components/navigation-menu/navbar-global-styles.css';
+import '../selection-styles.css';
 
 export const metadata = getDefaultMetadata({
   productName: PRODUCTS.HIVE.name,

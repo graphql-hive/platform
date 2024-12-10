@@ -1,8 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Anchor } from 'nextra/components';
 import { cn } from '@theguild/components';
+import { useMDXComponents as getDocsMDXComponents } from '@theguild/components/server';
 
-export const Link: typeof Anchor = ({ className, ...props }) => {
+const Link: typeof Anchor = ({ className, ...props }) => {
   return (
     <Anchor
       // we remove `text-underline-position` from default Nextra link styles
@@ -14,6 +15,14 @@ export const Link: typeof Anchor = ({ className, ...props }) => {
     />
   );
 };
-export const docsMDXComponents = {
+
+const docsMDXComponents = getDocsMDXComponents({
   a: Link,
+});
+
+export const useMDXComponents: typeof getDocsMDXComponents = components => {
+  return {
+    ...docsMDXComponents,
+    ...components,
+  };
 };
