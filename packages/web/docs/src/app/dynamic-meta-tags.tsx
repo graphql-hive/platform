@@ -70,7 +70,6 @@ export function DynamicMetaTags() {
     <>
       <link rel="canonical" href={canonicalUrl} />
       <meta content="en" httpEquiv="Content-Language" />
-      <title>{title}</title>
       <meta name="description" content={description} />
       <meta property="og:title" content={title} />
       <meta property="og:locale" content="en_US" />
