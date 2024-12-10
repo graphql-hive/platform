@@ -51,7 +51,7 @@ export function createInputValidationSchema() {
 
         return {
           ...acc,
-          [name]: z.union([
+          [`@graphql-eslint/${name}`]: z.union([
             z.tuple([RULE_LEVEL]),
             z.tuple(
               validate
