@@ -16,7 +16,7 @@ export const metadata = getDefaultMetadata({
   websiteName: 'Hive',
   description:
     'Fully Open-source schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs',
-  metadataBase: new URL('https://the-guild.dev/graphql/hive')
+  metadataBase: new URL('https://the-guild.dev/graphql/hive'),
 });
 // @ts-expect-error -- we use filebased og image
 delete metadata.openGraph.images;
@@ -105,4 +105,4 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default HiveLayout
+export default HiveLayout;
