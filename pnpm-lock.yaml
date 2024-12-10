@@ -988,8 +988,8 @@ importers:
   packages/services/policy:
     devDependencies:
       '@graphql-eslint/eslint-plugin':
-        specifier: 3.20.1
-        version: 3.20.1(@babel/core@7.25.8)(@types/node@22.9.3)(encoding@0.1.13)(graphql@16.9.0)
+        specifier: 4.4.0-alpha-20241210124724-37546942474e54378c2b293d843e141891961747
+        version: 4.4.0-alpha-20241210124724-37546942474e54378c2b293d843e141891961747(@apollo/subgraph@2.9.3(graphql@16.9.0))(@types/node@22.9.3)(encoding@0.1.13)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(graphql@16.9.0)(typescript@5.6.3)
       '@hive/service-common':
         specifier: workspace:*
         version: link:../service-common
@@ -4045,12 +4045,6 @@ packages:
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
 
-  '@graphql-eslint/eslint-plugin@3.20.1':
-    resolution: {integrity: sha512-RbwVlz1gcYG62sECR1u0XqMh8w5e5XMCCZoMvPQ3nJzEBCTfXLGX727GBoRmSvY1x4gJmqNZ1lsOX7lZY14RIw==}
-    engines: {node: '>=12'}
-    peerDependencies:
-      graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-
   '@graphql-eslint/eslint-plugin@4.4.0-alpha-20241210124724-37546942474e54378c2b293d843e141891961747':
     resolution: {integrity: sha512-YasWWYhm5EcRegjDvP6gpHCwmgJVXnSptBY4AZsHSzvfRGj+Q3/mfvPlJ8SYat0IXfTyQn/Yx1ZZr2Qk35w7dw==}
     engines: {node: '>=18'}
@@ -4223,11 +4217,6 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
-  '@graphql-tools/code-file-loader@7.3.23':
-    resolution: {integrity: sha512-8Wt1rTtyTEs0p47uzsPJ1vAtfAx0jmxPifiNdmo9EOCuUPyQGEbMaik/YkqZ7QUFIEYEQu+Vgfo8tElwOPtx5Q==}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
   '@graphql-tools/code-file-loader@8.0.1':
     resolution: {integrity: sha512-pmg81lsIXGW3uW+nFSCIG0lFQIxWVbgDjeBkSWlnP8CZsrHTQEkB53DT7t4BHLryoxDS4G4cPxM52yNINDSL8w==}
     engines: {node: '>=16.0.0'}
@@ -4333,11 +4322,6 @@ packages:
   '@graphql-tools/graphql-file-loader@8.0.0':
     resolution: {integrity: sha512-wRXj9Z1IFL3+zJG1HWEY0S4TXal7+s1vVhbZva96MSp0kbb/3JBF7j0cnJ44Eq0ClccMgGCDFqPFXty4JlpaPg==}
     engines: {node: '>=16.0.0'}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
-  '@graphql-tools/graphql-tag-pluck@7.5.2':
-    resolution: {integrity: sha512-RW+H8FqOOLQw0BPXaahYepVSRjuOHw+7IL8Opaa5G5uYGOBxoXR7DceyQ7BcpMgktAOOmpDNQ2WtcboChOJSRA==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
@@ -18714,29 +18698,6 @@ snapshots:
       - encoding
       - supports-color
 
-  '@graphql-eslint/eslint-plugin@3.20.1(@babel/core@7.25.8)(@types/node@22.9.3)(encoding@0.1.13)(graphql@16.9.0)':
-    dependencies:
-      '@babel/code-frame': 7.25.7
-      '@graphql-tools/code-file-loader': 7.3.23(@babel/core@7.25.8)(graphql@16.9.0)
-      '@graphql-tools/graphql-tag-pluck': 7.5.2(@babel/core@7.25.8)(graphql@16.9.0)
-      '@graphql-tools/utils': 9.2.1(graphql@16.9.0)
-      chalk: 4.1.2
-      debug: 4.3.7(supports-color@8.1.1)
-      fast-glob: 3.3.2
-      graphql: 16.9.0
-      graphql-config: 4.5.0(@types/node@22.9.3)(encoding@0.1.13)(graphql@16.9.0)
-      graphql-depth-limit: 1.1.0(graphql@16.9.0)
-      lodash.lowercase: 4.3.0
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@types/node'
-      - bufferutil
-      - cosmiconfig-toml-loader
-      - encoding
-      - supports-color
-      - utf-8-validate
-
   '@graphql-eslint/eslint-plugin@4.4.0-alpha-20241210124724-37546942474e54378c2b293d843e141891961747(@apollo/subgraph@2.9.3(graphql@16.9.0))(@types/node@22.9.3)(encoding@0.1.13)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(graphql@16.9.0)(typescript@5.6.3)':
     dependencies:
       '@graphql-tools/code-file-loader': 8.1.0(graphql@16.9.0)
@@ -19038,18 +18999,6 @@ snapshots:
       tslib: 2.8.1
       value-or-promise: 1.0.12
 
-  '@graphql-tools/code-file-loader@7.3.23(@babel/core@7.25.8)(graphql@16.9.0)':
-    dependencies:
-      '@graphql-tools/graphql-tag-pluck': 7.5.2(@babel/core@7.25.8)(graphql@16.9.0)
-      '@graphql-tools/utils': 9.2.1(graphql@16.9.0)
-      globby: 11.1.0
-      graphql: 16.9.0
-      tslib: 2.8.1
-      unixify: 1.0.0
-    transitivePeerDependencies:
-      - '@babel/core'
-      - supports-color
-
   '@graphql-tools/code-file-loader@8.0.1(@babel/core@7.22.9)(graphql@16.9.0)':
     dependencies:
       '@graphql-tools/graphql-tag-pluck': 8.0.1(@babel/core@7.22.9)(graphql@16.9.0)
@@ -19265,19 +19214,6 @@ snapshots:
       graphql: 16.9.0
       tslib: 2.8.1
       unixify: 1.0.0
-
-  '@graphql-tools/graphql-tag-pluck@7.5.2(@babel/core@7.25.8)(graphql@16.9.0)':
-    dependencies:
-      '@babel/parser': 7.25.8
-      '@babel/plugin-syntax-import-assertions': 7.24.1(@babel/core@7.25.8)
-      '@babel/traverse': 7.25.7
-      '@babel/types': 7.25.8
-      '@graphql-tools/utils': 9.2.1(graphql@16.9.0)
-      graphql: 16.9.0
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - '@babel/core'
-      - supports-color
 
   '@graphql-tools/graphql-tag-pluck@8.0.1(@babel/core@7.22.9)(graphql@16.9.0)':
     dependencies:
@@ -23459,8 +23395,8 @@ snapshots:
       '@typescript-eslint/parser': 7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3)
       eslint: 9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)
       eslint-config-prettier: 9.1.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
       eslint-plugin-jsonc: 2.11.1(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
       eslint-plugin-jsx-a11y: 6.8.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
       eslint-plugin-mdx: 3.0.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
@@ -26174,13 +26110,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)):
     dependencies:
       debug: 4.3.7(supports-color@8.1.1)
       enhanced-resolve: 5.17.1
       eslint: 9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.13.1
@@ -26211,14 +26147,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.8.0(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)):
+  eslint-module-utils@2.8.0(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)):
     dependencies:
       debug: 3.2.7(supports-color@8.1.1)
     optionalDependencies:
       '@typescript-eslint/parser': 7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3)
       eslint: 9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
     transitivePeerDependencies:
       - supports-color
 
@@ -26234,7 +26170,7 @@ snapshots:
       eslint: 9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)
       eslint-compat-utils: 0.1.2(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)):
     dependencies:
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
@@ -26244,7 +26180,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))(typescript@5.6.3))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3)))(eslint@9.16.0(patch_hash=mz2t47uufmyzrrrjlxbpyhd2au)(jiti@2.3.3))
       hasown: 2.0.0
       is-core-module: 2.13.1
       is-glob: 4.0.3
