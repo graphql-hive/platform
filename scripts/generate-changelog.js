@@ -8,7 +8,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 const productUpdatesDirectory = path.join(
   __dirname,
-  '../packages/web/docs/src/pages/product-updates',
+  '../packages/web/docs/src/content/product-updates',
 );
 
 const files = fs.readdirSync(productUpdatesDirectory);
