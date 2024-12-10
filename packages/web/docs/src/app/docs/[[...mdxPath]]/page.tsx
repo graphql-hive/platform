@@ -6,9 +6,14 @@ import { ConfiguredGiscus } from '../../../components/configured-giscus';
 export const generateStaticParams = generateStaticParamsFor('mdxPath');
 
 export async function generateMetadata(props: PageProps<'...mdxPath'>) {
-  const params = await props.params;
-  const { metadata } = await importPage(params.mdxPath);
-  return metadata;
+  const { mdxPath } = await props.params;
+  const { metadata } = await importPage(mdxPath);
+  return {
+    ...metadata,
+    ...(mdxPath[0] === 'gateway' && {
+      title: { absolute: `${metadata.title} | Hive Gateway` },
+    }),
+  };
 }
 
 const Wrapper = useMDXComponents().wrapper;
