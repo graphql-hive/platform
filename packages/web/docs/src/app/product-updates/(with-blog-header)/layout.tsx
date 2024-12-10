@@ -68,7 +68,7 @@ const Authors: FC<{ meta: Meta }> = ({ meta }) => {
 
 const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const { normalizePagesResult } = useConfig();
-  const metadata = normalizePagesResult.activeMetadata!;
+  const metadata = normalizePagesResult.activeMetadata as Meta;
   return (
     <>
       <div className="x:max-w-[90rem] mx-auto">

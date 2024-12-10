@@ -21,6 +21,8 @@ export const metadata = getDefaultMetadata({
   description:
     'Fully Open-source schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs',
 });
+// @ts-expect-error -- we use filebased og image
+delete metadata.openGraph.images
 
 const neueMontreal = localFont({
   src: [
