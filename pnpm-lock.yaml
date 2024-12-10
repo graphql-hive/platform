@@ -1858,6 +1858,9 @@ importers:
       dompurify:
         specifier: 3.2.0
         version: 3.2.0
+      dotenv:
+        specifier: 16.4.5
+        version: 16.4.5
       echarts:
         specifier: 5.5.1
         version: 5.5.1
