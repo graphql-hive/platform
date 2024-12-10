@@ -18,37 +18,38 @@ function patchRulesConfig<T extends RuleName>(
   ruleName: T,
   ruleDef: AllRulesType[T],
 ): GraphQLESLintRule {
+  const { schema } = ruleDef.meta as any;
   switch (ruleName) {
     case 'alphabetize': {
       // Remove operation-specific configurations
-      delete ruleDef.meta!.schema!.items.properties.selections;
-      delete ruleDef.meta!.schema!.items.properties.variables;
+      delete schema.items.properties.selections;
+      delete schema.items.properties.variables;
       break;
     }
     case 'naming-convention': {
       // Remove operation-specific configurations
-      delete ruleDef.meta!.schema!.items.properties.VariableDefinition;
-      delete ruleDef.meta!.schema!.items.properties.OperationDefinition;
+      delete schema.items.properties.VariableDefinition;
+      delete schema.items.properties.OperationDefinition;
 
       // Get rid of "definitions" references because it's breaking Monaco editor in the frontend
-      Object.entries(ruleDef.meta!.schema!.items.properties).forEach(([, propDef]) => {
+      Object.entries(schema.items.properties).forEach(([, propDef]) => {
         if (propDef && typeof propDef === 'object' && 'oneOf' in propDef) {
           propDef.oneOf = [
-            ruleDef.meta!.schema!.definitions.asObject,
-            ruleDef.meta!.schema!.definitions.asString,
+            schema.definitions.asObject,
+            schema.definitions.asString,
           ];
         }
       });
-      ruleDef.meta!.schema!.items.patternProperties = {
+      schema.items.patternProperties = {
         '^(Argument|DirectiveDefinition|EnumTypeDefinition|EnumValueDefinition|FieldDefinition|InputObjectTypeDefinition|InputValueDefinition|InterfaceTypeDefinition|ObjectTypeDefinition|ScalarTypeDefinition|UnionTypeDefinition)(.+)?$':
           {
             oneOf: [
-              ruleDef.meta!.schema!.definitions.asObject,
-              ruleDef.meta!.schema!.definitions.asString,
+              schema.definitions.asObject,
+              schema.definitions.asString,
             ],
           },
       };
-      delete ruleDef.meta!.schema!.definitions;
+      delete schema.definitions;
 
       break;
     }
