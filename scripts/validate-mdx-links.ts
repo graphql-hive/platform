@@ -28,6 +28,7 @@ if (files.length === 0) {
   console.error('No files found. Please pass the --cwd or navigate to the proper directory.');
   process.exit(1);
 }
+
 console.log(`Found ${files.length} markdown files to validate.\n`);
 
 const scanned = await scanURLs();
