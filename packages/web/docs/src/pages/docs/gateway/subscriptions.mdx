@@ -318,7 +318,7 @@ You can find this example
 
 ### Install dependencies
 
-```ssh npm2yarn
+```sh npm2yarn
 npm i graphql-yoga @apollo/subgraph graphql
 ```
 
@@ -426,8 +426,8 @@ subgraphs:
 
 You can then run the Rover command to generate the supegraph schema SDL:
 
-```bash
-$ rover supergraph compose --config ./supergraph.yaml > supergraph.graphql
+```sh
+rover supergraph compose --config ./supergraph.yaml > supergraph.graphql
 ```
 
 For more details about how to use Apollo Rover, please refer to the
@@ -459,8 +459,8 @@ export const composeConfig = defineConfig({
 
 You can then run the Mesh command to generate the supergraph schema DSL:
 
-```bash
-$ npx mesh-compose > supegraph.graphql
+```sh
+npx mesh-compose > supegraph.graphql
 ```
 
 For more details about how to use GraphQL Mesh, please refer to the
@@ -477,15 +477,12 @@ supergraph file `supergraph.yaml` from the current directory, and serve it with 
 default features enabled.
 
 ```sh
-$ hive-gateway supergraph
+hive-gateway supergraph
 ```
 
 ### Subscribe
 
 By default, subscriptions are enabled and handles both WebSockets and SSE transport.
-
-<Tabs items={["SSE", "WebSocket"]}>
-<Tabs.Tab>
 
 Let's now subscribe to the product price changes by executing the following query:
 
@@ -506,10 +503,18 @@ subscription {
 Hive Gateway will inteligently resolve all fields on subscription events and deliver you the
 complete result.
 
+<Tabs items={["SSE", "WebSocket"]}>
+<Tabs.Tab>
+
 You can subscribe to the gateway through Server-Sent Events (SSE) (in JavaScript, using
 [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) or
-[graphql-sse](https://the-guild.dev/graphql/sse)). For the sake of brevity, we'll subscribe using
-`curl`:
+[graphql-sse](https://the-guild.dev/graphql/sse)).
+
+<Tabs items={["curl", "Apollo Client", "Relay"]}>
+
+<Tabs.Tab>
+
+For the sake of brevity, we'll subscribe using `curl`:
 
 ```sh
 curl 'http://localhost:4000/graphql' \
@@ -522,34 +527,174 @@ curl 'http://localhost:4000/graphql' \
 
 <Tabs.Tab>
 
-Let's now subscribe to the product price changes by executing the following query:
+Apollo Client is not compatible with SSE out of the box, but it's straightforward to add an Apollo
+Link to enable this feature by using [`graphql-sse`](https://the-guild.dev/graphql/sse) library.
 
-```graphql
-subscription {
-  productPriceChanged {
-    # Defined in Products subgraph
-    name
-    price
-    reviews {
-      # Defined in Reviews subgraph
-      score
-    }
+```ts filename="client.ts"
+import { ApolloLink, Operation, FetchResult, Observable } from '@apollo/client/core';
+import { ApolloClient } from "@apollo/client";
+import { print, GraphQLError } from 'graphql';
+import { createClient, ClientOptions, Client } from 'graphql-sse';
+
+class SSELink extends ApolloLink {
+  private client: Client;
+
+  constructor(options: ClientOptions) {
+    super();
+    this.client = createClient(options);
+  }
+
+  public request(operation: Operation): Observable<FetchResult> {
+    return new Observable((sink) => {
+      return this.client.subscribe<FetchResult>(
+        { ...operation, query: print(operation.query) },
+        {
+          next: sink.next.bind(sink),
+          complete: sink.complete.bind(sink),
+          error: sink.error.bind(sink),
+        },
+      );
+    });
   }
 }
+
+export const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: new SSELink({ url: 'http://localhost:4000/graphql' }),
+});
 ```
 
-Hive Gateway will inteligently resolve all fields on subscription events and deliver you the
-complete result.
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+Relay doesn't support SSE out of the box, but you can easily enable this feature by setting up a
+[Network Layer](https://relay.dev/docs/guides/network-layer/) using
+[`graphql-sse`](https://the-guild.dev/graphql/sse) library.
+
+```ts filename="network.ts"
+import { Network, Observable, RequestParameters, Variables } from 'relay-runtime';
+import { createClient } from 'graphql-sse';
+
+const subscriptionsClient = createClient({
+  url: 'http://localhost:4000/graphql',
+});
+
+// yes, both fetch AND subscribe can be handled in one implementation
+function fetchOrSubscribe(operation: RequestParameters, variables: Variables) {
+  return Observable.create((sink) => {
+    if (!operation.text) {
+      return sink.error(new Error('Operation text cannot be empty'));
+    }
+    return subscriptionsClient.subscribe(
+      { operationName: operation.name, query: operation.text, variables },
+      sink,
+    );
+  });
+}
+
+export const network = Network.create(fetchOrSubscribe, fetchOrSubscribe);
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+</Tabs.Tab>
+
+<Tabs.Tab>
 
 You can subscribe to the gateway through WebSockets. For the sake of brevity, we'll subscribe using
 `wscat`:
 
+<Tabs items={["wscat", "Apollo Client", "Relay"]}>
+
+<Tabs.Tab>
+
+First, begin the connection with:
+
 ```sh
-wscat \
+npx wscat \
   -c http://localhost:4000/graphql \
   -s graphql-ws \
-  -x '{"query":"subscription OnProductPriceChanged { productPriceChanged { name price reviews { score } } }","operationName":"OnProductPriceChanged"}'
+  -x '{"type": "connection_init"}' --wait 600
 ```
+
+Once connected, you can start a subscription:
+
+```
+> {"type": "subscribe", "id": "operation-1", "payload": {"query":"subscription OnProductPriceChanged { productPriceChanged { name price reviews { score } } }","operationName":"OnProductPriceChanged"}}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+Apollo Client supports WebSocket subscriptions over WebSocket by using the
+[`GraphQLWsLink`](https://www.apollographql.com/docs/react/api/link/apollo-link-subscriptions),
+which relies on [`graphql-ws`](https://github.com/enisdenjo/graphql-ws) library.
+
+You will need to use a `split` link to either use classic HTTP for queries and mutation, or
+WebSockets for subscriptions.
+
+```ts filename="client.ts"
+import { split, HttpLink } from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+
+export const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  // Use the `split` link to send queries and subscription with a different link.
+  link: split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
+      );
+    },
+    new GraphQLWsLink(createClient({ url: 'ws://localhost:4000/graphql' })),
+    new HttpLink({ uri: 'http://localhost:4000/graphql' })
+  ),
+});
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+Relay doesn't support WebSockets out of the box, but you can easily enable this feature by setting
+up a [Network Layer](https://relay.dev/docs/guides/network-layer/) using
+[`graphql-ws`](https://github.com/enisdenjo/graphql-ws) library.
+
+```ts filename="network.ts"
+import { Network, Observable } from 'relay-runtime';
+import { createClient } from 'graphql-ws';
+
+const wsClient = createClient({
+  url:'ws://localhost:3000',
+});
+
+const subscribe = (operation, variables) => {
+  return Observable.create((sink) => {
+    return wsClient.subscribe(
+      {
+        operationName: operation.name,
+        query: operation.text,
+        variables,
+      },
+      sink,
+    );
+  });
+}
+
+export const network = Network.create(fetchQuery, subscribe);
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 </Tabs.Tab>
 
