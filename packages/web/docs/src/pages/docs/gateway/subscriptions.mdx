@@ -123,104 +123,6 @@ export const gatewayConfig = defineConfig({
   possible transports. We recommend using either SSE or HTTP Callbacks instead.
 </Callout>
 
-#### Propagation of authorization
-
-Hive Gateway can propagate the downstream client's `Authorization` header contents to the upstream
-WebSocket connections.
-
-The recommended way is to use the
-[`ConnectionInit` message payload](https://github.com/graphql/graphql-over-http/blob/main/rfcs/GraphQLOverWebSocket.md#connectioninit).
-It is also possible, but not recommended, to propagate HTTP headers by sending them alongside the
-WebSocket upgrade request.
-
-<Callout type="warning">
-  If either `connectionParams` or `headers` are used with dynamic values, it can drastically
-  increase the number of upstream WebSockets connections. <br />
-  Since `headers` and `connectionParams` can only be applied at connection time, a new connection is
-  required for each different set of values provided.
-</Callout>
-
-<Tabs items={["ConnectionParams", "HTTP Headers"]}>
-
-<Tabs.Tab>
-
-```ts filename="gateway.config.ts"
-import { defineConfig, type WSTransportOptions } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  supergraph: 'supergraph.graphql',
-  transportEntries: {
-    // use "*.http" to apply options to all subgraphs with HTTP
-    '*.http': {
-      options: {
-        subscriptions: {
-          kind: 'ws',
-          location: '/subscriptions',
-          options: {
-            connectionParams: {
-              token: '{context.headers.authorization}'
-              // You can also add any other field here.
-              // The only limitation is that value must be serializable with JSON.stringify.
-            }
-          } satisfies WSTransportOptions
-        }
-      }
-    }
-  }
-})
-```
-
-The contents of the payload will be available in `graphql-ws` `connectionParams`:
-
-```json
-{
-  "connectionParams": {
-    "token": "<CONTENTS_OF_AUTHORIZATION_HEADER>"
-  }
-}
-```
-
-<Callout type="info">
-  This is also what Apollo Router do when [propagating auth on
-  WebSockets](https://www.apollographql.com/docs/router/executing-operations/subscription-support/#websocket-auth-support).
-</Callout>
-
-</Tabs.Tab>
-
-<Tabs.Tab>
-
-```ts filename="gateway.config.ts"
-import { defineConfig, type WSTransportOptions } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  supergraph: 'supergraph.graphql',
-  transportEntries: {
-    // use "*.http" to apply options to all subgraphs with HTTP
-    '*.http': {
-      options: {
-        subscriptions: {
-          kind: 'ws',
-          location: '/subscriptions',
-          headers: [
-            ['authorization', '{context.headers.authorization}'],
-            // You can also add any other header here.
-          ]
-        }
-      }
-    }
-  }
-})
-```
-
-<Callout>
-  The headers will be sent only with the upgrade request. They will not be sent again during the
-  lifecycle of the subscription.
-</Callout>
-
-</Tabs.Tab>
-
-</Tabs>
-
 ### Subscriptions using HTTP Callback
 
 If your subgraph uses
@@ -309,6 +211,137 @@ export const gatewayConfig = defineConfig({
   }
 })
 ```
+
+### Propagation of authentication and headers
+
+Hive Gateway can propagate the downstream client's `Authorization` header (or any other header) to
+the upstream subgraph.
+
+The propagation of headers is different if you use pure HTTP transports (SSE or HTTP Callbacks) or
+WebSockets.
+
+<Tabs items={["HTTP (SSE or Callback)", "WebSocket"]}>
+
+<Tabs.Tab>
+
+Propagation of headers for pure HTTP subscription transports follow the
+[same configuration than normal upstream requests](http://localhost:3000/docs/gateway/other-features/header-propagation).
+
+```ts
+import { defineConfig } from '@graphql-hive/gateway'
+
+export const gatewayConfig = defineConfig({
+  propagateHeaders: {
+    fromClientToSubgraphs({ request }) {
+      return {
+        'authorization': request.headers.get('authorization')
+      }
+    }
+  }
+})
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+The recommended way is to use the
+[`ConnectionInit` message payload](https://github.com/graphql/graphql-over-http/blob/main/rfcs/GraphQLOverWebSocket.md#connectioninit).
+It is also possible, but not recommended, to propagate HTTP headers by sending them alongside the
+WebSocket upgrade request.
+
+<Callout type="warning">
+  If either `connectionParams` or `headers` are used with dynamic values, it can drastically
+  increase the number of upstream WebSockets connections. <br />
+  Since `headers` and `connectionParams` can only be applied at connection time, a new connection is
+  required for each different set of values provided.
+</Callout>
+
+<Tabs items={["ConnectionParams", "HTTP Headers"]}>
+
+<Tabs.Tab>
+
+```ts filename="gateway.config.ts"
+import { defineConfig, type WSTransportOptions } from '@graphql-hive/gateway'
+
+export const gatewayConfig = defineConfig({
+  supergraph: 'supergraph.graphql',
+  transportEntries: {
+    // use "*.http" to apply options to all subgraphs with HTTP
+    '*.http': {
+      options: {
+        subscriptions: {
+          kind: 'ws',
+          location: '/subscriptions',
+          options: {
+            connectionParams: {
+              token: '{context.headers.authorization}'
+              // You can also add any other field here.
+              // The only limitation is that value must be serializable with JSON.stringify.
+            }
+          } satisfies WSTransportOptions
+        }
+      }
+    }
+  }
+})
+```
+
+On subgraph side, the contents of the payload will be available in the `graphql-ws` context field
+`connectionParams`:
+
+```json
+{
+  "connectionParams": {
+    "token": "<CONTENTS_OF_AUTHORIZATION_HEADER>"
+  }
+}
+```
+
+<Callout type="info">
+  This is also what Apollo Router do when [propagating auth on
+  WebSockets](https://www.apollographql.com/docs/router/executing-operations/subscription-support/#websocket-auth-support).
+</Callout>
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="gateway.config.ts"
+import { defineConfig, type WSTransportOptions } from '@graphql-hive/gateway'
+
+export const gatewayConfig = defineConfig({
+  supergraph: 'supergraph.graphql',
+  transportEntries: {
+    // use "*.http" to apply options to all subgraphs with HTTP
+    '*.http': {
+      options: {
+        subscriptions: {
+          kind: 'ws',
+          location: '/subscriptions',
+          headers: [
+            ['authorization', '{context.headers.authorization}'],
+            // You can also add any other header here.
+          ]
+        }
+      }
+    }
+  }
+})
+```
+
+<Callout>
+  The headers will be sent only with the upgrade request. They will not be sent again during the
+  lifecycle of the subscription.
+</Callout>
+
+</Tabs.Tab>
+
+</Tabs>
+
+</Tabs.Tab>
+
+</Tabs>
 
 ## Closing active subscriptions on schema change
 
