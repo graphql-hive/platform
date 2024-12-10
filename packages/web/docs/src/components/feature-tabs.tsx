@@ -106,8 +106,8 @@ export function FeatureTabs({ className }: { className?: string }) {
   return (
     <section
       className={cn(
-        'border-beige-400 isolate mx-auto w-[1200px] max-w-full rounded-3xl bg-white' +
-          ' sm:max-w-[calc(100%-4rem)] sm:border md:p-6',
+        'border-beige-400 isolate mx-auto w-[1200px] max-w-full rounded-3xl bg-white',
+        'sm:max-w-[calc(100%-4rem)] sm:border md:p-6',
         className,
       )}
     >

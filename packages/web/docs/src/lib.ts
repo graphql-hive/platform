@@ -29,10 +29,6 @@ export function isPageWithFaq(path: string) {
 
 export function AttachPageFAQSchema() {
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
     const html = document.querySelector('html');
 
     if (!html) {

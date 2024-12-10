@@ -87,7 +87,7 @@ export function EcosystemIllustration(props: { className?: string }) {
         styles.container,
       )}
     >
-      <div className={'flex flex-row ' + styles.vars}>
+      <div className={cn('flex', styles.vars)}>
         <Edge top bottom left highlighted={highlightedEdge === 5}>
           <div
             style={{
@@ -328,9 +328,9 @@ function Node({
       onClick={() => onHighlight(edges)}
       className={cn(
         styles.node,
-        'relative z-10 flex h-[--node-h] items-center gap-2 rounded-2xl p-4 xl:gap-4 xl:p-[22px]' +
-          ' bg-[linear-gradient(135deg,rgb(255_255_255/0.10),rgb(255_255_255/0.20))]' +
-          ' cursor-pointer transition-colors duration-500 [&>svg]:flex-shrink-0',
+        'relative z-10 flex h-[--node-h] items-center gap-2 rounded-2xl p-4 xl:gap-4 xl:p-[22px]',
+        'bg-[linear-gradient(135deg,rgb(255_255_255/0.10),rgb(255_255_255/0.20))]',
+        'cursor-pointer transition-colors duration-500 [&>svg]:shrink-0',
         // todo: linear gradients don't transition, so we should add white/10 background layer'
         highlighted &&
           'bg-[linear-gradient(135deg,rgb(255_255_255/.2),rgb(255_255_255/.3))] ring ring-green-300',

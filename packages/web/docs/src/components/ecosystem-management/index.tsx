@@ -15,8 +15,8 @@ export function EcosystemManagementSection({ className }: { className?: string }
   return (
     <section
       className={cn(
-        'bg-green-1000 relative isolate overflow-hidden rounded-3xl text-white' +
-          ' p-8 pb-[160px] sm:pb-[112px] md:p-[72px] md:pb-[112px] lg:pb-[72px]',
+        'bg-green-1000 relative isolate overflow-hidden rounded-3xl text-white',
+        'p-8 pb-[160px] sm:pb-[112px] md:p-[72px] md:pb-[112px] lg:pb-[72px]',
         className,
       )}
     >

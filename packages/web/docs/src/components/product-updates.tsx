@@ -42,81 +42,28 @@ function ProductUpdateTeaser(props: Changelog): ReactElement {
   );
 }
 
-// TODO: I'm not sure this is gonna work. We previously imported Nextra internal here.
 export async function getChangelogs(): Promise<Changelog[]> {
-  const [_meta, ...pageMap] = await getPageMap();
+  const [_meta, _indexPage, ...pageMap] = await getPageMap('/product-updates');
 
-  type PageMapItem = (typeof pageMap)[number];
-  type Folder = PageMapItem & { children: PageMapItem[] };
-
-  const productUpdatesFolder = pageMap.find(
-    (item): item is Folder =>
-      'route' in item && item.route === '/product-updates' && 'children' in item,
-  )!.children!;
-
-  const getDateISOStringFromFrontmatter = (
-    item: { name: string },
-    frontMatter: { date?: Date | string; timestamp?: number },
-  ) => {
-    try {
-      return new Date(
-        frontMatter.date || frontMatter.timestamp || item.name.slice(0, 10),
-      ).toISOString();
-    } catch (error) {
-      console.error(`Error parsing date \`${frontMatter.date}\` for ${item.name}: ${error}`);
-      throw error;
-    }
-  };
-
-  return productUpdatesFolder
-    .slice(1) // cut `_meta.ts` which always comes first
+  return pageMap
     .map(item => {
-      if (!('children' in item) && 'route' in item) {
-        const frontMatter = (item as any).frontMatter as {
-          title: string;
-          date?: Date;
-          description: string;
-        };
-
-        if (!frontMatter.title) {
-          throw new Error(`Incorrect Front matter on page ${item.route}`);
-        }
-
-        // Regular mdx page
-        return {
-          title: frontMatter.title,
-          date: getDateISOStringFromFrontmatter(item, frontMatter),
-          description: frontMatter.description,
-          route: item.route!,
-        };
+      if ('data' in item || 'children' in item) {
+        throw new Error('Incorrect page map');
       }
+      const { route, frontMatter = {} } = item;
+      let date: string;
 
-      // Folder
-      const indexPage =
-        'children' in item
-          ? (item as Folder).children.find(item => 'name' in item && item.name === 'index')
-          : null;
-
-      if (!indexPage) {
-        throw new Error('Changelog folder must have an "index.mdx" page');
+      try {
+        date = new Date(frontMatter.date || item.name.slice(0, 10)).toISOString();
+      } catch (error) {
+        console.error(`Error parsing date \`${frontMatter.date}\` for ${item.name}: ${error}`);
+        throw error;
       }
-
-      const route = (indexPage as typeof indexPage & { route: string }).route;
-      const frontMatter = (indexPage as any).frontMatter as {
-        title: string;
-        date: Date;
-        description: string;
-      };
-
-      if (!frontMatter.title) {
-        throw new Error(`Incorrect Front matter on page ${route}`);
-      }
-
       return {
         title: frontMatter.title,
-        date: frontMatter.date!.toISOString(),
+        date,
         description: frontMatter.description,
-        route: route!,
+        route,
       };
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
