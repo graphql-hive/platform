@@ -11,6 +11,9 @@ export default withGuildDocs({
       treeShaking: true,
     },
   },
+  nextraConfig: {
+    contentDirBasePath: '/docs'
+  },
   redirects: async () => [
     {
       source: '/docs/get-started/organizations',
