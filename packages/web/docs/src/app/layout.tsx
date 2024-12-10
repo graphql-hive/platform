@@ -11,15 +11,12 @@ import { getDefaultMetadata, getPageMap } from '@theguild/components/server';
 import { Footer } from '../components/footer';
 import { NavigationMenu } from '../components/navigation-menu';
 
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return <HiveLayout>{children}</HiveLayout>;
-}
-
 export const metadata = getDefaultMetadata({
   productName: PRODUCTS.HIVE.name,
   websiteName: 'Hive',
   description:
     'Fully Open-source schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs',
+  metadataBase: new URL('https://the-guild.dev/graphql/hive')
 });
 // @ts-expect-error -- we use filebased og image
 delete metadata.openGraph.images;
@@ -107,3 +104,5 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
     </html>
   );
 };
+
+export default HiveLayout

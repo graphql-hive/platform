@@ -147,7 +147,7 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
                     'justify-center p-0.5 lg:p-4',
                     'rdx-state-active:text-green-1000 lg:rdx-state-active:border-beige-600',
                     'border-transparent font-medium leading-6 text-green-800 lg:border',
-                    'flex flex-1 items-center justify-center rounded-[15px]',
+                    'flex flex-1 items-center rounded-[15px]',
                   )}
                 >
                   <div className="size-2 rounded-full bg-blue-200 transition-colors lg:hidden" />

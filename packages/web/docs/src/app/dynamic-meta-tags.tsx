@@ -1,7 +1,7 @@
 'use client';
 
-import { useConfig } from '@theguild/components';
 import { usePathname } from 'next/navigation';
+import { useConfig } from '@theguild/components';
 
 function ensureAbsolute(url: string) {
   if (url.startsWith('/')) {
@@ -45,8 +45,8 @@ function createBreadcrumb(normalizedResult: NormalizedResult) {
 
 export function DynamicMetaTags() {
   const { normalizePagesResult } = useConfig();
-  const metadata = normalizePagesResult.activeMetadata!
-  const pathname = usePathname()
+  const metadata = normalizePagesResult.activeMetadata!;
+  const pathname = usePathname();
 
   const canonicalUrl = ensureAbsolute(metadata.canonical ?? pathname);
 

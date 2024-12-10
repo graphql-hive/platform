@@ -10,7 +10,7 @@ export async function generateMetadata(props: PageProps<'...mdxPath'>) {
   const { metadata } = await importPage(mdxPath);
   return {
     ...metadata,
-    ...(mdxPath[0] === 'gateway' && {
+    ...(mdxPath?.[0] === 'gateway' && {
       title: { absolute: `${metadata.title} | Hive Gateway` },
     }),
   };
