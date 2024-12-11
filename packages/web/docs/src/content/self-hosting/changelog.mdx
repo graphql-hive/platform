@@ -16,4 +16,4 @@ improvements please refer to [our product updates](/product-updates).
 
 export const source = await fs.readFile(path.resolve('../../../deployment/CHANGELOG.md'), 'utf8')
 
-<MDXRemote compiledSource={await compileMdx(source.replace('# hive', ''))} />
+<MDXRemote compiledSource={await compileMdx(source.replace(/#\s+.*\n/, ''))} />
