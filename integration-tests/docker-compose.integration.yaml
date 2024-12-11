@@ -193,7 +193,7 @@ services:
       GRAPHQL_PUBLIC_ORIGIN: http://localhost:8082
 
   broker:
-    image: vectorized/redpanda:latest
+    image: redpandadata/redpanda:latest
     hostname: broker
     networks:
       - 'stack'
