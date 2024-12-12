@@ -1,11 +1,23 @@
 import { writeFileSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { buildSchema, GraphQLError, introspectionFromSchema } from 'graphql';
+import { z } from 'zod';
 import { Args, Flags } from '@oclif/core';
 import Command from '../base-command';
 import { loadSchema } from '../helpers/schema';
 
 export default class Introspect extends Command<typeof Introspect> {
+  successDataSchema = z.union([
+    z.object({
+      type: z.literal('file'),
+      path: z.string(),
+    }),
+    z.object({
+      type: z.literal('stdout'),
+      schema: z.string(),
+    }),
+  ]);
+
   static description = 'introspects a GraphQL Schema';
   static flags = {
     write: Flags.string({
@@ -63,7 +75,10 @@ export default class Introspect extends Command<typeof Introspect> {
 
     if (!flags.write) {
       this.log(schema);
-      return;
+      return this.successData({
+        type: 'stdout',
+        schema,
+      });
     }
 
     if (flags.write) {
@@ -94,6 +109,10 @@ export default class Introspect extends Command<typeof Introspect> {
       }
 
       this.success(`Saved to ${filepath}`);
+      return this.successData({
+        type: 'file',
+        path: filepath,
+      });
     }
   }
 }

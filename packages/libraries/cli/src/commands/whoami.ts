@@ -1,4 +1,5 @@
 import colors from 'colors';
+import { z } from 'zod';
 import { Flags } from '@oclif/core';
 import Command from '../base-command';
 import { graphql } from '../gql';
@@ -33,6 +34,18 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 `);
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
+  successDataSchema = z.object({
+    tokenName: z.string(),
+    organization: z.string(),
+    project: z.string(),
+    target: z.string(),
+    authorization: z.object({
+      schema: z.object({
+        publish: z.boolean(),
+        check: z.boolean(),
+      }),
+    }),
+  });
   static description = 'shows information about the current token';
   static flags = {
     'registry.endpoint': Flags.string({
@@ -109,6 +122,19 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       });
 
       this.log(print());
+
+      return this.successData({
+        tokenName: tokenInfo.token.name,
+        organization: organization.slug,
+        project: project.slug,
+        target: target.slug,
+        authorization: {
+          schema: {
+            publish: tokenInfo.canPublishSchema,
+            check: tokenInfo.canCheckSchema,
+          },
+        },
+      });
     } else if (result.tokenInfo.__typename === 'TokenNotFoundError') {
       this.error(`Token not found. Reason: ${result.tokenInfo.message}`, {
         exit: 0,

@@ -1,19 +1,35 @@
 import colors from 'colors';
 import { print, type GraphQLError } from 'graphql';
 import type { ExecutionResult } from 'graphql';
+import { z } from 'zod';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
+import { PrettyPrintableError } from '@oclif/core/lib/interfaces';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
   (typeof BaseCommand)['baseFlags'] & T['flags']
 >;
+
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
 
-export default abstract class BaseCommand<T extends typeof Command> extends Command {
+export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
+  public static enableJsonFlag = true;
+
+  /**
+   * Set the data type for the `successData` method.
+   */
+  public successDataSchema:
+    | z.SomeZodObject
+    | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject]>
+    | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject, z.SomeZodObject]>
+    | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject, z.SomeZodObject, z.SomeZodObject]> = z.object(
+    {},
+  );
+
   protected _userConfig: Config | undefined;
 
   static baseFlags = {
@@ -23,8 +39,9 @@ export default abstract class BaseCommand<T extends typeof Command> extends Comm
     }),
   };
 
-  protected flags!: Flags<T>;
-  protected args!: Args<T>;
+  protected flags!: Flags<$Command>;
+
+  protected args!: Args<$Command>;
 
   protected get userConfig(): Config {
     if (!this._userConfig) {
@@ -33,7 +50,7 @@ export default abstract class BaseCommand<T extends typeof Command> extends Comm
     return this._userConfig!;
   }
 
-  public async init(): Promise<void> {
+  async init(): Promise<void> {
     await super.init();
 
     this._userConfig = new Config({
@@ -48,8 +65,20 @@ export default abstract class BaseCommand<T extends typeof Command> extends Comm
       args: this.ctor.args,
       strict: this.ctor.strict,
     });
-    this.flags = flags as Flags<T>;
-    this.args = args as Args<T>;
+    this.flags = flags as Flags<$Command>;
+    this.args = args as Args<$Command>;
+  }
+
+  /**
+   * Identity function that accepts the type of this command's `successDataSchema`.
+   *
+   * Use this to conveniently enforce (statically) that the data you return satisfies the schema.
+   */
+  successData(data: z.infer<this['successDataSchema']>) {
+    // TODO apply the zod schema for runtime validation. This would guarantee that
+    // only valid data is ever returned. If the validation fails, we should throw an oclif cli error or whatever
+    // and maybe also attempt to send some telemetry data about the error so that our team can fix the issue.
+    return data;
   }
 
   success(...args: any[]) {
