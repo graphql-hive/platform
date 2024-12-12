@@ -110,7 +110,7 @@ export const gatewayConfig = defineConfig({
           kind: 'ws',
           // override the path if it is different than normal http
           location: '/subscriptions'
-        } satisfies WSTransportOptions
+        }
       }
     }
   }
@@ -175,7 +175,7 @@ For example, let be 4 subgraphs:
 - stores: using `mysql` transport
 
 ```ts filename="gateway.config.ts"
-import { defineConfig, type HTTPCallbackTransportOptions } from '@graphql-hive/gateway'
+import { defineConfig, type WSTransportOptions } from '@graphql-hive/gateway'
 
 export const gatewayConfig = defineConfig({
   transportEntries: {
@@ -188,7 +188,7 @@ export const gatewayConfig = defineConfig({
             connectionParams: {
               token: '{context.headers.authorization}'
             }
-          }
+          } satisfies WSTransportOptions
         }
       }
     },
