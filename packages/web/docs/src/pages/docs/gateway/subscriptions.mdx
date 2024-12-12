@@ -338,6 +338,18 @@ export const gatewayConfig = defineConfig({
 
 </Tabs>
 
+## Configure Client subscriptions
+
+Client subscriptions are enabled by default and compatible with both
+[GraphQL over SSE](https://github.com/graphql/graphql-over-http/blob/main/rfcs/GraphQLOverSSE.md)
+and [GraphQL over WebSocket with `graphql-ws`](https://github.com/enisdenjo/graphql-ws).
+
+The default endpoint for subscriptions is `/graphql` and follow the `graphqlEndpoint` option, as for
+queries and mutations.
+
+You can disable WebSockets server by using `disableWebsockets` option in the config file or by
+providing `--disable-websockets` option to the `hive-gateway` CLI.
+
 ## Closing active subscriptions on schema change
 
 When the schema changes in Hive Gateway, all active subscriptions will be completed after emitting
