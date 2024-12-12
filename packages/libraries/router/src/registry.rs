@@ -27,7 +27,9 @@ pub struct HiveRegistryConfig {
 static COMMIT: Option<&'static str> = option_env!("GITHUB_SHA");
 
 impl HiveRegistry {
-    pub fn setup(user_config: Option<HiveRegistryConfig>) -> Result<()> {
+    // TODO: Rename this on next major release
+    #[allow(clippy::new_ret_no_self)]
+    pub fn new(user_config: Option<HiveRegistryConfig>) -> Result<()> {
         let mut config = HiveRegistryConfig {
             endpoint: None,
             key: None,
