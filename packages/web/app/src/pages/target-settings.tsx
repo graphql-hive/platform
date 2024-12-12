@@ -40,7 +40,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Combobox } from '@/components/v2/combobox';
 import { Table, TBody, Td, Tr } from '@/components/v2/table';
 import { Tag } from '@/components/v2/tag';
-import { DEFAULT_RETENTION_DAYS, MINIMUM_DAYS } from '@/constants';
+import { ENTERPRISE_RETENTION_DAYS } from '@/constants';
 import { env } from '@/env/frontend';
 import { FragmentType, graphql, useFragment } from '@/gql';
 import { ProjectType } from '@/gql/graphql';
@@ -49,6 +49,7 @@ import { canAccessTarget, TargetAccessScope } from '@/lib/access/target';
 import { subDays } from '@/lib/date-time';
 import { useToggle } from '@/lib/hooks';
 import { cn } from '@/lib/utils';
+import { resolveRetentionInDaysBasedOrganizationPlan } from '@/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from '@tanstack/react-router';
 
@@ -414,6 +415,7 @@ const TargetSettingsPage_TargetSettingsQuery = graphql(`
     organization(selector: $organizationSelector) {
       organization {
         id
+        plan
         rateLimit {
           retentionInDays
         }
@@ -467,7 +469,8 @@ const conditionalBreakingChangesFormSchema = z.object({
     value => Number(value),
     z
       .number({ required_error: 'Period is required' })
-      .min(0, 'Period must be at least 0 days')
+      .min(1, 'Period must be at least 1 days')
+      .max(ENTERPRISE_RETENTION_DAYS, `Period must be at most ${ENTERPRISE_RETENTION_DAYS} days`)
       .transform(value => Math.round(value)),
   ),
   percentage: z.preprocess(
@@ -491,7 +494,7 @@ const ConditionalBreakingChanges = (props: {
 }) => {
   const { toast } = useToast();
   const [targetValidation, setValidation] = useMutation(SetTargetValidationMutation);
-  const [mutation, updateValidation] = useMutation(
+  const [_, updateValidation] = useMutation(
     TargetSettingsPage_UpdateTargetValidationSettingsMutation,
   );
   const [targetSettings] = useQuery({
@@ -516,14 +519,15 @@ const ConditionalBreakingChanges = (props: {
     TargetSettings_TargetValidationSettingsFragment,
     targetSettings.data?.target?.validationSettings,
   );
+
+  const retentionInDaysBasedOrganizationPlan =
+    targetSettings.data?.organization?.organization?.rateLimit.retentionInDays;
+  const defaultDays = resolveRetentionInDaysBasedOrganizationPlan(
+    retentionInDaysBasedOrganizationPlan,
+  );
+
   const isEnabled = settings?.enabled || false;
   const possibleTargets = targetSettings.data?.targets.nodes;
-
-  const retentionInDays =
-    targetSettings.data?.organization?.organization?.rateLimit.retentionInDays ??
-    DEFAULT_RETENTION_DAYS;
-  const defaultDays =
-    retentionInDays >= DEFAULT_RETENTION_DAYS ? DEFAULT_RETENTION_DAYS : MINIMUM_DAYS;
 
   const conditionalBreakingChangesForm = useForm({
     mode: 'all',
@@ -536,67 +540,59 @@ const ConditionalBreakingChanges = (props: {
     },
   });
 
+  // Set form values when settings are fetched
   useEffect(() => {
-    conditionalBreakingChangesForm.reset({
-      period: settings?.period ?? defaultDays,
-      percentage: settings?.percentage ?? 0,
-      targetIds: settings?.targets.map(t => t.id) || [],
-      excludedClients: settings?.excludedClients ?? [],
-    });
+    conditionalBreakingChangesForm.setValue('period', settings?.period ?? defaultDays);
+    conditionalBreakingChangesForm.setValue('percentage', settings?.percentage ?? 0);
+    conditionalBreakingChangesForm.setValue('targetIds', settings?.targets.map(t => t.id) || []);
+    conditionalBreakingChangesForm.setValue('excludedClients', settings?.excludedClients ?? []);
   }, [settings]);
+
+  const orgPlan = targetSettings.data?.organization?.organization?.plan;
 
   async function onConditionalBreakingChangesFormSubmit(
     data: ConditionalBreakingChangesFormValues,
   ) {
-    await updateValidation({
-      input: {
-        organizationSlug: props.organizationSlug,
-        projectSlug: props.projectSlug,
-        targetSlug: props.targetSlug,
-        percentage: data.percentage,
-        period: data.period,
-        targetIds: data.targetIds,
-        excludedClients: data.excludedClients,
-      },
-    });
-    if (mutation.data?.updateTargetValidationSettings.error?.inputErrors.period) {
+    // This is a workaround for the issue with zod's transform function
+    if (data.period > defaultDays) {
+      conditionalBreakingChangesForm.setError('period', {
+        message: `Retention period must be less than or equal to ${defaultDays} days based on ${orgPlan} plan`,
+        type: 'maxLength',
+      });
+      return;
+    }
+    try {
+      const result = await updateValidation({
+        input: {
+          organizationSlug: props.organizationSlug,
+          projectSlug: props.projectSlug,
+          targetSlug: props.targetSlug,
+          percentage: data.percentage,
+          period: data.period,
+          targetIds: data.targetIds,
+          excludedClients: data.excludedClients,
+        },
+      });
+      if (result.data?.updateTargetValidationSettings.error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: result.data.updateTargetValidationSettings.error.message,
+        });
+      } else {
+        toast({
+          variant: 'default',
+          title: 'Success',
+          description: 'Conditional breaking changes updated successfully',
+        });
+      }
+    } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: mutation.data?.updateTargetValidationSettings.error?.inputErrors.period,
-      });
-    } else {
-      toast({
-        variant: 'default',
-        title: 'Success',
-        description: 'Conditional breaking changes settings updated successfully',
+        description: 'Failed to update conditional breaking changes',
       });
     }
-    // }).then(result => {
-    //   if (mutation.data?.updateTargetValidationSettings.error?.inputErrors.period) {
-    //     toast({
-    //       variant: 'destructive',
-    //       title: 'Error',
-    //       description:
-    //         mutation.data.updateTargetValidationSettings.error.inputErrors.period[0] ||
-    //         'Invalid period',
-    //     });
-    //   }
-    //   if (result.error || result.data?.updateTargetValidationSettings.error) {
-    //     toast({
-    //       variant: 'destructive',
-    //       title: 'Error',
-    //       description:
-    //         result.error?.message || result.data?.updateTargetValidationSettings.error?.message,
-    //     });
-    //   } else {
-    //     toast({
-    //       variant: 'default',
-    //       title: 'Success',
-    //       description: 'Conditional breaking changes settings updated successfully',
-    //     });
-    //   }
-    // });
   }
 
   return (
@@ -652,7 +648,7 @@ const ConditionalBreakingChanges = (props: {
               <FormField
                 control={conditionalBreakingChangesForm.control}
                 name="percentage"
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
@@ -898,7 +894,6 @@ function TargetSlug(props: { organizationSlug: string; projectSlug: string; targ
           slugForm.setError('slug', error);
         }
       } catch (error) {
-        console.error('error', error);
         toast({
           variant: 'destructive',
           title: 'Error',
