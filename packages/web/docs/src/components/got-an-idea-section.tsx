@@ -111,7 +111,7 @@ export function GotAnIdeaSection() {
         Join our community to chat with us and let's build something together!
       </p>
       <CallToAction
-        href="https://discord.gg/graphql-hive"
+        href="https://discord.com/invite/xud7bH9"
         variant="primary-inverted"
         className="mt-8"
       >
