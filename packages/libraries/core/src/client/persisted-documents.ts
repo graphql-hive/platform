@@ -12,7 +12,7 @@ export function createPersistedDocuments(
     logger: Logger;
   },
 ): null | {
-  resolve(documentId: string): Promise<string | null> | string;
+  resolve(documentId: string): PromiseOrValue<string | null>;
   allowArbitraryDocuments(context: { headers?: HeadersObject }): PromiseOrValue<boolean>;
 } {
   const persistedDocumentsCache = LRU<string>(config.cache ?? 10_000);
