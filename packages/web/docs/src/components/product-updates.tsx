@@ -53,9 +53,7 @@ export async function getChangelogs(): Promise<Changelog[]> {
       }
       // Folder
       const indexPage =
-        'children' in item && item.children
-          ? item.children.find(item => item.name === 'index')
-          : null;
+        'children' in item && item.children && item.children.find(item => item.name === 'index');
 
       if (!indexPage) {
         throw new Error('Changelog folder must have an "index.mdx" page');
