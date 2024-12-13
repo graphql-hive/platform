@@ -182,25 +182,25 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
       hive = isHiveClient(clientOrOptions)
         ? clientOrOptions
         : createHive({
-            ...clientOrOptions,
-            agent: clientOrOptions.agent
-              ? {
-                  logger: {
-                    // Hive Plugin should respect the given Yoga logger
-                    error: (...args) => yoga.logger.error(...args),
-                    info: (...args) => yoga.logger.info(...args),
-                  },
-                  ...clientOrOptions.agent,
-                  __testing: {
-                    // Hive Plugin should respect the given FetchAPI, note that this is not `yoga.fetch`
-                    fetch(...args) {
-                      return yoga.fetchAPI.fetch(...args);
-                    },
-                    ...clientOrOptions.agent.__testing,
-                  },
-                }
-              : undefined,
-          });
+          ...clientOrOptions,
+          agent: clientOrOptions.agent
+            ? {
+              logger: {
+                // Hive Plugin should respect the given Yoga logger
+                error: (...args) => yoga.logger.error(...args),
+                info: (...args) => yoga.logger.info(...args),
+              },
+              ...clientOrOptions.agent,
+              __testing: {
+                // Hive Plugin should respect the given FetchAPI, note that this is not `yoga.fetch`
+                fetch(...args) {
+                  return yoga.fetchAPI.fetch(...args);
+                },
+                ...clientOrOptions.agent.__testing,
+              },
+            }
+            : undefined,
+        });
       void hive.info();
       const { experimental__persistedDocuments } = hive;
       if (!experimental__persistedDocuments) {
@@ -221,21 +221,20 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
 
             return null;
           },
-          getPersistedOperation(key, _request, context) {
-            return mapMaybePromise(experimental__persistedDocuments.resolve(key), document => {
-              // after we resolve the document we need to update the cache record to contain the resolved document
-              if (document) {
-                const record = contextualCache.get(context);
-                if (record) {
-                  record.experimental__documentId = key;
-                  record.paramsArgs = {
-                    ...record.paramsArgs,
-                    query: document,
-                  };
-                }
+          async getPersistedOperation(key, _request, context) {
+            const document = await experimental__persistedDocuments.resolve(key);
+            // after we resolve the document we need to update the cache record to contain the resolved document
+            if (document) {
+              const record = contextualCache.get(context);
+              if (record) {
+                record.experimental__documentId = key;
+                record.paramsArgs = {
+                  ...record.paramsArgs,
+                  query: document,
+                };
               }
-              return document;
-            }) as Promise<string | null>;
+            }
+            return document;
           },
           allowArbitraryOperations(request) {
             return experimental__persistedDocuments.allowArbitraryDocuments(request);
