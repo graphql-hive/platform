@@ -126,11 +126,3 @@ export function GotAnIdeaSection() {
     </div>
   );
 }
-
-declare global {
-  interface Window {
-    $crisp?: {
-      push: (args: any[]) => void;
-    };
-  }
-}
