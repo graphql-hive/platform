@@ -1,5 +1,12 @@
 import { DocumentNode, ExecutionArgs, GraphQLError, GraphQLSchema, Kind, parse } from 'graphql';
-import { createLRUCache, type GraphQLParams, type Plugin, mapMaybePromise, DisposableSymbols, YogaServer } from 'graphql-yoga';
+import {
+  createLRUCache,
+  DisposableSymbols,
+  mapMaybePromise,
+  YogaServer,
+  type GraphQLParams,
+  type Plugin,
+} from 'graphql-yoga';
 import {
   autoDisposeSymbol,
   CollectUsageCallback,
@@ -41,7 +48,6 @@ export function createHive(clientOrOptions: HivePluginOptions) {
 export function useHive(clientOrOptions: HiveClient): Plugin;
 export function useHive(clientOrOptions: HivePluginOptions): Plugin;
 export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin {
-
   const parsedDocumentCache = createLRUCache<DocumentNode>();
   let latestSchema: GraphQLSchema | null = null;
   const contextualCache = new WeakMap<object, CacheRecord>();
@@ -96,7 +102,7 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
                 },
                 result,
                 record.experimental__documentId,
-              )
+              ),
             );
             return;
           }
@@ -116,7 +122,7 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
                   args,
                   errors.length ? { errors } : {},
                   record.experimental__documentId,
-                )
+                ),
               );
             },
           };
@@ -136,18 +142,10 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
         },
       };
     },
-    onResultProcess({
-      serverContext,
-      result,
-    }) {
+    onResultProcess({ serverContext, result }) {
       const record = contextualCache.get(serverContext);
 
-      if (
-        !record ||
-        Array.isArray(result) ||
-        isAsyncIterable(result) ||
-        record.executionArgs
-      ) {
+      if (!record || Array.isArray(result) || isAsyncIterable(result) || record.executionArgs) {
         return;
       }
 
@@ -173,7 +171,7 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
               },
               result,
               record.experimental__documentId,
-            )
+            ),
           );
         } catch (err) {
           yoga.logger.error(err);
@@ -181,22 +179,26 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
       }
     },
     onPluginInit({ addPlugin }) {
-      hive = isHiveClient(clientOrOptions) ? clientOrOptions : createHive({
-        ...clientOrOptions,
-        agent: clientOrOptions.agent ? {
-          logger: {
-            // Hive Plugin should respect the given Yoga logger
-            error: (...args) => yoga.logger.error(...args),
-            info: (...args) => yoga.logger.info(...args),
-          },
-          ...clientOrOptions.agent,
-          __testing: {
-            fetch: yoga.fetchAPI.fetch,
-            ...clientOrOptions.agent.__testing,
-            // Hive Plugin should respect the given FetchAPI, note that this is not `yoga.fetch`
-          },
-        } : undefined,
-      });
+      hive = isHiveClient(clientOrOptions)
+        ? clientOrOptions
+        : createHive({
+            ...clientOrOptions,
+            agent: clientOrOptions.agent
+              ? {
+                  logger: {
+                    // Hive Plugin should respect the given Yoga logger
+                    error: (...args) => yoga.logger.error(...args),
+                    info: (...args) => yoga.logger.info(...args),
+                  },
+                  ...clientOrOptions.agent,
+                  __testing: {
+                    fetch: yoga.fetchAPI.fetch,
+                    ...clientOrOptions.agent.__testing,
+                    // Hive Plugin should respect the given FetchAPI, note that this is not `yoga.fetch`
+                  },
+                }
+              : undefined,
+          });
       void hive.info();
       const { experimental__persistedDocuments } = hive;
       if (!experimental__persistedDocuments) {
@@ -260,6 +262,6 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
       if (hive[autoDisposeSymbol]) {
         return hive.dispose();
       }
-    }
+    },
   };
 }
