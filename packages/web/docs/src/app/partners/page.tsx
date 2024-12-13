@@ -16,9 +16,6 @@ export const metadata = {
   title: 'Partnerships',
   description:
     'Accelerate GraphQL Federation adoption with the Hive Partner Network. Access enterprise-grade tools and expertise to build scalable, unified APIs across distributed systems. Join our network of federation experts.',
-  openGraph: {
-    images: ['/hive-partners-og.png'],
-  },
 };
 
 function WhyUs({ className }: { className?: string }) {

@@ -3,24 +3,23 @@ import { ReactNode } from 'react';
 import localFont from 'next/font/local';
 import { Layout } from 'nextra-theme-docs';
 import { Head } from 'nextra/components';
-import '@theguild/components/style.css';
-import '../components/navigation-menu/navbar-global-styles.css';
-import '../selection-styles.css';
 import { PRODUCTS } from '@theguild/components';
 import { getDefaultMetadata, getPageMap } from '@theguild/components/server';
 import { Footer } from '../components/footer';
 import { NavigationMenu } from '../components/navigation-menu';
-
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return <HiveLayout>{children}</HiveLayout>;
-}
+import '@theguild/components/style.css';
+import '../components/navigation-menu/navbar-global-styles.css';
+import '../selection-styles.css';
 
 export const metadata = getDefaultMetadata({
   productName: PRODUCTS.HIVE.name,
   websiteName: 'Hive',
   description:
     'Fully Open-source schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs',
+  metadataBase: new URL('https://the-guild.dev/graphql/hive'),
 });
+// @ts-expect-error -- we use filebased og image
+delete metadata.openGraph.images;
 
 const neueMontreal = localFont({
   src: [
@@ -105,3 +104,5 @@ const HiveLayout = async ({ children }: { children: ReactNode }) => {
     </html>
   );
 };
+
+export default HiveLayout;

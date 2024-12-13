@@ -1,10 +1,7 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { useConfig } from '@theguild/components';
-
-const siteDescription =
-  'Fully Open-source schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs';
-const siteName = 'Hive';
 
 function ensureAbsolute(url: string) {
   if (url.startsWith('/')) {
@@ -48,36 +45,17 @@ function createBreadcrumb(normalizedResult: NormalizedResult) {
 
 export function DynamicMetaTags() {
   const { normalizePagesResult } = useConfig();
+  const metadata = normalizePagesResult.activeMetadata!;
+  const pathname = usePathname();
 
-  // Get the current page path
-  // Because it shows the full path, from top to bottom,
-  // we need to get the last one to get the current page.
-  const pagePath = normalizePagesResult.activePath[normalizePagesResult.activePath.length - 1];
-
-  const isGatewayDocsPage = pagePath.route.includes('/docs/gateway');
-  const suffix = isGatewayDocsPage ? 'Hive Gateway' : 'Hive';
-  const title = `${pagePath.title} - ${suffix}`;
-
-  const {
-    description = `${siteName}: ${siteDescription}`,
-    canonical,
-    ogImage,
-  } = pagePath.frontMatter;
-
-  const canonicalUrl = ensureAbsolute(canonical ?? pagePath.route);
+  const canonicalUrl = ensureAbsolute(metadata.canonical ?? pathname);
 
   return (
     <>
       <link rel="canonical" href={canonicalUrl} />
       <meta content="en" httpEquiv="Content-Language" />
-      <meta name="description" content={description} />
-      <meta property="og:title" content={title} />
       <meta property="og:locale" content="en_US" />
       <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:image" content={ensureAbsolute(ogImage ?? '/og-image.png')} />
-      <meta property="og:image:alt" content={description} />
-      <meta property="og:image:width" content="1340" />
-      <meta property="og:image:height" content="700" />
       <script
         type="application/ld+json"
         id="breadcrumb"
