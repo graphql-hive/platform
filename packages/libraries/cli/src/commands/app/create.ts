@@ -1,3 +1,4 @@
+import { OutputSchema } from 'src/helpers/outputSchema';
 import { z } from 'zod';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
@@ -6,6 +7,22 @@ import { AppDeploymentStatus } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppCreate extends Command<typeof AppCreate> {
+  static successDataSchema = z.union([
+    OutputSchema.Effect.Skipped.extend({
+      data: z.object({
+        // TODO improve type to match GQL Schema enum
+        status: OutputSchema.NonEmptyString,
+      }),
+    }),
+    OutputSchema.Effect.Executed.extend({
+      data: z.object({
+        id: OutputSchema.NonEmptyString,
+        name: OutputSchema.NonEmptyString,
+        version: OutputSchema.NonEmptyString,
+      }),
+    }),
+  ]);
+
   static description = 'create an app deployment';
   static flags = {
     'registry.endpoint': Flags.string({
@@ -79,10 +96,15 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }
 
     if (result.createAppDeployment.ok.createdAppDeployment.status !== AppDeploymentStatus.Pending) {
-      this.log(
-        `App deployment "${flags['name']}@${flags['version']}" is "${result.createAppDeployment.ok.createdAppDeployment.status}". Skip uploading documents...`,
-      );
-      return;
+      const message = `App deployment "${flags['name']}@${flags['version']}" is "${result.createAppDeployment.ok.createdAppDeployment.status}". Skip uploading documents...`;
+      this.log(message);
+      return this.successData({
+        message,
+        effect: 'skipped',
+        data: {
+          status: result.createAppDeployment.ok.createdAppDeployment.status,
+        },
+      });
     }
 
     let buffer: Array<{ hash: string; body: string }> = [];
@@ -137,9 +159,17 @@ export default class AppCreate extends Command<typeof AppCreate> {
 
     await flush(true);
 
-    this.log(
-      `\nApp deployment "${flags['name']}@${flags['version']}" (${counter} operations) created.\nActive it with the "hive app:publish" command.`,
-    );
+    const message = `App deployment "${flags['name']}@${flags['version']}" (${counter} operations) created.\nActivate it with the "hive app:publish" command.`;
+    this.log(message);
+    return this.successData({
+      message,
+      effect: 'executed',
+      data: {
+        id: result.createAppDeployment.ok.createdAppDeployment.id,
+        name: flags['name'],
+        version: flags['version'],
+      },
+    });
   }
 }
 

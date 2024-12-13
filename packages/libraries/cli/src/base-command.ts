@@ -6,6 +6,7 @@ import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
+import { OutputSchema } from './helpers/outputSchema';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
@@ -15,7 +16,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * Used by the {@link BaseCommand.successData} method.
    */
-  public static successDataSchema: OptionalSuccessSchema = undefined;
+  public static successDataSchema: OutputSchema = OutputSchema.Envelope;
 
   /**
    * Whether to validate the data returned by the {@link BaseCommand.successData} method.
@@ -64,17 +65,21 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 
   /**
-   * Helper function that accepts the type of this command's {@link BaseCommand.successDataSchema}.
+   * Helper function for creating data that adheres to the type specified by your command's {@link BaseCommand.successDataSchema}.
    *
-   * If {@link BaseCommand.successDataValidateEnabled} is `true`, the data will be runtime-validated too.
-   * Otherwise this is just an identity function, convenient for static type checking.
+   * If {@link BaseCommand.successDataValidateEnabled} is `true`, then the given data will be runtime-validated too.
+   *
+   * For ease of use some standard properties are added for you automatically, simplifying the input you have to provide.
    */
-  successData<$Data extends InferConstraintSuccessData<$Command>>(data: $Data): $Data {
-    // this['successDataSchema']
+  successData(dataInput: InferSuccessDataInput<$Command>): InferSuccessDataOutput<$Command> {
+    const dataOutput = {
+      ...(dataInput as object),
+      ok: true,
+    } as InferSuccessDataOutput<$Command>;
     // TODO apply the zod schema for runtime validation. This would guarantee that
     // only valid data is ever returned. If the validation fails, we should throw an oclif cli error or whatever
     // and maybe also attempt to send some telemetry data about the error so that our team can fix the issue.
-    return data;
+    return dataOutput;
   }
 
   success(...args: any[]) {
@@ -337,20 +342,22 @@ export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
 
-type InferConstraintSuccessData<$CommandClass extends typeof Command> =
+type InferSuccessDataOutput<$CommandClass extends typeof Command> =
   'successDataSchema' extends keyof $CommandClass
-    ? $CommandClass['successDataSchema'] extends SuccessSchema
+    ? $CommandClass['successDataSchema'] extends OutputSchema
       ? z.infer<$CommandClass['successDataSchema']>
-      : 'Error: Missing `static successDataSchema = ...` on your command.'
-    : 'Error: Missing `static successDataSchema = ...` on your command.';
+      : never
+    : never;
 
-type OptionalSuccessSchema = undefined | SuccessSchema;
+type InferSuccessDataInput<$CommandClass extends typeof Command> =
+  'successDataSchema' extends keyof $CommandClass
+    ? $CommandClass['successDataSchema'] extends OutputSchema
+      ? Omit<z.infer<$CommandClass['successDataSchema']>, 'ok'>
+      : InferSuccessDataInputError
+    : InferSuccessDataInputError;
 
-type SuccessSchema =
-  | z.SomeZodObject
-  | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject]>
-  | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject, z.SomeZodObject]>
-  | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject, z.SomeZodObject, z.SomeZodObject]>;
+type InferSuccessDataInputError =
+  'Error: Missing `static successDataSchema = ...` on your command.';
 
 function isClientError(error: Error): error is ClientError {
   return error instanceof ClientError;

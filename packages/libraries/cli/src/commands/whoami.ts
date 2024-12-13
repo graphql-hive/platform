@@ -1,4 +1,5 @@
 import colors from 'colors';
+import { OutputSchema } from 'src/helpers/outputSchema';
 import { z } from 'zod';
 import { Flags } from '@oclif/core';
 import Command from '../base-command';
@@ -34,15 +35,17 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 `);
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
-  static successDataSchema = z.object({
-    tokenName: z.string(),
-    organization: z.string(),
-    project: z.string(),
-    target: z.string(),
-    authorization: z.object({
-      schema: z.object({
-        publish: z.boolean(),
-        check: z.boolean(),
+  static successDataSchema = OutputSchema.Envelope.extend({
+    data: z.object({
+      tokenName: z.string(),
+      organization: z.string(),
+      project: z.string(),
+      target: z.string(),
+      authorization: z.object({
+        schema: z.object({
+          publish: z.boolean(),
+          check: z.boolean(),
+        }),
       }),
     }),
   });
@@ -124,14 +127,16 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       this.log(print());
 
       return this.successData({
-        tokenName: tokenInfo.token.name,
-        organization: organization.slug,
-        project: project.slug,
-        target: target.slug,
-        authorization: {
-          schema: {
-            publish: tokenInfo.canPublishSchema,
-            check: tokenInfo.canCheckSchema,
+        data: {
+          tokenName: tokenInfo.token.name,
+          organization: organization.slug,
+          project: project.slug,
+          target: target.slug,
+          authorization: {
+            schema: {
+              publish: tokenInfo.canPublishSchema,
+              check: tokenInfo.canCheckSchema,
+            },
           },
         },
       });

@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import Command from '../../base-command';
 
 export default class ResetConfig extends Command<typeof ResetConfig> {
@@ -5,6 +6,10 @@ export default class ResetConfig extends Command<typeof ResetConfig> {
 
   async run() {
     this.userConfig.clear();
-    this.success('Config cleared.');
+    const message = 'Config cleared.';
+    this.success(message);
+    return this.successData({
+      message,
+    });
   }
 }

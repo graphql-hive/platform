@@ -1,8 +1,25 @@
+import { OutputSchema } from 'src/helpers/outputSchema';
+import { z } from 'zod';
 import { http, URL } from '@graphql-hive/core';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
+  static successDataSchema = z.union([
+    OutputSchema.Envelope.extend({
+      data: z.object({
+        outputMode: z.literal('file'),
+        path: z.string(),
+      }),
+    }),
+    OutputSchema.Envelope.extend({
+      data: z.object({
+        outputMode: z.literal('stdout'),
+        content: z.string(),
+      }),
+    }),
+  ]);
+
   static description = 'fetch artifacts from the CDN';
   static flags = {
     'cdn.endpoint': Flags.string({
@@ -69,10 +86,24 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       const fs = await import('fs/promises');
       const contents = Buffer.from(await response.arrayBuffer());
       await fs.writeFile(flags.outputFile, contents);
-      this.log(`Wrote ${contents.length} bytes to ${flags.outputFile}`);
-      return;
+      const message = `Wrote ${contents.length} bytes to ${flags.outputFile}`;
+      this.log(message);
+      return this.successData({
+        message,
+        data: {
+          outputMode: 'file',
+          path: flags.outputFile,
+        },
+      });
     }
 
-    this.log(await response.text());
+    const content = await response.text();
+    this.log(content);
+    return this.successData({
+      data: {
+        outputMode: 'stdout',
+        content,
+      },
+    });
   }
 }

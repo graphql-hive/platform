@@ -1,9 +1,24 @@
+import { OutputSchema } from 'src/helpers/outputSchema';
+import { z } from 'zod';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppPublish extends Command<typeof AppPublish> {
+  static successDataSchema = z.union([
+    OutputSchema.Effect.Skipped.extend({
+      data: z.object({
+        name: OutputSchema.NonEmptyString,
+      }),
+    }),
+    OutputSchema.Effect.Executed.extend({
+      data: z.object({
+        name: OutputSchema.NonEmptyString,
+      }),
+    }),
+  ]);
+
   static description = 'publish an app deployment';
   static flags = {
     'registry.endpoint': Flags.string({
@@ -55,10 +70,25 @@ export default class AppPublish extends Command<typeof AppPublish> {
       const name = `${result.activateAppDeployment.ok.activatedAppDeployment.name}@${result.activateAppDeployment.ok.activatedAppDeployment.version}`;
 
       if (result.activateAppDeployment.ok.isSkipped) {
-        this.warn(`App deployment "${name}" is already published. Skipping...`);
-        return;
+        const message = `App deployment "${name}" is already published. Skipping...`;
+        this.warn(message);
+        return this.successData({
+          message,
+          effect: 'skipped',
+          data: {
+            name,
+          },
+        });
       }
-      this.log(`App deployment "${name}" published successfully.`);
+      const message = `App deployment "${name}" published successfully.`;
+      this.log(message);
+      return this.successData({
+        message,
+        effect: 'executed',
+        data: {
+          name,
+        },
+      });
     }
   }
 }

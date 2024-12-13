@@ -1,9 +1,17 @@
+import { OutputSchema } from 'src/helpers/outputSchema';
+import { z } from 'zod';
 import { Args } from '@oclif/core';
 import Command from '../../base-command';
 import { allowedKeys, ValidConfigurationKeys } from '../../helpers/config';
 
 export default class SetConfig extends Command<typeof SetConfig> {
-  static description = 'updates specific cli configuration';
+  static successDataSchema = OutputSchema.Envelope.extend({
+    data: z.object({
+      key: OutputSchema.NonEmptyString,
+      value: OutputSchema.NonEmptyString,
+    }),
+  });
+  static description = 'updates a specific cli configuration key';
   static args = {
     key: Args.string({
       name: 'key',
@@ -21,6 +29,14 @@ export default class SetConfig extends Command<typeof SetConfig> {
   async run() {
     const { args } = await this.parse(SetConfig);
     this.userConfig.set(args.key as ValidConfigurationKeys, args.value);
-    this.success(this.bolderize(`Config flag "${args.key}" was set to "${args.value}"`));
+    const message = `Config key "${args.key}" was set to "${args.value}"`;
+    this.success(this.bolderize(message));
+    return this.successData({
+      message,
+      data: {
+        key: args.key,
+        value: args.value,
+      },
+    });
   }
 }
