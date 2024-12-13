@@ -1,5 +1,5 @@
 import { DocumentNode, ExecutionArgs, GraphQLError, GraphQLSchema, Kind, parse } from 'graphql';
-import { createLRUCache, type GraphQLParams, type Plugin, type YogaLogger, mapMaybePromise, DisposableSymbols } from 'graphql-yoga';
+import { createLRUCache, type GraphQLParams, type Plugin, mapMaybePromise, DisposableSymbols, YogaServer } from 'graphql-yoga';
 import {
   autoDisposeSymbol,
   CollectUsageCallback,
@@ -47,23 +47,10 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
   const contextualCache = new WeakMap<object, CacheRecord>();
 
   let hive: HiveClient;
-  let logger: YogaLogger;
+  let yoga: YogaServer<any, any>;
   return {
-    onYogaInit({ yoga }) {
-      logger = yoga.logger;
-      hive = isHiveClient(clientOrOptions) ? clientOrOptions : createHive({
-        ...clientOrOptions,
-        agent: clientOrOptions.agent ? {
-          logger: yoga.logger,
-          ...clientOrOptions.agent,
-          __testing: {
-            ...clientOrOptions.agent.__testing,
-            // Hive Plugin should respect the given FetchAPI, note that this is not `yoga.fetch`
-            fetch: yoga.fetchAPI.fetch,
-          },
-        } : undefined,
-      });
-      void hive.info();
+    onYogaInit(payload) {
+      yoga = payload.yoga;
     },
     onSchemaChange({ schema }) {
       hive.reportSchema({ schema });
@@ -189,11 +176,28 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
             )
           );
         } catch (err) {
-          logger.error(err);
+          yoga.logger.error(err);
         }
       }
     },
     onPluginInit({ addPlugin }) {
+      hive = isHiveClient(clientOrOptions) ? clientOrOptions : createHive({
+        ...clientOrOptions,
+        agent: clientOrOptions.agent ? {
+          logger: {
+            // Hive Plugin should respect the given Yoga logger
+            error: (...args) => yoga.logger.error(...args),
+            info: (...args) => yoga.logger.info(...args),
+          },
+          ...clientOrOptions.agent,
+          __testing: {
+            fetch: yoga.fetchAPI.fetch,
+            ...clientOrOptions.agent.__testing,
+            // Hive Plugin should respect the given FetchAPI, note that this is not `yoga.fetch`
+          },
+        } : undefined,
+      });
+      void hive.info();
       const { experimental__persistedDocuments } = hive;
       if (!experimental__persistedDocuments) {
         return;
@@ -230,9 +234,7 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
             }) as Promise<string | null>;
           },
           allowArbitraryOperations(request) {
-            return experimental__persistedDocuments.allowArbitraryDocuments({
-              headers: request.headers,
-            });
+            return experimental__persistedDocuments.allowArbitraryDocuments(request);
           },
           customErrors: {
             keyNotFound() {
