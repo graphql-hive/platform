@@ -45,6 +45,9 @@ export const components = {
   },
 };
 
+/**
+ * Take all sections headings and render them as navigation links
+ */
 const ecosystemPageNav = {
   ...Object.fromEntries(Object.keys(components).map(key => [key, () => null])),
   h2: EcosystemPageNavH2,
