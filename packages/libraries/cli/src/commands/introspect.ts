@@ -7,7 +7,7 @@ import Command from '../base-command';
 import { loadSchema } from '../helpers/schema';
 
 export default class Introspect extends Command<typeof Introspect> {
-  successDataSchema = z.union([
+  static successDataSchema = z.union([
     z.object({
       type: z.literal('file'),
       path: z.string(),

@@ -1,34 +1,29 @@
 import colors from 'colors';
 import { print, type GraphQLError } from 'graphql';
 import type { ExecutionResult } from 'graphql';
-import { z } from 'zod';
+import { z, ZodUnion } from 'zod';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { PrettyPrintableError } from '@oclif/core/lib/interfaces';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 
-export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
-  (typeof BaseCommand)['baseFlags'] & T['flags']
->;
-
-export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
-
-type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
-
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
 
   /**
-   * Set the data type for the `successData` method.
+   * The data type returned by this command when successfully executed.
+   *
+   * Used by the {@link BaseCommand.successData} method.
    */
-  public successDataSchema:
-    | z.SomeZodObject
-    | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject]>
-    | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject, z.SomeZodObject]>
-    | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject, z.SomeZodObject, z.SomeZodObject]> = z.object(
-    {},
-  );
+  public static successDataSchema: OptionalSuccessSchema = undefined;
+
+  /**
+   * Whether to validate the data returned by the {@link BaseCommand.successData} method.
+   *
+   * @defaultValue `true`
+   */
+  public successDataValidateEnabled: boolean = true;
 
   protected _userConfig: Config | undefined;
 
@@ -70,11 +65,13 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 
   /**
-   * Identity function that accepts the type of this command's `successDataSchema`.
+   * Helper function that accepts the type of this command's {@link BaseCommand.successDataSchema}.
    *
-   * Use this to conveniently enforce (statically) that the data you return satisfies the schema.
+   * If {@link BaseCommand.successDataValidateEnabled} is `true`, the data will be runtime-validated too.
+   * Otherwise this is just an identity function, convenient for static type checking.
    */
-  successData(data: z.infer<this['successDataSchema']>) {
+  successData<$Data extends InferConstraintSuccessData<$Command>>(data: $Data): $Data {
+    // this['successDataSchema']
     // TODO apply the zod schema for runtime validation. This would guarantee that
     // only valid data is ever returned. If the validation fails, we should throw an oclif cli error or whatever
     // and maybe also attempt to send some telemetry data about the error so that our team can fix the issue.
@@ -332,6 +329,29 @@ class ClientError extends Error {
     super(message);
   }
 }
+
+export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
+  (typeof BaseCommand)['baseFlags'] & T['flags']
+>;
+
+export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
+
+type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
+
+type InferConstraintSuccessData<$CommandClass extends typeof Command> =
+  'successDataSchema' extends keyof $CommandClass
+    ? $CommandClass['successDataSchema'] extends SuccessSchema
+      ? z.infer<$CommandClass['successDataSchema']>
+      : 'Error: Missing `static successDataSchema = ...` on your command.'
+    : 'Error: Missing `static successDataSchema = ...` on your command.';
+
+type OptionalSuccessSchema = undefined | SuccessSchema;
+
+type SuccessSchema =
+  | z.SomeZodObject
+  | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject]>
+  | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject, z.SomeZodObject]>
+  | z.ZodUnion<[z.SomeZodObject, z.SomeZodObject, z.SomeZodObject, z.SomeZodObject]>;
 
 function isClientError(error: Error): error is ClientError {
   return error instanceof ClientError;

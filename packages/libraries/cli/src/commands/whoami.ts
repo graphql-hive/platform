@@ -34,7 +34,7 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 `);
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
-  successDataSchema = z.object({
+  static successDataSchema = z.object({
     tokenName: z.string(),
     organization: z.string(),
     project: z.string(),
