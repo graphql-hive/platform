@@ -20,7 +20,7 @@ The following list of files are loaded by default, sorted by priority:
 - `gateway.config.mjs`
 - `gateway.config.cjs`
 
-<Callout>Both TypeScript (`*.ts`) and JavaScript (`*.js`) config filetypes are supported.</Callout>
+Both TypeScript (`*.ts`) and JavaScript (`*.js`) config filetypes are supported.
 
 ## Supergraph Related
 
@@ -46,7 +46,7 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-<Callout>
+<Callout type="info">
 
 For Hive Registry and Apollo GraphOS, you probably don't need to provide the `supergraph` option.
 
@@ -290,7 +290,6 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-<Callout>
 By default, Hive Gateway introspects the schema from the endpoint. And if it fails, it skips the
 validation and schema aware features. But if Hive CDN endpoint and key have been provided in the
 configuration, Hive Gateway will fetch the schema from the Hive CDN.
@@ -311,8 +310,6 @@ export const gatewayConfig = defineConfig({
   }
 })
 ```
-
-</Callout>
 
 #### `endpoint`
 
@@ -575,3 +572,11 @@ order to have a better scalability, you can provide a custom PubSub.
 ### `healthCheckEndpoint` and `readinessCheckEndpoint`
 
 [Learn more about Health Check and Readiness Check](/docs/gateway/monitoring-tracing#healthcheck)
+
+### `disableWebsockets`
+
+By default Hive Gateway starts a WebSocket server, using the same path than the normal HTTP
+endpoint. This allows your gateway to be compatible with Subscriptions over WebSockets for incoming
+client subscriptions out of the box.
+
+This option allows you to disable this WebSockets server.
