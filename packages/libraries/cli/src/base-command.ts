@@ -1,11 +1,10 @@
 import colors from 'colors';
 import { print, type GraphQLError } from 'graphql';
 import type { ExecutionResult } from 'graphql';
-import { z, ZodUnion } from 'zod';
+import { z } from 'zod';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
-import { PrettyPrintableError } from '@oclif/core/lib/interfaces';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
