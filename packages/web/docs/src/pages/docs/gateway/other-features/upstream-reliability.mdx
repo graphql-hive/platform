@@ -79,26 +79,7 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-#### `shouldRetry`
-
-Hive Gateway offer the possibility to skip retrying a specific upstream request, based on its
-context or returned value.
-
-For example, you can make Hive Gateway always retry any response with an error HTTP status code (>=
-400).
-
-```ts filename="gateway.config.ts"
-import { defineConfig } from '@graphql-hive/gateway'
-
-export const gatewayConfig = defineConfig({
-  upstreamRetry: {
-    maxRetries: 3,
-    shouldRetry: ({ response }) => response?.status >= 400 // Always retry any HTTP errors
-  }
-})
-```
-
-#### `retryDelay`
+#### Delay
 
 The default delay to wait between tries.
 
@@ -114,6 +95,53 @@ export const gatewayConfig = defineConfig({
   upstreamRetry: {
     maxRetries: 3,
     retryDelay: 1000 // delay in milliseconds
+  }
+})
+```
+
+#### Backoff
+
+To avoid adding pressure on a subgraph that is already potentially struggling with load, a standard
+method is to use an exponential backoff.
+
+A backoff consist of increasing the delay between tries after each try, to give more time to the
+server to recover from the error state.
+
+An exponential backoff consist of increasing the delay exponentially after each tries, by
+multiplying the delay by a given rate instead of increasing it by a fixed amount. This is the
+industry standard backoff strategy, because it is the most effective way to release the pressure on
+the upstream service without entirely giving up from receiving a response.
+
+Hive Gateway implements an exponential backoff by default. You can change the backoff rate using
+`retryDelayFactor` option. You can use a factor of `1` to disable backoff and have a fix retry
+delay.
+
+```ts filename="gateway.config.ts"
+import { defineConfig } from '@graphql-hive/gateway'
+
+export const gatewayConfig = defineConfig({
+  upstreamRetry: {
+    maxRetries: 3,
+    retryDelayFactor: 1.25 // default value. Use a value of 1 to disable backoff.
+  }
+})
+```
+
+#### Skip a request
+
+Hive Gateway offer the possibility to skip retrying a specific upstream request, based on its
+context or returned value.
+
+For example, you can make Hive Gateway always retry any response with an error HTTP status code (>=
+400).
+
+```ts filename="gateway.config.ts"
+import { defineConfig } from '@graphql-hive/gateway'
+
+export const gatewayConfig = defineConfig({
+  upstreamRetry: {
+    maxRetries: 3,
+    shouldRetry: ({ response }) => response?.status >= 400 // Always retry any HTTP errors
   }
 })
 ```
