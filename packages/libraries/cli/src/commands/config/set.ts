@@ -30,7 +30,7 @@ export default class SetConfig extends Command<typeof SetConfig> {
     const { args } = await this.parse(SetConfig);
     this.userConfig.set(args.key as ValidConfigurationKeys, args.value);
     const message = `Config key "${args.key}" was set to "${args.value}"`;
-    this.success(this.bolderize(message));
+    this.logSuccess(this.bolderize(message));
     return this.successData({
       message,
       data: {

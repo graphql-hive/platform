@@ -18,7 +18,7 @@ const criticalityMap: Record<CriticalityLevel, string> = {
 };
 
 export function renderErrors(this: BaseCommand<any>, errors: SchemaErrorConnection) {
-  this.fail(`Detected ${errors.total} error${errors.total > 1 ? 's' : ''}`);
+  this.logFail(`Detected ${errors.total} error${errors.total > 1 ? 's' : ''}`);
   this.log('');
 
   errors.nodes.forEach(error => {
@@ -69,7 +69,7 @@ export function renderChanges(this: BaseCommand<any>, maskedChanges: MaskedChang
     });
   };
 
-  this.info(`Detected ${changes.total} change${changes.total > 1 ? 's' : ''}`);
+  this.logInfo(`Detected ${changes.total} change${changes.total > 1 ? 's' : ''}`);
   this.log('');
 
   const breakingChanges = changes.nodes.filter(
@@ -92,7 +92,7 @@ export function renderChanges(this: BaseCommand<any>, maskedChanges: MaskedChang
 
 export function renderWarnings(this: BaseCommand<any>, warnings: SchemaWarningConnection) {
   this.log('');
-  this.infoWarning(`Detected ${warnings.total} warning${warnings.total > 1 ? 's' : ''}`);
+  this.logWarning(`Detected ${warnings.total} warning${warnings.total > 1 ? 's' : ''}`);
   this.log('');
 
   warnings.nodes.forEach(warning => {

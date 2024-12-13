@@ -17,6 +17,7 @@ export namespace OutputSchema {
   export const Envelope = z.object({
     ok: z.literal(true),
     message: z.string().optional(),
+    // warnings: z.array(z.string()),
   });
 
   export namespace Effect {

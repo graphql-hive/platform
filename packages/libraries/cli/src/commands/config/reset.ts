@@ -7,7 +7,7 @@ export default class ResetConfig extends Command<typeof ResetConfig> {
   async run() {
     this.userConfig.clear();
     const message = 'Config cleared.';
-    this.success(message);
+    this.logSuccess(message);
     return this.successData({
       message,
     });

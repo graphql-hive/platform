@@ -114,8 +114,8 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       });
 
       if (operations.length === 0) {
-        this.info('No operations found');
-        this.exit(0);
+        this.logInfo('No operations found');
+        // todo json output
         return;
       }
 
@@ -157,8 +157,8 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       const operationsWithErrors = invalidOperations.filter(o => o.errors.length > 0);
 
       if (operationsWithErrors.length === 0) {
-        this.success(`All operations are valid (${operations.length})`);
-        this.exit(0);
+        this.logSuccess(`All operations are valid (${operations.length})`);
+        // todo json output
         return;
       }
 
@@ -176,12 +176,13 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       ux.styledHeader('Details');
 
       this.printInvalidDocuments(operationsWithErrors);
+      // todo json output
       this.exit(1);
     } catch (error) {
       if (error instanceof Errors.ExitError) {
         throw error;
       } else {
-        this.fail('Failed to validate operations');
+        this.logFail('Failed to validate operations');
         this.handleFetchError(error);
       }
     }
@@ -194,7 +195,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
   }
 
   private renderErrors(sourceName: string, errors: GraphQLError[]) {
-    this.fail(sourceName);
+    this.logFail(sourceName);
     errors.forEach(e => {
       this.log(` - ${this.bolderize(e.message)}`);
     });

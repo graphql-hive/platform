@@ -6,6 +6,7 @@ import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
+import { OmitNever, OptionalizePropertyUnsafe } from './helpers/general';
 import { OutputSchema } from './helpers/output-schema';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
@@ -57,6 +58,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     const { args, flags } = await this.parse({
       flags: this.ctor.flags,
       baseFlags: (super.ctor as typeof BaseCommand).baseFlags,
+      enableJsonFlag: this.ctor.enableJsonFlag,
       args: this.ctor.args,
       strict: this.ctor.strict,
     });
@@ -75,6 +77,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     const dataOutput = {
       ...(dataInput as object),
       ok: true,
+      // warnings: [] as string[],
     } as InferSuccessDataOutput<$Command>;
     // TODO apply the zod schema for runtime validation. This would guarantee that
     // only valid data is ever returned. If the validation fails, we should throw an oclif cli error or whatever
@@ -82,19 +85,31 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     return dataOutput;
   }
 
-  success(...args: any[]) {
+  /**
+   * {@link Command.log} with success styling.
+   */
+  logSuccess(...args: any[]) {
     this.log(colors.green('✔'), ...args);
   }
 
-  fail(...args: any[]) {
+  /**
+   * {@link Command.log} with failure styling.
+   */
+  logFail(...args: any[]) {
     this.log(colors.red('✖'), ...args);
   }
 
-  info(...args: any[]) {
+  /**
+   * {@link Command.log} with info styling.
+   */
+  logInfo(...args: any[]) {
     this.log(colors.yellow('ℹ'), ...args);
   }
 
-  infoWarning(...args: any[]) {
+  /**
+   * {@link Command.log} with warning styling.
+   */
+  logWarning(...args: any[]) {
     this.log(colors.yellow('⚠'), ...args);
   }
 
@@ -339,8 +354,6 @@ export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
 >;
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
-
-type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
 
 type InferSuccessDataOutput<$CommandClass extends typeof Command> =
   'SuccessSchema' extends keyof $CommandClass

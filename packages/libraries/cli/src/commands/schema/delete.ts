@@ -95,7 +95,7 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
         );
 
         if (!confirmed) {
-          this.info('Aborting');
+          this.logInfo('Aborting');
           this.exit(0);
         }
       }
@@ -126,7 +126,7 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
 
       if (result.schemaDelete.__typename === 'SchemaDeleteSuccess') {
         const message = `${service} deleted`;
-        this.success(message);
+        this.logSuccess(message);
         return this.successData({
           message,
         });
@@ -134,7 +134,7 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
 
       if (result.schemaDelete.__typename === 'SchemaDeleteError') {
         // todo json output for this block
-        this.fail(`Failed to delete ${service}`);
+        this.logFail(`Failed to delete ${service}`);
         const errors = result.schemaDelete.errors;
 
         if (errors) {
@@ -150,7 +150,7 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       if (error instanceof Errors.ExitError) {
         throw error;
       } else {
-        this.fail(`Failed to complete`);
+        this.logFail(`Failed to complete`);
         this.handleFetchError(error);
       }
     }
