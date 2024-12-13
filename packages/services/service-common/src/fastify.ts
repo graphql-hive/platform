@@ -21,6 +21,7 @@ export async function createServer(options: {
     bodyLimit: options.bodyLimit ?? 15e6, // 15mb by default
     logger: {
       level: options.log.level,
+      redact: ['request.options', 'options', 'request.headers.authorization'],
     },
     maxParamLength: 5000,
     requestIdHeader: 'x-request-id',
