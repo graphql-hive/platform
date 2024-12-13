@@ -111,12 +111,26 @@ export function GotAnIdeaSection() {
         Join our community to chat with us and let's build something together!
       </p>
       <CallToAction
-        href="https://discord.com/invite/xud7bH9"
+        href="https://the-guild.dev/contact"
         variant="primary-inverted"
         className="mt-8"
+        onClick={event => {
+          if (window.$crisp) {
+            event.preventDefault();
+            window.$crisp?.push(['do', 'chat:open']);
+          }
+        }}
       >
-        Join our community
+        Get in touch
       </CallToAction>
     </div>
   );
+}
+
+declare global {
+  interface Window {
+    $crisp?: {
+      push: (args: any[]) => void;
+    };
+  }
 }
