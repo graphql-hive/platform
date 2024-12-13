@@ -1,5 +1,5 @@
 import colors from 'colors';
-import { OutputSchema } from 'src/helpers/outputSchema';
+import { OutputSchema } from 'src/helpers/output-schema';
 import { z } from 'zod';
 import { Flags } from '@oclif/core';
 import Command from '../base-command';
@@ -35,7 +35,7 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 `);
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
-  static successDataSchema = OutputSchema.Envelope.extend({
+  static SuccessSchema = OutputSchema.Envelope.extend({
     data: z.object({
       tokenName: z.string(),
       organization: z.string(),

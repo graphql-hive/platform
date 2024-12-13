@@ -6,7 +6,7 @@ import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
-import { OutputSchema } from './helpers/outputSchema';
+import { OutputSchema } from './helpers/output-schema';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
@@ -16,14 +16,14 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * Used by the {@link BaseCommand.successData} method.
    */
-  public static successDataSchema: OutputSchema = OutputSchema.Envelope;
+  public static SuccessSchema: OutputSchema = OutputSchema.Envelope;
 
   /**
    * Whether to validate the data returned by the {@link BaseCommand.successData} method.
    *
    * @defaultValue `true`
    */
-  public successDataValidateEnabled: boolean = true;
+  public SuccessSchemaValidationEnabled: boolean = true;
 
   protected _userConfig: Config | undefined;
 
@@ -65,9 +65,9 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 
   /**
-   * Helper function for creating data that adheres to the type specified by your command's {@link BaseCommand.successDataSchema}.
+   * Helper function for creating data that adheres to the type specified by your command's {@link BaseCommand.SuccessSchema}.
    *
-   * If {@link BaseCommand.successDataValidateEnabled} is `true`, then the given data will be runtime-validated too.
+   * If {@link BaseCommand.SuccessSchemaValidationEnabled} is `true`, then the given data will be runtime-validated too.
    *
    * For ease of use some standard properties are added for you automatically, simplifying the input you have to provide.
    */
@@ -343,21 +343,20 @@ export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
 
 type InferSuccessDataOutput<$CommandClass extends typeof Command> =
-  'successDataSchema' extends keyof $CommandClass
-    ? $CommandClass['successDataSchema'] extends OutputSchema
-      ? z.infer<$CommandClass['successDataSchema']>
+  'SuccessSchema' extends keyof $CommandClass
+    ? $CommandClass['SuccessSchema'] extends OutputSchema
+      ? z.infer<$CommandClass['SuccessSchema']>
       : never
     : never;
 
 type InferSuccessDataInput<$CommandClass extends typeof Command> =
-  'successDataSchema' extends keyof $CommandClass
-    ? $CommandClass['successDataSchema'] extends OutputSchema
-      ? Omit<z.infer<$CommandClass['successDataSchema']>, 'ok'>
+  'SuccessSchema' extends keyof $CommandClass
+    ? $CommandClass['SuccessSchema'] extends OutputSchema
+      ? Omit<z.infer<$CommandClass['SuccessSchema']>, 'ok'>
       : InferSuccessDataInputError
     : InferSuccessDataInputError;
 
-type InferSuccessDataInputError =
-  'Error: Missing `static successDataSchema = ...` on your command.';
+type InferSuccessDataInputError = 'Error: Missing `static SuccessSchema = ...` on your command.';
 
 function isClientError(error: Error): error is ClientError {
   return error instanceof ClientError;

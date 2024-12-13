@@ -1,4 +1,4 @@
-import { OutputSchema } from 'src/helpers/outputSchema';
+import { OutputSchema } from 'src/helpers/output-schema';
 import { z } from 'zod';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
@@ -6,7 +6,7 @@ import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppPublish extends Command<typeof AppPublish> {
-  static successDataSchema = z.union([
+  static SuccessSchema = z.union([
     OutputSchema.Effect.Skipped.extend({
       data: z.object({
         name: OutputSchema.NonEmptyString,

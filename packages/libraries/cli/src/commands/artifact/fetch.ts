@@ -1,11 +1,11 @@
-import { OutputSchema } from 'src/helpers/outputSchema';
+import { OutputSchema } from 'src/helpers/output-schema';
 import { z } from 'zod';
 import { http, URL } from '@graphql-hive/core';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
-  static successDataSchema = z.union([
+  static SuccessSchema = z.union([
     OutputSchema.Envelope.extend({
       data: OutputSchema.DataOutputMode.File,
     }),

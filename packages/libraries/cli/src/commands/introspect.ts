@@ -1,14 +1,14 @@
 import { writeFileSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { buildSchema, GraphQLError, introspectionFromSchema } from 'graphql';
-import { OutputSchema } from 'src/helpers/outputSchema';
+import { OutputSchema } from 'src/helpers/output-schema';
 import { z } from 'zod';
 import { Args, Flags } from '@oclif/core';
 import Command from '../base-command';
 import { loadSchema } from '../helpers/schema';
 
 export default class Introspect extends Command<typeof Introspect> {
-  static successDataSchema = z.union([
+  static SuccessSchema = z.union([
     OutputSchema.Envelope.extend({
       data: OutputSchema.DataOutputMode.File,
     }),

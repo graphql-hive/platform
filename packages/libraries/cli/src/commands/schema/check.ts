@@ -1,6 +1,6 @@
 import { SchemaWarningConnection } from 'src/gql/graphql';
 import { casesExhausted } from 'src/helpers/general';
-import { OutputSchema } from 'src/helpers/outputSchema';
+import { OutputSchema } from 'src/helpers/output-schema';
 import { z } from 'zod';
 import { Args, Errors, Flags } from '@oclif/core';
 import Command from '../../base-command';
@@ -120,7 +120,7 @@ const Warning = z.object({
 type Warning = z.infer<typeof Warning>;
 
 export default class SchemaCheck extends Command<typeof SchemaCheck> {
-  static successDataSchema = z.union([
+  static SuccessSchema = z.union([
     OutputSchema.Envelope.extend({
       data: z.object({
         // todo is this the right "term" for this check type?

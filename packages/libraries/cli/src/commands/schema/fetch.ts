@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
-import { OutputSchema } from 'src/helpers/outputSchema';
+import { OutputSchema } from 'src/helpers/output-schema';
 import { z } from 'zod';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
@@ -23,7 +23,7 @@ const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
 `);
 
 export default class SchemaFetch extends Command<typeof SchemaFetch> {
-  static successDataSchema = z.union([
+  static SuccessSchema = z.union([
     OutputSchema.Envelope.extend({
       data: OutputSchema.DataOutputMode.File,
     }),

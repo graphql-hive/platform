@@ -1,4 +1,4 @@
-import { OutputSchema } from 'src/helpers/outputSchema';
+import { OutputSchema } from 'src/helpers/output-schema';
 import { z } from 'zod';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
@@ -7,7 +7,7 @@ import { AppDeploymentStatus } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppCreate extends Command<typeof AppCreate> {
-  static successDataSchema = z.union([
+  static SuccessSchema = z.union([
     OutputSchema.Effect.Skipped.extend({
       data: z.object({
         // TODO improve type to match GQL Schema enum

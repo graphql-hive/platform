@@ -1,11 +1,11 @@
-import { OutputSchema } from 'src/helpers/outputSchema';
+import { OutputSchema } from 'src/helpers/output-schema';
 import { z } from 'zod';
 import { Args } from '@oclif/core';
 import Command from '../../base-command';
 import { allowedKeys, ValidConfigurationKeys } from '../../helpers/config';
 
 export default class SetConfig extends Command<typeof SetConfig> {
-  static successDataSchema = OutputSchema.Envelope.extend({
+  static SuccessSchema = OutputSchema.Envelope.extend({
     data: z.object({
       key: OutputSchema.NonEmptyString,
       value: OutputSchema.NonEmptyString,
