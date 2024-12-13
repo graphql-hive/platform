@@ -1,5 +1,5 @@
-import { GotAnIdeaSection } from '../../components/got-an-idea-section';
-import { Page as LandingPageContainer } from '../../components/page';
+import { GotAnIdeaSection } from '../got-an-idea-section';
+import { Page as LandingPageContainer } from '../page';
 import { components } from './components';
 import EcosystemPageContent from './content.mdx';
 
