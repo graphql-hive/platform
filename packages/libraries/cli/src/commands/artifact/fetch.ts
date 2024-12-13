@@ -7,16 +7,10 @@ import Command from '../../base-command';
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
   static successDataSchema = z.union([
     OutputSchema.Envelope.extend({
-      data: z.object({
-        outputMode: z.literal('file'),
-        path: z.string(),
-      }),
+      data: OutputSchema.DataOutputMode.File,
     }),
     OutputSchema.Envelope.extend({
-      data: z.object({
-        outputMode: z.literal('stdout'),
-        content: z.string(),
-      }),
+      data: OutputSchema.DataOutputMode.Stdout,
     }),
   ]);
 

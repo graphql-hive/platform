@@ -83,6 +83,15 @@ type ServiceWithSource = {
       };
 };
 
+// TODO add JSON output support.
+// Unlike other commands that return, this common kicks off a long running process in the terminal
+// that outputs messages to the terminal over time.
+// Therefore the OClif framework pattern of returning an object is incompatible.
+// We'll need to inspect the json flag ourselves and return the appropriate output.
+//
+// Presumably users would typically NOT use JSON output for this command. This task appears to be motivated by
+// the principal of simplicity via consistency.
+
 export default class Dev extends Command<typeof Dev> {
   static description = [
     'Develop and compose Supergraph with your local services.',

@@ -1,5 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
+import { OutputSchema } from 'src/helpers/outputSchema';
+import { z } from 'zod';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
@@ -21,6 +23,15 @@ const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
 `);
 
 export default class SchemaFetch extends Command<typeof SchemaFetch> {
+  static successDataSchema = z.union([
+    OutputSchema.Envelope.extend({
+      data: OutputSchema.DataOutputMode.File,
+    }),
+    OutputSchema.Envelope.extend({
+      data: OutputSchema.DataOutputMode.Stdout,
+    }),
+  ]);
+
   static description = 'fetch schema or supergraph from the Hive API';
   static flags = {
     /** @deprecated */
@@ -134,8 +145,20 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
           this.fail(`Unsupported file extension ${extname(flags.write)}`);
           this.exit(1);
       }
-      return;
+      return this.successData({
+        data: {
+          outputMode: 'file',
+          path: filepath,
+        },
+      });
     }
+
     this.log(schema);
+    return this.successData({
+      data: {
+        outputMode: 'stdout',
+        content: schema,
+      },
+    });
   }
 }

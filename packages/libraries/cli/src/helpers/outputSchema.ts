@@ -3,6 +3,7 @@ import { z } from 'zod';
 // prettier-ignore
 export type OutputSchema =
 		| Envelope
+		| z.ZodUnion<[Envelope]>
 		| z.ZodUnion<[Envelope, Envelope]>
 		| z.ZodUnion<[Envelope, Envelope, Envelope]>
 		| z.ZodUnion<[Envelope, Envelope, Envelope, Envelope]>;
@@ -24,6 +25,16 @@ export namespace OutputSchema {
     });
     export const Executed = Envelope.extend({
       effect: z.literal('executed'),
+    });
+  }
+  export namespace DataOutputMode {
+    export const Stdout = z.object({
+      outputMode: z.literal('stdout'),
+      content: z.string(),
+    });
+    export const File = z.object({
+      outputMode: z.literal('file'),
+      path: z.string(),
     });
   }
 }

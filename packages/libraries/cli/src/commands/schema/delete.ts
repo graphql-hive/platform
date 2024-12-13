@@ -1,3 +1,5 @@
+import { casesExhausted } from 'src/helpers/general';
+import { z } from 'zod';
 import { Args, Errors, Flags, ux } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
@@ -123,18 +125,27 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       });
 
       if (result.schemaDelete.__typename === 'SchemaDeleteSuccess') {
-        this.success(`${service} deleted`);
-        this.exit(0);
+        const message = `${service} deleted`;
+        this.success(message);
+        return this.successData({
+          message,
+        });
+      }
+
+      if (result.schemaDelete.__typename === 'SchemaDeleteError') {
+        // todo json output for this block
+        this.fail(`Failed to delete ${service}`);
+        const errors = result.schemaDelete.errors;
+
+        if (errors) {
+          renderErrors.call(this, errors);
+          this.exit(1);
+        }
+
         return;
       }
 
-      this.fail(`Failed to delete ${service}`);
-      const errors = result.schemaDelete.errors;
-
-      if (errors) {
-        renderErrors.call(this, errors);
-        this.exit(1);
-      }
+      casesExhausted(result.schemaDelete);
     } catch (error) {
       if (error instanceof Errors.ExitError) {
         throw error;

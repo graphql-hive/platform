@@ -26,7 +26,7 @@ export function renderErrors(this: BaseCommand<any>, errors: SchemaErrorConnecti
   });
 }
 
-const RenderChanges_SchemaChanges = graphql(`
+export const RenderChanges_SchemaChanges = graphql(`
   fragment RenderChanges_schemaChanges on SchemaChangeConnection {
     total
     nodes {
@@ -42,10 +42,9 @@ const RenderChanges_SchemaChanges = graphql(`
   }
 `);
 
-export function renderChanges(
-  this: BaseCommand<any>,
-  maskedChanges: FragmentType<typeof RenderChanges_SchemaChanges>,
-) {
+export type MaskedChanges = FragmentType<typeof RenderChanges_SchemaChanges>;
+
+export function renderChanges(this: BaseCommand<any>, maskedChanges: MaskedChanges) {
   const changes = unmaskFragment(RenderChanges_SchemaChanges, maskedChanges);
   type ChangeType = (typeof changes)['nodes'][number];
 

@@ -10,16 +10,10 @@ import { loadSchema } from '../helpers/schema';
 export default class Introspect extends Command<typeof Introspect> {
   static successDataSchema = z.union([
     OutputSchema.Envelope.extend({
-      data: z.object({
-        outputMode: z.literal('file'),
-        path: z.string(),
-      }),
+      data: OutputSchema.DataOutputMode.File,
     }),
     OutputSchema.Envelope.extend({
-      data: z.object({
-        outputMode: z.literal('stdout'),
-        schema: z.string(),
-      }),
+      data: OutputSchema.DataOutputMode.Stdout,
     }),
   ]);
 
@@ -83,7 +77,7 @@ export default class Introspect extends Command<typeof Introspect> {
       return this.successData({
         data: {
           outputMode: 'stdout',
-          schema,
+          content: schema,
         },
       });
     }

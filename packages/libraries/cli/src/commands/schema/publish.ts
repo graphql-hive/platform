@@ -271,6 +271,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
 
       let result: DocumentType<typeof schemaPublishMutation> | null = null;
 
+      // todo: json output
       do {
         result = await this.registryApi(endpoint, accessToken).request({
           operation: schemaPublishMutation,

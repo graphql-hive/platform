@@ -1,15 +1,23 @@
+import { SchemaWarningConnection } from 'src/gql/graphql';
+import { casesExhausted } from 'src/helpers/general';
+import { OutputSchema } from 'src/helpers/outputSchema';
+import { z } from 'zod';
 import { Args, Errors, Flags } from '@oclif/core';
 import Command from '../../base-command';
-import { graphql } from '../../gql';
+import { graphql, useFragment } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { gitInfo } from '../../helpers/git';
 import {
   loadSchema,
+  MaskedChanges,
   minifySchema,
   renderChanges,
+  RenderChanges_SchemaChanges,
   renderErrors,
   renderWarnings,
 } from '../../helpers/schema';
+
+const CriticalityLevel = z.enum(['Breaking', 'Dangerous', 'Safe']);
 
 const schemaCheckMutation = graphql(/* GraphQL */ `
   mutation schemaCheck($input: SchemaCheckInput!, $usesGitHubApp: Boolean!) {
@@ -86,7 +94,51 @@ const schemaCheckMutation = graphql(/* GraphQL */ `
   }
 `);
 
+const Change = z.object({
+  message: z.string(),
+  criticality: CriticalityLevel,
+  isSafeBasedOnUsage: z.boolean(),
+  approval: z
+    .object({
+      by: z
+        .object({
+          // id: z.string().nullable(),
+          displayName: z.string().nullable(),
+        })
+        .nullable(),
+    })
+    .nullable(),
+});
+type Change = z.infer<typeof Change>;
+
+const Warning = z.object({
+  message: z.string(),
+  source: z.string().nullable(),
+  line: z.number().nullable(),
+  column: z.number().nullable(),
+});
+type Warning = z.infer<typeof Warning>;
+
 export default class SchemaCheck extends Command<typeof SchemaCheck> {
+  static successDataSchema = z.union([
+    OutputSchema.Envelope.extend({
+      data: z.object({
+        // todo is this the right "term" for this check type?
+        checkType: z.literal('registry'),
+        url: z.string().url().nullable(),
+        breakingChanges: z.boolean(),
+        changes: z.array(Change),
+        warnings: z.array(Warning),
+      }),
+    }),
+    OutputSchema.Envelope.extend({
+      data: z.object({
+        checkType: z.literal('github'),
+        message: z.string(),
+      }),
+    }),
+  ]);
+
   static description = 'checks schema';
   static flags = {
     service: Flags.string({
@@ -251,7 +303,19 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         if (result.schemaCheck.schemaCheck?.webUrl) {
           this.log(`View full report:\n${result.schemaCheck.schemaCheck.webUrl}`);
         }
-      } else if (result.schemaCheck.__typename === 'SchemaCheckError') {
+
+        return this.successData({
+          data: {
+            checkType: 'registry',
+            breakingChanges: false,
+            warnings: toWaring(result.schemaCheck.warnings),
+            changes: toChange(result.schemaCheck.changes),
+            url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
+          },
+        });
+      }
+
+      if (result.schemaCheck.__typename === 'SchemaCheckError') {
         const changes = result.schemaCheck.changes;
         const errors = result.schemaCheck.errors;
         const warnings = result.schemaCheck.warnings;
@@ -276,14 +340,38 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
         if (forceSafe) {
           this.success('Breaking changes were expected (forced)');
-        } else {
-          this.exit(1);
+          return this.successData({
+            data: {
+              checkType: 'registry',
+              breakingChanges: true,
+              warnings: toWaring(result.schemaCheck.warnings),
+              changes: toChange(result.schemaCheck.changes),
+              url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
+            },
+          });
         }
-      } else if (result.schemaCheck.__typename === 'GitHubSchemaCheckSuccess') {
-        this.success(result.schemaCheck.message);
-      } else {
-        this.error(result.schemaCheck.message);
+
+        // TODO integrate return JSON with exit 1
+        this.exit(1);
       }
+
+      if (result.schemaCheck.__typename === 'GitHubSchemaCheckSuccess') {
+        this.success(result.schemaCheck.message);
+        return this.successData({
+          data: {
+            checkType: 'github',
+            message: result.schemaCheck.message,
+          },
+        });
+      }
+
+      if (result.schemaCheck.__typename === 'GitHubSchemaCheckError') {
+        this.error(result.schemaCheck.message);
+        // todo: confirm that OClif emits error json automatically.
+        // todo: even if it does... seems that we want a consistent schema here to above, with an added success-indicator property.
+      }
+
+      casesExhausted(result.schemaCheck);
     } catch (error) {
       if (error instanceof Errors.ExitError) {
         throw error;
@@ -294,3 +382,35 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }
   }
 }
+
+const toWaring = (warnings: undefined | null | SchemaWarningConnection): Warning[] => {
+  return (
+    warnings?.nodes.map(_ => ({
+      message: _.message,
+      source: _.source ?? null,
+      line: _.line ?? null,
+      column: _.column ?? null,
+    })) ?? []
+  );
+};
+
+const toChange = (maskedChanges: undefined | null | MaskedChanges): Change[] => {
+  const changes = useFragment(RenderChanges_SchemaChanges, maskedChanges);
+  return (
+    changes?.nodes.map(_ => ({
+      message: _.message,
+      criticality: _.criticality,
+      isSafeBasedOnUsage: _.isSafeBasedOnUsage,
+      approval: _.approval
+        ? {
+            by: _.approval.approvedBy
+              ? {
+                  // id: _.approval.approvedBy.id,
+                  displayName: _.approval.approvedBy.displayName,
+                }
+              : null,
+          }
+        : null,
+    })) ?? []
+  );
+};
