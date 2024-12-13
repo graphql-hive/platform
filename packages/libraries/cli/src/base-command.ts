@@ -22,6 +22,9 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   /**
    * Whether to validate the data returned by the {@link BaseCommand.successData} method.
    *
+   * WARNING: If disabling validation, then you must not any of Zod's value coercing features
+   * since they won't be run when validation is disabled.
+   *
    * @defaultValue `true`
    */
   public SuccessSchemaValidationEnabled: boolean = true;
@@ -79,9 +82,17 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       ok: true,
       // warnings: [] as string[],
     } as InferSuccessDataOutput<$Command>;
-    // TODO apply the zod schema for runtime validation. This would guarantee that
-    // only valid data is ever returned. If the validation fails, we should throw an oclif cli error or whatever
-    // and maybe also attempt to send some telemetry data about the error so that our team can fix the issue.
+
+    if (this.SuccessSchemaValidationEnabled) {
+      // @ts-expect-error TS doesn't support static property access on this.constructor for some reason.
+      const schema = this.constructor.SuccessSchema as OutputSchema;
+      const result = schema.safeParse(dataOutput);
+      if (!result.success) {
+        throw new Errors.CLIError(result.error.message);
+      }
+      return result.data as InferSuccessDataOutput<$Command>;
+    }
+
     return dataOutput;
   }
 
