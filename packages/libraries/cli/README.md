@@ -17,10 +17,12 @@ A CLI util to manage and control your Hive.
 If you are running a JavaScript/NodeJS project, you can install Hive CLI from the `npm` registry:
 
 ```
-npm add -D @graphql-hive/cli
+pnpm install -D @graphql-hive/cli
+yarn add -D @graphql-hive/cli
+npm install -D @graphql-hive/cli
 ```
 
-> [!NOTE] We recommend installing Hive CLI as part of your project, under `devDependencies`, instead of
+> We recommend installing Hive CLI as part of your project, under `devDependencies`, instead of
 > using a global installation.
 
 ### Binary
