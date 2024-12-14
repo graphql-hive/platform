@@ -1,7 +1,7 @@
 import { ComponentProps, PropsWithoutRef, useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { formatISO } from 'date-fns';
-import { use } from 'echarts';
+import { InfoIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery } from 'urql';
 import { z } from 'zod';
@@ -36,6 +36,7 @@ import { QueryError } from '@/components/ui/query-error';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { TimeAgo } from '@/components/ui/time-ago';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/components/ui/use-toast';
 import { Combobox } from '@/components/v2/combobox';
 import { Table, TBody, Td, Tr } from '@/components/v2/table';
@@ -556,7 +557,7 @@ const ConditionalBreakingChanges = (props: {
     // This is a workaround for the issue with zod's transform function
     if (data.period > defaultDays) {
       conditionalBreakingChangesForm.setError('period', {
-        message: `Retention period must be less than or equal to ${defaultDays} days based on ${orgPlan} plan`,
+        message: `Period must be at most ${defaultDays} days`,
         type: 'maxLength',
       });
       return;
@@ -681,6 +682,26 @@ const ConditionalBreakingChanges = (props: {
                   </FormItem>
                 )}
               />
+              <div className="mr-2 flex flex-row">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <InfoIcon className="h-4 w-4 text-gray-400" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        You can customize Conditional Breaking Change date range,
+                        <br />
+                        based on your data retention and your Hive plan.
+                        <br />
+                        Your plan: {orgPlan}.
+                        <br />
+                        Date retention: {defaultDays} days.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               days.
             </div>
             {conditionalBreakingChangesForm.formState.errors.period && (
