@@ -644,7 +644,7 @@ const ConditionalBreakingChanges = (props: {
           )}
         >
           <div className={clsx('text-gray-300', !isEnabled && 'pointer-events-none opacity-25')}>
-            <div className="justify-star flex flex-row items-baseline">
+            <div className="flex flex-row items-baseline justify-start">
               A schema change is considered as breaking only if it affects more than
               <FormField
                 control={conditionalBreakingChangesForm.control}
@@ -665,24 +665,7 @@ const ConditionalBreakingChanges = (props: {
                 )}
               />
               % of traffic in the past
-              <FormField
-                control={conditionalBreakingChangesForm.control}
-                name="period"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        autoComplete="off"
-                        {...field}
-                        className="mx-2 !inline-flex w-16"
-                        disabled={!isEnabled}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <div className="mr-2 flex flex-row">
+              <div className="ml-2 flex flex-row items-baseline">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -702,6 +685,23 @@ const ConditionalBreakingChanges = (props: {
                   </Tooltip>
                 </TooltipProvider>
               </div>
+              <FormField
+                control={conditionalBreakingChangesForm.control}
+                name="period"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        autoComplete="off"
+                        {...field}
+                        className="mx-2 !inline-flex w-16"
+                        disabled={!isEnabled}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
               days.
             </div>
             {conditionalBreakingChangesForm.formState.errors.period && (
