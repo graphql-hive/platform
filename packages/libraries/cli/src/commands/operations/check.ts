@@ -72,7 +72,27 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     }),
   };
   static SuccessSchema = Envelope.Generic({
-    type: Typebox.Literal('no_operations_found'),
+    countTotal: Typebox.Integer({ minimum: 0 }),
+    countInvalid: Typebox.Integer({ minimum: 0 }),
+    countValid: Typebox.Integer({ minimum: 0 }),
+    invalidOperations: Typebox.Array(
+      Typebox.Object({
+        source: Typebox.Object({
+          name: Typebox.String(),
+        }),
+        errors: Typebox.Array(
+          Typebox.Object({
+            message: Typebox.String(),
+            locations: Typebox.Array(
+              Typebox.Object({
+                line: Typebox.Integer({ minimum: 0 }),
+                column: Typebox.Integer({ minimum: 0 }),
+              }),
+            ),
+          }),
+        ),
+      }),
+    ),
   });
   static args = {
     file: Args.string({
@@ -122,7 +142,10 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       this.logInfo('No operations found');
       return this.successData({
         data: {
-          type: 'no_operations_found',
+          countTotal: 0,
+          countInvalid: 0,
+          countValid: 0,
+          invalidOperations: [],
         },
       });
     }
@@ -148,6 +171,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       );
 
       if (detectedApolloDirectives) {
+        // TODO: Gather warnings into a "warnings" array property in our envelope.
         this.warn(
           'Apollo Client specific directives detected (@client, @connection). Please use the --apolloClient flag to enable support.',
         );
@@ -166,26 +190,50 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
 
     if (operationsWithErrors.length === 0) {
       this.logSuccess(`All operations are valid (${operations.length})`);
-      // todo json output
-      return;
+    } else {
+      ux.styledHeader('Summary');
+      this.log(
+        [
+          `Total: ${operations.length}`,
+          `Invalid: ${operationsWithErrors.length} (${Math.floor(
+            (operationsWithErrors.length / operations.length) * 100,
+          )}%)`,
+          '',
+        ].join('\n'),
+      );
+
+      ux.styledHeader('Details');
+
+      this.printInvalidDocuments(operationsWithErrors);
+      process.exitCode = 1;
     }
 
-    ux.styledHeader('Summary');
-    this.log(
-      [
-        `Total: ${operations.length}`,
-        `Invalid: ${operationsWithErrors.length} (${Math.floor(
-          (operationsWithErrors.length / operations.length) * 100,
-        )}%)`,
-        '',
-      ].join('\n'),
-    );
-
-    ux.styledHeader('Details');
-
-    this.printInvalidDocuments(operationsWithErrors);
-    // todo json output
-    this.exit(1);
+    return this.successData({
+      data: {
+        countTotal: operations.length,
+        countInvalid: operationsWithErrors.length,
+        countValid: operations.length - operationsWithErrors.length,
+        invalidOperations: operationsWithErrors.map(o => {
+          return {
+            source: {
+              name: o.source.name,
+            },
+            errors: o.errors.map(e => {
+              return {
+                message: e.message,
+                locations:
+                  e.locations?.map(l => {
+                    return {
+                      line: l.line,
+                      column: l.column,
+                    };
+                  }) ?? [],
+              };
+            }),
+          };
+        }),
+      },
+    });
   }
 
   private printInvalidDocuments(invalidDocuments: InvalidDocument[]): void {
