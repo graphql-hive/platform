@@ -1,5 +1,5 @@
 import { OutputSchema } from 'src/helpers/output-schema';
-import { z } from 'zod';
+import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
@@ -7,15 +7,15 @@ import { AppDeploymentStatus } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppCreate extends Command<typeof AppCreate> {
-  static SuccessSchema = z.union([
+  static SuccessSchema = Typebox.Union([
     OutputSchema.Effect.Skipped.extend({
-      data: z.object({
+      data: Typebox.Object({
         // TODO improve type to match GQL Schema enum
         status: OutputSchema.NonEmptyString,
       }),
     }),
     OutputSchema.Effect.Executed.extend({
-      data: z.object({
+      data: Typebox.Object({
         id: OutputSchema.NonEmptyString,
         name: OutputSchema.NonEmptyString,
         version: OutputSchema.NonEmptyString,
@@ -68,13 +68,8 @@ export default class AppCreate extends Command<typeof AppCreate> {
     const file: string = args.file;
     const fs = await import('fs/promises');
     const contents = await fs.readFile(file, 'utf-8');
-    const operations: unknown = JSON.parse(contents);
-    const validationResult = ManifestModel.safeParse(operations);
-
-    if (validationResult.success === false) {
-      // TODO: better error message :)
-      throw new Error('Invalid manifest');
-    }
+    // TODO: better error message if parsing fails :)
+    const operations = Typebox.Value.ParseJson(ManifestModel, contents);
 
     const result = await this.registryApi(endpoint, accessToken).request({
       operation: CreateAppDeploymentMutation,
@@ -151,7 +146,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
 
     let counter = 0;
 
-    for (const [hash, body] of Object.entries(validationResult.data)) {
+    for (const [hash, body] of Object.entries(operations)) {
       buffer.push({ hash, body });
       await flush();
       counter++;
@@ -173,7 +168,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
   }
 }
 
-const ManifestModel = z.record(z.string());
+const ManifestModel = Typebox.Record(Typebox.String(), Typebox.String());
 
 const CreateAppDeploymentMutation = graphql(/* GraphQL */ `
   mutation CreateAppDeployment($input: CreateAppDeploymentInput!) {

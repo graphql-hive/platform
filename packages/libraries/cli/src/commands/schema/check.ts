@@ -1,7 +1,7 @@
 import { SchemaWarningConnection } from 'src/gql/graphql';
 import { casesExhausted } from 'src/helpers/general';
 import { OutputSchema } from 'src/helpers/output-schema';
-import { z } from 'zod';
+import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Errors, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql, useFragment } from '../../gql';
@@ -17,7 +17,11 @@ import {
   renderWarnings,
 } from '../../helpers/schema';
 
-const CriticalityLevel = z.enum(['Breaking', 'Dangerous', 'Safe']);
+const CriticalityLevel = Typebox.Enum({
+  Breaking: 'Breaking',
+  Dangerous: 'Dangerous',
+  Safe: 'Safe',
+});
 
 const schemaCheckMutation = graphql(/* GraphQL */ `
   mutation schemaCheck($input: SchemaCheckInput!, $usesGitHubApp: Boolean!) {
@@ -94,47 +98,47 @@ const schemaCheckMutation = graphql(/* GraphQL */ `
   }
 `);
 
-const Change = z.object({
-  message: z.string(),
+const Change = Typebox.Object({
+  message: Typebox.String(),
   criticality: CriticalityLevel,
-  isSafeBasedOnUsage: z.boolean(),
-  approval: z
-    .object({
-      by: z
-        .object({
+  isSafeBasedOnUsage: Typebox.Boolean(),
+  approval: Typebox.Nullable(
+    Typebox.Object({
+      by: Typebox.Nullable(
+        Typebox.Object({
           // id: z.string().nullable(),
-          displayName: z.string().nullable(),
-        })
-        .nullable(),
-    })
-    .nullable(),
+          displayName: Typebox.String().nullable(),
+        }),
+      ),
+    }),
+  ),
 });
-type Change = z.infer<typeof Change>;
+type Change = Typebox.Static<typeof Change>;
 
-const Warning = z.object({
-  message: z.string(),
-  source: z.string().nullable(),
-  line: z.number().nullable(),
-  column: z.number().nullable(),
+const Warning = Typebox.Object({
+  message: Typebox.String(),
+  source: Typebox.Nullable(Typebox.String()),
+  line: Typebox.Nullable(Typebox.Number()),
+  column: Typebox.Nullable(Typebox.Number()),
 });
-type Warning = z.infer<typeof Warning>;
+type Warning = Typebox.Static<typeof Warning>;
 
 export default class SchemaCheck extends Command<typeof SchemaCheck> {
-  static SuccessSchema = z.union([
+  static SuccessSchema = Typebox.Union([
     OutputSchema.Envelope.extend({
-      data: z.object({
+      data: Typebox.Object({
         // todo is this the right "term" for this check type?
-        checkType: z.literal('registry'),
-        url: z.string().url().nullable(),
-        breakingChanges: z.boolean(),
-        changes: z.array(Change),
-        warnings: z.array(Warning),
+        checkType: Typebox.Literal('registry'),
+        url: Typebox.Nullable(Typebox.String({ format: 'uri-template' })),
+        breakingChanges: Typebox.Boolean(),
+        changes: Typebox.Array(Change),
+        warnings: Typebox.Array(Warning),
       }),
     }),
     OutputSchema.Envelope.extend({
-      data: z.object({
-        checkType: z.literal('github'),
-        message: z.string(),
+      data: Typebox.Object({
+        checkType: Typebox.Literal('github'),
+        message: Typebox.String(),
       }),
     }),
   ]);

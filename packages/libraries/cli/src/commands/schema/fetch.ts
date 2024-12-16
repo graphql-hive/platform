@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
 import { OutputSchema } from 'src/helpers/output-schema';
-import { z } from 'zod';
+import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
@@ -23,7 +23,7 @@ const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
 `);
 
 export default class SchemaFetch extends Command<typeof SchemaFetch> {
-  static SuccessSchema = z.union([
+  static SuccessSchema = Typebox.Union([
     OutputSchema.Envelope.extend({
       data: OutputSchema.DataOutputMode.File,
     }),

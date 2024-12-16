@@ -1,5 +1,4 @@
 import { casesExhausted } from 'src/helpers/general';
-import { z } from 'zod';
 import { Args, Errors, Flags, ux } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';

@@ -1,6 +1,6 @@
 import colors from 'colors';
 import { OutputSchema } from 'src/helpers/output-schema';
-import { z } from 'zod';
+import { Typebox } from 'src/helpers/typebox/__';
 import { Flags } from '@oclif/core';
 import Command from '../base-command';
 import { graphql } from '../gql';
@@ -36,15 +36,15 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
   static SuccessSchema = OutputSchema.Envelope.extend({
-    data: z.object({
-      tokenName: z.string(),
-      organization: z.string(),
-      project: z.string(),
-      target: z.string(),
-      authorization: z.object({
-        schema: z.object({
-          publish: z.boolean(),
-          check: z.boolean(),
+    data: Typebox.Object({
+      tokenName: Typebox.String(),
+      organization: Typebox.String(),
+      project: Typebox.String(),
+      target: Typebox.String(),
+      authorization: Typebox.Object({
+        schema: Typebox.Object({
+          publish: Typebox.Boolean(),
+          check: Typebox.Boolean(),
         }),
       }),
     }),

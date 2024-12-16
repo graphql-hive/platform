@@ -1,11 +1,11 @@
 import { OutputSchema } from 'src/helpers/output-schema';
-import { z } from 'zod';
+import { Typebox } from 'src/helpers/typebox/__';
 import { http, URL } from '@graphql-hive/core';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
-  static SuccessSchema = z.union([
+  static SuccessSchema = Typebox.Union([
     OutputSchema.Envelope.extend({
       data: OutputSchema.DataOutputMode.File,
     }),

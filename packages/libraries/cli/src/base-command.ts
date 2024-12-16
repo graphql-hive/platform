@@ -1,13 +1,13 @@
 import colors from 'colors';
 import { print, type GraphQLError } from 'graphql';
 import type { ExecutionResult } from 'graphql';
-import { z } from 'zod';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 import { OmitNever, OptionalizePropertyUnsafe } from './helpers/general';
 import { OutputSchema } from './helpers/output-schema';
+import { Typebox } from './helpers/typebox/__';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
@@ -369,14 +369,14 @@ export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 type InferSuccessDataOutput<$CommandClass extends typeof Command> =
   'SuccessSchema' extends keyof $CommandClass
     ? $CommandClass['SuccessSchema'] extends OutputSchema
-      ? z.infer<$CommandClass['SuccessSchema']>
+      ? Typebox.Static<$CommandClass['SuccessSchema']>
       : never
     : never;
 
 type InferSuccessDataInput<$CommandClass extends typeof Command> =
   'SuccessSchema' extends keyof $CommandClass
     ? $CommandClass['SuccessSchema'] extends OutputSchema
-      ? Omit<z.infer<$CommandClass['SuccessSchema']>, 'ok'>
+      ? Omit<Typebox.Static<$CommandClass['SuccessSchema']>, 'ok'>
       : InferSuccessDataInputError
     : InferSuccessDataInputError;
 

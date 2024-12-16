@@ -1,19 +1,19 @@
 import { OutputSchema } from 'src/helpers/output-schema';
-import { z } from 'zod';
+import { Typebox } from 'src/helpers/typebox/__';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppPublish extends Command<typeof AppPublish> {
-  static SuccessSchema = z.union([
+  static SuccessSchema = Typebox.Union([
     OutputSchema.Effect.Skipped.extend({
-      data: z.object({
+      data: Typebox.Object({
         name: OutputSchema.NonEmptyString,
       }),
     }),
     OutputSchema.Effect.Executed.extend({
-      data: z.object({
+      data: Typebox.Object({
         name: OutputSchema.NonEmptyString,
       }),
     }),
