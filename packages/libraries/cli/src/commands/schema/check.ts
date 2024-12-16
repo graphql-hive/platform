@@ -127,7 +127,6 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   static SuccessSchema = Typebox.Union([
     OutputSchema.Envelope.extend({
       data: Typebox.Object({
-        // todo is this the right "term" for this check type?
         checkType: Typebox.Literal('registry'),
         url: Typebox.Nullable(Typebox.String({ format: 'uri-template' })),
         breakingChanges: Typebox.Boolean(),
