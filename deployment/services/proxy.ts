@@ -18,12 +18,17 @@ export function deployLabWorker({
   environment: Environment;
   path: string;
 }) {
-  return reverseProxy.registerInternalProxy(environment.appDns, {
+  const dnsName = `lab-worker.${environment.rootDns}`;
+  reverseProxy.registerInternalProxy(dnsName, {
     path,
     service: app.service,
-    host: `lab-worker.${environment.appDns}`,
-    customRewrite: '/public/preflight-script-worker.js',
+    host: dnsName,
+    customRewrite: '/preflight-script-worker.js',
   });
+
+  return {
+    workerUrl: `https://${dnsName}${path}`,
+  };
 }
 
 export function deployProxy({
@@ -119,6 +124,5 @@ export function deployProxy({
         service: usage.service,
         retriable: true,
       },
-    ])
-    .get();
+    ]);
 }

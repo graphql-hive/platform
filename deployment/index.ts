@@ -308,7 +308,7 @@ const proxy = deployProxy({
 });
 
 deployLabWorker({
-  reverseProxy: proxy!,
+  reverseProxy: proxy,
   app,
   environment,
   path: '/worker.js',
@@ -340,4 +340,4 @@ export const schemaApiServiceId = schema.service.id;
 export const webhooksApiServiceId = webhooks.service.id;
 
 export const appId = app.deployment.id;
-export const publicIp = proxy!.status.loadBalancer.ingress[0].ip;
+export const publicIp = proxy.get()!.status.loadBalancer.ingress[0].ip;

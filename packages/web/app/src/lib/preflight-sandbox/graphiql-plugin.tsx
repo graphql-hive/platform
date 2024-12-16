@@ -1,17 +1,15 @@
 import {
   ComponentPropsWithoutRef,
-  Dispatch,
+  createContext,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
 import { clsx } from 'clsx';
 import type { editor } from 'monaco-editor';
-import { useMutation, useQuery } from 'urql';
-import { persist } from 'zustand/middleware';
-import { shallow } from 'zustand/shallow';
-import { createWithEqualityFn } from 'zustand/traditional';
+import { useMutation } from 'urql';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,9 +23,9 @@ import {
 import { Subtitle, Title } from '@/components/ui/page';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
-import { graphql } from '@/gql';
-import { useToggle } from '@/lib/hooks';
-import { GraphiQLPlugin, useExecutionContext } from '@graphiql/react';
+import { FragmentType, graphql, useFragment } from '@/gql';
+import { useLocalStorage, useToggle } from '@/lib/hooks';
+import { GraphiQLPlugin } from '@graphiql/react';
 import { Editor as MonacoEditor, OnMount } from '@monaco-editor/react';
 import {
   Cross2Icon,
@@ -39,46 +37,13 @@ import {
 } from '@radix-ui/react-icons';
 import { useParams } from '@tanstack/react-router';
 import type { LogMessage } from './preflight-script-worker';
-import PreflightWorker from './preflight-script-worker?worker';
+import _PreflightWorker from './preflight-script-worker?worker';
 
-const PREFLIGHT_TIMEOUT = 30_000; // 30,000 ms = 30 seconds
-
-const usePreflightScriptStore = createWithEqualityFn(
-  persist<{
-    script: string;
-    env: string;
-    disabled: boolean;
-    // We can't put method in actions object since we save in localStorage
-    setScript: Dispatch<string>;
-    setDisabled: Dispatch<boolean>;
-    setEnv: Dispatch<string | undefined>;
-  }>(
-    set => ({
-      script: '',
-      env: '',
-      disabled: false,
-      setScript: script => set({ script }),
-      setDisabled: disabled => set({ disabled }),
-      setEnv: env => set({ env }),
-    }),
-    {
-      name: 'preflight-script-storage',
-    },
-  ),
-  shallow,
-);
-
-const usePreflightScriptState = () =>
-  usePreflightScriptStore(state => ({
-    script: state.script,
-    env: state.env,
-    disabled: state.disabled,
-  }));
-
-const { setScript, setDisabled, setEnv } = usePreflightScriptStore.getState();
-
-// We need to reassign to new instance after calling `.terminate()` method
-let preflightWorker = new PreflightWorker();
+const PreflightWorker =
+  // eslint-disable-next-line no-process-env -- Static analyzer replace process.env.NODE_ENV at build time
+  process.env.NODE_ENV === 'production'
+    ? Worker.bind(null, 'https://lab-worker.dev.graphql-hive.com/worker.js')
+    : _PreflightWorker;
 
 export const preflightScriptPlugin: GraphiQLPlugin = {
   icon: () => (
@@ -141,57 +106,12 @@ const monacoProps = {
 } satisfies Record<'script' | 'env', ComponentPropsWithoutRef<typeof MonacoEditor>>;
 
 type ResultLog = { type: 'log'; message: string };
-type ResultError = { error: Error };
-type ResultEnv = { environmentVariables: Record<string, unknown> };
+type ResultError = { type: 'error'; error: Error };
+type ResultEnv = { type: 'result'; environmentVariables: Record<string, unknown> };
 
 type PreflightScriptResult = ResultEnv | ResultLog | ResultError;
 
-let timerId = 0;
-
-export async function executeScript() {
-  const { disabled, script, env } = usePreflightScriptStore.getState();
-  const environmentVariables = env ? JSON.parse(env) : {};
-
-  if (disabled) {
-    return { environmentVariables };
-  }
-  clearTimeout(timerId);
-  preflightWorker.postMessage({ script, environmentVariables });
-
-  const { promise, resolve } = Promise.withResolvers<Exclude<PreflightScriptResult, ResultLog>>();
-  preflightWorker.onmessage = ({ data }: MessageEvent<PreflightScriptResult>) => {
-    if ('type' in data) return;
-    clearTimeout(timerId);
-    if ('environmentVariables' in data) {
-      const { environmentVariables } = data;
-      setEnv(JSON.stringify(environmentVariables, null, 2));
-      resolve({ environmentVariables });
-      return;
-    }
-    resolve({ error: data.error });
-  };
-  timerId = window.setTimeout(() => {
-    resolve({
-      error: new Error(
-        `Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`,
-      ),
-    });
-    stopWorker();
-  }, PREFLIGHT_TIMEOUT);
-  return promise;
-}
-
-const TargetQuery = graphql(`
-  query Target($selector: TargetSelectorInput!) {
-    target(selector: $selector) {
-      id
-      preflightScript {
-        id
-        sourceCode
-      }
-    }
-  }
-`);
+const PREFLIGHT_TIMEOUT = 30_000;
 
 const UpdatePreflightScriptMutation = graphql(`
   mutation UpdatePreflightScript(
@@ -200,9 +120,12 @@ const UpdatePreflightScriptMutation = graphql(`
   ) {
     updatePreflightScript(selector: $selector, input: $input) {
       ok {
-        preflightScript {
+        updatedTarget {
           id
-          sourceCode
+          preflightScript {
+            id
+            sourceCode
+          }
         }
       }
       error {
@@ -212,70 +135,209 @@ const UpdatePreflightScriptMutation = graphql(`
   }
 `);
 
-function stopWorker() {
-  preflightWorker.terminate(); // This kills the worker
-  preflightWorker = new PreflightWorker();
+const PreflightScript_TargetFragment = graphql(`
+  fragment PreflightScript_TargetFragment on Target {
+    id
+    preflightScript {
+      id
+      sourceCode
+    }
+  }
+`);
+
+type LogRecord = LogMessage | { type: 'separator' };
+
+function safeParseJSON(str: string): Record<string, unknown> | null {
+  try {
+    return JSON.parse(str);
+  } catch {
+    return null;
+  }
 }
 
-function PreflightScriptContent() {
-  const [showModal, toggleShowModal] = useToggle();
-  const { env, disabled } = usePreflightScriptState();
-  const params = useParams({
-    from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
-  });
-  const [query, refetchQuery] = useQuery({
-    query: TargetQuery,
-    variables: { selector: params },
-  });
-  const { isFetching } = useExecutionContext({ nonNull: true, caller: PreflightScriptContent });
+export function usePreflightScript(args: {
+  target: FragmentType<typeof PreflightScript_TargetFragment> | null;
+}) {
+  const target = useFragment(PreflightScript_TargetFragment, args.target);
+  const [worker, setWorker] = useState(() => new PreflightWorker());
+  const [isPreflightScriptEnabled, setIsPreflightScriptEnabled] = useLocalStorage(
+    'hive:laboratory:isPreflightScriptEnabled',
+    false,
+  );
+  const [environmentVariables, setEnvironmentVariables] = useLocalStorage(
+    'hive:laboratory:environment',
+    '',
+  );
+  const latestEnvironmentVariablesRef = useRef(environmentVariables);
+  const [isRunning, setIsRunning] = useState(false);
+  const [logs, setLogs] = useState<LogRecord[]>([]);
+  const onNextFinishRef = useRef<PromiseWithResolvers<Record<string, unknown>> | undefined>();
 
   useEffect(() => {
-    if (!isFetching) {
-      // Stop worker in case user aborted execution
-      stopWorker();
-    }
-  }, [isFetching]);
+    latestEnvironmentVariablesRef.current = environmentVariables;
+  });
 
-  const [, mutate] = useMutation(UpdatePreflightScriptMutation);
+  useEffect(() => {
+    worker.onmessage = (ev: MessageEvent<PreflightScriptResult>) => {
+      if (ev.data.type === 'result') {
+        const mergedEnvironmentVariables = {
+          ...safeParseJSON(latestEnvironmentVariablesRef.current),
+          ...ev.data.environmentVariables,
+        };
+        setIsRunning(false);
+        setEnvironmentVariables(JSON.stringify(mergedEnvironmentVariables, null, 2));
+        setLogs(logs => [...logs, { type: 'separator' }]);
 
-  const preflightScript = query.data?.target?.preflightScript;
-  const { toast } = useToast();
-
-  const handleScriptChange = useCallback(
-    async (newValue = '') => {
-      const preflightId = preflightScript?.id;
-      const { data, error } = await mutate({
-        selector: params,
-        input: { sourceCode: newValue },
-      });
-      const err = error || data?.updatePreflightScript?.error;
-
-      if (err) {
-        toast({
-          title: 'Error',
-          description: err.message,
-          variant: 'destructive',
-        });
+        if (onNextFinishRef.current) {
+          onNextFinishRef.current.resolve(mergedEnvironmentVariables);
+          onNextFinishRef.current = undefined;
+        }
+        return;
+      }
+      if (ev.data.type === 'log') {
+        const message = ev.data.message;
+        setLogs(logs => [...logs, message]);
+        return;
+      }
+      if (ev.data.type === 'error') {
+        const error = ev.data.error;
+        setLogs(logs => [...logs, error]);
+        setIsRunning(false);
+        if (onNextFinishRef.current) {
+          onNextFinishRef.current.reject(error);
+          onNextFinishRef.current = undefined;
+        }
         return;
       }
 
-      const action = preflightId ? 'updated' : 'created';
-      if (!preflightId) {
-        refetchQuery({
-          requestPolicy: 'cache-and-network',
-        });
+      throw new Error('Received unexpected response from worker.');
+    };
+
+    // terminate worker when leaving laboratory
+    return () => {
+      worker.onmessage = () => {};
+      worker.terminate();
+    };
+  }, [worker]);
+
+  const abort = useCallback(
+    (isTimeout = false) => {
+      setLogs(logs => [
+        ...logs,
+        isTimeout
+          ? new Error(
+              `Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`,
+            )
+          : '> Preflight script interrupted by user',
+      ]);
+
+      worker.terminate();
+      worker.onmessage = () => {};
+      if (onNextFinishRef.current) {
+        onNextFinishRef.current.reject(new Error('Abort'));
       }
-      toast({
-        title: action[0].toUpperCase() + action.slice(1),
-        description: `Preflight script has been ${action} successfully`,
-        variant: 'default',
-      });
-      setScript(data!.updatePreflightScript.ok!.preflightScript.sourceCode);
+      setIsRunning(false);
+      setWorker(new PreflightWorker());
     },
-    [preflightScript],
+    [worker],
   );
 
-  const script = preflightScript?.sourceCode;
+  const execute = useCallback(
+    async (
+      /** provide a script to be executed. If no script is provided, the target defined one will be used. */
+      script = target?.preflightScript?.sourceCode ?? '',
+      /** we always want to tun the script if we are in preview mode */
+      isPreview = false,
+    ) => {
+      if (isPreview === false && !isPreflightScriptEnabled) {
+        return safeParseJSON(environmentVariables);
+      }
+      const now = Date.now();
+
+      setLogs(prev => [...prev, '> Start running script']);
+      setIsRunning(true);
+
+      onNextFinishRef.current = Promise.withResolvers<Record<string, unknown>>();
+
+      worker.postMessage({
+        script,
+        environmentVariables: (environmentVariables && safeParseJSON(environmentVariables)) || {},
+      });
+
+      const timeoutTimer = setTimeout(() => {
+        abort(true);
+      }, PREFLIGHT_TIMEOUT);
+
+      return onNextFinishRef.current.promise.finally(() => {
+        clearTimeout(timeoutTimer);
+        setLogs(logs => [
+          ...logs,
+          `> End running script. Done in ${(Date.now() - now) / 1000}s`,
+          {
+            type: 'separator' as const,
+          },
+        ]);
+      });
+    },
+    [isPreflightScriptEnabled, target?.preflightScript, environmentVariables, worker],
+  );
+
+  return {
+    execute,
+    abort,
+    isPreflightScriptEnabled,
+    setIsPreflightScriptEnabled,
+    script: target?.preflightScript?.sourceCode ?? '',
+    environmentVariables,
+    setEnvironmentVariables,
+    isRunning,
+    logs,
+    clearLogs: () => setLogs([]),
+  } as const;
+}
+
+type PreflightScriptObject = ReturnType<typeof usePreflightScript>;
+
+const PreflightScriptContext = createContext<PreflightScriptObject | null>(null);
+export const PreflightScriptProvider = PreflightScriptContext.Provider;
+
+function PreflightScriptContent() {
+  const preflightScript = useContext(PreflightScriptContext);
+  if (preflightScript === null) {
+    throw new Error('PreflightScriptContent used outside PreflightScriptContext.Provider');
+  }
+
+  const [showModal, toggleShowModal] = useToggle();
+  const params = useParams({
+    from: '/authenticated/$organizationSlug/$projectSlug/$targetSlug',
+  });
+
+  const [, mutate] = useMutation(UpdatePreflightScriptMutation);
+
+  const { toast } = useToast();
+
+  const handleScriptChange = useCallback(async (newValue = '') => {
+    const { data, error } = await mutate({
+      selector: params,
+      input: { sourceCode: newValue },
+    });
+    const err = error || data?.updatePreflightScript?.error;
+
+    if (err) {
+      toast({
+        title: 'Error',
+        description: err.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Update',
+      description: 'Preflight script has been updated successfully',
+      variant: 'default',
+    });
+  }, []);
 
   return (
     <>
@@ -284,10 +346,19 @@ function PreflightScriptContent() {
         key={String(showModal)}
         isOpen={showModal}
         toggle={toggleShowModal}
-        scriptValue={script}
+        scriptValue={preflightScript.script}
+        executeScript={value =>
+          preflightScript.execute(value, true).catch(() => {
+            // swallow error as it is already displayed in the logs.
+          })
+        }
+        isRunning={preflightScript.isRunning}
+        abortScriptRun={preflightScript.abort}
+        logs={preflightScript.logs}
+        clearLogs={preflightScript.clearLogs}
         onScriptValueChange={handleScriptChange}
-        envValue={env}
-        onEnvValueChange={setEnv}
+        envValue={preflightScript.environmentVariables}
+        onEnvValueChange={preflightScript.setEnvironmentVariables}
       />
       <div className="graphiql-doc-explorer-title flex items-center justify-between gap-4">
         Preflight Script
@@ -308,18 +379,18 @@ function PreflightScriptContent() {
 
       <div className="flex items-center gap-2 text-sm">
         <Switch
-          checked={!disabled}
-          onCheckedChange={v => setDisabled(!v)}
+          checked={preflightScript.isPreflightScriptEnabled}
+          onCheckedChange={v => preflightScript.setIsPreflightScriptEnabled(v)}
           className="my-4"
-          data-cy="disable-preflight-script"
+          data-cy="toggle-preflight-script"
         />
-        <span className="w-6">{disabled ? 'OFF' : 'ON'}</span>
+        <span className="w-6">{preflightScript.isPreflightScriptEnabled ? 'ON' : 'OFF'}</span>
       </div>
 
-      {!disabled && (
+      {preflightScript.isPreflightScriptEnabled && (
         <MonacoEditor
           height={128}
-          value={script}
+          value={preflightScript.script}
           {...monacoProps.script}
           className={classes.monacoMini}
           wrapperProps={{
@@ -342,8 +413,8 @@ function PreflightScriptContent() {
       <Subtitle>Define variables to use in your Headers</Subtitle>
       <MonacoEditor
         height={128}
-        value={env}
-        onChange={setEnv}
+        value={preflightScript.environmentVariables}
+        onChange={value => preflightScript.setEnvironmentVariables(value ?? '')}
         {...monacoProps.env}
         className={classes.monacoMini}
         wrapperProps={{
@@ -358,6 +429,11 @@ function PreflightScriptModal({
   isOpen,
   toggle,
   scriptValue,
+  executeScript,
+  isRunning,
+  abortScriptRun,
+  logs,
+  clearLogs,
   onScriptValueChange,
   envValue,
   onEnvValueChange,
@@ -365,15 +441,18 @@ function PreflightScriptModal({
   isOpen: boolean;
   toggle: () => void;
   scriptValue?: string;
-  onScriptValueChange: (value?: string) => void;
+  executeScript: (script: string) => void;
+  isRunning: boolean;
+  abortScriptRun: () => void;
+  logs: Array<LogRecord>;
+  clearLogs: () => void;
+  onScriptValueChange: (value: string) => void;
   envValue: string;
-  onEnvValueChange: (value?: string) => void;
+  onEnvValueChange: (value: string) => void;
 }) {
   const scriptEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const envEditorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  const [logs, setLogs] = useState<(LogMessage | { type: 'separator' })[]>([]);
   const consoleRef = useRef<HTMLElement>(null);
-  const [isRunning, setIsRunning] = useState(false);
 
   const handleScriptEditorDidMount: OnMount = useCallback(editor => {
     scriptEditorRef.current = editor;
@@ -383,73 +462,13 @@ function PreflightScriptModal({
     envEditorRef.current = editor;
   }, []);
   const handleSubmit = useCallback(() => {
-    onScriptValueChange(scriptEditorRef.current?.getValue());
-    onEnvValueChange(envEditorRef.current?.getValue());
+    onScriptValueChange(scriptEditorRef.current?.getValue() ?? '');
+    onEnvValueChange(envEditorRef.current?.getValue() ?? '');
     toggle();
   }, []);
 
-  const handleStopScript = useCallback(() => {
-    stopWorker();
-    setLogs(prev => [...prev, '> Preflight script interrupted by user', { type: 'separator' }]);
-    setIsRunning(false);
-  }, []);
-
-  const handleRunScript = useCallback(async () => {
-    const now = Date.now();
-    clearTimeout(timerId);
-
-    if (isRunning) {
-      handleStopScript();
-      return;
-    }
-
-    setIsRunning(true);
-    setLogs(prev => [...prev, '> Start running script']);
-
-    const env = envEditorRef.current?.getValue() ?? '';
-    preflightWorker.postMessage({
-      script: scriptEditorRef.current?.getValue() ?? '',
-      environmentVariables: env ? JSON.parse(env) : {},
-    });
-    preflightWorker.onmessage = ({ data }: MessageEvent<PreflightScriptResult>) => {
-      setLogs(prev => {
-        const result = [...prev];
-        const log =
-          'environmentVariables' in data ? '' : 'error' in data ? data.error : data.message;
-        result.push(log);
-        const isTerminated = 'environmentVariables' in data || 'error' in data;
-        if (isTerminated) {
-          clearTimeout(timerId);
-          const last = prev.at(-1);
-          const isLastSeparator =
-            typeof last === 'object' && 'type' in last && last.type === 'separator';
-          if (!isLastSeparator) {
-            result.push(`> End running script. Done in ${(Date.now() - now) / 1000}s`, {
-              type: 'separator' as const,
-            });
-          }
-          setIsRunning(false);
-        }
-        if ('environmentVariables' in data) {
-          setEnv(JSON.stringify(data.environmentVariables, null, 2));
-        }
-        return result;
-      });
-    };
-    timerId = window.setTimeout(() => {
-      stopWorker();
-      setLogs(prev => [
-        ...prev,
-        new Error(`Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`),
-        { type: 'separator' },
-      ]);
-      setIsRunning(false);
-    }, PREFLIGHT_TIMEOUT);
-  }, [isRunning]);
-
   useEffect(() => {
     const consoleEl = consoleRef.current;
-
     consoleEl?.scroll({ top: consoleEl.scrollHeight, behavior: 'smooth' });
   }, [logs]);
 
@@ -457,13 +476,21 @@ function PreflightScriptModal({
     <Dialog
       open={isOpen}
       onOpenChange={open => {
-        if (!open && isRunning) {
-          handleStopScript();
+        if (!open) {
+          abortScriptRun();
         }
         toggle();
       }}
     >
-      <DialogContent className="w-11/12 max-w-[unset] xl:w-4/5">
+      <DialogContent
+        className="w-11/12 max-w-[unset] xl:w-4/5"
+        onEscapeKeyDown={ev => {
+          // prevent pressing escape in monaco to close the modal
+          if (ev.target instanceof HTMLTextAreaElement) {
+            ev.preventDefault();
+          }
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Edit your Preflight Script</DialogTitle>
           <DialogDescription>
@@ -486,7 +513,14 @@ function PreflightScriptModal({
                 variant="orangeLink"
                 size="icon-sm"
                 className="size-auto gap-1"
-                onClick={handleRunScript}
+                onClick={() => {
+                  if (isRunning) {
+                    abortScriptRun();
+                    return;
+                  }
+
+                  executeScript(scriptEditorRef.current?.getValue() ?? '');
+                }}
                 data-cy="run-preflight-script"
               >
                 {isRunning ? (
@@ -522,7 +556,7 @@ function PreflightScriptModal({
                 variant="orangeLink"
                 size="icon-sm"
                 className="size-auto gap-1"
-                onClick={() => setLogs([])}
+                onClick={clearLogs}
                 disabled={isRunning}
               >
                 <Cross2Icon className="shrink-0" height="12" />
@@ -577,6 +611,7 @@ function PreflightScriptModal({
             </Title>
             <MonacoEditor
               value={envValue}
+              onChange={value => onEnvValueChange(value ?? '')}
               onMount={handleEnvEditorDidMount}
               {...monacoProps.env}
               options={{
