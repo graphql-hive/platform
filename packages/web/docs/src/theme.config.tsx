@@ -124,23 +124,24 @@ export default defineConfig({
 
       return (
         <HiveFooter
-          isHive
           className={cn(
             isLandingPage(route) ? 'light' : '[&>:first-child]:mx-0 [&>:first-child]:max-w-[90rem]',
             'pt-[72px]',
           )}
-          resources={[
-            {
-              children: 'Privacy Policy',
-              href: 'https://the-guild.dev/graphql/hive/privacy-policy.pdf',
-              title: 'Privacy Policy',
-            },
-            {
-              children: 'Terms of Use',
-              href: 'https://the-guild.dev/graphql/hive/terms-of-use.pdf',
-              title: 'Terms of Use',
-            },
-          ]}
+          items={{
+            resources: [
+              {
+                children: 'Privacy Policy',
+                href: 'https://the-guild.dev/graphql/hive/privacy-policy.pdf',
+                title: 'Privacy Policy',
+              },
+              {
+                children: 'Terms of Use',
+                href: 'https://the-guild.dev/graphql/hive/terms-of-use.pdf',
+                title: 'Terms of Use',
+              },
+            ],
+          }}
         />
       );
     },

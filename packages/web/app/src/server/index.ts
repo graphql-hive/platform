@@ -10,8 +10,10 @@ import { connectSlack } from './slack';
 const __dirname = new URL('.', import.meta.url).pathname;
 /**
  * Whether the server is running in development mode.
+ * See the ./dev.ts file
  */
-const isDev = process.argv.includes('--dev');
+// eslint-disable-next-line no-process-env
+const isDev = process.env.NODE_ENV === 'development';
 
 const server = Fastify({
   disableRequestLogging: true,
@@ -30,6 +32,7 @@ async function main() {
    * In development mode, we're going to use @fastify/vite for hot module reloading, pre-bundling dependencies, etc.
    */
   if (isDev) {
+    server.log.info('Running in development mode');
     // If in development mode, use Vite to serve the frontend and enable hot module reloading.
     const { default: FastifyVite } = await import('@fastify/vite');
     await server.register(FastifyVite, {
@@ -45,6 +48,7 @@ async function main() {
     });
     await server.vite.ready();
   } else {
+    server.log.info('Running in production mode');
     // If in production mode, serve the frontend as static files.
     await server.register(FastifyStatic, {
       // The root directory of the frontend code (where the index.html is located)
