@@ -1,4 +1,9 @@
 /**
+ * This module is for assorted "standard library" like functions and types each of
+ * which are to simple or incomplete to justify factoring out to a dedicated module.
+ */
+
+/**
  * This code should never be reached.
  */
 export const casesExhausted = (value: never): never => {
