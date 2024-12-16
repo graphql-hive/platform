@@ -341,21 +341,21 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
         this.log('');
 
+        process.exitCode = 1;
+
         if (forceSafe) {
           this.logSuccess('Breaking changes were expected (forced)');
-          return this.successData({
-            data: {
-              checkType: 'registry',
-              breakingChanges: true,
-              warnings: toWaring(result.schemaCheck.warnings),
-              changes: toChange(result.schemaCheck.changes),
-              url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
-            },
-          });
         }
 
-        // TODO integrate return JSON with exit 1
-        this.exit(1);
+        return this.successData({
+          data: {
+            checkType: 'registry',
+            breakingChanges: true,
+            warnings: toWaring(result.schemaCheck.warnings),
+            changes: toChange(result.schemaCheck.changes),
+            url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
+          },
+        });
       }
 
       if (result.schemaCheck.__typename === 'GitHubSchemaCheckSuccess') {
