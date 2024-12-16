@@ -1,6 +1,6 @@
 import { SchemaWarningConnection } from 'src/gql/graphql';
 import { casesExhausted } from 'src/helpers/general';
-import { OutputSchema } from 'src/helpers/output-schema';
+import { Envelope } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Errors, Flags } from '@oclif/core';
 import { CommandError } from '@oclif/core/lib/interfaces';
@@ -128,14 +128,14 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   static description = 'checks schema';
   static descriptionOfAction = 'check schema';
   static SuccessSchema = Typebox.Union([
-    OutputSchema.Envelope({
+    Envelope.Generic({
       checkType: Typebox.Literal('registry'),
       url: Typebox.Nullable(Typebox.String({ format: 'uri-template' })),
       breakingChanges: Typebox.Boolean(),
       changes: Typebox.Array(Change),
       warnings: Typebox.Array(Warning),
     }),
-    OutputSchema.Envelope({
+    Envelope.Generic({
       checkType: Typebox.Literal('github'),
       message: Typebox.String(),
     }),

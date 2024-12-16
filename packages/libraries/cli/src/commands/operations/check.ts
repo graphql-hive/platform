@@ -1,5 +1,5 @@
 import { buildSchema, GraphQLError, Source } from 'graphql';
-import { OutputSchema } from 'src/helpers/output-schema';
+import { Envelope } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { InvalidDocument, validate } from '@graphql-inspector/core';
 import { Args, Errors, Flags, ux } from '@oclif/core';
@@ -71,7 +71,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       default: false,
     }),
   };
-  static SuccessSchema = OutputSchema.Envelope({
+  static SuccessSchema = Envelope.Generic({
     type: Typebox.Literal('no_operations_found'),
   });
   static args = {

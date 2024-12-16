@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
-import { OutputSchema } from 'src/helpers/output-schema';
+import { DataOutputMode, Envelope } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
@@ -24,8 +24,8 @@ const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
 
 export default class SchemaFetch extends Command<typeof SchemaFetch> {
   static SuccessSchema = Typebox.Union([
-    OutputSchema.Envelope(OutputSchema.DataOutputMode.File.properties),
-    OutputSchema.Envelope(OutputSchema.DataOutputMode.Stdout.properties),
+    Envelope.Generic(DataOutputMode.File.properties),
+    Envelope.Generic(DataOutputMode.Stdout.properties),
   ]);
 
   static description = 'fetch schema or supergraph from the Hive API';

@@ -1,4 +1,4 @@
-import { OutputSchema } from 'src/helpers/output-schema';
+import { Envelope } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
@@ -8,14 +8,14 @@ import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppCreate extends Command<typeof AppCreate> {
   static SuccessSchema = Typebox.Union([
-    OutputSchema.IdempotentableEnvelopeSkipped({
+    Envelope.IdempotentableSkipped({
       status: Typebox.Enum({
         active: AppDeploymentStatus.Active,
         pending: AppDeploymentStatus.Pending,
         retired: AppDeploymentStatus.Retired,
       }),
     }),
-    OutputSchema.IdempotentableEnvelopeExecuted({
+    Envelope.IdempotentableExecuted({
       id: Typebox.StringNonEmpty,
       name: Typebox.StringNonEmpty,
       version: Typebox.StringNonEmpty,

@@ -1,6 +1,6 @@
 import colors from 'colors';
 import { casesExhausted } from 'src/helpers/general';
-import { OutputSchema } from 'src/helpers/output-schema';
+import { Envelope } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Flags } from '@oclif/core';
 import Command from '../base-command';
@@ -37,7 +37,7 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
   static description = 'shows information about the current token';
-  static SuccessSchema = OutputSchema.Envelope({
+  static SuccessSchema = Envelope.Generic({
     tokenName: Typebox.String(),
     organization: Typebox.String(),
     project: Typebox.String(),

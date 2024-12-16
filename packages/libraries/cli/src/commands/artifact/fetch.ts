@@ -1,4 +1,4 @@
-import { OutputSchema } from 'src/helpers/output-schema';
+import { DataOutputMode, Envelope } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { http, URL } from '@graphql-hive/core';
 import { Flags } from '@oclif/core';
@@ -6,8 +6,8 @@ import Command from '../../base-command';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
   static SuccessSchema = Typebox.Union([
-    OutputSchema.Envelope(OutputSchema.DataOutputMode.File.properties),
-    OutputSchema.Envelope(OutputSchema.DataOutputMode.Stdout.properties),
+    Envelope.Generic(DataOutputMode.File.properties),
+    Envelope.Generic(DataOutputMode.Stdout.properties),
   ]);
 
   static description = 'fetch artifacts from the CDN';

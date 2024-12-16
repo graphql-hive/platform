@@ -1,4 +1,4 @@
-import { OutputSchema } from 'src/helpers/output-schema';
+import { Envelope } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
@@ -7,10 +7,10 @@ import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppPublish extends Command<typeof AppPublish> {
   static SuccessSchema = Typebox.Union([
-    OutputSchema.IdempotentableEnvelopeSkipped({
+    Envelope.IdempotentableSkipped({
       name: Typebox.StringNonEmpty,
     }),
-    OutputSchema.IdempotentableEnvelopeExecuted({
+    Envelope.IdempotentableExecuted({
       name: Typebox.StringNonEmpty,
     }),
   ]);

@@ -7,7 +7,7 @@ import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { CommandError } from '@oclif/core/lib/interfaces';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 import { OmitNever } from './helpers/general';
-import { OutputSchema } from './helpers/output-schema';
+import { Envelope, OutputType } from './helpers/output-schema';
 import { Typebox } from './helpers/typebox/__';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
@@ -24,7 +24,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * Used by the {@link BaseCommand.successData} method.
    */
-  public static SuccessSchema: OutputSchema = OutputSchema.EnvelopeEmpty;
+  public static SuccessSchema: OutputType = Envelope.Empty;
 
   /**
    * Whether to validate the data returned by the {@link BaseCommand.successData} method.
@@ -92,7 +92,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
 
     if (this.SuccessSchemaValidationEnabled) {
       // TS doesn't support static property access on this.constructor for some reason.
-      const schema = (this.constructor as typeof BaseCommand).SuccessSchema as OutputSchema;
+      const schema = (this.constructor as typeof BaseCommand).SuccessSchema as OutputType;
       const result = schema.safeParse(dataOutput);
       if (!result.success) {
         throw new Errors.CLIError(result.error.message);
@@ -388,14 +388,14 @@ export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 
 type InferSuccessDataOutput<$CommandClass extends typeof Command> =
   'SuccessSchema' extends keyof $CommandClass
-    ? $CommandClass['SuccessSchema'] extends OutputSchema
+    ? $CommandClass['SuccessSchema'] extends OutputType
       ? Typebox.Static<$CommandClass['SuccessSchema']>
       : never
     : never;
 
 type InferSuccessDataInput<$CommandClass extends typeof Command> =
   'SuccessSchema' extends keyof $CommandClass
-    ? $CommandClass['SuccessSchema'] extends OutputSchema
+    ? $CommandClass['SuccessSchema'] extends OutputType
       ? Omit<Typebox.Static<$CommandClass['SuccessSchema']>, 'ok'>
       : InferSuccessDataInputError
     : InferSuccessDataInputError;
