@@ -6,12 +6,8 @@ import Command from '../../base-command';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
   static SuccessSchema = Typebox.Union([
-    OutputSchema.Envelope.extend({
-      data: OutputSchema.DataOutputMode.File,
-    }),
-    OutputSchema.Envelope.extend({
-      data: OutputSchema.DataOutputMode.Stdout,
-    }),
+    OutputSchema.Envelope(OutputSchema.DataOutputMode.File.properties),
+    OutputSchema.Envelope(OutputSchema.DataOutputMode.Stdout.properties),
   ]);
 
   static description = 'fetch artifacts from the CDN';

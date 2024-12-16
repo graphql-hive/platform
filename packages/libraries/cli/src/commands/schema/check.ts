@@ -128,20 +128,16 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   static description = 'checks schema';
   static descriptionOfAction = 'check schema';
   static SuccessSchema = Typebox.Union([
-    OutputSchema.Envelope.extend({
-      data: Typebox.Object({
-        checkType: Typebox.Literal('registry'),
-        url: Typebox.Nullable(Typebox.String({ format: 'uri-template' })),
-        breakingChanges: Typebox.Boolean(),
-        changes: Typebox.Array(Change),
-        warnings: Typebox.Array(Warning),
-      }),
+    OutputSchema.Envelope({
+      checkType: Typebox.Literal('registry'),
+      url: Typebox.Nullable(Typebox.String({ format: 'uri-template' })),
+      breakingChanges: Typebox.Boolean(),
+      changes: Typebox.Array(Change),
+      warnings: Typebox.Array(Warning),
     }),
-    OutputSchema.Envelope.extend({
-      data: Typebox.Object({
-        checkType: Typebox.Literal('github'),
-        message: Typebox.String(),
-      }),
+    OutputSchema.Envelope({
+      checkType: Typebox.Literal('github'),
+      message: Typebox.String(),
     }),
   ]);
 

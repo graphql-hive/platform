@@ -9,12 +9,8 @@ import { loadSchema } from '../helpers/schema';
 
 export default class Introspect extends Command<typeof Introspect> {
   static SuccessSchema = Typebox.Union([
-    OutputSchema.Envelope.extend({
-      data: OutputSchema.DataOutputMode.File,
-    }),
-    OutputSchema.Envelope.extend({
-      data: OutputSchema.DataOutputMode.Stdout,
-    }),
+    OutputSchema.Envelope(OutputSchema.DataOutputMode.File.properties),
+    OutputSchema.Envelope(OutputSchema.DataOutputMode.Stdout.properties),
   ]);
 
   static description = 'introspects a GraphQL Schema';

@@ -1,4 +1,5 @@
 import colors from 'colors';
+import { casesExhausted } from 'src/helpers/general';
 import { OutputSchema } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Flags } from '@oclif/core';
@@ -36,17 +37,15 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
   static description = 'shows information about the current token';
-  static SuccessSchema = OutputSchema.Envelope.extend({
-    data: Typebox.Object({
-      tokenName: Typebox.String(),
-      organization: Typebox.String(),
-      project: Typebox.String(),
-      target: Typebox.String(),
-      authorization: Typebox.Object({
-        schema: Typebox.Object({
-          publish: Typebox.Boolean(),
-          check: Typebox.Boolean(),
-        }),
+  static SuccessSchema = OutputSchema.Envelope({
+    tokenName: Typebox.String(),
+    organization: Typebox.String(),
+    project: Typebox.String(),
+    target: Typebox.String(),
+    authorization: Typebox.Object({
+      schema: Typebox.Object({
+        publish: Typebox.Boolean(),
+        check: Typebox.Boolean(),
       }),
     }),
   });
@@ -136,12 +135,16 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
           },
         },
       });
-    } else if (result.tokenInfo.__typename === 'TokenNotFoundError') {
+    }
+
+    if (result.tokenInfo.__typename === 'TokenNotFoundError') {
       this.error(`Token not found. Reason: ${result.tokenInfo.message}`, {
         exit: 0,
         suggestions: [`How to create a token? https://docs.graphql-hive.com/features/tokens`],
       });
     }
+
+    casesExhausted(result.tokenInfo);
   }
 }
 

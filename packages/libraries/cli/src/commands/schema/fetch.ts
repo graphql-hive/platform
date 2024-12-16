@@ -24,12 +24,8 @@ const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
 
 export default class SchemaFetch extends Command<typeof SchemaFetch> {
   static SuccessSchema = Typebox.Union([
-    OutputSchema.Envelope.extend({
-      data: OutputSchema.DataOutputMode.File,
-    }),
-    OutputSchema.Envelope.extend({
-      data: OutputSchema.DataOutputMode.Stdout,
-    }),
+    OutputSchema.Envelope(OutputSchema.DataOutputMode.File.properties),
+    OutputSchema.Envelope(OutputSchema.DataOutputMode.Stdout.properties),
   ]);
 
   static description = 'fetch schema or supergraph from the Hive API';

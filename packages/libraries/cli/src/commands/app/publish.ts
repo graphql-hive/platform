@@ -7,15 +7,11 @@ import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppPublish extends Command<typeof AppPublish> {
   static SuccessSchema = Typebox.Union([
-    OutputSchema.Effect.Skipped.extend({
-      data: Typebox.Object({
-        name: Typebox.StringNonEmpty,
-      }),
+    OutputSchema.IdempotentableEnvelopeSkipped({
+      name: Typebox.StringNonEmpty,
     }),
-    OutputSchema.Effect.Executed.extend({
-      data: Typebox.Object({
-        name: Typebox.StringNonEmpty,
-      }),
+    OutputSchema.IdempotentableEnvelopeExecuted({
+      name: Typebox.StringNonEmpty,
     }),
   ]);
 

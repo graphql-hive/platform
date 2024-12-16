@@ -24,7 +24,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * Used by the {@link BaseCommand.successData} method.
    */
-  public static SuccessSchema: OutputSchema = OutputSchema.Envelope;
+  public static SuccessSchema: OutputSchema = OutputSchema.EnvelopeEmpty;
 
   /**
    * Whether to validate the data returned by the {@link BaseCommand.successData} method.
@@ -400,7 +400,8 @@ type InferSuccessDataInput<$CommandClass extends typeof Command> =
       : InferSuccessDataInputError
     : InferSuccessDataInputError;
 
-type InferSuccessDataInputError = 'Error: Missing `static SuccessSchema = ...` on your command.';
+type InferSuccessDataInputError =
+  'Error: Missing e.g. `static SuccessSchema = OutputSchema.Envelope.extend({ data: ... })` on your command.';
 
 function isClientError(error: Error): error is ClientError {
   return error instanceof ClientError;

@@ -1,4 +1,6 @@
 import { buildSchema, GraphQLError, Source } from 'graphql';
+import { OutputSchema } from 'src/helpers/output-schema';
+import { Typebox } from 'src/helpers/typebox/__';
 import { InvalidDocument, validate } from '@graphql-inspector/core';
 import { Args, Errors, Flags, ux } from '@oclif/core';
 import { CommandError } from '@oclif/core/lib/interfaces';
@@ -69,7 +71,9 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       default: false,
     }),
   };
-
+  static SuccessSchema = OutputSchema.Envelope({
+    type: Typebox.Literal('no_operations_found'),
+  });
   static args = {
     file: Args.string({
       name: 'file',
@@ -116,8 +120,11 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
 
     if (operations.length === 0) {
       this.logInfo('No operations found');
-      // todo json output
-      return;
+      return this.successData({
+        data: {
+          type: 'no_operations_found',
+        },
+      });
     }
 
     const result = await this.registryApi(endpoint, accessToken).request({
