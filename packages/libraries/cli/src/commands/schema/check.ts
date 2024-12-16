@@ -341,10 +341,10 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
         this.log('');
 
-        process.exitCode = 1;
-
         if (forceSafe) {
           this.logSuccess('Breaking changes were expected (forced)');
+        } else {
+          process.exitCode = 1;
         }
 
         return this.successData({
