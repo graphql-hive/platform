@@ -51,6 +51,14 @@ const meta: Record<string, DeepPartial<Item | MenuItem | PageItem>> = {
       layout: 'raw',
     },
   },
+  ecosystem: {
+    title: 'Ecosystem',
+    type: 'page',
+    display: 'hidden',
+    theme: {
+      layout: 'raw',
+    },
+  },
   products: {
     title: 'Products',
     type: 'menu',

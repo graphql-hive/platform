@@ -280,6 +280,12 @@ if (hiveAppPersistedDocumentsAbsolutePath) {
       commit: imagesTag,
     },
     persistedDocumentsPath: hiveAppPersistedDocumentsAbsolutePath,
+    wakeupClickhouse: environment.isProduction
+      ? null
+      : {
+          clickhouse: clickhouse.secret,
+          dockerSecret: docker.secret,
+        },
     // We need to wait until the new GraphQL schema is published before we can publish the app deployment.
     dependsOn: [publishGraphQLSchemaCommand],
   });
@@ -308,7 +314,7 @@ const proxy = deployProxy({
 });
 
 deployCloudFlareSecurityTransform({
-  envName,
+  environment,
   // Paths used by 3rd-party software.
   // The CF Page Rules should not affect them and do not apply any special security headers.
   ignoredPaths: [
