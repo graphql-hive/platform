@@ -106,8 +106,7 @@ const Change = Typebox.Object({
     Typebox.Object({
       by: Typebox.Nullable(
         Typebox.Object({
-          // id: z.string().nullable(),
-          displayName: Typebox.String().nullable(),
+          displayName: Typebox.Nullable(Typebox.String()),
         }),
       ),
     }),
