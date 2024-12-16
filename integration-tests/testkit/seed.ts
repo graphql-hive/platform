@@ -307,11 +307,13 @@ export function initSeed() {
                   const result = await execute({
                     document: UpdatePreflightScriptMutation,
                     variables: {
-                      input: { sourceCode },
-                      selector: {
-                        organizationSlug: organization.slug,
-                        projectSlug: project.slug,
-                        targetSlug: target.slug,
+                      input: {
+                        selector: {
+                          organizationSlug: organization.slug,
+                          projectSlug: project.slug,
+                          targetSlug: target.slug,
+                        },
+                        sourceCode,
                       },
                     },
                     authToken: token,

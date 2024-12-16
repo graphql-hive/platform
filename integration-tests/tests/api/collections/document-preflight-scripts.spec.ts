@@ -12,7 +12,7 @@ describe('Preflight Script', () => {
         .then(r => r.createProject(ProjectType.Single));
 
       const { error, ok } = await updatePreflightScript({ sourceCode: rawJs });
-      expect(error).toBeNull();
+      expect(error).toEqual(null);
       expect(ok?.updatedTarget.preflightScript?.id).toBeDefined();
       expect(ok?.updatedTarget.preflightScript?.sourceCode).toBe(rawJs);
     });

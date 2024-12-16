@@ -3,7 +3,7 @@ import { sql, type DatabasePool } from 'slonik';
 import { z } from 'zod';
 import { getLocalLang, getTokenSync } from '@nodesecure/i18n';
 import * as jsxray from '@nodesecure/js-x-ray';
-import { TargetSelectorInput, UpdatePreflightScriptInput } from '../../../__generated__/types';
+import type { Target } from '../../../shared/entities';
 import { Session } from '../../auth/lib/authz';
 import { IdTranslator } from '../../shared/providers/id-translator';
 import { Logger } from '../../shared/providers/logger';
@@ -39,6 +39,8 @@ const PreflightScriptModel = z.strictObject({
   updatedAt: z.string(),
 });
 
+type PreflightScript = z.TypeOf<typeof PreflightScriptModel>;
+
 const scanner = new jsxray.AstAnalyser();
 await getLocalLang();
 
@@ -60,35 +62,51 @@ export class PreflightScriptProvider {
   }
 
   async getPreflightScript(targetId: string) {
-    const result = await this.pool.maybeOne(sql`/* getPreflightScript */
-      SELECT "id"
-           , "source_code"         as "sourceCode"
-           , "target_id"           as "targetId"
-           , "created_by_user_id"  as "createdByUserId"
-           , to_json("created_at") as "createdAt"
-           , to_json("updated_at") as "updatedAt"
-      FROM "document_preflight_scripts"
-      WHERE "target_id" = ${targetId}
-      `);
+    const result = await this.pool.maybeOne<unknown>(sql`/* getPreflightScript */
+      SELECT
+        "id"
+        , "source_code"         AS "sourceCode"
+        , "target_id"           AS "targetId"
+        , "created_by_user_id"  AS "createdByUserId"
+        , to_json("created_at") AS "createdAt"
+        , to_json("updated_at") AS "updatedAt"
+      FROM
+        "document_preflight_scripts"
+      WHERE
+        "target_id" = ${targetId}
+    `);
 
-    return result && PreflightScriptModel.parse(result);
-  }
-
-  async updatePreflightScript(selector: TargetSelectorInput, input: UpdatePreflightScriptInput) {
-    const validationResult = UpdatePreflightScriptModel.safeParse(input);
-    if (validationResult.error) {
-      return {
-        error: {
-          __typename: 'PreflightScriptError' as const,
-          message: validationResult.error.errors[0].message,
-        },
-      };
+    if (!result) {
+      return null;
     }
 
+    return PreflightScriptModel.parse(result);
+  }
+
+  async updatePreflightScript(args: {
+    selector: {
+      organizationSlug: string;
+      projectSlug: string;
+      targetSlug: string;
+    };
+    sourceCode: string;
+  }): Promise<
+    | {
+        error: { message: string };
+        ok?: never;
+      }
+    | {
+        error?: never;
+        ok: {
+          preflightScript: PreflightScript;
+          updatedTarget: Target;
+        };
+      }
+  > {
     const [organizationId, projectId, targetId] = await Promise.all([
-      this.idTranslator.translateOrganizationId(selector),
-      this.idTranslator.translateProjectId(selector),
-      this.idTranslator.translateTargetId(selector),
+      this.idTranslator.translateOrganizationId(args.selector),
+      this.idTranslator.translateProjectId(args.selector),
+      this.idTranslator.translateTargetId(args.selector),
     ]);
 
     await this.session.assertPerformAction({
@@ -101,31 +119,44 @@ export class PreflightScriptProvider {
       },
     });
 
+    const validationResult = UpdatePreflightScriptModel.safeParse({ sourceCode: args.sourceCode });
+
+    if (validationResult.error) {
+      return {
+        error: {
+          message: validationResult.error.errors[0].message,
+        },
+      };
+    }
+
     const currentUser = await this.session.getViewer();
     const result = await this.pool.maybeOne(sql`/* createPreflightScript */
-      INSERT INTO "document_preflight_scripts" ( "source_code"
-                                               , "target_id"
-                                               , "created_by_user_id")
-      VALUES (${input.sourceCode},
-              ${targetId},
-              ${currentUser.id})
-      ON CONFLICT (target_id) 
+      INSERT INTO "document_preflight_scripts" (
+        "source_code"
+        , "target_id"
+        , "created_by_user_id")
+      VALUES (
+        ${validationResult.data.sourceCode}
+        , ${targetId}
+        , ${currentUser.id}
+      )
+      ON CONFLICT ("target_id") 
       DO UPDATE
-        SET source_code = EXCLUDED.source_code,
-            updated_at  = NOW()
+        SET
+          "source_code" = EXCLUDED."source_code"
+          , "updated_at"  = NOW()
       RETURNING
           "id"
-          , "source_code" as "sourceCode"
-          , "target_id" as "targetId"
-          , "created_by_user_id" as "createdByUserId"
-          , to_json("created_at") as "createdAt"
-          , to_json("updated_at") as "updatedAt"
+          , "source_code" AS "sourceCode"
+          , "target_id" AS "targetId"
+          , "created_by_user_id" AS "createdByUserId"
+          , to_json("created_at") AS "createdAt"
+          , to_json("updated_at") AS "updatedAt"
       `);
 
     if (!result) {
       return {
         error: {
-          __typename: 'PreflightScriptError' as const,
           message: 'No preflight script found',
         },
       };
@@ -135,13 +166,12 @@ export class PreflightScriptProvider {
     if (error) {
       return {
         error: {
-          __typename: 'PreflightScriptError' as const,
           message: error.errors[0].message,
         },
       };
     }
 
-    const target = await this.storage.getTarget({
+    const updatedTarget = await this.storage.getTarget({
       organizationId,
       projectId,
       targetId,
@@ -149,9 +179,8 @@ export class PreflightScriptProvider {
 
     return {
       ok: {
-        __typename: 'PreflightScriptOkPayload' as const,
         preflightScript,
-        updatedTarget: target,
+        updatedTarget,
       },
     };
   }

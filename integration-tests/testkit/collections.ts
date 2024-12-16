@@ -204,11 +204,8 @@ export const DeleteOperationMutation = graphql(`
 `);
 
 export const UpdatePreflightScriptMutation = graphql(`
-  mutation UpdatePreflightScript(
-    $selector: TargetSelectorInput!
-    $input: UpdatePreflightScriptInput!
-  ) {
-    updatePreflightScript(selector: $selector, input: $input) {
+  mutation UpdatePreflightScript($input: UpdatePreflightScriptInput!) {
+    updatePreflightScript(input: $input) {
       ok {
         updatedTarget {
           id

@@ -114,11 +114,8 @@ type PreflightScriptResult = ResultEnv | ResultLog | ResultError;
 const PREFLIGHT_TIMEOUT = 30_000;
 
 const UpdatePreflightScriptMutation = graphql(`
-  mutation UpdatePreflightScript(
-    $selector: TargetSelectorInput!
-    $input: UpdatePreflightScriptInput!
-  ) {
-    updatePreflightScript(selector: $selector, input: $input) {
+  mutation UpdatePreflightScript($input: UpdatePreflightScriptInput!) {
+    updatePreflightScript(input: $input) {
       ok {
         updatedTarget {
           id
@@ -318,8 +315,10 @@ function PreflightScriptContent() {
 
   const handleScriptChange = useCallback(async (newValue = '') => {
     const { data, error } = await mutate({
-      selector: params,
-      input: { sourceCode: newValue },
+      input: {
+        selector: params,
+        sourceCode: newValue,
+      },
     });
     const err = error || data?.updatePreflightScript?.error;
 
