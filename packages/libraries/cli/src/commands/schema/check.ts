@@ -3,6 +3,7 @@ import { casesExhausted } from 'src/helpers/general';
 import { OutputSchema } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Errors, Flags } from '@oclif/core';
+import { CommandError } from '@oclif/core/lib/interfaces';
 import Command from '../../base-command';
 import { graphql, useFragment } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
@@ -124,6 +125,8 @@ const Warning = Typebox.Object({
 type Warning = Typebox.Static<typeof Warning>;
 
 export default class SchemaCheck extends Command<typeof SchemaCheck> {
+  static description = 'checks schema';
+  static descriptionOfAction = 'check schema';
   static SuccessSchema = Typebox.Union([
     OutputSchema.Envelope.extend({
       data: Typebox.Object({
@@ -142,7 +145,6 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }),
   ]);
 
-  static description = 'checks schema';
   static flags = {
     service: Flags.string({
       description: 'service name (only for distributed schemas)',
@@ -203,184 +205,175 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   };
 
   async run() {
-    try {
-      const { flags, args } = await this.parse(SchemaCheck);
+    const { flags, args } = await this.parse(SchemaCheck);
 
-      await this.require(flags);
+    await this.require(flags);
 
-      const service = flags.service;
-      const forceSafe = flags.forceSafe;
-      const usesGitHubApp = flags.github === true;
-      const endpoint = this.ensure({
-        key: 'registry.endpoint',
-        args: flags,
-        legacyFlagName: 'registry',
-        defaultValue: graphqlEndpoint,
-        env: 'HIVE_REGISTRY',
-      });
-      const file = args.file;
-      const accessToken = this.ensure({
-        key: 'registry.accessToken',
-        args: flags,
-        legacyFlagName: 'token',
-        env: 'HIVE_TOKEN',
-      });
-      const sdl = await loadSchema(file);
-      const git = await gitInfo(() => {
-        // noop
-      });
+    const service = flags.service;
+    const forceSafe = flags.forceSafe;
+    const usesGitHubApp = flags.github === true;
+    const endpoint = this.ensure({
+      key: 'registry.endpoint',
+      args: flags,
+      legacyFlagName: 'registry',
+      defaultValue: graphqlEndpoint,
+      env: 'HIVE_REGISTRY',
+    });
+    const file = args.file;
+    const accessToken = this.ensure({
+      key: 'registry.accessToken',
+      args: flags,
+      legacyFlagName: 'token',
+      env: 'HIVE_TOKEN',
+    });
+    const sdl = await loadSchema(file);
+    const git = await gitInfo(() => {
+      // noop
+    });
 
-      const commit = flags.commit || git?.commit;
-      const author = flags.author || git?.author;
+    const commit = flags.commit || git?.commit;
+    const author = flags.author || git?.author;
 
-      if (typeof sdl !== 'string' || sdl.length === 0) {
-        throw new Errors.CLIError('Schema seems empty');
+    if (typeof sdl !== 'string' || sdl.length === 0) {
+      throw new Errors.CLIError('Schema seems empty');
+    }
+
+    let github: null | {
+      commit: string;
+      repository: string | null;
+      pullRequestNumber: string | null;
+    } = null;
+
+    if (usesGitHubApp) {
+      if (!commit) {
+        throw new Errors.CLIError(`Couldn't resolve commit sha required for GitHub Application`);
+      }
+      if (!git.repository) {
+        throw new Errors.CLIError(
+          `Couldn't resolve git repository required for GitHub Application`,
+        );
+      }
+      if (!git.pullRequestNumber) {
+        this.warn(
+          "Could not resolve pull request number. Are you running this command on a 'pull_request' event?\n" +
+            'See https://the-guild.dev/graphql/hive/docs/other-integrations/ci-cd#github-workflow-for-ci',
+        );
       }
 
-      let github: null | {
-        commit: string;
-        repository: string | null;
-        pullRequestNumber: string | null;
-      } = null;
+      github = {
+        commit: commit,
+        repository: git.repository,
+        pullRequestNumber: git.pullRequestNumber,
+      };
+    }
 
-      if (usesGitHubApp) {
-        if (!commit) {
-          throw new Errors.CLIError(`Couldn't resolve commit sha required for GitHub Application`);
-        }
-        if (!git.repository) {
-          throw new Errors.CLIError(
-            `Couldn't resolve git repository required for GitHub Application`,
-          );
-        }
-        if (!git.pullRequestNumber) {
-          this.warn(
-            "Could not resolve pull request number. Are you running this command on a 'pull_request' event?\n" +
-              'See https://the-guild.dev/graphql/hive/docs/other-integrations/ci-cd#github-workflow-for-ci',
-          );
-        }
+    const result = await this.registryApi(endpoint, accessToken).request({
+      operation: schemaCheckMutation,
+      variables: {
+        input: {
+          service,
+          sdl: minifySchema(sdl),
+          github,
+          meta:
+            !!commit && !!author
+              ? {
+                  commit,
+                  author,
+                }
+              : null,
+          contextId: flags.contextId ?? undefined,
+        },
+        usesGitHubApp,
+      },
+    });
 
-        github = {
-          commit: commit,
-          repository: git.repository,
-          pullRequestNumber: git.pullRequestNumber,
-        };
+    if (result.schemaCheck.__typename === 'SchemaCheckSuccess') {
+      const changes = result.schemaCheck.changes;
+      if (result.schemaCheck.initial) {
+        this.logSuccess('Schema registry is empty, nothing to compare your schema with.');
+      } else if (!changes?.total) {
+        this.logSuccess('No changes');
+      } else {
+        renderChanges.call(this, changes);
+        this.log('');
       }
 
-      const result = await this.registryApi(endpoint, accessToken).request({
-        operation: schemaCheckMutation,
-        variables: {
-          input: {
-            service,
-            sdl: minifySchema(sdl),
-            github,
-            meta:
-              !!commit && !!author
-                ? {
-                    commit,
-                    author,
-                  }
-                : null,
-            contextId: flags.contextId ?? undefined,
-          },
-          usesGitHubApp,
+      const warnings = result.schemaCheck.warnings;
+      if (warnings?.total) {
+        renderWarnings.call(this, warnings);
+        this.log('');
+      }
+
+      if (result.schemaCheck.schemaCheck?.webUrl) {
+        this.log(`View full report:\n${result.schemaCheck.schemaCheck.webUrl}`);
+      }
+
+      return this.successData({
+        data: {
+          checkType: 'registry',
+          breakingChanges: false,
+          warnings: toWaring(result.schemaCheck.warnings),
+          changes: toChange(result.schemaCheck.changes),
+          url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
         },
       });
-
-      if (result.schemaCheck.__typename === 'SchemaCheckSuccess') {
-        const changes = result.schemaCheck.changes;
-        if (result.schemaCheck.initial) {
-          this.logSuccess('Schema registry is empty, nothing to compare your schema with.');
-        } else if (!changes?.total) {
-          this.logSuccess('No changes');
-        } else {
-          renderChanges.call(this, changes);
-          this.log('');
-        }
-
-        const warnings = result.schemaCheck.warnings;
-        if (warnings?.total) {
-          renderWarnings.call(this, warnings);
-          this.log('');
-        }
-
-        if (result.schemaCheck.schemaCheck?.webUrl) {
-          this.log(`View full report:\n${result.schemaCheck.schemaCheck.webUrl}`);
-        }
-
-        return this.successData({
-          data: {
-            checkType: 'registry',
-            breakingChanges: false,
-            warnings: toWaring(result.schemaCheck.warnings),
-            changes: toChange(result.schemaCheck.changes),
-            url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
-          },
-        });
-      }
-
-      if (result.schemaCheck.__typename === 'SchemaCheckError') {
-        const changes = result.schemaCheck.changes;
-        const errors = result.schemaCheck.errors;
-        const warnings = result.schemaCheck.warnings;
-        renderErrors.call(this, errors);
-
-        if (warnings?.total) {
-          renderWarnings.call(this, warnings);
-          this.log('');
-        }
-
-        if (changes && changes.total) {
-          this.log('');
-          renderChanges.call(this, changes);
-        }
-
-        if (result.schemaCheck.schemaCheck?.webUrl) {
-          this.log('');
-          this.log(`View full report:\n${result.schemaCheck.schemaCheck.webUrl}`);
-        }
-
-        this.log('');
-
-        if (forceSafe) {
-          this.logSuccess('Breaking changes were expected (forced)');
-        } else {
-          process.exitCode = 1;
-        }
-
-        return this.successData({
-          data: {
-            checkType: 'registry',
-            breakingChanges: true,
-            warnings: toWaring(result.schemaCheck.warnings),
-            changes: toChange(result.schemaCheck.changes),
-            url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
-          },
-        });
-      }
-
-      if (result.schemaCheck.__typename === 'GitHubSchemaCheckSuccess') {
-        this.logSuccess(result.schemaCheck.message);
-        return this.successData({
-          data: {
-            checkType: 'github',
-            message: result.schemaCheck.message,
-          },
-        });
-      }
-
-      if (result.schemaCheck.__typename === 'GitHubSchemaCheckError') {
-        this.error(result.schemaCheck.message);
-      }
-
-      casesExhausted(result.schemaCheck);
-    } catch (error) {
-      if (error instanceof Errors.ExitError) {
-        throw error;
-      } else {
-        this.logFail('Failed to check schema');
-        this.handleFetchError(error);
-      }
     }
+
+    if (result.schemaCheck.__typename === 'SchemaCheckError') {
+      const changes = result.schemaCheck.changes;
+      const errors = result.schemaCheck.errors;
+      const warnings = result.schemaCheck.warnings;
+      renderErrors.call(this, errors);
+
+      if (warnings?.total) {
+        renderWarnings.call(this, warnings);
+        this.log('');
+      }
+
+      if (changes && changes.total) {
+        this.log('');
+        renderChanges.call(this, changes);
+      }
+
+      if (result.schemaCheck.schemaCheck?.webUrl) {
+        this.log('');
+        this.log(`View full report:\n${result.schemaCheck.schemaCheck.webUrl}`);
+      }
+
+      this.log('');
+
+      if (forceSafe) {
+        this.logSuccess('Breaking changes were expected (forced)');
+      } else {
+        process.exitCode = 1;
+      }
+
+      return this.successData({
+        data: {
+          checkType: 'registry',
+          breakingChanges: true,
+          warnings: toWaring(result.schemaCheck.warnings),
+          changes: toChange(result.schemaCheck.changes),
+          url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
+        },
+      });
+    }
+
+    if (result.schemaCheck.__typename === 'GitHubSchemaCheckSuccess') {
+      this.logSuccess(result.schemaCheck.message);
+      return this.successData({
+        data: {
+          checkType: 'github',
+          message: result.schemaCheck.message,
+        },
+      });
+    }
+
+    if (result.schemaCheck.__typename === 'GitHubSchemaCheckError') {
+      this.error(result.schemaCheck.message);
+    }
+
+    casesExhausted(result.schemaCheck);
   }
 }
 

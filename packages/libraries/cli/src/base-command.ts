@@ -4,6 +4,7 @@ import type { ExecutionResult } from 'graphql';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
+import { CommandError } from '@oclif/core/lib/interfaces';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 import { OmitNever } from './helpers/general';
 import { OutputSchema } from './helpers/output-schema';
@@ -11,6 +12,12 @@ import { Typebox } from './helpers/typebox/__';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
+
+  /**
+   * A description of the action that this command performs.
+   * Used in certain automated error messages.
+   */
+  public static descriptionOfAction = 'perform action';
 
   /**
    * The data type returned by this command when successfully executed.
@@ -84,8 +91,8 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     } as InferSuccessDataOutput<$Command>;
 
     if (this.SuccessSchemaValidationEnabled) {
-      // @ts-expect-error TS doesn't support static property access on this.constructor for some reason.
-      const schema = this.constructor.SuccessSchema as OutputSchema;
+      // TS doesn't support static property access on this.constructor for some reason.
+      const schema = (this.constructor as typeof BaseCommand).SuccessSchema as OutputSchema;
       const result = schema.safeParse(dataOutput);
       if (!result.success) {
         throw new Errors.CLIError(result.error.message);
@@ -306,6 +313,19 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
         return jsonData.data!;
       },
     };
+  }
+
+  /**
+   * @see https://oclif.io/docs/error_handling/#error-handling-in-the-catch-method
+   */
+  async catch(error: CommandError): Promise<void> {
+    if (error instanceof Errors.CLIError) {
+      await super.catch(error);
+    } else {
+      const descriptionOfAction = (this.constructor as typeof BaseCommand).descriptionOfAction;
+      this.logFail(`Failed to ${descriptionOfAction}`);
+      this.handleFetchError(error);
+    }
   }
 
   handleFetchError(error: unknown): never {

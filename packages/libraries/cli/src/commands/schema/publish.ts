@@ -68,6 +68,7 @@ const schemaPublishMutation = graphql(/* GraphQL */ `
 
 export default class SchemaPublish extends Command<typeof SchemaPublish> {
   static description = 'publishes schema';
+  static descriptionOfAction = 'publish schema';
   static flags = {
     service: Flags.string({
       description: 'service name (only for distributed schemas)',
@@ -176,193 +177,184 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
   }
 
   async run() {
-    try {
-      const { flags, args } = await this.parse(SchemaPublish);
+    const { flags, args } = await this.parse(SchemaPublish);
 
-      await this.require(flags);
+    await this.require(flags);
 
-      const endpoint = this.ensure({
-        key: 'registry.endpoint',
-        args: flags,
-        legacyFlagName: 'registry',
-        defaultValue: graphqlEndpoint,
-        env: 'HIVE_REGISTRY',
+    const endpoint = this.ensure({
+      key: 'registry.endpoint',
+      args: flags,
+      legacyFlagName: 'registry',
+      defaultValue: graphqlEndpoint,
+      env: 'HIVE_REGISTRY',
+    });
+    const accessToken = this.ensure({
+      key: 'registry.accessToken',
+      args: flags,
+      legacyFlagName: 'token',
+      env: 'HIVE_TOKEN',
+    });
+    const service = flags.service;
+    const url = flags.url;
+    const file = args.file;
+    const force = flags.force;
+    const experimental_acceptBreakingChanges = flags.experimental_acceptBreakingChanges;
+    const metadata = this.resolveMetadata(flags.metadata);
+    const usesGitHubApp = flags.github;
+
+    let commit: string | undefined | null = this.maybe({
+      key: 'commit',
+      args: flags,
+      env: 'HIVE_COMMIT',
+    });
+    let author: string | undefined | null = this.maybe({
+      key: 'author',
+      args: flags,
+      env: 'HIVE_AUTHOR',
+    });
+
+    let gitHub: null | {
+      repository: string;
+      commit: string;
+    } = null;
+
+    if (!commit || !author) {
+      const git = await gitInfo(() => {
+        this.warn(`No git information found. Couldn't resolve author and commit.`);
       });
-      const accessToken = this.ensure({
-        key: 'registry.accessToken',
-        args: flags,
-        legacyFlagName: 'token',
-        env: 'HIVE_TOKEN',
-      });
-      const service = flags.service;
-      const url = flags.url;
-      const file = args.file;
-      const force = flags.force;
-      const experimental_acceptBreakingChanges = flags.experimental_acceptBreakingChanges;
-      const metadata = this.resolveMetadata(flags.metadata);
-      const usesGitHubApp = flags.github;
 
-      let commit: string | undefined | null = this.maybe({
-        key: 'commit',
-        args: flags,
-        env: 'HIVE_COMMIT',
-      });
-      let author: string | undefined | null = this.maybe({
-        key: 'author',
-        args: flags,
-        env: 'HIVE_AUTHOR',
-      });
-
-      let gitHub: null | {
-        repository: string;
-        commit: string;
-      } = null;
-
-      if (!commit || !author) {
-        const git = await gitInfo(() => {
-          this.warn(`No git information found. Couldn't resolve author and commit.`);
-        });
-
-        if (!commit) {
-          commit = git.commit;
-        }
-
-        if (!author) {
-          author = git.author;
-        }
+      if (!commit) {
+        commit = git.commit;
       }
 
       if (!author) {
-        throw new Errors.CLIError(`Missing "author"`);
-      }
-
-      if (!commit) {
-        throw new Errors.CLIError(`Missing "commit"`);
-      }
-
-      if (usesGitHubApp) {
-        // eslint-disable-next-line no-process-env
-        const repository = process.env['GITHUB_REPOSITORY'] ?? null;
-        if (!repository) {
-          throw new Errors.CLIError(`Missing "GITHUB_REPOSITORY" environment variable.`);
-        }
-        gitHub = {
-          repository,
-          commit,
-        };
-      }
-
-      let sdl: string;
-      try {
-        const rawSdl = await loadSchema(file);
-        invariant(typeof rawSdl === 'string' && rawSdl.length > 0, 'Schema seems empty');
-        const transformedSDL = print(transformCommentsToDescriptions(rawSdl));
-        sdl = minifySchema(transformedSDL);
-      } catch (err) {
-        if (err instanceof GraphQLError) {
-          const location = err.locations?.[0];
-          const locationString = location
-            ? ` at line ${location.line}, column ${location.column}`
-            : '';
-          throw new Error(`The SDL is not valid${locationString}:\n ${err.message}`);
-        }
-        throw err;
-      }
-
-      let result: DocumentType<typeof schemaPublishMutation> | null = null;
-
-      // todo: json output
-      do {
-        result = await this.registryApi(endpoint, accessToken).request({
-          operation: schemaPublishMutation,
-          variables: {
-            input: {
-              service,
-              url,
-              author,
-              commit,
-              sdl,
-              force,
-              experimental_acceptBreakingChanges: experimental_acceptBreakingChanges === true,
-              metadata,
-              gitHub,
-              supportsRetry: true,
-            },
-            usesGitHubApp: !!gitHub,
-          },
-          /** Gateway timeout is 60 seconds. */
-          timeout: 55_000,
-        });
-
-        if (result.schemaPublish.__typename === 'SchemaPublishSuccess') {
-          const changes = result.schemaPublish.changes;
-
-          if (result.schemaPublish.initial) {
-            this.logSuccess('Published initial schema.');
-          } else if (result.schemaPublish.successMessage) {
-            this.logSuccess(result.schemaPublish.successMessage);
-          } else if (changes && changes.total === 0) {
-            this.logSuccess('No changes. Skipping.');
-          } else {
-            if (changes) {
-              renderChanges.call(this, changes);
-            }
-            this.logSuccess('Schema published');
-          }
-
-          if (result.schemaPublish.linkToWebsite) {
-            this.logInfo(`Available at ${result.schemaPublish.linkToWebsite}`);
-          }
-        } else if (result.schemaPublish.__typename === 'SchemaPublishRetry') {
-          this.log(result.schemaPublish.reason);
-          this.log('Waiting for other schema publishes to complete...');
-          result = null;
-        } else if (result.schemaPublish.__typename === 'SchemaPublishMissingServiceError') {
-          this.logFail(
-            `${result.schemaPublish.missingServiceError} Please use the '--service <name>' parameter.`,
-          );
-          this.exit(1);
-        } else if (result.schemaPublish.__typename === 'SchemaPublishMissingUrlError') {
-          this.logFail(
-            `${result.schemaPublish.missingUrlError} Please use the '--url <url>' parameter.`,
-          );
-          this.exit(1);
-        } else if (result.schemaPublish.__typename === 'SchemaPublishError') {
-          const changes = result.schemaPublish.changes;
-          const errors = result.schemaPublish.errors;
-          renderErrors.call(this, errors);
-
-          if (changes && changes.total) {
-            this.log('');
-            renderChanges.call(this, changes);
-          }
-          this.log('');
-
-          if (!force) {
-            this.logFail('Failed to publish schema');
-            this.exit(1);
-          } else {
-            this.logSuccess('Schema published (forced)');
-          }
-
-          if (result.schemaPublish.linkToWebsite) {
-            this.logInfo(`Available at ${result.schemaPublish.linkToWebsite}`);
-          }
-        } else if (result.schemaPublish.__typename === 'GitHubSchemaPublishSuccess') {
-          this.logSuccess(result.schemaPublish.message);
-        } else {
-          this.error(
-            'message' in result.schemaPublish ? result.schemaPublish.message : 'Unknown error',
-          );
-        }
-      } while (result === null);
-    } catch (error) {
-      if (error instanceof Errors.ExitError) {
-        throw error;
-      } else {
-        this.logFail('Failed to publish schema');
-        this.handleFetchError(error);
+        author = git.author;
       }
     }
+
+    if (!author) {
+      throw new Errors.CLIError(`Missing "author"`);
+    }
+
+    if (!commit) {
+      throw new Errors.CLIError(`Missing "commit"`);
+    }
+
+    if (usesGitHubApp) {
+      // eslint-disable-next-line no-process-env
+      const repository = process.env['GITHUB_REPOSITORY'] ?? null;
+      if (!repository) {
+        throw new Errors.CLIError(`Missing "GITHUB_REPOSITORY" environment variable.`);
+      }
+      gitHub = {
+        repository,
+        commit,
+      };
+    }
+
+    let sdl: string;
+    try {
+      const rawSdl = await loadSchema(file);
+      invariant(typeof rawSdl === 'string' && rawSdl.length > 0, 'Schema seems empty');
+      const transformedSDL = print(transformCommentsToDescriptions(rawSdl));
+      sdl = minifySchema(transformedSDL);
+    } catch (err) {
+      if (err instanceof GraphQLError) {
+        const location = err.locations?.[0];
+        const locationString = location
+          ? ` at line ${location.line}, column ${location.column}`
+          : '';
+        throw new Error(`The SDL is not valid${locationString}:\n ${err.message}`);
+      }
+      throw err;
+    }
+
+    let result: DocumentType<typeof schemaPublishMutation> | null = null;
+
+    // todo: json output
+    do {
+      result = await this.registryApi(endpoint, accessToken).request({
+        operation: schemaPublishMutation,
+        variables: {
+          input: {
+            service,
+            url,
+            author,
+            commit,
+            sdl,
+            force,
+            experimental_acceptBreakingChanges: experimental_acceptBreakingChanges === true,
+            metadata,
+            gitHub,
+            supportsRetry: true,
+          },
+          usesGitHubApp: !!gitHub,
+        },
+        /** Gateway timeout is 60 seconds. */
+        timeout: 55_000,
+      });
+
+      if (result.schemaPublish.__typename === 'SchemaPublishSuccess') {
+        const changes = result.schemaPublish.changes;
+
+        if (result.schemaPublish.initial) {
+          this.logSuccess('Published initial schema.');
+        } else if (result.schemaPublish.successMessage) {
+          this.logSuccess(result.schemaPublish.successMessage);
+        } else if (changes && changes.total === 0) {
+          this.logSuccess('No changes. Skipping.');
+        } else {
+          if (changes) {
+            renderChanges.call(this, changes);
+          }
+          this.logSuccess('Schema published');
+        }
+
+        if (result.schemaPublish.linkToWebsite) {
+          this.logInfo(`Available at ${result.schemaPublish.linkToWebsite}`);
+        }
+      } else if (result.schemaPublish.__typename === 'SchemaPublishRetry') {
+        this.log(result.schemaPublish.reason);
+        this.log('Waiting for other schema publishes to complete...');
+        result = null;
+      } else if (result.schemaPublish.__typename === 'SchemaPublishMissingServiceError') {
+        this.logFail(
+          `${result.schemaPublish.missingServiceError} Please use the '--service <name>' parameter.`,
+        );
+        this.exit(1);
+      } else if (result.schemaPublish.__typename === 'SchemaPublishMissingUrlError') {
+        this.logFail(
+          `${result.schemaPublish.missingUrlError} Please use the '--url <url>' parameter.`,
+        );
+        this.exit(1);
+      } else if (result.schemaPublish.__typename === 'SchemaPublishError') {
+        const changes = result.schemaPublish.changes;
+        const errors = result.schemaPublish.errors;
+        renderErrors.call(this, errors);
+
+        if (changes && changes.total) {
+          this.log('');
+          renderChanges.call(this, changes);
+        }
+        this.log('');
+
+        if (!force) {
+          this.logFail('Failed to publish schema');
+          this.exit(1);
+        } else {
+          this.logSuccess('Schema published (forced)');
+        }
+
+        if (result.schemaPublish.linkToWebsite) {
+          this.logInfo(`Available at ${result.schemaPublish.linkToWebsite}`);
+        }
+      } else if (result.schemaPublish.__typename === 'GitHubSchemaPublishSuccess') {
+        this.logSuccess(result.schemaPublish.message);
+      } else {
+        this.error(
+          'message' in result.schemaPublish ? result.schemaPublish.message : 'Unknown error',
+        );
+      }
+    } while (result === null);
   }
 }

@@ -1,6 +1,7 @@
 import { buildSchema, GraphQLError, Source } from 'graphql';
 import { InvalidDocument, validate } from '@graphql-inspector/core';
 import { Args, Errors, Flags, ux } from '@oclif/core';
+import { CommandError } from '@oclif/core/lib/interfaces';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
@@ -16,6 +17,7 @@ const fetchLatestVersionQuery = graphql(/* GraphQL */ `
 
 export default class OperationsCheck extends Command<typeof OperationsCheck> {
   static description = 'checks operations against a published schema';
+  static descriptionOfAction = 'validate operations';
   static flags = {
     'registry.endpoint': Flags.string({
       description: 'registry endpoint',
@@ -78,114 +80,105 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
   };
 
   async run() {
-    try {
-      const { flags, args } = await this.parse(OperationsCheck);
+    const { flags, args } = await this.parse(OperationsCheck);
 
-      await this.require(flags);
+    await this.require(flags);
 
-      const endpoint = this.ensure({
-        key: 'registry.endpoint',
-        args: flags,
-        legacyFlagName: 'registry',
-        defaultValue: graphqlEndpoint,
-        env: 'HIVE_REGISTRY',
-      });
-      const accessToken = this.ensure({
-        key: 'registry.accessToken',
-        args: flags,
-        legacyFlagName: 'token',
-        env: 'HIVE_TOKEN',
-      });
-      const graphqlTag = flags.graphqlTag;
-      const globalGraphqlTag = flags.globalGraphqlTag;
+    const endpoint = this.ensure({
+      key: 'registry.endpoint',
+      args: flags,
+      legacyFlagName: 'registry',
+      defaultValue: graphqlEndpoint,
+      env: 'HIVE_REGISTRY',
+    });
+    const accessToken = this.ensure({
+      key: 'registry.accessToken',
+      args: flags,
+      legacyFlagName: 'token',
+      env: 'HIVE_TOKEN',
+    });
+    const graphqlTag = flags.graphqlTag;
+    const globalGraphqlTag = flags.globalGraphqlTag;
 
-      const file: string = args.file;
+    const file: string = args.file;
 
-      const operations = await loadOperations(file, {
-        normalize: false,
-        pluckModules: graphqlTag?.map(tag => {
-          const [name, identifier] = tag.split(':');
-          return {
-            name,
-            identifier,
-          };
-        }),
-        pluckGlobalGqlIdentifierName: globalGraphqlTag,
-      });
+    const operations = await loadOperations(file, {
+      normalize: false,
+      pluckModules: graphqlTag?.map(tag => {
+        const [name, identifier] = tag.split(':');
+        return {
+          name,
+          identifier,
+        };
+      }),
+      pluckGlobalGqlIdentifierName: globalGraphqlTag,
+    });
 
-      if (operations.length === 0) {
-        this.logInfo('No operations found');
-        // todo json output
-        return;
-      }
-
-      const result = await this.registryApi(endpoint, accessToken).request({
-        operation: fetchLatestVersionQuery,
-      });
-
-      const sdl = result.latestValidVersion?.sdl;
-
-      if (!sdl) {
-        this.error('Could not find a published schema. Please publish a valid schema first.');
-      }
-
-      const schema = buildSchema(sdl, {
-        assumeValidSDL: true,
-        assumeValid: true,
-      });
-
-      if (!flags.apolloClient) {
-        const detectedApolloDirectives = operations.some(
-          s => s.content.includes('@client') || s.content.includes('@connection'),
-        );
-
-        if (detectedApolloDirectives) {
-          this.warn(
-            'Apollo Client specific directives detected (@client, @connection). Please use the --apolloClient flag to enable support.',
-          );
-        }
-      }
-
-      const invalidOperations = validate(
-        schema,
-        operations.map(s => new Source(s.content, s.location)),
-        {
-          apollo: flags.apolloClient === true,
-        },
-      );
-
-      const operationsWithErrors = invalidOperations.filter(o => o.errors.length > 0);
-
-      if (operationsWithErrors.length === 0) {
-        this.logSuccess(`All operations are valid (${operations.length})`);
-        // todo json output
-        return;
-      }
-
-      ux.styledHeader('Summary');
-      this.log(
-        [
-          `Total: ${operations.length}`,
-          `Invalid: ${operationsWithErrors.length} (${Math.floor(
-            (operationsWithErrors.length / operations.length) * 100,
-          )}%)`,
-          '',
-        ].join('\n'),
-      );
-
-      ux.styledHeader('Details');
-
-      this.printInvalidDocuments(operationsWithErrors);
+    if (operations.length === 0) {
+      this.logInfo('No operations found');
       // todo json output
-      this.exit(1);
-    } catch (error) {
-      if (error instanceof Errors.ExitError) {
-        throw error;
-      } else {
-        this.logFail('Failed to validate operations');
-        this.handleFetchError(error);
+      return;
+    }
+
+    const result = await this.registryApi(endpoint, accessToken).request({
+      operation: fetchLatestVersionQuery,
+    });
+
+    const sdl = result.latestValidVersion?.sdl;
+
+    if (!sdl) {
+      this.error('Could not find a published schema. Please publish a valid schema first.');
+    }
+
+    const schema = buildSchema(sdl, {
+      assumeValidSDL: true,
+      assumeValid: true,
+    });
+
+    if (!flags.apolloClient) {
+      const detectedApolloDirectives = operations.some(
+        s => s.content.includes('@client') || s.content.includes('@connection'),
+      );
+
+      if (detectedApolloDirectives) {
+        this.warn(
+          'Apollo Client specific directives detected (@client, @connection). Please use the --apolloClient flag to enable support.',
+        );
       }
     }
+
+    const invalidOperations = validate(
+      schema,
+      operations.map(s => new Source(s.content, s.location)),
+      {
+        apollo: flags.apolloClient === true,
+      },
+    );
+
+    const operationsWithErrors = invalidOperations.filter(o => o.errors.length > 0);
+
+    if (operationsWithErrors.length === 0) {
+      this.logSuccess(`All operations are valid (${operations.length})`);
+      // todo json output
+      return;
+    }
+
+    ux.styledHeader('Summary');
+    this.log(
+      [
+        `Total: ${operations.length}`,
+        `Invalid: ${operationsWithErrors.length} (${Math.floor(
+          (operationsWithErrors.length / operations.length) * 100,
+        )}%)`,
+        '',
+      ].join('\n'),
+    );
+
+    ux.styledHeader('Details');
+
+    this.printInvalidDocuments(operationsWithErrors);
+    // todo json output
+    this.exit(1);
   }
 
   private printInvalidDocuments(invalidDocuments: InvalidDocument[]): void {

@@ -40,6 +40,7 @@ const schemaDeleteMutation = graphql(/* GraphQL */ `
 
 export default class SchemaDelete extends Command<typeof SchemaDelete> {
   static description = 'deletes a schema';
+  static descriptionOfAction = 'delete schema';
   static flags = {
     'registry.endpoint': Flags.string({
       description: 'registry endpoint',
@@ -83,75 +84,66 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
   };
 
   async run() {
-    try {
-      const { flags, args } = await this.parse(SchemaDelete);
+    const { flags, args } = await this.parse(SchemaDelete);
 
-      const service: string = args.service;
+    const service: string = args.service;
 
-      if (!flags.confirm) {
-        const confirmed = await ux.confirm(
-          `Are you sure you want to delete "${service}" from the registry? (y/n)`,
-        );
+    if (!flags.confirm) {
+      const confirmed = await ux.confirm(
+        `Are you sure you want to delete "${service}" from the registry? (y/n)`,
+      );
 
-        if (!confirmed) {
-          this.logInfo('Aborting');
-          this.exit(0);
-        }
-      }
-
-      const endpoint = this.ensure({
-        key: 'registry.endpoint',
-        args: flags,
-        legacyFlagName: 'registry',
-        defaultValue: graphqlEndpoint,
-        env: 'HIVE_REGISTRY',
-      });
-      const accessToken = this.ensure({
-        key: 'registry.accessToken',
-        args: flags,
-        legacyFlagName: 'token',
-        env: 'HIVE_TOKEN',
-      });
-
-      const result = await this.registryApi(endpoint, accessToken).request({
-        operation: schemaDeleteMutation,
-        variables: {
-          input: {
-            serviceName: service,
-            dryRun: flags.dryRun,
-          },
-        },
-      });
-
-      if (result.schemaDelete.__typename === 'SchemaDeleteSuccess') {
-        const message = `${service} deleted`;
-        this.logSuccess(message);
-        return this.successData({
-          message,
-        });
-      }
-
-      if (result.schemaDelete.__typename === 'SchemaDeleteError') {
-        // todo json output for this block
-        this.logFail(`Failed to delete ${service}`);
-        const errors = result.schemaDelete.errors;
-
-        if (errors) {
-          renderErrors.call(this, errors);
-          this.exit(1);
-        }
-
-        return;
-      }
-
-      casesExhausted(result.schemaDelete);
-    } catch (error) {
-      if (error instanceof Errors.ExitError) {
-        throw error;
-      } else {
-        this.logFail(`Failed to complete`);
-        this.handleFetchError(error);
+      if (!confirmed) {
+        this.logInfo('Aborting');
+        this.exit(0);
       }
     }
+
+    const endpoint = this.ensure({
+      key: 'registry.endpoint',
+      args: flags,
+      legacyFlagName: 'registry',
+      defaultValue: graphqlEndpoint,
+      env: 'HIVE_REGISTRY',
+    });
+    const accessToken = this.ensure({
+      key: 'registry.accessToken',
+      args: flags,
+      legacyFlagName: 'token',
+      env: 'HIVE_TOKEN',
+    });
+
+    const result = await this.registryApi(endpoint, accessToken).request({
+      operation: schemaDeleteMutation,
+      variables: {
+        input: {
+          serviceName: service,
+          dryRun: flags.dryRun,
+        },
+      },
+    });
+
+    if (result.schemaDelete.__typename === 'SchemaDeleteSuccess') {
+      const message = `${service} deleted`;
+      this.logSuccess(message);
+      return this.successData({
+        message,
+      });
+    }
+
+    if (result.schemaDelete.__typename === 'SchemaDeleteError') {
+      // todo json output for this block
+      this.logFail(`Failed to delete ${service}`);
+      const errors = result.schemaDelete.errors;
+
+      if (errors) {
+        renderErrors.call(this, errors);
+        this.exit(1);
+      }
+
+      return;
+    }
+
+    casesExhausted(result.schemaDelete);
   }
 }

@@ -308,8 +308,6 @@ export default class Dev extends Command<typeof Dev> {
       } catch (error) {
         reject(error);
       }
-    }).catch(error => {
-      this.handleFetchError(error);
     });
 
     if (compositionHasErrors(compositionResult)) {

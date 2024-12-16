@@ -35,6 +35,7 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 `);
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
+  static description = 'shows information about the current token';
   static SuccessSchema = OutputSchema.Envelope.extend({
     data: Typebox.Object({
       tokenName: Typebox.String(),
@@ -49,7 +50,6 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       }),
     }),
   });
-  static description = 'shows information about the current token';
   static flags = {
     'registry.endpoint': Flags.string({
       description: 'registry endpoint',
@@ -92,13 +92,9 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       env: 'HIVE_TOKEN',
     });
 
-    const result = await this.registryApi(registry, token)
-      .request({
-        operation: myTokenInfoQuery,
-      })
-      .catch(error => {
-        this.handleFetchError(error);
-      });
+    const result = await this.registryApi(registry, token).request({
+      operation: myTokenInfoQuery,
+    });
 
     if (result.tokenInfo.__typename === 'TokenInfo') {
       const { tokenInfo } = result;
