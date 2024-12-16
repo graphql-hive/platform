@@ -9,12 +9,12 @@ export default class AppPublish extends Command<typeof AppPublish> {
   static SuccessSchema = Typebox.Union([
     OutputSchema.Effect.Skipped.extend({
       data: Typebox.Object({
-        name: OutputSchema.NonEmptyString,
+        name: Typebox.StringNonEmpty,
       }),
     }),
     OutputSchema.Effect.Executed.extend({
       data: Typebox.Object({
-        name: OutputSchema.NonEmptyString,
+        name: Typebox.StringNonEmpty,
       }),
     }),
   ]);

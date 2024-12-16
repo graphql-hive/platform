@@ -11,14 +11,14 @@ export default class AppCreate extends Command<typeof AppCreate> {
     OutputSchema.Effect.Skipped.extend({
       data: Typebox.Object({
         // TODO improve type to match GQL Schema enum
-        status: OutputSchema.NonEmptyString,
+        status: Typebox.StringNonEmpty,
       }),
     }),
     OutputSchema.Effect.Executed.extend({
       data: Typebox.Object({
-        id: OutputSchema.NonEmptyString,
-        name: OutputSchema.NonEmptyString,
-        version: OutputSchema.NonEmptyString,
+        id: Typebox.StringNonEmpty,
+        name: Typebox.StringNonEmpty,
+        version: Typebox.StringNonEmpty,
       }),
     }),
   ]);

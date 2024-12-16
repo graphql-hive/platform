@@ -12,8 +12,6 @@ export type OutputSchema =
 type Envelope = typeof OutputSchema.Envelope;
 
 export namespace OutputSchema {
-  export const NonEmptyString = Typebox.String({ minLength: 1 });
-
   export const Envelope = Typebox.Object({
     ok: Typebox.Literal(true),
     message: Typebox.Optional(Typebox.String()),
