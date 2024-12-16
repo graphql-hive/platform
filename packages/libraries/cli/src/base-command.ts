@@ -401,7 +401,7 @@ type InferSuccessDataInput<$CommandClass extends typeof Command> =
     : InferSuccessDataInputError;
 
 type InferSuccessDataInputError =
-  'Error: Missing e.g. `static SuccessSchema = OutputSchema.Envelope.extend({ data: ... })` on your command.';
+  'Error: Missing e.g. `static SuccessSchema = Envelope.Generic({ ... })` on your command.';
 
 function isClientError(error: Error): error is ClientError {
   return error instanceof ClientError;
