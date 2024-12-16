@@ -3,7 +3,8 @@ import type { Redis } from 'ioredis';
 import { LRUCache } from 'lru-cache';
 import ms from 'ms';
 import { createConnectionString, createTokenStorage, Interceptor, tokens } from '@hive/storage';
-import { until, useActionTracker } from './helpers';
+import { captureException, captureMessage } from '@sentry/node';
+import { atomic, until, useActionTracker } from './helpers';
 import { cacheHits, cacheInvalidations, cacheMisses } from './metrics';
 
 type CacheEntry = StorageItem | 'not-found';
@@ -30,6 +31,17 @@ export interface Storage {
   invalidateTokens(hashedTokens: string[]): Promise<void>;
 }
 
+const cacheConfig = {
+  inMemory: {
+    maxEntries: 1000,
+    ttlInMs: ms('5m'),
+  },
+  redis: {
+    ttlInMs: ms('24h') / 1000,
+  },
+  tokenTouchIntervalInMs: ms('60s'),
+} as const;
+
 export async function createStorage(
   config: Parameters<typeof createConnectionString>[0],
   redis: Redis,
@@ -38,7 +50,7 @@ export async function createStorage(
 ): Promise<Storage> {
   const tracker = useActionTracker();
   const connectionString = createConnectionString(config);
-  const db = await createTokenStorage(connectionString, 5, additionalInterceptors.concat([{}]));
+  const db = await createTokenStorage(connectionString, 5, additionalInterceptors);
   const touch = tokenTouchScheduler(logger, async tokens => {
     try {
       await db.touchTokens({ tokens });
@@ -47,8 +59,8 @@ export async function createStorage(
     }
   });
   const cache = new LRUCache<string, CacheEntry>({
-    max: 1000,
-    ttl: ms('5m'),
+    max: cacheConfig.inMemory.maxEntries,
+    ttl: cacheConfig.inMemory.ttlInMs,
     // Allow to return stale data if the fetchMethod is slow
     allowStale: false,
     // Don't delete the cache entry if the fetchMethod fails
@@ -66,12 +78,19 @@ export async function createStorage(
 
       if (redis.status === 'ready') {
         redisData = await redis.get(hashedToken).catch(error => {
-          logger.error('Failed to read token from Redis', error);
+          handleStorageError({
+            logger,
+            error,
+            logMsg: 'Failed to read token from Redis',
+            tier: 'redis',
+            action: 'fetch',
+          });
           return null;
         });
       } else {
         // TODO: what if redis is not ready? Should we call the DB or return null?
-        logger.debug('Redis is not ready, skipping cache read');
+        logger.warn('Redis is not ready, skipping cache read');
+        captureMessage('Redis was not available as secondary cache', 'warning');
       }
 
       if (redisData) {
@@ -83,7 +102,13 @@ export async function createStorage(
         // If the DB is down, we log the error, and we throw exception.
         // This will cause the cache to return stale data.
         // This may have a performance impact (more calls to Db), but it won't break the system.
-        logger.error('Failed to read token from the DB', error);
+        handleStorageError({
+          logger,
+          error,
+          logMsg: 'Failed to read token from the Db',
+          tier: 'db',
+          action: 'fetch',
+        });
         return Promise.reject(error);
       });
 
@@ -91,10 +116,13 @@ export async function createStorage(
 
       // Write to Redis, so the next time we can read it from there
       await setInRedis(redis, hashedToken, cacheEntry).catch(error => {
-        logger.error(
-          'Failed to write token to Redis, but it was written to the in-memory cache',
+        handleStorageError({
+          logger,
           error,
-        );
+          logMsg: 'Failed to write token to Redis, but it was written to the in-memory cache',
+          tier: 'redis',
+          action: 'set',
+        });
       });
 
       return cacheEntry;
@@ -110,6 +138,7 @@ export async function createStorage(
       await db.destroy();
       // Wait for Redis to finish all the pending operations
       await redis.quit();
+      touch.dispose();
     },
     isReady: atomic(async () => {
       if (redis.status === 'ready' || redis.status === 'reconnecting') {
@@ -152,7 +181,13 @@ export async function createStorage(
       try {
         await setInRedis(redis, hashedToken, cacheEntry);
       } catch (error) {
-        logger.error('Failed to write token to Redis, but it was created in the DB', error);
+        handleStorageError({
+          logger,
+          error,
+          logMsg: 'Failed to write token to Redis, but it was created in the Db',
+          tier: 'redis',
+          action: 'set',
+        });
       }
 
       return cacheEntry;
@@ -204,31 +239,17 @@ function generateRedisKey(hashedToken: string) {
   return `tokens:cache:v2:${hashedToken}`;
 }
 
-const promisesInFlight = new Map<string, Promise<any>>();
-function atomic<R>(fn: () => Promise<R>): () => Promise<R> {
-  const uniqueString = Math.random().toString(36).slice(2) + Date.now().toString(36);
-
-  return function atomicWrapper() {
-    if (promisesInFlight.has(uniqueString)) {
-      return promisesInFlight.get(uniqueString)!;
-    }
-
-    const promise = fn();
-    promisesInFlight.set(uniqueString, promise);
-
-    return promise.finally(() => {
-      promisesInFlight.delete(uniqueString);
-    });
-  };
-}
-
 async function setInRedis(redis: Redis, hashedToken: string, cacheEntry: CacheEntry) {
   if (redis.status !== 'ready') {
     return;
   }
 
   const redisKey = generateRedisKey(hashedToken);
-  await redis.setex(redisKey, ms('24h') / 1000, JSON.stringify(cacheEntry));
+  await redis.setex(
+    redisKey,
+    Math.ceil(cacheConfig.redis.ttlInMs / 1000),
+    JSON.stringify(cacheEntry),
+  );
 }
 
 function tokenTouchScheduler(
@@ -258,7 +279,7 @@ function tokenTouchScheduler(
 
     logger.debug(`Touch ${tokens.length} tokens`);
     void onTouch(tokens);
-  }, ms('60s'));
+  }, cacheConfig.tokenTouchIntervalInMs);
 
   function dispose() {
     clearInterval(interval);
@@ -268,4 +289,20 @@ function tokenTouchScheduler(
     schedule,
     dispose,
   };
+}
+
+async function handleStorageError(params: {
+  logger: FastifyBaseLogger;
+  error: unknown;
+  logMsg: string;
+  tier: 'redis' | 'db';
+  action: 'fetch' | 'set';
+}) {
+  params.logger.error(params.logMsg, params.error);
+  captureException(params.error, {
+    tags: {
+      storageTier: params.tier,
+      storageAction: params.action,
+    },
+  });
 }
