@@ -16,7 +16,7 @@ import { deployKafka } from './services/kafka';
 import { deployObservability } from './services/observability';
 import { deploySchemaPolicy } from './services/policy';
 import { deployPostgres } from './services/postgres';
-import { deployProxy } from './services/proxy';
+import { deployLabWorker, deployProxy } from './services/proxy';
 import { deployRateLimit } from './services/rate-limit';
 import { deployRedis } from './services/redis';
 import { deployS3, deployS3Mirror } from './services/s3';
@@ -307,6 +307,13 @@ const proxy = deployProxy({
   environment,
 });
 
+deployLabWorker({
+  reverseProxy: proxy,
+  app,
+  environment,
+  path: '/worker.js',
+});
+
 deployCloudFlareSecurityTransform({
   envName,
   // Paths used by 3rd-party software.
@@ -333,4 +340,4 @@ export const schemaApiServiceId = schema.service.id;
 export const webhooksApiServiceId = webhooks.service.id;
 
 export const appId = app.deployment.id;
-export const publicIp = proxy!.status.loadBalancer.ingress[0].ip;
+export const publicIp = proxy.get()!.status.loadBalancer.ingress[0].ip;
