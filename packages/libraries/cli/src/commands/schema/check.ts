@@ -370,8 +370,6 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
       if (result.schemaCheck.__typename === 'GitHubSchemaCheckError') {
         this.error(result.schemaCheck.message);
-        // todo: confirm that OClif emits error json automatically.
-        // todo: even if it does... seems that we want a consistent schema here to above, with an added success-indicator property.
       }
 
       casesExhausted(result.schemaCheck);
