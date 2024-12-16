@@ -3,7 +3,6 @@ import { casesExhausted } from 'src/helpers/general';
 import { Envelope } from 'src/helpers/output-schema';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Errors, Flags } from '@oclif/core';
-import { CommandError } from '@oclif/core/lib/interfaces';
 import Command from '../../base-command';
 import { graphql, useFragment } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';

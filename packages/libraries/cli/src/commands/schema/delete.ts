@@ -132,7 +132,6 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
     }
 
     if (result.schemaDelete.__typename === 'SchemaDeleteError') {
-      // todo json output for this block
       this.logFail(`Failed to delete ${service}`);
       const errors = result.schemaDelete.errors;
 
