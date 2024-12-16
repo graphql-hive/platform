@@ -5,8 +5,8 @@ import { z } from 'zod';
 import { createErrorHandler, handleTRPCError, maskToken, metrics } from '@hive/service-common';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { initTRPC } from '@trpc/server';
-import { useCache } from './cache';
 import { cacheHits, cacheMisses } from './metrics';
+import { Storage } from './multi-tier-storage';
 
 const httpRequests = new metrics.Counter({
   name: 'tokens_http_requests',
@@ -43,7 +43,7 @@ function generateToken() {
 export type Context = {
   req: FastifyRequest;
   errorHandler: ReturnType<typeof createErrorHandler>;
-  getStorage: ReturnType<typeof useCache>['getStorage'];
+  storage: Storage;
   tokenReadFailuresCache: LruType<string>;
 };
 
@@ -72,9 +72,7 @@ export const tokensApiRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const storage = await ctx.getStorage();
-
-        return await storage.readTarget(input.targetId);
+        return await ctx.storage.readTarget(input.targetId);
       } catch (error) {
         ctx.errorHandler('Failed to get tokens of a target', error as Error);
 
@@ -91,8 +89,7 @@ export const tokensApiRouter = t.router({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const storage = await ctx.getStorage();
-        await storage.invalidateTokens(input.tokens);
+        await ctx.storage.invalidateTokens(input.tokens);
 
         return true;
       } catch (error) {
@@ -116,9 +113,8 @@ export const tokensApiRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       try {
         const { target, project, organization, name, scopes } = input;
-        const storage = await ctx.getStorage();
         const token = generateToken();
-        const result = await storage.writeToken({
+        const result = await ctx.storage.writeToken({
           name,
           target,
           project,
@@ -149,8 +145,7 @@ export const tokensApiRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       try {
         const hashed_token = input.token;
-        const storage = await ctx.getStorage();
-        await storage.deleteToken(hashed_token);
+        await ctx.storage.deleteToken(hashed_token);
 
         return true;
       } catch (error) {
@@ -180,8 +175,7 @@ export const tokensApiRouter = t.router({
       }
 
       try {
-        const storage = await ctx.getStorage();
-        const result = await storage.readToken(hash);
+        const result = await ctx.storage.readToken(hash);
 
         // removes the token from the failures cache (in case the value expired)
         ctx.tokenReadFailuresCache.delete(hash);

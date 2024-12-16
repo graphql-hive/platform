@@ -1,22 +1,5 @@
 import pTimeout from 'p-timeout';
 
-const requestsInFlight = new Map<string, Promise<any>>();
-
-export function atomic<A extends string, R>(fn: (arg: A) => Promise<R>): (arg: A) => Promise<R> {
-  return function atomicWrapper(arg) {
-    if (requestsInFlight.has(arg)) {
-      return requestsInFlight.get(arg)!;
-    }
-
-    const promise = fn(arg);
-    requestsInFlight.set(arg, promise);
-
-    return promise.finally(() => {
-      requestsInFlight.delete(arg);
-    });
-  };
-}
-
 // It's used to track the number of requests that are in flight.
 // This is important because we don't want to kill the pod when `DELETE` or `POST` action is in progress.
 export function useActionTracker() {

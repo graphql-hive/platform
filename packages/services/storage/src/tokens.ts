@@ -75,12 +75,16 @@ export async function createTokenStorage(
         `,
       );
     },
-    async deleteToken({ token }: { token: string }) {
-      await pool.query(
-        sql`
-          UPDATE tokens SET deleted_at = NOW() WHERE token = ${token}
-        `,
-      );
+    async deleteToken(params: { token: string; postDeletionTransaction: () => Promise<void> }) {
+      await pool.transaction(async t => {
+        await t.query(sql`
+          UPDATE tokens
+          SET deleted_at = NOW()
+          WHERE token = ${params.token}
+        `);
+
+        await params.postDeletionTransaction();
+      });
     },
     async touchTokens({ tokens }: { tokens: Array<{ token: string; date: Date }> }) {
       await pool.query(sql`
