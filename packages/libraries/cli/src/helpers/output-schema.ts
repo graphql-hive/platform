@@ -37,6 +37,31 @@ export namespace Envelope {
         data: Typebox.Object(data),
       }),
     ]);
+
+  export const FailureBase = Typebox.Object({
+    exitCode: Typebox.Integer({ minimum: 1 }),
+    code: Typebox.String(),
+    message: Typebox.String(),
+    url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
+    suggestions: Typebox.Array(Typebox.String()),
+    // data: Typebox.Record(Typebox.String(), Typebox.Any()),
+  });
+
+  export const Failure = <$Data extends Typebox.TProperties>(data: $Data) =>
+    Typebox.Composite([FailureBase, Typebox.Object({ data: Typebox.Object(data) })]);
+
+  export type FailureBaseT = typeof FailureBase;
+
+  export type FailureBase = Typebox.Static<FailureBaseT>;
+
+  export const failureDefaults: FailureBase = {
+    exitCode: 1,
+    code: 'unexpected',
+    message: 'Command failed.',
+    url: null,
+    suggestions: [],
+    // data: {},
+  };
 }
 
 export namespace DataOutputMode {

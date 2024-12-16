@@ -140,7 +140,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
 
     if (operations.length === 0) {
       this.logInfo('No operations found');
-      return this.successData({
+      return this.success({
         data: {
           countTotal: 0,
           countInvalid: 0,
@@ -208,7 +208,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       process.exitCode = 1;
     }
 
-    return this.successData({
+    return this.success({
       data: {
         countTotal: operations.length,
         countInvalid: operationsWithErrors.length,

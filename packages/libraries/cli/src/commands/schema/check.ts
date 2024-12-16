@@ -128,7 +128,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   static SuccessSchema = Typebox.Union([
     Envelope.Generic({
       checkType: Typebox.Literal('registry'),
-      url: Typebox.Nullable(Typebox.String({ format: 'uri-template' })),
+      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
       breakingChanges: Typebox.Boolean(),
       changes: Typebox.Array(Change),
       warnings: Typebox.Array(Warning),
@@ -302,7 +302,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         this.log(`View full report:\n${result.schemaCheck.schemaCheck.webUrl}`);
       }
 
-      return this.successData({
+      return this.success({
         data: {
           checkType: 'registry',
           breakingChanges: false,
@@ -342,7 +342,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         process.exitCode = 1;
       }
 
-      return this.successData({
+      return this.success({
         data: {
           checkType: 'registry',
           breakingChanges: true,
@@ -355,7 +355,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
     if (result.schemaCheck.__typename === 'GitHubSchemaCheckSuccess') {
       this.logSuccess(result.schemaCheck.message);
-      return this.successData({
+      return this.success({
         data: {
           checkType: 'github',
           message: result.schemaCheck.message,

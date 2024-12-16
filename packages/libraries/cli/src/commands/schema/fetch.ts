@@ -141,7 +141,7 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
           this.logFail(`Unsupported file extension ${extname(flags.write)}`);
           this.exit(1);
       }
-      return this.successData({
+      return this.success({
         data: {
           outputMode: 'file',
           path: filepath,
@@ -150,7 +150,7 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
     }
 
     this.log(schema);
-    return this.successData({
+    return this.success({
       data: {
         outputMode: 'stdout',
         content: schema,

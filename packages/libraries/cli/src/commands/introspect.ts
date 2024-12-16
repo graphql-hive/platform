@@ -70,7 +70,7 @@ export default class Introspect extends Command<typeof Introspect> {
 
     if (!flags.write) {
       this.log(schema);
-      return this.successData({
+      return this.success({
         data: {
           outputMode: 'stdout',
           content: schema,
@@ -106,7 +106,7 @@ export default class Introspect extends Command<typeof Introspect> {
       }
 
       this.logSuccess(`Saved to ${filepath}`);
-      return this.successData({
+      return this.success({
         data: {
           outputMode: 'file',
           path: filepath,

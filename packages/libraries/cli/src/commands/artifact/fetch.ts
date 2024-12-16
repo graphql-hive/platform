@@ -78,7 +78,7 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       await fs.writeFile(flags.outputFile, contents);
       const message = `Wrote ${contents.length} bytes to ${flags.outputFile}`;
       this.log(message);
-      return this.successData({
+      return this.success({
         message,
         data: {
           outputMode: 'file',
@@ -89,7 +89,7 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
 
     const content = await response.text();
     this.log(content);
-    return this.successData({
+    return this.success({
       data: {
         outputMode: 'stdout',
         content,

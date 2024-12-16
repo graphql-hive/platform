@@ -121,7 +121,7 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
 
       this.log(print());
 
-      return this.successData({
+      return this.success({
         data: {
           tokenName: tokenInfo.token.name,
           organization: organization.slug,

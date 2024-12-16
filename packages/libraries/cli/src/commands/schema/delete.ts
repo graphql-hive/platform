@@ -1,4 +1,6 @@
 import { casesExhausted } from 'src/helpers/general';
+import { Envelope } from 'src/helpers/output-schema';
+import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Errors, Flags, ux } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
@@ -83,6 +85,14 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
     }),
   };
 
+  static FailureSchema = Envelope.Failure({
+    errors: Typebox.Array(
+      Typebox.Object({
+        message: Typebox.String(),
+      }),
+    ),
+  });
+
   async run() {
     const { flags, args } = await this.parse(SchemaDelete);
 
@@ -126,18 +136,28 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
     if (result.schemaDelete.__typename === 'SchemaDeleteSuccess') {
       const message = `${service} deleted`;
       this.logSuccess(message);
-      return this.successData({
+      return this.success({
         message,
       });
     }
 
     if (result.schemaDelete.__typename === 'SchemaDeleteError') {
+      // todo  JSON output
       this.logFail(`Failed to delete ${service}`);
       const errors = result.schemaDelete.errors;
 
+      // TODO: errors is not optional, so remove this if condition?
       if (errors) {
         renderErrors.call(this, errors);
-        this.exit(1);
+        throw this.fail({
+          data: {
+            errors: errors.nodes.map(e => {
+              return {
+                message: e.message,
+              };
+            }),
+          },
+        });
       }
 
       return;

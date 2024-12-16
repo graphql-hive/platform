@@ -92,7 +92,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
     if (result.createAppDeployment.ok.createdAppDeployment.status !== AppDeploymentStatus.Pending) {
       const message = `App deployment "${flags['name']}@${flags['version']}" is "${result.createAppDeployment.ok.createdAppDeployment.status}". Skip uploading documents...`;
       this.log(message);
-      return this.successData({
+      return this.success({
         message,
         effect: 'skipped',
         data: {
@@ -155,7 +155,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
 
     const message = `App deployment "${flags['name']}@${flags['version']}" (${counter} operations) created.\nActivate it with the "hive app:publish" command.`;
     this.log(message);
-    return this.successData({
+    return this.success({
       message,
       effect: 'executed',
       data: {

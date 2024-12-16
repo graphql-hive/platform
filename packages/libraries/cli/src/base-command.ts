@@ -5,8 +5,9 @@ import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { CommandError } from '@oclif/core/lib/interfaces';
+import { CLIFailure } from './helpers/cli-failure';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
-import { OmitNever } from './helpers/general';
+import { OmitNever, OptionalizePropertyUnsafe } from './helpers/general';
 import { Envelope, OutputType } from './helpers/output-schema';
 import { Typebox } from './helpers/typebox/__';
 
@@ -22,12 +23,14 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   /**
    * The data type returned by this command when successfully executed.
    *
-   * Used by the {@link BaseCommand.successData} method.
+   * Used by the {@link BaseCommand.success} method.
    */
   public static SuccessSchema: OutputType = Envelope.Empty;
 
+  public static FailureSchema: Envelope.FailureBaseT = Envelope.FailureBase;
+
   /**
-   * Whether to validate the data returned by the {@link BaseCommand.successData} method.
+   * Whether to validate the data returned by the {@link BaseCommand.success} method.
    *
    * WARNING: If disabling validation, then you must not any of Zod's value coercing features
    * since they won't be run when validation is disabled.
@@ -76,6 +79,17 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     this.args = args as Args<$Command>;
   }
 
+  fail(envelope: InferFailureInput<$Command>) {
+    return new CLIFailure(envelope);
+  }
+
+  toErrorJson(error: unknown) {
+    if (error instanceof CLIFailure) {
+      return error.envelope;
+    }
+    return super.toErrorJson(error);
+  }
+
   /**
    * Helper function for creating data that adheres to the type specified by your command's {@link BaseCommand.SuccessSchema}.
    *
@@ -83,7 +97,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * For ease of use some standard properties are added for you automatically, simplifying the input you have to provide.
    */
-  successData(dataInput: InferSuccessDataInput<$Command>): InferSuccessDataOutput<$Command> {
+  success(dataInput: InferSuccessDataInput<$Command>): InferSuccessDataOutput<$Command> {
     const dataOutput = {
       ...(dataInput as object),
       ok: true,
@@ -385,6 +399,26 @@ export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
 >;
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
+
+type InferFailureOutput<$CommandClass extends typeof Command> =
+  'FailureSchema' extends keyof $CommandClass
+    ? $CommandClass['FailureSchema'] extends Envelope.FailureBaseT
+      ? Typebox.Static<$CommandClass['FailureSchema']>
+      : never
+    : never;
+
+type InferFailureInput<$CommandClass extends typeof Command> =
+  'FailureSchema' extends keyof $CommandClass
+    ? $CommandClass['FailureSchema'] extends Envelope.FailureBaseT
+      ? OptionalizePropertyUnsafe<
+          Typebox.Static<$CommandClass['FailureSchema']>,
+          'message' | 'exitCode' | 'code' | 'url' | 'suggestions'
+        >
+      : InferFailureInputError
+    : InferFailureInputError;
+
+type InferFailureInputError =
+  'Error: Missing e.g. `static FailureSchema = EnvelopeFailure({ ... })` on your command.';
 
 type InferSuccessDataOutput<$CommandClass extends typeof Command> =
   'SuccessSchema' extends keyof $CommandClass
