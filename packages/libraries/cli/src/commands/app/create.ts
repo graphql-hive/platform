@@ -10,8 +10,11 @@ export default class AppCreate extends Command<typeof AppCreate> {
   static SuccessSchema = Typebox.Union([
     OutputSchema.Effect.Skipped.extend({
       data: Typebox.Object({
-        // TODO improve type to match GQL Schema enum
-        status: Typebox.StringNonEmpty,
+        status: Typebox.Enum({
+          active: AppDeploymentStatus.Active,
+          pending: AppDeploymentStatus.Pending,
+          retired: AppDeploymentStatus.Retired,
+        }),
       }),
     }),
     OutputSchema.Effect.Executed.extend({
