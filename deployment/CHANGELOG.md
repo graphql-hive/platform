@@ -1,5 +1,24 @@
 # hive
 
+## 1.2.3
+
+### Patch Changes
+
+- [#6115](https://github.com/graphql-hive/console/pull/6115)
+  [`0d7ce02`](https://github.com/graphql-hive/console/commit/0d7ce02082a5ac02111b888132209ee0ef34c831)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Move information about target and
+  organization to logger's metadata in usage service
+
+- [#6121](https://github.com/graphql-hive/console/pull/6121)
+  [`6d78547`](https://github.com/graphql-hive/console/commit/6d78547a0f29a732713052d33d207396144e0998)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Make optional properties optional or
+  nullable in usage report v2
+
+- [#6111](https://github.com/graphql-hive/console/pull/6111)
+  [`cffd08a`](https://github.com/graphql-hive/console/commit/cffd08a53d7e5a53bb59fa68e940b693e9102485)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix a missing @join\_\_field on a query
+  field where @override is used, but not in all subgraphs.
+
 ## 1.2.2
 
 ### Patch Changes
