@@ -1,5 +1,21 @@
 # 16.10.2024
 
+## 1.1.0
+
+### Minor Changes
+
+- [#5732](https://github.com/graphql-hive/console/pull/5732)
+  [`1d3c566`](https://github.com/graphql-hive/console/commit/1d3c566ddcf5eb31c68545931da32bcdf4b8a047)
+  Thanks [@dotansimha](https://github.com/dotansimha)! - Updated Apollo-Router custom plugin for
+  Hive to use Usage reporting spec v2.
+  [Learn more](https://the-guild.dev/graphql/hive/docs/specs/usage-reports)
+
+- [#5732](https://github.com/graphql-hive/console/pull/5732)
+  [`1d3c566`](https://github.com/graphql-hive/console/commit/1d3c566ddcf5eb31c68545931da32bcdf4b8a047)
+  Thanks [@dotansimha](https://github.com/dotansimha)! - Add support for persisted documents using
+  Hive App Deployments.
+  [Learn more](https://the-guild.dev/graphql/hive/product-updates/2024-07-30-persisted-documents-app-deployments-preview)
+
 ## 1.0.1
 
 ### Patch Changes
