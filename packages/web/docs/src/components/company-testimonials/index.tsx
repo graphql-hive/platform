@@ -122,13 +122,11 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
         </Heading>
         <Tabs.Root
           defaultValue={testimonials[0].company}
-          className="flex flex-col"
+          className="flex flex-col overflow-hidden"
           onValueChange={value => {
             const id = getTestimonialId(value);
             const element = document.getElementById(id);
-            if (element) {
-              element.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' });
-            }
+            element?.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' });
           }}
         >
           <Tabs.List

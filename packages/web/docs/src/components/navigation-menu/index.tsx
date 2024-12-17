@@ -35,11 +35,11 @@ const developerMenu: HiveNavigationProps['developerMenu'] = [
 ];
 
 export function NavigationMenu() {
-  const route = usePathname();
+  const pathname = usePathname();
 
   return (
     <HiveNavigation
-      className={isLandingPage(route) ? 'light max-w-[1392px]' : 'max-w-[90rem]'}
+      className={landingPages.has(pathname) ? 'light max-w-[1392px]' : 'max-w-[90rem]'}
       companyMenuChildren={<GraphQLConfCard image={graphQLConfLocalImage} />}
       productName={PRODUCTS.HIVE.name}
       developerMenu={developerMenu}
@@ -47,5 +47,11 @@ export function NavigationMenu() {
   );
 }
 
-const landingLikePages = ['/', '/pricing', '/federation', '/oss-friends', '/ecosystem'];
-export const isLandingPage = (route: string) => landingLikePages.includes(route);
+export const landingPages = new Set([
+  '/',
+  '/pricing',
+  '/federation',
+  '/oss-friends',
+  '/ecosystem',
+  '/partners',
+]);

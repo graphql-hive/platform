@@ -9,7 +9,7 @@ import { Footer } from '../components/footer';
 import { NavigationMenu } from '../components/navigation-menu';
 import { DynamicMetaTags } from './dynamic-meta-tags';
 import '@theguild/components/style.css';
-import '../components/navigation-menu/navbar-global-styles.css';
+// import '../components/navigation-menu/navbar-global-styles.css';
 import '../selection-styles.css';
 
 export const metadata = getDefaultMetadata({

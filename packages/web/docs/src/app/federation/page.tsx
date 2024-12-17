@@ -211,6 +211,7 @@ function HowFederationWorksSection(props: {
   callToActionTitle: string;
   index: keyof typeof HowFederationWorksVariants;
   children?: ReactNode;
+  className?: string;
 }) {
   const variant = HowFederationWorksVariants[props.index];
 
@@ -220,18 +221,15 @@ function HowFederationWorksSection(props: {
         'relative isolate max-w-full rounded-none px-4 py-6 lg:px-8 lg:py-24 xl:px-16 [@media(min-width:1358px)]:px-24',
         'flex flex-col gap-6 lg:flex-row lg:gap-12',
         variant.className,
-        variant.beforeClassName
-          ? [
-              "before:absolute before:-top-24 before:left-0 before:hidden before:size-24 before:rounded-bl-3xl before:shadow-[0_48px_0_0] before:content-[''] before:lg:block",
-              variant.beforeClassName,
-            ]
-          : null,
-        variant.afterClassName
-          ? [
-              "after:absolute after:right-0 after:top-0 after:hidden after:size-24 after:rounded-tr-3xl after:shadow-[0_-48px_0_0] after:content-[''] after:lg:block",
-              variant.afterClassName,
-            ]
-          : null,
+        variant.beforeClassName && [
+          "before:absolute before:-top-24 before:left-0 before:hidden before:size-24 before:rounded-bl-3xl before:shadow-[0_48px_0_0] before:content-[''] before:lg:block",
+          variant.beforeClassName,
+        ],
+        variant.afterClassName && [
+          "after:absolute after:right-0 after:top-0 after:hidden after:size-24 after:rounded-tr-3xl after:shadow-[0_-48px_0_0] after:content-[''] after:lg:block",
+          variant.afterClassName,
+        ],
+        props.className,
       )}
     >
       <div className="mx-auto flex max-w-full shrink flex-col flex-wrap justify-center gap-x-2">
@@ -477,6 +475,7 @@ function HowFederationWorks(props: { className?: string }) {
         <HowFederationWorksSection
           index="third"
           heading="GraphQL Gateway (Router)"
+          className="prose-p:text-white/80 prose-li:text-white/80"
           description={
             <>
               <p>
@@ -614,7 +613,7 @@ function WhyHive({ className }: { className?: string }) {
       <Heading as="h2" size="md" className="text-balance sm:px-6 sm:text-center">
         Why Choose Hive for GraphQL Federation?
       </Heading>
-      <ul className="flex flex-row flex-wrap justify-center divide-y divide-solid sm:mt-6 sm:divide-x sm:divide-y-0 md:mt-16 md:px-6 xl:px-16">
+      <ul className="flex flex-row flex-wrap justify-center divide-y divide-solid divide-gray-200 sm:mt-6 sm:divide-x sm:divide-y-0 md:mt-16 md:px-6 xl:px-16">
         <InfoCard
           as="li"
           heading="Complete Federation Stack"

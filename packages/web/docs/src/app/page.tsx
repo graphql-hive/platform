@@ -29,11 +29,21 @@ import { InfoCard } from '../components/info-card';
 import { LandingPageContainer } from '../components/landing-page-container';
 import { StatsItem, StatsList } from '../components/stats';
 import { TeamSection } from '../components/team-section';
+import { metadata as rootMetadata } from './layout';
 
 export const metadata = {
   title: 'Open-Source GraphQL Federation Platform',
   description:
     'Fully Open-Source schema registry, analytics and gateway for GraphQL federation and other GraphQL APIs',
+  alternates: {
+    // to remove leading slash
+    canonical: '.',
+  },
+  openGraph: {
+    ...rootMetadata.openGraph,
+    // to remove leading slash
+    url: '.',
+  },
 };
 
 export default function IndexPage(): ReactElement {
