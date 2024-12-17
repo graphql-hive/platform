@@ -19,6 +19,11 @@ export function LandingPageContainer(props: { children: ReactNode; className?: s
           body {
             background: #fff;
           }
+
+          .nextra-search-results mark {
+            background: oklch(0.611752 0.07807 214.47 / 0.8);
+          }
+
           .nextra-sidebar-footer {
             display: none;
           }
