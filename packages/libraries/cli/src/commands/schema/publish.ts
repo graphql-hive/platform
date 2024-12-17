@@ -318,12 +318,12 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         this.log('Waiting for other schema publishes to complete...');
         result = null;
       } else if (result.schemaPublish.__typename === 'SchemaPublishMissingServiceError') {
-        this.logFail(
+        this.logFailure(
           `${result.schemaPublish.missingServiceError} Please use the '--service <name>' parameter.`,
         );
         this.exit(1);
       } else if (result.schemaPublish.__typename === 'SchemaPublishMissingUrlError') {
-        this.logFail(
+        this.logFailure(
           `${result.schemaPublish.missingUrlError} Please use the '--url <url>' parameter.`,
         );
         this.exit(1);
@@ -339,7 +339,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         this.log('');
 
         if (!force) {
-          this.logFail('Failed to publish schema');
+          this.logFailure('Failed to publish schema');
           this.exit(1);
         } else {
           this.logSuccess('Schema published (forced)');

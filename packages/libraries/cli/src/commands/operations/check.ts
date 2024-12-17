@@ -71,7 +71,15 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       default: false,
     }),
   };
-  static SuccessSchema = Envelope.Generic({
+  static args = {
+    file: Args.string({
+      name: 'file',
+      required: true,
+      description: 'Glob pattern to find the operations',
+      hidden: false,
+    }),
+  };
+  static output = Envelope.Success({
     countTotal: Typebox.Integer({ minimum: 0 }),
     countInvalid: Typebox.Integer({ minimum: 0 }),
     countValid: Typebox.Integer({ minimum: 0 }),
@@ -94,16 +102,8 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       }),
     ),
   });
-  static args = {
-    file: Args.string({
-      name: 'file',
-      required: true,
-      description: 'Glob pattern to find the operations',
-      hidden: false,
-    }),
-  };
 
-  async run() {
+  async runResult() {
     const { flags, args } = await this.parse(OperationsCheck);
 
     await this.require(flags);
@@ -243,7 +243,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
   }
 
   private renderErrors(sourceName: string, errors: GraphQLError[]) {
-    this.logFail(sourceName);
+    this.logFailure(sourceName);
     errors.forEach(e => {
       this.log(` - ${this.bolderize(e.message)}`);
     });

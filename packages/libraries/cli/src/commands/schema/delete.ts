@@ -85,15 +85,18 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
     }),
   };
 
-  static FailureSchema = Envelope.Failure({
-    errors: Typebox.Array(
-      Typebox.Object({
-        message: Typebox.String(),
-      }),
-    ),
-  });
+  static output = Typebox.Union([
+    Envelope.Failure({
+      errors: Typebox.Array(
+        Typebox.Object({
+          message: Typebox.String(),
+        }),
+      ),
+    }),
+    Envelope.Success({}),
+  ]);
 
-  async run() {
+  async runResult() {
     const { flags, args } = await this.parse(SchemaDelete);
 
     const service: string = args.service;
@@ -138,31 +141,24 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       this.logSuccess(message);
       return this.success({
         message,
+        data: {},
       });
     }
 
     if (result.schemaDelete.__typename === 'SchemaDeleteError') {
-      // todo  JSON output
-      this.logFail(`Failed to delete ${service}`);
-      const errors = result.schemaDelete.errors;
-
-      // TODO: errors is not optional, so remove this if condition?
-      if (errors) {
-        renderErrors.call(this, errors);
-        throw this.fail({
-          data: {
-            errors: errors.nodes.map(e => {
-              return {
-                message: e.message,
-              };
-            }),
-          },
-        });
-      }
-
-      return;
+      this.logFailure(`Failed to delete ${service}`);
+      renderErrors.call(this, result.schemaDelete.errors);
+      return this.failure({
+        context: {
+          errors: result.schemaDelete.errors.nodes.map(e => {
+            return {
+              message: e.message,
+            };
+          }),
+        },
+      });
     }
 
-    casesExhausted(result.schemaDelete);
+    throw casesExhausted(result.schemaDelete);
   }
 }

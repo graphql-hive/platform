@@ -125,20 +125,6 @@ type Warning = Typebox.Static<typeof Warning>;
 export default class SchemaCheck extends Command<typeof SchemaCheck> {
   static description = 'checks schema';
   static descriptionOfAction = 'check schema';
-  static SuccessSchema = Typebox.Union([
-    Envelope.Generic({
-      checkType: Typebox.Literal('registry'),
-      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
-      breakingChanges: Typebox.Boolean(),
-      changes: Typebox.Array(Change),
-      warnings: Typebox.Array(Warning),
-    }),
-    Envelope.Generic({
-      checkType: Typebox.Literal('github'),
-      message: Typebox.String(),
-    }),
-  ]);
-
   static flags = {
     service: Flags.string({
       description: 'service name (only for distributed schemas)',
@@ -188,7 +174,6 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       description: 'Context ID for grouping the schema check.',
     }),
   };
-
   static args = {
     file: Args.string({
       name: 'file',
@@ -197,8 +182,22 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       hidden: false,
     }),
   };
+  static output = Typebox.Union([
+    Envelope.Success({
+      checkType: Typebox.Literal('registry'),
+      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
+      breakingChanges: Typebox.Boolean(),
+      changes: Typebox.Array(Change),
+      warnings: Typebox.Array(Warning),
+    }),
+    Envelope.Success({
+      checkType: Typebox.Literal('github'),
+      message: Typebox.String(),
+    }),
+    Envelope.FailureBase,
+  ]);
 
-  async run() {
+  async runResult() {
     const { flags, args } = await this.parse(SchemaCheck);
 
     await this.require(flags);
@@ -364,10 +363,13 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }
 
     if (result.schemaCheck.__typename === 'GitHubSchemaCheckError') {
-      this.error(result.schemaCheck.message);
+      this.logFailure(result.schemaCheck.message);
+      return this.failure({
+        message: result.schemaCheck.message,
+      });
     }
 
-    casesExhausted(result.schemaCheck);
+    throw casesExhausted(result.schemaCheck);
   }
 }
 

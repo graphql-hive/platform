@@ -8,9 +8,9 @@ import Command from '../base-command';
 import { loadSchema } from '../helpers/schema';
 
 export default class Introspect extends Command<typeof Introspect> {
-  static SuccessSchema = Typebox.Union([
-    Envelope.Generic(DataOutputMode.File.properties),
-    Envelope.Generic(DataOutputMode.Stdout.properties),
+  static output = Typebox.Union([
+    Envelope.Success(DataOutputMode.File.properties),
+    Envelope.Success(DataOutputMode.Stdout.properties),
   ]);
 
   static description = 'introspects a GraphQL Schema';
@@ -54,7 +54,7 @@ export default class Introspect extends Command<typeof Introspect> {
       method: 'POST',
     }).catch(err => {
       if (err instanceof GraphQLError) {
-        this.logFail(err.message);
+        this.logFailure(err.message);
         this.exit(1);
       }
 
@@ -64,7 +64,7 @@ export default class Introspect extends Command<typeof Introspect> {
     });
 
     if (!schema) {
-      this.logFail('Unable to load schema');
+      this.logFailure('Unable to load schema');
       this.exit(1);
     }
 
@@ -101,7 +101,7 @@ export default class Introspect extends Command<typeof Introspect> {
           break;
         }
         default:
-          this.logFail(`Unsupported file extension ${extname(flags.write)}`);
+          this.logFailure(`Unsupported file extension ${extname(flags.write)}`);
           this.exit(1);
       }
 

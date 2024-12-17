@@ -1,12 +1,13 @@
 import colors from 'colors';
-import { print, type GraphQLError } from 'graphql';
+import { print } from 'graphql';
 import type { ExecutionResult } from 'graphql';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { CommandError } from '@oclif/core/lib/interfaces';
-import { CLIFailure } from './helpers/cli-failure';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
+import { CLIFailure } from './helpers/errors/cli-failure';
+import { ClientError } from './helpers/errors/client-error';
 import { OmitNever, OptionalizePropertyUnsafe } from './helpers/general';
 import { Envelope, OutputType } from './helpers/output-schema';
 import { Typebox } from './helpers/typebox/__';
@@ -21,23 +22,11 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   public static descriptionOfAction = 'perform action';
 
   /**
-   * The data type returned by this command when successfully executed.
+   * The data type returned by this command when executed.
    *
-   * Used by the {@link BaseCommand.success} method.
+   * Used by methods: {@link BaseCommand.success}, {@link BaseCommand.failure}, {@link BaseCommand.runResult}.
    */
-  public static SuccessSchema: OutputType = Envelope.Empty;
-
-  public static FailureSchema: Envelope.FailureBaseT = Envelope.FailureBase;
-
-  /**
-   * Whether to validate the data returned by the {@link BaseCommand.success} method.
-   *
-   * WARNING: If disabling validation, then you must not any of Zod's value coercing features
-   * since they won't be run when validation is disabled.
-   *
-   * @defaultValue `true`
-   */
-  public SuccessSchemaValidationEnabled: boolean = true;
+  public static output: OutputType = Envelope.SuccessBase;
 
   protected _userConfig: Config | undefined;
 
@@ -51,6 +40,65 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   protected flags!: Flags<$Command>;
 
   protected args!: Args<$Command>;
+
+  /**
+   * Prefer implementing {@link BaseCommand.runResult} instead of this method. Refer to it for its benefits.
+   *
+   * By default this command runs {@link BaseCommand.runResult}, having logic to handle its return value.
+   */
+  async run(): Promise<void | InferSuccess<$Command>> {
+    const resultUnsafe = await this.runResult();
+    const schema = (this.constructor as typeof BaseCommand).output as OutputType;
+    const result = Typebox.Value.Parse(schema, resultUnsafe);
+
+    if (result.ok) {
+      return result as any;
+    }
+
+    throw new CLIFailure(result);
+  }
+
+  /**
+   * A safer alternative to {@link BaseCommand.run}. Benefits:
+   *
+   * 1. Clearer control-flow: Treats errors as data (meaning you return them).
+   * 2. More type-safe 1: Throwing is not tracked by TypeScript, return is.
+   * 3. More type-safe 2: You are prevented from forgetting to return JSON data (void return not allowed).
+   *
+   * Note: You must specify your command's output type in {@link BaseCommand.output} to take advantage of this method.
+   */
+  async runResult(): Promise<InferSuccess<$Command> | InferFailure<$Command>> {
+    throw new Error('Not implemented');
+  }
+
+  toErrorJson(value: unknown) {
+    if (value instanceof CLIFailure) {
+      return value.envelope;
+    }
+    return super.toErrorJson(value);
+  }
+
+  /**
+   * Helper function for easy creation of success data (with defaults) that
+   * adheres to the type specified by your command's {@link BaseCommand.output}.
+   */
+  success(envelopeInit: InferSuccessInit<$Command>): InferSuccess<$Command> {
+    return {
+      ...Envelope.successDefaults,
+      ...(envelopeInit as object),
+    } as any;
+  }
+
+  /**
+   * Helper function for easy creation of failure data (with defaults) that
+   * adheres to the type specified by your command's {@link BaseCommand.output}.
+   */
+  failure(envelopeInit: InferFailureInit<$Command>): InferFailure<$Command> {
+    return {
+      ...Envelope.failureDefaults,
+      ...(envelopeInit as object),
+    } as any;
+  }
 
   protected get userConfig(): Config {
     if (!this._userConfig) {
@@ -79,44 +127,6 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     this.args = args as Args<$Command>;
   }
 
-  fail(envelope: InferFailureInput<$Command>) {
-    return new CLIFailure(envelope);
-  }
-
-  toErrorJson(error: unknown) {
-    if (error instanceof CLIFailure) {
-      return error.envelope;
-    }
-    return super.toErrorJson(error);
-  }
-
-  /**
-   * Helper function for creating data that adheres to the type specified by your command's {@link BaseCommand.SuccessSchema}.
-   *
-   * If {@link BaseCommand.SuccessSchemaValidationEnabled} is `true`, then the given data will be runtime-validated too.
-   *
-   * For ease of use some standard properties are added for you automatically, simplifying the input you have to provide.
-   */
-  success(dataInput: InferSuccessDataInput<$Command>): InferSuccessDataOutput<$Command> {
-    const dataOutput = {
-      ...(dataInput as object),
-      ok: true,
-      // warnings: [] as string[],
-    } as InferSuccessDataOutput<$Command>;
-
-    if (this.SuccessSchemaValidationEnabled) {
-      // TS doesn't support static property access on this.constructor for some reason.
-      const schema = (this.constructor as typeof BaseCommand).SuccessSchema as OutputType;
-      const result = schema.safeParse(dataOutput);
-      if (!result.success) {
-        throw new Errors.CLIError(result.error.message);
-      }
-      return result.data as InferSuccessDataOutput<$Command>;
-    }
-
-    return dataOutput;
-  }
-
   /**
    * {@link Command.log} with success styling.
    */
@@ -127,7 +137,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   /**
    * {@link Command.log} with failure styling.
    */
-  logFail(...args: any[]) {
+  logFailure(...args: any[]) {
     this.log(colors.red('✖'), ...args);
   }
 
@@ -337,7 +347,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       await super.catch(error);
     } else {
       const descriptionOfAction = (this.constructor as typeof BaseCommand).descriptionOfAction;
-      this.logFail(`Failed to ${descriptionOfAction}`);
+      this.logFailure(`Failed to ${descriptionOfAction}`);
       this.handleFetchError(error);
     }
   }
@@ -348,7 +358,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     }
 
     if (error instanceof Error) {
-      if (isClientError(error)) {
+      if (error instanceof ClientError) {
         const errors = error.response?.errors;
 
         if (Array.isArray(errors) && errors.length > 0) {
@@ -382,61 +392,45 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 }
 
-class ClientError extends Error {
-  constructor(
-    message: string,
-    public response: {
-      errors?: readonly GraphQLError[];
-      headers: Headers;
-    },
-  ) {
-    super(message);
-  }
-}
-
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
   (typeof BaseCommand)['baseFlags'] & T['flags']
 >;
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 
-type InferFailureOutput<$CommandClass extends typeof Command> =
-  'FailureSchema' extends keyof $CommandClass
-    ? $CommandClass['FailureSchema'] extends Envelope.FailureBaseT
-      ? Typebox.Static<$CommandClass['FailureSchema']>
+type InferFailure<$CommandClass extends typeof Command> =
+  'outputFailure' extends keyof $CommandClass
+    ? $CommandClass['outputFailure'] extends Envelope.FailureBase
+      ? Typebox.Static<$CommandClass['outputFailure']>
       : never
     : never;
 
-type InferFailureInput<$CommandClass extends typeof Command> =
-  'FailureSchema' extends keyof $CommandClass
-    ? $CommandClass['FailureSchema'] extends Envelope.FailureBaseT
-      ? OptionalizePropertyUnsafe<
-          Typebox.Static<$CommandClass['FailureSchema']>,
-          'message' | 'exitCode' | 'code' | 'url' | 'suggestions'
-        >
-      : InferFailureInputError
-    : InferFailureInputError;
+type InferFailureInit<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
+  ? $CommandClass['output'] extends OutputType
+    ? OptionalizePropertyUnsafe<
+        Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: true }>, 'ok'>,
+        'message' | 'exitCode' | 'code' | 'url' | 'suggestions'
+      >
+    : InferFailureInputError
+  : InferFailureInputError;
 
 type InferFailureInputError =
-  'Error: Missing e.g. `static FailureSchema = EnvelopeFailure({ ... })` on your command.';
+  'Error: Missing e.g. `static output = Envelope.Failure({ ... })` on your command.';
 
-type InferSuccessDataOutput<$CommandClass extends typeof Command> =
-  'SuccessSchema' extends keyof $CommandClass
-    ? $CommandClass['SuccessSchema'] extends OutputType
-      ? Typebox.Static<$CommandClass['SuccessSchema']>
-      : never
-    : never;
+type InferSuccess<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
+  ? $CommandClass['output'] extends OutputType
+    ? Exclude<Typebox.Static<$CommandClass['output']>, { ok: false }>
+    : never
+  : never;
 
-type InferSuccessDataInput<$CommandClass extends typeof Command> =
-  'SuccessSchema' extends keyof $CommandClass
-    ? $CommandClass['SuccessSchema'] extends OutputType
-      ? Omit<Typebox.Static<$CommandClass['SuccessSchema']>, 'ok'>
-      : InferSuccessDataInputError
-    : InferSuccessDataInputError;
+type InferSuccessInit<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
+  ? $CommandClass['output'] extends OutputType
+    ? OptionalizePropertyUnsafe<
+        Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: false }>, 'ok'>,
+        'message'
+      >
+    : InferSuccessDataInputError
+  : InferSuccessDataInputError;
 
 type InferSuccessDataInputError =
-  'Error: Missing e.g. `static SuccessSchema = Envelope.Generic({ ... })` on your command.';
-
-function isClientError(error: Error): error is ClientError {
-  return error instanceof ClientError;
-}
+  'Error: Missing e.g. `static output = Envelope.Success({ ... })` on your command.';

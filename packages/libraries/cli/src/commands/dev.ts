@@ -223,7 +223,7 @@ export default class Dev extends Command<typeof Dev> {
             write: flags.write,
             unstable__forceLatest,
             onError: message => {
-              this.logFail(message);
+              this.logFailure(message);
             },
           }),
         );
@@ -236,7 +236,7 @@ export default class Dev extends Command<typeof Dev> {
           services,
           write: flags.write,
           onError: message => {
-            this.logFail(message);
+            this.logFailure(message);
           },
         }),
       );
@@ -426,7 +426,7 @@ export default class Dev extends Command<typeof Dev> {
           services = newServices;
         }
       } catch (error) {
-        this.logFail(String(error));
+        this.logFailure(String(error));
       }
 
       timeoutId = setTimeout(watch, watchInterval);

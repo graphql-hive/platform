@@ -37,7 +37,7 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
   static description = 'shows information about the current token';
-  static SuccessSchema = Envelope.Generic({
+  static output = Envelope.Success({
     tokenName: Typebox.String(),
     organization: Typebox.String(),
     project: Typebox.String(),

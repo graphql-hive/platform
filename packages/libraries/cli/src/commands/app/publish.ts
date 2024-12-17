@@ -6,11 +6,11 @@ import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 
 export default class AppPublish extends Command<typeof AppPublish> {
-  static SuccessSchema = Typebox.Union([
-    Envelope.IdempotentableSkipped({
+  static output = Typebox.Union([
+    Envelope.SuccessIdempotentableSkipped({
       name: Typebox.StringNonEmpty,
     }),
-    Envelope.IdempotentableExecuted({
+    Envelope.SuccessIdempotentableExecuted({
       name: Typebox.StringNonEmpty,
     }),
   ]);

@@ -5,9 +5,9 @@ import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
-  static SuccessSchema = Typebox.Union([
-    Envelope.Generic(DataOutputMode.File.properties),
-    Envelope.Generic(DataOutputMode.Stdout.properties),
+  static output = Typebox.Union([
+    Envelope.Success(DataOutputMode.File.properties),
+    Envelope.Success(DataOutputMode.Stdout.properties),
   ]);
 
   static description = 'fetch artifacts from the CDN';

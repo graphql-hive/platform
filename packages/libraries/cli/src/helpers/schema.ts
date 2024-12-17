@@ -18,7 +18,7 @@ const criticalityMap: Record<CriticalityLevel, string> = {
 };
 
 export function renderErrors(this: BaseCommand<any>, errors: SchemaErrorConnection) {
-  this.logFail(`Detected ${errors.total} error${errors.total > 1 ? 's' : ''}`);
+  this.logFailure(`Detected ${errors.total} error${errors.total > 1 ? 's' : ''}`);
   this.log('');
 
   errors.nodes.forEach(error => {

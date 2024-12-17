@@ -23,11 +23,6 @@ const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
 `);
 
 export default class SchemaFetch extends Command<typeof SchemaFetch> {
-  static SuccessSchema = Typebox.Union([
-    Envelope.Generic(DataOutputMode.File.properties),
-    Envelope.Generic(DataOutputMode.Stdout.properties),
-  ]);
-
   static description = 'fetch schema or supergraph from the Hive API';
   static flags = {
     /** @deprecated */
@@ -64,7 +59,6 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       description: 'whether to write to a file instead of stdout',
     }),
   };
-
   static args = {
     actionId: Args.string({
       name: 'actionId' as const,
@@ -73,6 +67,10 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       hidden: false,
     }),
   };
+  static output = Typebox.Union([
+    Envelope.Success(DataOutputMode.File.properties),
+    Envelope.Success(DataOutputMode.Stdout.properties),
+  ]);
 
   async run() {
     const { flags, args } = await this.parse(SchemaFetch);
@@ -114,18 +112,18 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
     });
 
     if (result.schemaVersionForActionId == null) {
-      return this.error(`No schema found for action id ${actionId}`);
+      this.error(`No schema found for action id ${actionId}`);
     }
 
     if (result.schemaVersionForActionId.valid === false) {
-      return this.error(`Schema is invalid for action id ${actionId}`);
+      this.error(`Schema is invalid for action id ${actionId}`);
     }
 
     const schema =
       result.schemaVersionForActionId.sdl ?? result.schemaVersionForActionId.supergraph;
 
     if (schema == null) {
-      return this.error(`No ${sdlType} found for action id ${actionId}`);
+      this.error(`No ${sdlType} found for action id ${actionId}`);
     }
 
     if (flags.write) {
@@ -138,7 +136,7 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
           await writeFile(filepath, schema, 'utf8');
           break;
         default:
-          this.logFail(`Unsupported file extension ${extname(flags.write)}`);
+          this.logFailure(`Unsupported file extension ${extname(flags.write)}`);
           this.exit(1);
       }
       return this.success({

@@ -2,36 +2,42 @@ import { Typebox } from './typebox/__';
 
 // prettier-ignore
 export type OutputType =
-  | Envelope.Empty
-  | Typebox.Union<Envelope.Empty[]>
+  | Envelope.SuccessBase
+  | Envelope.FailureBase
+  | Typebox.Union<(Envelope.SuccessBase | Envelope.FailureBase)[]>
 
 export namespace Envelope {
-  export const Empty = Typebox.Object({
+  export const SuccessBase = Typebox.Object({
     ok: Typebox.Literal(true),
-    message: Typebox.Optional(Typebox.String()),
+    message: Typebox.String(),
   });
-  export type Empty = typeof Empty;
+  export type SuccessBase = typeof SuccessBase;
 
-  export const Generic = <$DataInit extends Typebox.TProperties>(data: $DataInit) =>
+  export const successDefaults: Typebox.Static<SuccessBase> = {
+    ok: true,
+    message: 'Command succeeded.',
+  };
+
+  export const Success = <$DataInit extends Typebox.TProperties>(data: $DataInit) =>
     Typebox.Composite([
-      Empty,
+      SuccessBase,
       Typebox.Object({
         data: Typebox.Object(data),
       }),
     ]);
 
-  export const IdempotentableSkipped = <$Data extends Typebox.TProperties>(data: $Data) =>
+  export const SuccessIdempotentableSkipped = <$Data extends Typebox.TProperties>(data: $Data) =>
     Typebox.Composite([
-      Empty,
+      SuccessBase,
       Typebox.Object({
         effect: Typebox.Literal('skipped'),
         data: Typebox.Object(data),
       }),
     ]);
 
-  export const IdempotentableExecuted = <$Data extends Typebox.TProperties>(data: $Data) =>
+  export const SuccessIdempotentableExecuted = <$Data extends Typebox.TProperties>(data: $Data) =>
     Typebox.Composite([
-      Empty,
+      SuccessBase,
       Typebox.Object({
         effect: Typebox.Literal('executed'),
         data: Typebox.Object(data),
@@ -39,6 +45,7 @@ export namespace Envelope {
     ]);
 
   export const FailureBase = Typebox.Object({
+    ok: Typebox.Literal(false),
     exitCode: Typebox.Integer({ minimum: 1 }),
     code: Typebox.String(),
     message: Typebox.String(),
@@ -46,21 +53,19 @@ export namespace Envelope {
     suggestions: Typebox.Array(Typebox.String()),
     // data: Typebox.Record(Typebox.String(), Typebox.Any()),
   });
+  export type FailureBase = typeof FailureBase;
 
-  export const Failure = <$Data extends Typebox.TProperties>(data: $Data) =>
-    Typebox.Composite([FailureBase, Typebox.Object({ data: Typebox.Object(data) })]);
+  export const Failure = <$Context extends Typebox.TProperties>(context: $Context) =>
+    Typebox.Composite([FailureBase, Typebox.Object({ context: Typebox.Object(context) })]);
 
-  export type FailureBaseT = typeof FailureBase;
-
-  export type FailureBase = Typebox.Static<FailureBaseT>;
-
-  export const failureDefaults: FailureBase = {
+  export const failureDefaults: Typebox.Static<FailureBase> = {
+    ok: false,
     exitCode: 1,
     code: 'unexpected',
     message: 'Command failed.',
     url: null,
     suggestions: [],
-    // data: {},
+    // context: {},
   };
 }
 
