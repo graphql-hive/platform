@@ -25,7 +25,7 @@ export interface Storage {
   close(): Promise<void>;
   isReady(): Promise<boolean>;
   readTarget(targetId: string): Promise<StorageItem[]>;
-  readToken(hashedToken: string): Promise<StorageItem | null>;
+  readToken(hashedToken: string, maskedToken: string): Promise<StorageItem | null>;
   writeToken(item: Omit<StorageItem, 'date' | 'lastUsedAt'>): Promise<StorageItem>;
   deleteToken(hashedToken: string): Promise<void>;
   invalidateTokens(hashedTokens: string[]): Promise<void>;
@@ -46,20 +46,26 @@ const cacheConfig = {
 export async function createStorage(
   config: Parameters<typeof createConnectionString>[0],
   redis: Redis,
-  logger: FastifyBaseLogger,
+  serverLogger: FastifyBaseLogger,
   additionalInterceptors: Interceptor[],
 ): Promise<Storage> {
   const tracker = useActionTracker();
   const connectionString = createConnectionString(config);
   const db = await createTokenStorage(connectionString, 5, additionalInterceptors);
-  const touch = tokenTouchScheduler(logger, async tokens => {
+  const touch = tokenTouchScheduler(serverLogger, async tokens => {
     try {
       await db.touchTokens({ tokens });
     } catch (error) {
-      logger.error('Failed to touch tokens', error);
+      serverLogger.error('Failed to touch tokens', error);
     }
   });
-  const cache = new LRUCache<string, CacheEntry>({
+  const cache = new LRUCache<
+    string,
+    CacheEntry,
+    {
+      maskedToken: string;
+    }
+  >({
     max: cacheConfig.inMemory.maxEntries,
     ttl: cacheConfig.inMemory.ttlInMs,
     // Allow to return stale data if the fetchMethod is slow
@@ -73,12 +79,14 @@ export async function createStorage(
     // to fill the cache with fresh data.
     // This method is called only once per cache key,
     // even if multiple requests are waiting for it.
-    async fetchMethod(hashedToken, staleCacheEntry) {
+    async fetchMethod(hashedToken, _staleEntry, { context }) {
       // Nothing fresh in the in-memory cache, let's check Redis
+
+      const logger = serverLogger.child({ maskedToken: context.maskedToken });
       let redisData: string | null = null;
 
       if (redis.status === 'ready') {
-        redisData = await redis.get(hashedToken).catch(error => {
+        redisData = await redis.get(generateRedisKey(hashedToken)).catch(error => {
           handleStorageError({
             logger,
             error,
@@ -98,74 +106,64 @@ export async function createStorage(
       }
 
       if (redisData) {
+        logger.debug('Returning fresh data from Redis');
         return JSON.parse(redisData) as CacheEntry;
       }
 
-      // Nothing in Redis, let's check the DB
-      const cacheEntry: CacheEntry = await db
-        .getToken({ token: hashedToken })
-        .then(dbResult => {
-          if (!dbResult) {
-            return 'not-found' as CacheEntry;
-          }
+      try {
+        // Nothing in Redis, let's check the DB
+        const dbResult = await db.getToken({ token: hashedToken });
+        const cacheEntry = dbResult ? transformToken(dbResult) : 'not-found';
 
-          return transformToken(dbResult);
-        })
-        .catch(async error => {
-          // If the DB is down, we log the error, and we throw exception.
-          // This will cause the cache to return stale data.
-          // This may have a performance impact (more calls to Db), but it won't break the system.
+        // Write to Redis, so the next time we can read it from there
+        await setInRedis(redis, hashedToken, cacheEntry).catch(error => {
           handleStorageError({
             logger,
             error,
-            logMsg: 'Failed to read token from the Db',
-            tier: 'db',
-            action: 'fetch',
+            logMsg: 'Failed to write token to Redis, but it was written to the in-memory cache',
+            tier: 'redis',
+            action: 'set',
           });
-
-          if (staleCacheEntry) {
-            logger.warn('Failed to read token from the Db, returning stale data');
-            throw error;
-          }
-
-          if (redis.status !== 'ready') {
-            logger.warn('Redis is not ready, cannot read stale data from it');
-            throw error;
-          }
-
-          const staleRedisData = await redis
-            .get(generateStaleRedisKey(hashedToken))
-            .catch(error => {
-              handleStorageError({
-                logger,
-                error,
-                logMsg: 'Failed to read token from Redis (stale)',
-                tier: 'redis-stale',
-                action: 'fetch',
-              });
-              return null;
-            });
-
-          if (!staleRedisData) {
-            logger.debug('No stale data in Redis');
-            throw error;
-          }
-
-          return JSON.parse(staleRedisData) as CacheEntry;
         });
-
-      // Write to Redis, so the next time we can read it from there
-      await setInRedis(redis, hashedToken, cacheEntry).catch(error => {
+      } catch (error) {
+        // If the DB is down, we log the error, and we throw exception.
+        // This will cause the cache to return stale data.
+        // This may have a performance impact (more calls to Db), but it won't break the system.
         handleStorageError({
           logger,
           error,
-          logMsg: 'Failed to write token to Redis, but it was written to the in-memory cache',
-          tier: 'redis',
-          action: 'set',
+          logMsg: 'Failed to read token from the Db',
+          tier: 'db',
+          action: 'fetch',
         });
-      });
 
-      return cacheEntry;
+        if (redis.status !== 'ready') {
+          logger.warn('Redis is not ready, cannot read stale data from it');
+          throw error;
+        }
+
+        const staleRedisData = await redis.get(generateStaleRedisKey(hashedToken)).catch(error => {
+          handleStorageError({
+            logger,
+            error,
+            logMsg: 'Failed to read token from Redis (stale)',
+            tier: 'redis-stale',
+            action: 'fetch',
+          });
+          return null;
+        });
+
+        if (!staleRedisData) {
+          logger.debug('No stale data in Redis');
+          throw error;
+        }
+
+        logger.debug('Returning stale data from Redis');
+        // Stale data will be cached in the in-memory cache only, as it's not fresh.
+        return JSON.parse(staleRedisData) as CacheEntry;
+      }
+
+      throw new Error('Unexpected code path');
     },
   });
 
@@ -173,7 +171,7 @@ export async function createStorage(
     async close() {
       // Wait for all the pending operations to finish
       await until(tracker.idle, 10_000).catch(error => {
-        logger.error('Failed to wait for tokens being idle', error);
+        serverLogger.error('Failed to wait for tokens being idle', error);
       });
       await db.destroy();
       // Wait for Redis to finish all the pending operations
@@ -190,8 +188,12 @@ export async function createStorage(
       const tokens = await db.getTokens({ target });
       return tokens.map(transformToken);
     },
-    async readToken(hashedToken) {
-      const data = await cache.fetch(hashedToken);
+    async readToken(hashedToken, maskedToken) {
+      const data = await cache.fetch(hashedToken, {
+        context: {
+          maskedToken,
+        },
+      });
 
       if (!data) {
         // Looked up in all layers, and the token is not found
@@ -222,7 +224,7 @@ export async function createStorage(
         await setInRedis(redis, hashedToken, cacheEntry);
       } catch (error) {
         handleStorageError({
-          logger,
+          logger: serverLogger,
           error,
           logMsg: 'Failed to write token to Redis, but it was created in the Db',
           tier: 'redis',

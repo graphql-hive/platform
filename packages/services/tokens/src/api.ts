@@ -175,7 +175,7 @@ export const tokensApiRouter = t.router({
       }
 
       try {
-        const result = await ctx.storage.readToken(hash);
+        const result = await ctx.storage.readToken(hash, alias);
 
         // removes the token from the failures cache (in case the value expired)
         ctx.tokenReadFailuresCache.delete(hash);
