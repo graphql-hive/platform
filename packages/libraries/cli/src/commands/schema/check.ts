@@ -1,12 +1,11 @@
-import { SchemaWarningConnection } from '../../gql/graphql';
-import { casesExhausted } from '../../helpers/general';
-import { Envelope } from '../../helpers/output-type';
-import { Typebox } from '../../helpers/typebox/__';
 import { Args, Errors, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql, useFragment } from '../../gql';
+import { SchemaWarningConnection } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
+import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
+import { Envelope } from '../../helpers/output-type';
 import {
   loadSchema,
   MaskedChanges,
@@ -16,6 +15,7 @@ import {
   renderErrors,
   renderWarnings,
 } from '../../helpers/schema';
+import { Typebox } from '../../helpers/typebox/__';
 
 const CriticalityLevel = Typebox.Enum({
   Breaking: 'Breaking',

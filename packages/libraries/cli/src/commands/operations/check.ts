@@ -1,12 +1,12 @@
 import { buildSchema, GraphQLError, Source } from 'graphql';
-import { Envelope } from '../../helpers/output-type';
-import { Typebox } from '../../helpers/typebox/__';
 import { InvalidDocument, validate } from '@graphql-inspector/core';
 import { Args, Flags, ux } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { loadOperations } from '../../helpers/operations';
+import { Envelope } from '../../helpers/output-type';
+import { Typebox } from '../../helpers/typebox/__';
 
 const fetchLatestVersionQuery = graphql(/* GraphQL */ `
   query fetchLatestVersion {
