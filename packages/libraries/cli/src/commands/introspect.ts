@@ -5,15 +5,9 @@ import { Args, Flags } from '@oclif/core';
 import Command from '../base-command';
 import { loadSchema } from '../helpers/schema';
 import { Typebox } from '../helpers/typebox/__';
-import { DataOutputMode } from '../schema/data';
-import { Envelope } from '../schema/envelope';
+import { SchemaOutput } from '../schema-output/__';
 
 export default class Introspect extends Command<typeof Introspect> {
-  static output = Typebox.Union([
-    Envelope.Success(DataOutputMode.File.properties),
-    Envelope.Success(DataOutputMode.Stdout.properties),
-  ]);
-
   static description = 'introspects a GraphQL Schema';
   static flags = {
     write: Flags.string({
@@ -35,6 +29,10 @@ export default class Introspect extends Command<typeof Introspect> {
       hidden: false,
     }),
   };
+  static output = Typebox.Union([
+    SchemaOutput.success(SchemaOutput.OutputMode.File.properties),
+    SchemaOutput.success(SchemaOutput.OutputMode.Stdout.properties),
+  ]);
 
   async run() {
     const { flags, args } = await this.parse(Introspect);

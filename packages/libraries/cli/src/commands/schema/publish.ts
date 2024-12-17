@@ -3,12 +3,15 @@ import { GraphQLError, print } from 'graphql';
 import { transformCommentsToDescriptions } from '@graphql-tools/utils';
 import { Args, Errors, Flags } from '@oclif/core';
 import Command from '../../base-command';
+import { Fragments } from '../../fragments/__';
 import { DocumentType, graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
-import { loadSchema, minifySchema, renderChanges, renderErrors } from '../../helpers/schema';
+import { loadSchema, minifySchema, renderErrors } from '../../helpers/schema';
+import { Typebox } from '../../helpers/typebox/__';
 import { invariant } from '../../helpers/validation';
+import { SchemaOutput } from '../../schema-output/__';
 
 const schemaPublishMutation = graphql(/* GraphQL */ `
   mutation schemaPublish($input: SchemaPublishInput!, $usesGitHubApp: Boolean!) {
@@ -134,7 +137,6 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       multiple: true,
     }),
   };
-
   static args = {
     file: Args.string({
       name: 'file',
@@ -143,6 +145,12 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       hidden: false,
     }),
   };
+  static output = Typebox.Union([
+    SchemaOutput.success({
+      changes: Typebox.Array(SchemaOutput.SchemaChange),
+    }),
+    SchemaOutput.FailureBase,
+  ]);
 
   resolveMetadata(metadata: string | undefined): string | undefined {
     if (!metadata) {
@@ -319,7 +327,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         this.logSuccess('No changes. Skipping.');
       } else {
         if (changes) {
-          renderChanges.call(this, changes);
+          Fragments.SchemaChange.log.call(this, changes);
         }
         this.logSuccess('Schema published');
       }
@@ -328,14 +336,9 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         this.logInfo(`Available at ${data.linkToWebsite}`);
       }
       return this.success({
-        // todo
-        // data: {
-        //   changes: data.changes?.nodes.map(n => {
-        //     return {
-        //       message: n.message,
-        //     };
-        //   }),
-        // },
+        data: {
+          changes: Fragments.SchemaChange.toSchemaOutput(data.changes),
+        },
       });
     }
 
@@ -356,7 +359,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
 
       if (changes && changes.total) {
         this.log('');
-        renderChanges.call(this, changes);
+        Fragments.SchemaChange.log.call(this, changes);
       }
       this.log('');
 

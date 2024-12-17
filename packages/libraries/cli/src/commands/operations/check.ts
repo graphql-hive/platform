@@ -6,7 +6,7 @@ import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { loadOperations } from '../../helpers/operations';
 import { Typebox } from '../../helpers/typebox/__';
-import { Envelope } from '../../schema/envelope';
+import { SchemaOutput } from '../../schema-output/__';
 
 const fetchLatestVersionQuery = graphql(/* GraphQL */ `
   query fetchLatestVersion {
@@ -78,7 +78,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       hidden: false,
     }),
   };
-  static output = Envelope.Success({
+  static output = SchemaOutput.success({
     countTotal: Typebox.Integer({ minimum: 0 }),
     countInvalid: Typebox.Integer({ minimum: 0 }),
     countValid: Typebox.Integer({ minimum: 0 }),

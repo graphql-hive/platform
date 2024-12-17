@@ -2,15 +2,9 @@ import { http, URL } from '@graphql-hive/core';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { Typebox } from '../../helpers/typebox/__';
-import { DataOutputMode } from '../../schema/data';
-import { Envelope } from '../../schema/envelope';
+import { SchemaOutput } from '../../schema-output/__';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
-  static output = Typebox.Union([
-    Envelope.Success(DataOutputMode.File.properties),
-    Envelope.Success(DataOutputMode.Stdout.properties),
-  ]);
-
   static description = 'fetch artifacts from the CDN';
   static flags = {
     'cdn.endpoint': Flags.string({
@@ -28,6 +22,10 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       description: 'whether to write to a file instead of stdout',
     }),
   };
+  static output = Typebox.Union([
+    SchemaOutput.success(SchemaOutput.OutputMode.File.properties),
+    SchemaOutput.success(SchemaOutput.OutputMode.Stdout.properties),
+  ]);
 
   async run() {
     const { flags } = await this.parse(ArtifactsFetch);

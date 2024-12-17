@@ -5,7 +5,7 @@ import { graphql } from '../gql';
 import { graphqlEndpoint } from '../helpers/config';
 import { casesExhausted } from '../helpers/general';
 import { Typebox } from '../helpers/typebox/__';
-import { Envelope } from '../schema/envelope';
+import { SchemaOutput } from '../schema-output/__';
 
 const myTokenInfoQuery = graphql(/* GraphQL */ `
   query myTokenInfo {
@@ -37,7 +37,7 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
   static description = 'shows information about the current token';
-  static output = Envelope.Success({
+  static output = SchemaOutput.success({
     tokenName: Typebox.String(),
     organization: Typebox.String(),
     project: Typebox.String(),

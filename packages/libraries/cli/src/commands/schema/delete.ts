@@ -5,7 +5,7 @@ import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { renderErrors } from '../../helpers/schema';
 import { Typebox } from '../../helpers/typebox/__';
-import { Envelope } from '../../schema/envelope';
+import { SchemaOutput } from '../../schema-output/__';
 
 const schemaDeleteMutation = graphql(/* GraphQL */ `
   mutation schemaDelete($input: SchemaDeleteInput!) {
@@ -75,7 +75,6 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       default: false,
     }),
   };
-
   static args = {
     service: Args.string({
       name: 'service' as const,
@@ -84,16 +83,15 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       hidden: false,
     }),
   };
-
   static output = Typebox.Union([
-    Envelope.Failure({
+    SchemaOutput.failure({
       errors: Typebox.Array(
         Typebox.Object({
           message: Typebox.String(),
         }),
       ),
     }),
-    Envelope.Success({}),
+    SchemaOutput.success({}),
   ]);
 
   async runResult() {

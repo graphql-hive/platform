@@ -1,12 +1,11 @@
 import { Errors } from '@oclif/core';
-import { Envelope } from '../../schema/envelope';
-import { Typebox } from '../typebox/__';
+import { SchemaOutput } from '../../schema-output/__';
 
 export class CLIFailure extends Errors.CLIError {
-  public envelope: Typebox.Static<Envelope.FailureBase>;
-  constructor(envelopeInit: Partial<Typebox.Static<Envelope.FailureBase>>) {
+  public envelope: SchemaOutput.FailureBase;
+  constructor(envelopeInit: Partial<SchemaOutput.FailureBase>) {
     const envelope = {
-      ...Envelope.failureDefaults,
+      ...SchemaOutput.failureDefaults,
       ...envelopeInit,
     };
     super(envelope.message, {

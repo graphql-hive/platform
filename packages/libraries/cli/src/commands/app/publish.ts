@@ -3,14 +3,14 @@ import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { Typebox } from '../../helpers/typebox/__';
-import { Envelope } from '../../schema/envelope';
+import { SchemaOutput } from '../../schema-output/__';
 
 export default class AppPublish extends Command<typeof AppPublish> {
   static output = Typebox.Union([
-    Envelope.SuccessIdempotentableSkipped({
+    SchemaOutput.successIdempotentableSkipped({
       name: Typebox.StringNonEmpty,
     }),
-    Envelope.SuccessIdempotentableExecuted({
+    SchemaOutput.successIdempotentableExecuted({
       name: Typebox.StringNonEmpty,
     }),
   ]);

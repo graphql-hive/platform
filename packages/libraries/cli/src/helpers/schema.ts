@@ -6,16 +6,8 @@ import { JsonFileLoader } from '@graphql-tools/json-file-loader';
 import { loadTypedefs } from '@graphql-tools/load';
 import { UrlLoader } from '@graphql-tools/url-loader';
 import BaseCommand from '../base-command';
-import { FragmentType, graphql, useFragment as unmaskFragment } from '../gql';
-import { CriticalityLevel, SchemaErrorConnection, SchemaWarningConnection } from '../gql/graphql';
-
-const indent = '  ';
-
-const criticalityMap: Record<CriticalityLevel, string> = {
-  [CriticalityLevel.Breaking]: colors.red('-'),
-  [CriticalityLevel.Safe]: colors.green('-'),
-  [CriticalityLevel.Dangerous]: colors.green('-'),
-};
+import { SchemaErrorConnection, SchemaWarningConnection } from '../gql/graphql';
+import { indent } from './text';
 
 export function renderErrors(this: BaseCommand<any>, errors: SchemaErrorConnection) {
   this.logFailure(`Detected ${errors.total} error${errors.total > 1 ? 's' : ''}`);
@@ -24,70 +16,6 @@ export function renderErrors(this: BaseCommand<any>, errors: SchemaErrorConnecti
   errors.nodes.forEach(error => {
     this.log(String(indent), colors.red('-'), this.bolderize(error.message));
   });
-}
-
-export const RenderChanges_SchemaChanges = graphql(`
-  fragment RenderChanges_schemaChanges on SchemaChangeConnection {
-    total
-    nodes {
-      criticality
-      isSafeBasedOnUsage
-      message(withSafeBasedOnUsageNote: false)
-      approval {
-        approvedBy {
-          displayName
-        }
-      }
-    }
-  }
-`);
-
-export type MaskedChanges = FragmentType<typeof RenderChanges_SchemaChanges>;
-
-export function renderChanges(this: BaseCommand<any>, maskedChanges: MaskedChanges) {
-  const changes = unmaskFragment(RenderChanges_SchemaChanges, maskedChanges);
-  type ChangeType = (typeof changes)['nodes'][number];
-
-  const writeChanges = (changes: ChangeType[]) => {
-    changes.forEach(change => {
-      const messageParts = [
-        String(indent),
-        criticalityMap[change.isSafeBasedOnUsage ? CriticalityLevel.Safe : change.criticality],
-        this.bolderize(change.message),
-      ];
-
-      if (change.isSafeBasedOnUsage) {
-        messageParts.push(colors.green('(Safe based on usage ✓)'));
-      }
-      if (change.approval) {
-        messageParts.push(
-          colors.green(`(Approved by ${change.approval.approvedBy?.displayName ?? '<unknown>'} ✓)`),
-        );
-      }
-
-      this.log(...messageParts);
-    });
-  };
-
-  this.logInfo(`Detected ${changes.total} change${changes.total > 1 ? 's' : ''}`);
-  this.log('');
-
-  const breakingChanges = changes.nodes.filter(
-    change => change.criticality === CriticalityLevel.Breaking,
-  );
-  const safeChanges = changes.nodes.filter(
-    change => change.criticality !== CriticalityLevel.Breaking,
-  );
-
-  if (breakingChanges.length) {
-    this.log(String(indent), `Breaking changes:`);
-    writeChanges(breakingChanges);
-  }
-
-  if (safeChanges.length) {
-    this.log(String(indent), `Safe changes:`);
-    writeChanges(safeChanges);
-  }
 }
 
 export function renderWarnings(this: BaseCommand<any>, warnings: SchemaWarningConnection) {

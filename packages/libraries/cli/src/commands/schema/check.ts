@@ -1,22 +1,14 @@
 import { Args, Errors, Flags } from '@oclif/core';
 import Command from '../../base-command';
-import { graphql, useFragment } from '../../gql';
+import { Fragments } from '../../fragments/__';
+import { graphql } from '../../gql';
 import { SchemaWarningConnection } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
-import {
-  loadSchema,
-  MaskedChanges,
-  minifySchema,
-  renderChanges,
-  RenderChanges_SchemaChanges,
-  renderErrors,
-  renderWarnings,
-} from '../../helpers/schema';
+import { loadSchema, minifySchema, renderErrors, renderWarnings } from '../../helpers/schema';
 import { Typebox } from '../../helpers/typebox/__';
-import { CriticalityLevel } from '../../schema/data';
-import { Envelope } from '../../schema/envelope';
+import { SchemaOutput } from '../../schema-output/__';
 
 const schemaCheckMutation = graphql(/* GraphQL */ `
   mutation schemaCheck($input: SchemaCheckInput!, $usesGitHubApp: Boolean!) {
@@ -93,30 +85,6 @@ const schemaCheckMutation = graphql(/* GraphQL */ `
   }
 `);
 
-const Change = Typebox.Object({
-  message: Typebox.String(),
-  criticality: CriticalityLevel,
-  isSafeBasedOnUsage: Typebox.Boolean(),
-  approval: Typebox.Nullable(
-    Typebox.Object({
-      by: Typebox.Nullable(
-        Typebox.Object({
-          displayName: Typebox.Nullable(Typebox.String()),
-        }),
-      ),
-    }),
-  ),
-});
-type Change = Typebox.Static<typeof Change>;
-
-const Warning = Typebox.Object({
-  message: Typebox.String(),
-  source: Typebox.Nullable(Typebox.String()),
-  line: Typebox.Nullable(Typebox.Number()),
-  column: Typebox.Nullable(Typebox.Number()),
-});
-type Warning = Typebox.Static<typeof Warning>;
-
 export default class SchemaCheck extends Command<typeof SchemaCheck> {
   static description = 'checks schema';
   static descriptionOfAction = 'check schema';
@@ -178,18 +146,18 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }),
   };
   static output = Typebox.Union([
-    Envelope.Success({
+    SchemaOutput.success({
       checkType: Typebox.Literal('registry'),
       url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
       breakingChanges: Typebox.Boolean(),
-      changes: Typebox.Array(Change),
-      warnings: Typebox.Array(Warning),
+      changes: Typebox.Array(SchemaOutput.SchemaChange),
+      warnings: Typebox.Array(SchemaOutput.SchemaWarning),
     }),
-    Envelope.Success({
+    SchemaOutput.success({
       checkType: Typebox.Literal('github'),
       message: Typebox.String(),
     }),
-    Envelope.FailureBase,
+    SchemaOutput.FailureBase,
   ]);
 
   async runResult() {
@@ -282,7 +250,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       } else if (!changes?.total) {
         this.logSuccess('No changes');
       } else {
-        renderChanges.call(this, changes);
+        Fragments.SchemaChange.log.call(this, changes);
         this.log('');
       }
 
@@ -300,8 +268,8 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         data: {
           checkType: 'registry',
           breakingChanges: false,
-          warnings: toWaring(result.schemaCheck.warnings),
-          changes: toChange(result.schemaCheck.changes),
+          warnings: toSchemaWaring(result.schemaCheck.warnings),
+          changes: Fragments.SchemaChange.toSchemaOutput(result.schemaCheck.changes),
           url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
         },
       });
@@ -320,7 +288,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
       if (changes && changes.total) {
         this.log('');
-        renderChanges.call(this, changes);
+        Fragments.SchemaChange.log.call(this, changes);
       }
 
       if (result.schemaCheck.schemaCheck?.webUrl) {
@@ -340,8 +308,8 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         data: {
           checkType: 'registry',
           breakingChanges: true,
-          warnings: toWaring(result.schemaCheck.warnings),
-          changes: toChange(result.schemaCheck.changes),
+          warnings: toSchemaWaring(result.schemaCheck.warnings),
+          changes: Fragments.SchemaChange.toSchemaOutput(result.schemaCheck.changes),
           url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
         },
       });
@@ -368,34 +336,15 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   }
 }
 
-const toWaring = (warnings: undefined | null | SchemaWarningConnection): Warning[] => {
+const toSchemaWaring = (
+  warnings: undefined | null | SchemaWarningConnection,
+): SchemaOutput.SchemaWarning[] => {
   return (
     warnings?.nodes.map(_ => ({
       message: _.message,
       source: _.source ?? null,
       line: _.line ?? null,
       column: _.column ?? null,
-    })) ?? []
-  );
-};
-
-const toChange = (maskedChanges: undefined | null | MaskedChanges): Change[] => {
-  const changes = useFragment(RenderChanges_SchemaChanges, maskedChanges);
-  return (
-    changes?.nodes.map(_ => ({
-      message: _.message,
-      criticality: _.criticality,
-      isSafeBasedOnUsage: _.isSafeBasedOnUsage,
-      approval: _.approval
-        ? {
-            by: _.approval.approvedBy
-              ? {
-                  // id: _.approval.approvedBy.id,
-                  displayName: _.approval.approvedBy.displayName,
-                }
-              : null,
-          }
-        : null,
     })) ?? []
   );
 };

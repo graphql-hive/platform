@@ -4,18 +4,18 @@ import { graphql } from '../../gql';
 import { AppDeploymentStatus } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { Typebox } from '../../helpers/typebox/__';
-import { Envelope } from '../../schema/envelope';
+import { SchemaOutput } from '../../schema-output/__';
 
 export default class AppCreate extends Command<typeof AppCreate> {
   static output = Typebox.Union([
-    Envelope.SuccessIdempotentableSkipped({
+    SchemaOutput.successIdempotentableSkipped({
       status: Typebox.Enum({
         active: AppDeploymentStatus.Active,
         pending: AppDeploymentStatus.Pending,
         retired: AppDeploymentStatus.Retired,
       }),
     }),
-    Envelope.SuccessIdempotentableExecuted({
+    SchemaOutput.successIdempotentableExecuted({
       id: Typebox.StringNonEmpty,
       name: Typebox.StringNonEmpty,
       version: Typebox.StringNonEmpty,

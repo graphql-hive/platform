@@ -10,8 +10,7 @@ import { CLIFailure } from './helpers/errors/cli-failure';
 import { ClientError } from './helpers/errors/client-error';
 import { OmitNever, OptionalizePropertyUnsafe, Simplify } from './helpers/general';
 import { Typebox } from './helpers/typebox/__';
-import { Envelope } from './schema/envelope';
-import { OutputType } from './schema/output';
+import { SchemaOutput } from './schema-output/__';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
@@ -27,7 +26,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * Used by methods: {@link BaseCommand.success}, {@link BaseCommand.failure}, {@link BaseCommand.runResult}.
    */
-  public static output: OutputType = Envelope.SuccessBase;
+  public static output: SchemaOutput.$Output = SchemaOutput.SuccessBase;
 
   protected _userConfig: Config | undefined;
 
@@ -49,7 +48,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    */
   async run(): Promise<void | InferSuccess<$Command>> {
     const resultUnsafe = await this.runResult();
-    const schema = (this.constructor as typeof BaseCommand).output as OutputType;
+    const schema = (this.constructor as typeof BaseCommand).output as SchemaOutput.$Output;
     const result = Typebox.Value.Parse(schema, resultUnsafe);
 
     if (result.ok) {
@@ -85,7 +84,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    */
   success(envelopeInit: InferSuccessInit<$Command>): InferSuccess<$Command> {
     return {
-      ...Envelope.successDefaults,
+      ...SchemaOutput.successDefaults,
       ...(envelopeInit as object),
     } as any;
   }
@@ -96,7 +95,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    */
   failure(envelopeInit: InferFailureInit<$Command>): InferFailure<$Command> {
     return {
-      ...Envelope.failureDefaults,
+      ...SchemaOutput.failureDefaults,
       ...(envelopeInit as object),
     } as any;
   }
@@ -399,15 +398,14 @@ export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 
-type InferFailure<$CommandClass extends typeof Command> =
-  'outputFailure' extends keyof $CommandClass
-    ? $CommandClass['outputFailure'] extends Envelope.FailureBase
-      ? Typebox.Static<$CommandClass['outputFailure']>
-      : never
-    : never;
+type InferFailure<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
+  ? $CommandClass['output'] extends typeof SchemaOutput.FailureBase
+    ? Typebox.Static<$CommandClass['output']>
+    : never
+  : never;
 
 type InferFailureInit<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
-  ? $CommandClass['output'] extends OutputType
+  ? $CommandClass['output'] extends SchemaOutput.$Output
     ? Simplify<
         OptionalizePropertyUnsafe<
           Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: true }>, 'ok'>,
@@ -418,16 +416,16 @@ type InferFailureInit<$CommandClass extends typeof Command> = 'output' extends k
   : InferFailureInputError;
 
 type InferFailureInputError =
-  'Error: Missing e.g. `static output = Envelope.Failure({ ... })` on your command.';
+  'Error: Missing e.g. `static output = SchemaOutput.failure({ ... })` on your command.';
 
 type InferSuccess<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
-  ? $CommandClass['output'] extends OutputType
+  ? $CommandClass['output'] extends SchemaOutput.$Output
     ? Exclude<Typebox.Static<$CommandClass['output']>, { ok: false }>
     : never
   : never;
 
 type InferSuccessInit<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
-  ? $CommandClass['output'] extends OutputType
+  ? $CommandClass['output'] extends SchemaOutput.$Output
     ? Simplify<
         OptionalizePropertyUnsafe<
           Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: false }>, 'ok'>,
@@ -438,4 +436,4 @@ type InferSuccessInit<$CommandClass extends typeof Command> = 'output' extends k
   : InferSuccessDataInputError;
 
 type InferSuccessDataInputError =
-  'Error: Missing e.g. `static output = Envelope.Success({ ... })` on your command.';
+  'Error: Missing e.g. `static output = SchemaOutput.success({ ... })` on your command.';
