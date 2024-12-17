@@ -37,7 +37,8 @@ const cacheConfig = {
     ttlInMs: ms('5m'),
   },
   redis: {
-    ttlInMs: ms('24h') / 1000,
+    ttlInMs: ms('1h'),
+    staleTtlInMs: ms('24h'),
   },
   tokenTouchIntervalInMs: ms('60s'),
 } as const;
@@ -72,7 +73,7 @@ export async function createStorage(
     // to fill the cache with fresh data.
     // This method is called only once per cache key,
     // even if multiple requests are waiting for it.
-    async fetchMethod(hashedToken) {
+    async fetchMethod(hashedToken, staleCacheEntry) {
       // Nothing fresh in the in-memory cache, let's check Redis
       let redisData: string | null = null;
 
@@ -101,21 +102,57 @@ export async function createStorage(
       }
 
       // Nothing in Redis, let's check the DB
-      const dbResult = await db.getToken({ token: hashedToken }).catch(error => {
-        // If the DB is down, we log the error, and we throw exception.
-        // This will cause the cache to return stale data.
-        // This may have a performance impact (more calls to Db), but it won't break the system.
-        handleStorageError({
-          logger,
-          error,
-          logMsg: 'Failed to read token from the Db',
-          tier: 'db',
-          action: 'fetch',
-        });
-        return Promise.reject(error);
-      });
+      const cacheEntry: CacheEntry = await db
+        .getToken({ token: hashedToken })
+        .then(dbResult => {
+          if (!dbResult) {
+            return 'not-found' as CacheEntry;
+          }
 
-      const cacheEntry = dbResult ? transformToken(dbResult) : 'not-found';
+          return transformToken(dbResult);
+        })
+        .catch(async error => {
+          // If the DB is down, we log the error, and we throw exception.
+          // This will cause the cache to return stale data.
+          // This may have a performance impact (more calls to Db), but it won't break the system.
+          handleStorageError({
+            logger,
+            error,
+            logMsg: 'Failed to read token from the Db',
+            tier: 'db',
+            action: 'fetch',
+          });
+
+          if (staleCacheEntry) {
+            logger.warn('Failed to read token from the Db, returning stale data');
+            throw error;
+          }
+
+          if (redis.status !== 'ready') {
+            logger.warn('Redis is not ready, cannot read stale data from it');
+            throw error;
+          }
+
+          const staleRedisData = await redis
+            .get(generateStaleRedisKey(hashedToken))
+            .catch(error => {
+              handleStorageError({
+                logger,
+                error,
+                logMsg: 'Failed to read token from Redis (stale)',
+                tier: 'redis-stale',
+                action: 'fetch',
+              });
+              return null;
+            });
+
+          if (!staleRedisData) {
+            logger.debug('No stale data in Redis');
+            throw error;
+          }
+
+          return JSON.parse(staleRedisData) as CacheEntry;
+        });
 
       // Write to Redis, so the next time we can read it from there
       await setInRedis(redis, hashedToken, cacheEntry).catch(error => {
@@ -200,7 +237,7 @@ export async function createStorage(
         token: hashedToken,
         async postDeletionTransaction() {
           // delete from Redis when the token is deleted from the DB
-          await redis.del(generateRedisKey(hashedToken));
+          await redis.del([generateRedisKey(hashedToken), generateStaleRedisKey(hashedToken)]);
           // only then delete from the in-memory cache.
           // The other replicas will purge the token from
           // their own in-memory caches on their own pace (ttl)
@@ -215,7 +252,9 @@ export async function createStorage(
 
       cacheInvalidations.inc();
 
-      await redis.del(hashedTokens.map(generateRedisKey));
+      await redis.del(
+        hashedTokens.map(generateRedisKey).concat(hashedTokens.map(generateStaleRedisKey)),
+      );
       for (const hashedToken of hashedTokens) {
         cache.delete(hashedToken);
       }
@@ -242,17 +281,52 @@ function generateRedisKey(hashedToken: string) {
   return `tokens:cache:v2:${hashedToken}`;
 }
 
+function generateStaleRedisKey(hashedToken: string) {
+  // bump the version when the cache format changes
+  return `tokens:stale-cache:v2:${hashedToken}`;
+}
+
 async function setInRedis(redis: Redis, hashedToken: string, cacheEntry: CacheEntry) {
   if (redis.status !== 'ready') {
     return;
   }
 
-  const redisKey = generateRedisKey(hashedToken);
-  await redis.setex(
-    redisKey,
-    Math.ceil(cacheConfig.redis.ttlInMs / 1000),
-    JSON.stringify(cacheEntry),
-  );
+  const stringifiedCacheEntry = JSON.stringify(cacheEntry);
+
+  const results = await redis
+    .pipeline()
+    .setex(
+      generateRedisKey(hashedToken),
+      Math.ceil(cacheConfig.redis.ttlInMs / 1000),
+      stringifiedCacheEntry,
+    )
+    .setex(
+      generateStaleRedisKey(hashedToken),
+      Math.ceil(cacheConfig.redis.staleTtlInMs / 1000),
+      stringifiedCacheEntry,
+    )
+    .exec();
+
+  if (!results?.length) {
+    return;
+  }
+
+  const errors: Error[] = [];
+
+  for (const [error] of results) {
+    if (error instanceof Error) {
+      errors.push(error);
+    }
+  }
+
+  if (errors.length) {
+    throw new Error(errors.map(e => e.message).join('\n'), {
+      cause: {
+        message: 'SETEX Pipeline Failure',
+        errors,
+      },
+    });
+  }
 }
 
 function tokenTouchScheduler(
@@ -298,7 +372,7 @@ async function handleStorageError(params: {
   logger: FastifyBaseLogger;
   error: unknown;
   logMsg: string;
-  tier: 'redis' | 'db';
+  tier: 'redis' | 'redis-stale' | 'db';
   action: 'fetch' | 'set';
 }) {
   params.logger.error(params.logMsg, params.error);
