@@ -368,7 +368,7 @@ function tokenTouchScheduler(
   };
 }
 
-async function handleStorageError(params: {
+function handleStorageError(params: {
   logger: FastifyBaseLogger;
   error: unknown;
   logMsg: string;
