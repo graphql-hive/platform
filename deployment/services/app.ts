@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import * as pulumi from '@pulumi/pulumi';
 import { serviceLocalEndpoint } from '../utils/local-endpoint';
 import { ServiceDeployment } from '../utils/service-deployment';
@@ -71,6 +72,7 @@ export function deployApp({
         AUTH_ORGANIZATION_OIDC: '1',
         MEMBER_ROLES_DEADLINE: appEnv.MEMBER_ROLES_DEADLINE,
         PORT: '3000',
+        LABORATORY_PREFLIGHT_WORKER_URL: `https://lab-worker.${environment.labWorkerDns}/worker.js?hash=${randomUUID()}`,
       },
       port: 3000,
     },
