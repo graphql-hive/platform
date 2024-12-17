@@ -461,7 +461,7 @@ export default class Dev extends Command<typeof Dev> {
             url: input.url,
             sdl: await this.resolveSdlFromPath(input.sdl),
             input: {
-              kind: 'file' as const,
+              kind: 'CLIOutputFile' as const,
               path: input.sdl,
             },
           };

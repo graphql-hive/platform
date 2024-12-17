@@ -12,4 +12,11 @@ export namespace SchemaErrorConnection {
       this.log(String(indent), colors.red('-'), this.bolderize(error.message));
     });
   }
+  export const toSchemaOutput = (errors: SchemaHive.SchemaErrorConnection) => {
+    return errors.nodes.map(error => {
+      return {
+        message: error.message,
+      };
+    });
+  };
 }

@@ -49,7 +49,7 @@ export const FailureBase = Typebox.Object({
 export type FailureBase = Typebox.Static<typeof FailureBase>;
 
 export const failure = <$Context extends Typebox.TProperties>(context: $Context) =>
-  Typebox.Composite([FailureBase, Typebox.Object({ context: Typebox.Object(context) })]);
+  Typebox.Composite([FailureBase, Typebox.Object({ data: Typebox.Object(context) })]);
 
 export const failureDefaults: Typebox.Static<typeof FailureBase> = {
   ok: false,

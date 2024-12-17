@@ -79,7 +79,7 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       return this.success({
         message,
         data: {
-          outputMode: 'file',
+          __typename: 'CLIOutputFile',
           path: flags.outputFile,
         },
       });
@@ -89,7 +89,7 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
     this.log(content);
     return this.success({
       data: {
-        outputMode: 'stdout',
+        __typename: 'CLIOutputStdout',
         content,
       },
     });

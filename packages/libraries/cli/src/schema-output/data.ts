@@ -30,13 +30,18 @@ export const SchemaWarning = Typebox.Object({
 });
 export type SchemaWarning = Typebox.Static<typeof SchemaWarning>;
 
+export const SchemaError = Typebox.Object({
+  message: Typebox.String(),
+});
+export type SchemaError = Typebox.Static<typeof SchemaError>;
+
 export namespace OutputMode {
   export const Stdout = Typebox.Object({
-    outputMode: Typebox.Literal('stdout'),
+    __typename: Typebox.Literal('CLIOutputStdout'),
     content: Typebox.String(),
   });
   export const File = Typebox.Object({
-    outputMode: Typebox.Literal('file'),
+    __typename: Typebox.Literal('CLIOutputFile'),
     path: Typebox.String(),
   });
 }

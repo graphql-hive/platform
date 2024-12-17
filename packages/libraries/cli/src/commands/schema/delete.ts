@@ -84,14 +84,15 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.failure({
-      errors: Typebox.Array(
-        Typebox.Object({
-          message: Typebox.String(),
-        }),
-      ),
+    SchemaOutput.success({
+      __typename: Typebox.Literal('SchemaDeleteSuccess'),
+      message: Typebox.String(),
     }),
-    SchemaOutput.SuccessBase,
+    SchemaOutput.failure({
+      __typename: Typebox.Literal('SchemaDeleteError'),
+      message: Typebox.String(),
+      errors: Typebox.Array(SchemaOutput.SchemaError),
+    }),
   );
 
   async runResult() {
@@ -124,38 +125,42 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       env: 'HIVE_TOKEN',
     });
 
-    const result = await this.registryApi(endpoint, accessToken).request({
-      operation: schemaDeleteMutation,
-      variables: {
-        input: {
-          serviceName: service,
-          dryRun: flags.dryRun,
+    const result = await this.registryApi(endpoint, accessToken)
+      .request({
+        operation: schemaDeleteMutation,
+        variables: {
+          input: {
+            serviceName: service,
+            dryRun: flags.dryRun,
+          },
         },
-      },
-    });
+      })
+      .then(_ => _.schemaDelete);
 
-    if (result.schemaDelete.__typename === 'SchemaDeleteSuccess') {
+    if (result.__typename === 'SchemaDeleteSuccess') {
       const message = `${service} deleted`;
       this.logSuccess(message);
       return this.success({
-        message,
-      });
-    }
-
-    if (result.schemaDelete.__typename === 'SchemaDeleteError') {
-      this.logFailure(`Failed to delete ${service}`);
-      Fragments.SchemaErrorConnection.log.call(this, result.schemaDelete.errors);
-      return this.failure({
-        context: {
-          errors: result.schemaDelete.errors.nodes.map(e => {
-            return {
-              message: e.message,
-            };
-          }),
+        data: {
+          __typename: 'SchemaDeleteSuccess',
+          message,
         },
       });
     }
 
-    throw casesExhausted(result.schemaDelete);
+    if (result.__typename === 'SchemaDeleteError') {
+      const message = `Failed to delete ${service}`;
+      this.logFailure(message);
+      Fragments.SchemaErrorConnection.log.call(this, result.errors);
+      return this.failure({
+        data: {
+          __typename: 'SchemaDeleteError',
+          message,
+          errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
+        },
+      });
+    }
+
+    throw casesExhausted(result);
   }
 }

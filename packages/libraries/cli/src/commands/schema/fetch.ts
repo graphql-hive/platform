@@ -141,7 +141,7 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       }
       return this.success({
         data: {
-          outputMode: 'file',
+          __typename: 'CLIOutputFile',
           path: filepath,
         },
       });
@@ -150,7 +150,7 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
     this.log(schema);
     return this.success({
       data: {
-        outputMode: 'stdout',
+        __typename: 'CLIOutputStdout',
         content: schema,
       },
     });

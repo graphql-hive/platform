@@ -161,7 +161,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       __typename: Typebox.Literal('GitHubSchemaCheckSuccess'),
       message: Typebox.String(),
     }),
-    SchemaOutput.success({
+    SchemaOutput.failure({
       __typename: Typebox.Literal('GitHubSchemaCheckError'),
       message: Typebox.String(),
     }),
@@ -335,8 +335,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
     if (result.__typename === 'GitHubSchemaCheckError') {
       this.logFailure(result.message);
-      process.exitCode = 1;
-      return this.success({
+      return this.failure({
         data: {
           __typename: 'GitHubSchemaCheckError',
           message: result.message,
