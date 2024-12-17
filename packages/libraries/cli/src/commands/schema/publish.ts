@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'fs';
 import { GraphQLError, print } from 'graphql';
+import { casesExhausted } from 'src/helpers/general';
 import { transformCommentsToDescriptions } from '@graphql-tools/utils';
 import { Args, Errors, Flags } from '@oclif/core';
 import Command from '../../base-command';
@@ -269,11 +270,10 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       throw err;
     }
 
-    let result: DocumentType<typeof schemaPublishMutation> | null = null;
+    let resultPending: DocumentType<typeof schemaPublishMutation> | null = null;
 
-    // todo: json output
     do {
-      result = await this.registryApi(endpoint, accessToken).request({
+      resultPending = await this.registryApi(endpoint, accessToken).request({
         operation: schemaPublishMutation,
         variables: {
           input: {
@@ -293,68 +293,77 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         /** Gateway timeout is 60 seconds. */
         timeout: 55_000,
       });
-
-      if (result.schemaPublish.__typename === 'SchemaPublishSuccess') {
-        const changes = result.schemaPublish.changes;
-
-        if (result.schemaPublish.initial) {
-          this.logSuccess('Published initial schema.');
-        } else if (result.schemaPublish.successMessage) {
-          this.logSuccess(result.schemaPublish.successMessage);
-        } else if (changes && changes.total === 0) {
-          this.logSuccess('No changes. Skipping.');
-        } else {
-          if (changes) {
-            renderChanges.call(this, changes);
-          }
-          this.logSuccess('Schema published');
-        }
-
-        if (result.schemaPublish.linkToWebsite) {
-          this.logInfo(`Available at ${result.schemaPublish.linkToWebsite}`);
-        }
-      } else if (result.schemaPublish.__typename === 'SchemaPublishRetry') {
-        this.log(result.schemaPublish.reason);
+      if (resultPending.schemaPublish.__typename === 'SchemaPublishRetry') {
+        this.log(resultPending.schemaPublish.reason);
         this.log('Waiting for other schema publishes to complete...');
-        result = null;
-      } else if (result.schemaPublish.__typename === 'SchemaPublishMissingServiceError') {
-        this.logFailure(
-          `${result.schemaPublish.missingServiceError} Please use the '--service <name>' parameter.`,
-        );
-        this.exit(1);
-      } else if (result.schemaPublish.__typename === 'SchemaPublishMissingUrlError') {
-        this.logFailure(
-          `${result.schemaPublish.missingUrlError} Please use the '--url <url>' parameter.`,
-        );
-        this.exit(1);
-      } else if (result.schemaPublish.__typename === 'SchemaPublishError') {
-        const changes = result.schemaPublish.changes;
-        const errors = result.schemaPublish.errors;
-        renderErrors.call(this, errors);
+        resultPending = null;
+      }
+    } while (resultPending === null);
 
-        if (changes && changes.total) {
-          this.log('');
+    // todo: json output
+    const result = resultPending!;
+
+    if (result.schemaPublish.__typename === 'SchemaPublishSuccess') {
+      const changes = result.schemaPublish.changes;
+
+      if (result.schemaPublish.initial) {
+        this.logSuccess('Published initial schema.');
+      } else if (result.schemaPublish.successMessage) {
+        this.logSuccess(result.schemaPublish.successMessage);
+      } else if (changes && changes.total === 0) {
+        this.logSuccess('No changes. Skipping.');
+      } else {
+        if (changes) {
           renderChanges.call(this, changes);
         }
-        this.log('');
-
-        if (!force) {
-          this.logFailure('Failed to publish schema');
-          this.exit(1);
-        } else {
-          this.logSuccess('Schema published (forced)');
-        }
-
-        if (result.schemaPublish.linkToWebsite) {
-          this.logInfo(`Available at ${result.schemaPublish.linkToWebsite}`);
-        }
-      } else if (result.schemaPublish.__typename === 'GitHubSchemaPublishSuccess') {
-        this.logSuccess(result.schemaPublish.message);
-      } else {
-        this.error(
-          'message' in result.schemaPublish ? result.schemaPublish.message : 'Unknown error',
-        );
+        this.logSuccess('Schema published');
       }
-    } while (result === null);
+
+      if (result.schemaPublish.linkToWebsite) {
+        this.logInfo(`Available at ${result.schemaPublish.linkToWebsite}`);
+      }
+    } else if (result.schemaPublish.__typename === 'SchemaPublishMissingServiceError') {
+      this.logFailure(
+        `${result.schemaPublish.missingServiceError} Please use the '--service <name>' parameter.`,
+      );
+      this.exit(1);
+    } else if (result.schemaPublish.__typename === 'SchemaPublishMissingUrlError') {
+      this.logFailure(
+        `${result.schemaPublish.missingUrlError} Please use the '--url <url>' parameter.`,
+      );
+      this.exit(1);
+    } else if (result.schemaPublish.__typename === 'SchemaPublishError') {
+      const changes = result.schemaPublish.changes;
+      const errors = result.schemaPublish.errors;
+      renderErrors.call(this, errors);
+
+      if (changes && changes.total) {
+        this.log('');
+        renderChanges.call(this, changes);
+      }
+      this.log('');
+
+      if (!force) {
+        this.logFailure('Failed to publish schema');
+        this.exit(1);
+      } else {
+        this.logSuccess('Schema published (forced)');
+      }
+
+      if (result.schemaPublish.linkToWebsite) {
+        this.logInfo(`Available at ${result.schemaPublish.linkToWebsite}`);
+      }
+    } else if (result.schemaPublish.__typename === 'GitHubSchemaPublishSuccess') {
+      this.logSuccess(result.schemaPublish.message);
+    } else if (result.schemaPublish.__typename === 'SchemaPublishRetry') {
+      // This case is handled in initial fetch loop.
+      throw new Error('Impossible');
+    } else if (result.schemaPublish.__typename === 'GitHubSchemaPublishError') {
+      this.error(
+        'message' in result.schemaPublish ? result.schemaPublish.message : 'Unknown error',
+      );
+    } else {
+      throw casesExhausted(result.schemaPublish);
+    }
   }
 }
