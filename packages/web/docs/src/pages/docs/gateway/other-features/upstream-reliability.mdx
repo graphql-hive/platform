@@ -83,7 +83,7 @@ export const gatewayConfig = defineConfig({
 
 The default delay to wait between tries.
 
-If the subgraph is using HTTP transport, the delay is replaced by the response's `Retry-After`
+If the subgraph is using HTTP protocol, the delay is replaced by the response's `Retry-After`
 header if present.
 
 The `Retry-After` can either contain a number of second or a date.
