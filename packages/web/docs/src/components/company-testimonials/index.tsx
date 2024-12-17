@@ -1,9 +1,10 @@
+'use client';
+
 import React, { Fragment, useRef } from 'react';
 import Head from 'next/head';
 import Image, { StaticImageData } from 'next/image';
 import * as Tabs from '@radix-ui/react-tabs';
-import { CallToAction, Heading } from '@theguild/components';
-import { cn } from '../../lib';
+import { CallToAction, cn, Heading } from '@theguild/components';
 import { ArrowIcon } from '../arrow-icon';
 import {
   KarrotLogo,
@@ -121,13 +122,11 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
         </Heading>
         <Tabs.Root
           defaultValue={testimonials[0].company}
-          className="flex flex-col"
+          className="flex flex-col overflow-hidden"
           onValueChange={value => {
             const id = getTestimonialId(value);
             const element = document.getElementById(id);
-            if (element) {
-              element.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' });
-            }
+            element?.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' });
           }}
         >
           <Tabs.List
@@ -140,14 +139,14 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
                 <Tabs.Trigger
                   key={testimonial.company}
                   value={testimonial.company}
-                  className={
-                    'hive-focus flex-grow-0 [&[data-state="active"]>:first-child]:bg-blue-400' +
-                    ' lg:rdx-state-active:bg-white lg:flex-grow lg:bg-transparent' +
-                    ' justify-center p-0.5 lg:p-4' +
-                    ' rdx-state-active:text-green-1000 lg:rdx-state-active:border-beige-600' +
-                    ' border-transparent font-medium leading-6 text-green-800 lg:border' +
-                    ' flex flex-1 items-center justify-center rounded-[15px]'
-                  }
+                  className={cn(
+                    'hive-focus grow-0 [&[data-state="active"]>:first-child]:bg-blue-400',
+                    'lg:rdx-state-active:bg-white lg:grow lg:bg-transparent',
+                    'justify-center p-0.5 lg:p-4',
+                    'rdx-state-active:text-green-1000 lg:rdx-state-active:border-beige-600',
+                    'border-transparent font-medium leading-6 text-green-800 lg:border',
+                    'flex flex-1 items-center rounded-[15px]',
+                  )}
                 >
                   <div className="size-2 rounded-full bg-blue-200 transition-colors lg:hidden" />
                   <Logo title={testimonial.company} height={32} className="max-lg:sr-only" />
@@ -169,9 +168,9 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
                     value={company}
                     tabIndex={-1}
                     className={cn(
-                      'relative flex w-full shrink-0 snap-center flex-col' +
-                        ' gap-6 md:flex-row lg:gap-12' +
-                        ' lg:data-[state="inactive"]:hidden',
+                      'relative flex w-full shrink-0 snap-center flex-col',
+                      'gap-6 md:flex-row lg:gap-12',
+                      'lg:data-[state="inactive"]:hidden',
                       caseStudyHref
                         ? 'data-[state="active"]:pb-[72px] lg:data-[state="active"]:pb-0'
                         : 'max-lg:pb-8',
@@ -216,10 +215,10 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
                             <Fragment key={i}>
                               <li>
                                 <span
-                                  className={
-                                    'block text-[40px] leading-[1.2] tracking-[-0.2px]' +
-                                    ' md:text-6xl md:leading-[1.1875] md:tracking-[-0.64px]'
-                                  }
+                                  className={cn(
+                                    'block text-[40px] leading-[1.2] tracking-[-0.2px]',
+                                    'md:text-6xl md:leading-[1.1875] md:tracking-[-0.64px]',
+                                  )}
                                 >
                                   {numbers}
                                 </span>
