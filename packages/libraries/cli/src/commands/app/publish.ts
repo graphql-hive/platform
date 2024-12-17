@@ -6,15 +6,6 @@ import { Typebox } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 export default class AppPublish extends Command<typeof AppPublish> {
-  static output = Typebox.Union([
-    SchemaOutput.successIdempotentableSkipped({
-      name: Typebox.StringNonEmpty,
-    }),
-    SchemaOutput.successIdempotentableExecuted({
-      name: Typebox.StringNonEmpty,
-    }),
-  ]);
-
   static description = 'publish an app deployment';
   static flags = {
     'registry.endpoint': Flags.string({
@@ -32,6 +23,14 @@ export default class AppPublish extends Command<typeof AppPublish> {
       required: true,
     }),
   };
+  static output = SchemaOutput.output(
+    SchemaOutput.successIdempotentableSkipped({
+      name: Typebox.StringNonEmpty,
+    }),
+    SchemaOutput.successIdempotentableExecuted({
+      name: Typebox.StringNonEmpty,
+    }),
+  );
 
   async run() {
     const { flags } = await this.parse(AppPublish);

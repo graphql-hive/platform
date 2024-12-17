@@ -1,1 +1,1 @@
-export * from './schema-changes';
+export * from './schema-change-connection';

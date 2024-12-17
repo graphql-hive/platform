@@ -7,21 +7,6 @@ import { Typebox } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 export default class AppCreate extends Command<typeof AppCreate> {
-  static output = Typebox.Union([
-    SchemaOutput.successIdempotentableSkipped({
-      status: Typebox.Enum({
-        active: AppDeploymentStatus.Active,
-        pending: AppDeploymentStatus.Pending,
-        retired: AppDeploymentStatus.Retired,
-      }),
-    }),
-    SchemaOutput.successIdempotentableExecuted({
-      id: Typebox.StringNonEmpty,
-      name: Typebox.StringNonEmpty,
-      version: Typebox.StringNonEmpty,
-    }),
-  ]);
-
   static description = 'create an app deployment';
   static flags = {
     'registry.endpoint': Flags.string({
@@ -39,7 +24,6 @@ export default class AppCreate extends Command<typeof AppCreate> {
       required: true,
     }),
   };
-
   static args = {
     file: Args.string({
       name: 'file',
@@ -48,6 +32,20 @@ export default class AppCreate extends Command<typeof AppCreate> {
       hidden: false,
     }),
   };
+  static output = SchemaOutput.output(
+    SchemaOutput.successIdempotentableSkipped({
+      status: Typebox.Enum({
+        active: AppDeploymentStatus.Active,
+        pending: AppDeploymentStatus.Pending,
+        retired: AppDeploymentStatus.Retired,
+      }),
+    }),
+    SchemaOutput.successIdempotentableExecuted({
+      id: Typebox.StringNonEmpty,
+      name: Typebox.StringNonEmpty,
+      version: Typebox.StringNonEmpty,
+    }),
+  );
 
   async run() {
     const { flags, args } = await this.parse(AppCreate);

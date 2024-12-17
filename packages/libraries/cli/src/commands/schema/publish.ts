@@ -145,12 +145,12 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       hidden: false,
     }),
   };
-  static output = Typebox.Union([
+  static output = SchemaOutput.output(
     SchemaOutput.success({
       changes: Typebox.Array(SchemaOutput.SchemaChange),
     }),
     SchemaOutput.FailureBase,
-  ]);
+  );
 
   resolveMetadata(metadata: string | undefined): string | undefined {
     if (!metadata) {
@@ -327,7 +327,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         this.logSuccess('No changes. Skipping.');
       } else {
         if (changes) {
-          Fragments.SchemaChange.log.call(this, changes);
+          Fragments.SchemaChangeConnection.log.call(this, changes);
         }
         this.logSuccess('Schema published');
       }
@@ -337,7 +337,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       }
       return this.success({
         data: {
-          changes: Fragments.SchemaChange.toSchemaOutput(data.changes),
+          changes: Fragments.SchemaChangeConnection.toSchemaOutput(data.changes),
         },
       });
     }
@@ -359,7 +359,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
 
       if (changes && changes.total) {
         this.log('');
-        Fragments.SchemaChange.log.call(this, changes);
+        Fragments.SchemaChangeConnection.log.call(this, changes);
       }
       this.log('');
 

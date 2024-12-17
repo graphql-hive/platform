@@ -1,7 +1,6 @@
 import { http, URL } from '@graphql-hive/core';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
-import { Typebox } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
@@ -22,10 +21,10 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       description: 'whether to write to a file instead of stdout',
     }),
   };
-  static output = Typebox.Union([
+  static output = SchemaOutput.output(
     SchemaOutput.success(SchemaOutput.OutputMode.File.properties),
     SchemaOutput.success(SchemaOutput.OutputMode.Stdout.properties),
-  ]);
+  );
 
   async run() {
     const { flags } = await this.parse(ArtifactsFetch);

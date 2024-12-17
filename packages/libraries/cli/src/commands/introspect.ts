@@ -4,7 +4,6 @@ import { buildSchema, GraphQLError, introspectionFromSchema } from 'graphql';
 import { Args, Flags } from '@oclif/core';
 import Command from '../base-command';
 import { loadSchema } from '../helpers/schema';
-import { Typebox } from '../helpers/typebox/__';
 import { SchemaOutput } from '../schema-output/__';
 
 export default class Introspect extends Command<typeof Introspect> {
@@ -29,10 +28,10 @@ export default class Introspect extends Command<typeof Introspect> {
       hidden: false,
     }),
   };
-  static output = Typebox.Union([
+  static output = SchemaOutput.output(
     SchemaOutput.success(SchemaOutput.OutputMode.File.properties),
     SchemaOutput.success(SchemaOutput.OutputMode.Stdout.properties),
-  ]);
+  );
 
   async run() {
     const { flags, args } = await this.parse(Introspect);

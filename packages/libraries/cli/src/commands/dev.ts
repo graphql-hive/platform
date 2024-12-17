@@ -174,6 +174,8 @@ export default class Dev extends Command<typeof Dev> {
       dependsOn: ['remote'],
     }),
   };
+  // todo
+  // static output = SchemaOutput.output();
 
   async run() {
     const { flags } = await this.parse(Dev);

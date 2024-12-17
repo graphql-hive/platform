@@ -1,11 +1,12 @@
 import colors from 'colors';
+import type { ResultOf } from '@graphql-typed-document-node/core';
 import BaseCommand from '../base-command';
-import { FragmentType, graphql, useFragment as unmaskFragment, useFragment } from '../gql';
+import { FragmentType, graphql, useFragment } from '../gql';
 import { CriticalityLevel } from '../gql/graphql';
 import { indent } from '../helpers/text';
 import * as SchemaOutput from '../schema-output/data';
 
-export const RenderChanges_SchemaChanges = graphql(`
+const fragment = graphql(`
   fragment RenderChanges_schemaChanges on SchemaChangeConnection {
     total
     nodes {
@@ -21,15 +22,18 @@ export const RenderChanges_SchemaChanges = graphql(`
   }
 `);
 
-type MaskedFragment = FragmentType<typeof RenderChanges_SchemaChanges>;
+type Mask = FragmentType<typeof fragment>;
 
-export namespace SchemaChange {
-  export function log(this: BaseCommand<any>, maskedFragment: MaskedFragment) {
-    const changes = unmaskFragment(RenderChanges_SchemaChanges, maskedFragment);
-    type ChangeType = (typeof changes)['nodes'][number];
+type SchemaChangeConnection = ResultOf<typeof fragment>;
 
-    const writeChanges = (changes: ChangeType[]) => {
-      changes.forEach(change => {
+type SchemaChange = SchemaChangeConnection['nodes'][number];
+
+export namespace SchemaChangeConnection {
+  export function log(this: BaseCommand<any>, mask: Mask) {
+    const schemaChanges = useFragment(fragment, mask);
+
+    const writeChanges = (schemaChanges: SchemaChange[]) => {
+      schemaChanges.forEach(change => {
         const messageParts = [
           String(indent),
           criticalityMap[change.isSafeBasedOnUsage ? CriticalityLevel.Safe : change.criticality],
@@ -51,13 +55,13 @@ export namespace SchemaChange {
       });
     };
 
-    this.logInfo(`Detected ${changes.total} change${changes.total > 1 ? 's' : ''}`);
+    this.logInfo(`Detected ${schemaChanges.total} change${schemaChanges.total > 1 ? 's' : ''}`);
     this.log('');
 
-    const breakingChanges = changes.nodes.filter(
+    const breakingChanges = schemaChanges.nodes.filter(
       change => change.criticality === CriticalityLevel.Breaking,
     );
-    const safeChanges = changes.nodes.filter(
+    const safeChanges = schemaChanges.nodes.filter(
       change => change.criticality !== CriticalityLevel.Breaking,
     );
 
@@ -72,10 +76,8 @@ export namespace SchemaChange {
     }
   }
 
-  export const toSchemaOutput = (
-    maskedChanges: undefined | null | MaskedFragment,
-  ): SchemaOutput.SchemaChange[] => {
-    const changes = useFragment(RenderChanges_SchemaChanges, maskedChanges);
+  export const toSchemaOutput = (mask: undefined | null | Mask): SchemaOutput.SchemaChange[] => {
+    const changes = useFragment(fragment, mask);
     return (
       changes?.nodes.map(_ => ({
         message: _.message,

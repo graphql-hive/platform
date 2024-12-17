@@ -78,29 +78,31 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.success({
-    countTotal: Typebox.Integer({ minimum: 0 }),
-    countInvalid: Typebox.Integer({ minimum: 0 }),
-    countValid: Typebox.Integer({ minimum: 0 }),
-    invalidOperations: Typebox.Array(
-      Typebox.Object({
-        source: Typebox.Object({
-          name: Typebox.String(),
-        }),
-        errors: Typebox.Array(
-          Typebox.Object({
-            message: Typebox.String(),
-            locations: Typebox.Array(
-              Typebox.Object({
-                line: Typebox.Integer({ minimum: 0 }),
-                column: Typebox.Integer({ minimum: 0 }),
-              }),
-            ),
+  static output = SchemaOutput.output(
+    SchemaOutput.success({
+      countTotal: Typebox.Integer({ minimum: 0 }),
+      countInvalid: Typebox.Integer({ minimum: 0 }),
+      countValid: Typebox.Integer({ minimum: 0 }),
+      invalidOperations: Typebox.Array(
+        Typebox.Object({
+          source: Typebox.Object({
+            name: Typebox.String(),
           }),
-        ),
-      }),
-    ),
-  });
+          errors: Typebox.Array(
+            Typebox.Object({
+              message: Typebox.String(),
+              locations: Typebox.Array(
+                Typebox.Object({
+                  line: Typebox.Integer({ minimum: 0 }),
+                  column: Typebox.Integer({ minimum: 0 }),
+                }),
+              ),
+            }),
+          ),
+        }),
+      ),
+    }),
+  );
 
   async runResult() {
     const { flags, args } = await this.parse(OperationsCheck);

@@ -83,7 +83,7 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       hidden: false,
     }),
   };
-  static output = Typebox.Union([
+  static output = SchemaOutput.output(
     SchemaOutput.failure({
       errors: Typebox.Array(
         Typebox.Object({
@@ -91,8 +91,8 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
         }),
       ),
     }),
-    SchemaOutput.success({}),
-  ]);
+    SchemaOutput.SuccessBase,
+  );
 
   async runResult() {
     const { flags, args } = await this.parse(SchemaDelete);
@@ -139,7 +139,6 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       this.logSuccess(message);
       return this.success({
         message,
-        data: {},
       });
     }
 

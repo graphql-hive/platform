@@ -37,18 +37,6 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
 
 export default class WhoAmI extends Command<typeof WhoAmI> {
   static description = 'shows information about the current token';
-  static output = SchemaOutput.success({
-    tokenName: Typebox.String(),
-    organization: Typebox.String(),
-    project: Typebox.String(),
-    target: Typebox.String(),
-    authorization: Typebox.Object({
-      schema: Typebox.Object({
-        publish: Typebox.Boolean(),
-        check: Typebox.Boolean(),
-      }),
-    }),
-  });
   static flags = {
     'registry.endpoint': Flags.string({
       description: 'registry endpoint',
@@ -73,6 +61,20 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       },
     }),
   };
+  static output = SchemaOutput.output(
+    SchemaOutput.success({
+      tokenName: Typebox.String(),
+      organization: Typebox.String(),
+      project: Typebox.String(),
+      target: Typebox.String(),
+      authorization: Typebox.Object({
+        schema: Typebox.Object({
+          publish: Typebox.Boolean(),
+          check: Typebox.Boolean(),
+        }),
+      }),
+    }),
+  );
 
   async run() {
     const { flags } = await this.parse(WhoAmI);

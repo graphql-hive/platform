@@ -145,7 +145,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       hidden: false,
     }),
   };
-  static output = Typebox.Union([
+  static output = SchemaOutput.output(
     SchemaOutput.success({
       checkType: Typebox.Literal('registry'),
       url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
@@ -158,7 +158,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       message: Typebox.String(),
     }),
     SchemaOutput.FailureBase,
-  ]);
+  );
 
   async runResult() {
     const { flags, args } = await this.parse(SchemaCheck);
@@ -250,7 +250,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       } else if (!changes?.total) {
         this.logSuccess('No changes');
       } else {
-        Fragments.SchemaChange.log.call(this, changes);
+        Fragments.SchemaChangeConnection.log.call(this, changes);
         this.log('');
       }
 
@@ -269,7 +269,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
           checkType: 'registry',
           breakingChanges: false,
           warnings: toSchemaWaring(result.schemaCheck.warnings),
-          changes: Fragments.SchemaChange.toSchemaOutput(result.schemaCheck.changes),
+          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.schemaCheck.changes),
           url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
         },
       });
@@ -288,7 +288,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
       if (changes && changes.total) {
         this.log('');
-        Fragments.SchemaChange.log.call(this, changes);
+        Fragments.SchemaChangeConnection.log.call(this, changes);
       }
 
       if (result.schemaCheck.schemaCheck?.webUrl) {
@@ -309,7 +309,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
           checkType: 'registry',
           breakingChanges: true,
           warnings: toSchemaWaring(result.schemaCheck.warnings),
-          changes: Fragments.SchemaChange.toSchemaOutput(result.schemaCheck.changes),
+          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.schemaCheck.changes),
           url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
         },
       });
