@@ -147,14 +147,24 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      integrationStrategy: Typebox.Literal('direct'),
+      __typename: Typebox.Literal('SchemaPublishSuccess'),
       changes: Typebox.Array(SchemaOutput.SchemaChange),
+      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      integrationStrategy: Typebox.Literal('gitHub'),
+      __typename: Typebox.Literal('SchemaPublishError'),
+      changes: Typebox.Array(SchemaOutput.SchemaChange),
+      errors: Typebox.Array(SchemaOutput.SchemaError),
+      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
+    }),
+    SchemaOutput.success({
+      __typename: Typebox.Literal('GitHubSchemaPublishSuccess'),
       message: Typebox.String(),
     }),
-    SchemaOutput.FailureBase,
+    SchemaOutput.failure({
+      __typename: Typebox.Literal('GitHubSchemaPublishError'),
+      message: Typebox.String(),
+    }),
   );
 
   resolveMetadata(metadata: string | undefined): string | undefined {
@@ -283,10 +293,10 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       throw err;
     }
 
-    let data: DocumentType<typeof schemaPublishMutation>['schemaPublish'] | null = null;
+    let result: DocumentType<typeof schemaPublishMutation>['schemaPublish'] | null = null;
 
     do {
-      const result = await this.registryApi(endpoint, accessToken)
+      const loopResult = await this.registryApi(endpoint, accessToken)
         .request({
           operation: schemaPublishMutation,
           variables: {
@@ -309,63 +319,61 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         })
         .then(data => data.schemaPublish);
 
-      if (result) {
-        if (result.__typename === 'SchemaPublishRetry') {
-          this.log(result.reason);
+      if (loopResult) {
+        if (loopResult.__typename === 'SchemaPublishRetry') {
+          this.log(loopResult.reason);
           this.log('Waiting for other schema publishes to complete...');
-          data = null;
+          result = null;
           continue;
         }
 
-        data = result;
+        result = loopResult;
       }
-    } while (data === null);
+    } while (result === null);
 
-    if (data.__typename === 'SchemaPublishSuccess') {
-      const changes = data.changes;
-
-      if (data.initial) {
+    if (result.__typename === 'SchemaPublishSuccess') {
+      if (result.initial) {
         this.logSuccess('Published initial schema.');
-      } else if (data.successMessage) {
-        this.logSuccess(data.successMessage);
-      } else if (changes && changes.total === 0) {
+      } else if (result.successMessage) {
+        this.logSuccess(result.successMessage);
+      } else if (result.changes && result.changes.total === 0) {
         this.logSuccess('No changes. Skipping.');
       } else {
-        if (changes) {
-          Fragments.SchemaChangeConnection.log.call(this, changes);
+        if (result.changes) {
+          Fragments.SchemaChangeConnection.log.call(this, result.changes);
         }
         this.logSuccess('Schema published');
       }
 
-      if (data.linkToWebsite) {
-        this.logInfo(`Available at ${data.linkToWebsite}`);
+      if (result.linkToWebsite) {
+        this.logInfo(`Available at ${result.linkToWebsite}`);
       }
+
       return this.success({
         data: {
-          integrationStrategy: 'direct',
-          changes: Fragments.SchemaChangeConnection.toSchemaOutput(data.changes),
+          __typename: 'SchemaPublishSuccess',
+          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
+          url: result.linkToWebsite ?? null,
         },
       });
     }
 
-    if (data.__typename === 'SchemaPublishMissingServiceError') {
-      this.logFailure(`${data.missingServiceError} Please use the '--service <name>' parameter.`);
+    if (result.__typename === 'SchemaPublishMissingServiceError') {
+      this.logFailure(`${result.missingServiceError} Please use the '--service <name>' parameter.`);
       this.exit(1);
     }
 
-    if (data.__typename === 'SchemaPublishMissingUrlError') {
-      this.logFailure(`${data.missingUrlError} Please use the '--url <url>' parameter.`);
+    if (result.__typename === 'SchemaPublishMissingUrlError') {
+      this.logFailure(`${result.missingUrlError} Please use the '--url <url>' parameter.`);
       this.exit(1);
     }
 
-    if (data.__typename === 'SchemaPublishError') {
-      const changes = data.changes;
-      const errors = data.errors;
-      Fragments.SchemaErrorConnection.log.call(this, errors);
+    if (result.__typename === 'SchemaPublishError') {
+      Fragments.SchemaErrorConnection.log.call(this, result.errors);
 
-      if (changes && changes.total) {
+      if (result.changes?.total) {
         this.log('');
-        Fragments.SchemaChangeConnection.log.call(this, changes);
+        Fragments.SchemaChangeConnection.log.call(this, result.changes);
       }
       this.log('');
 
@@ -376,37 +384,42 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         this.logSuccess('Schema published (forced)');
       }
 
-      if (data.linkToWebsite) {
-        this.logInfo(`Available at ${data.linkToWebsite}`);
+      if (result.linkToWebsite) {
+        this.logInfo(`Available at ${result.linkToWebsite}`);
       }
 
       return this.success({
         data: {
-          integrationStrategy: 'direct',
-          changes: Fragments.SchemaChangeConnection.toSchemaOutput(data.changes),
+          __typename: 'SchemaPublishError',
+          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
+          errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
+          url: result.linkToWebsite ?? null,
         },
       });
     }
 
-    if (data.__typename === 'GitHubSchemaPublishSuccess') {
-      this.logSuccess(data.message);
+    if (result.__typename === 'GitHubSchemaPublishSuccess') {
+      this.logSuccess(result.message);
       return this.success({
         data: {
-          integrationStrategy: 'gitHub',
-          message: data.message,
+          __typename: 'GitHubSchemaPublishSuccess',
+          message: result.message,
         },
       });
     }
 
-    if (data.__typename === 'GitHubSchemaPublishError') {
+    if (result.__typename === 'GitHubSchemaPublishError') {
       // todo: Why property check? Types suggest it is always there.
-      const message = 'message' in data ? data.message : 'Unknown error';
+      const message = 'message' in result ? result.message : 'Unknown error';
       this.error(message);
       return this.failure({
-        message,
+        data: {
+          __typename: 'GitHubSchemaPublishError',
+          message,
+        },
       });
     }
 
-    throw casesExhausted(data);
+    throw casesExhausted(result);
   }
 }
