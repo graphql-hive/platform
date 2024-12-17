@@ -231,10 +231,14 @@ function LearnGraphQLFederationSection(props: { className?: string }) {
   return (
     <section
       className={cn(
-        'bg-green-1000 rounded-3xl px-4 py-6 sm:py-12 md:px-6 md:text-center lg:px-24 lg:py-16',
+        'bg-green-1000 relative rounded-3xl p-8 sm:py-12 md:px-6 md:text-center lg:px-24 lg:py-16',
         props.className,
       )}
     >
+      <DecorationIsolation className="opacity-80">
+        <ArchDecoration className="absolute -right-1/2 top-1/2 sm:-right-1/4 md:right-[-105px] md:top-[120px] [&>path]:fill-none [&>path]:stroke-white/30" />
+        <HighlightDecoration className="absolute -bottom-16 -right-1 size-[600px] rotate-180 -scale-x-100 overflow-visible" />
+      </DecorationIsolation>
       <Heading
         as="h2"
         size="md"
@@ -243,9 +247,9 @@ function LearnGraphQLFederationSection(props: { className?: string }) {
         What Is GraphQL Federation?
       </Heading>
 
-      <p className="mt-6 font-medium text-white/80 md:mt-8">
+      <p className="mt-6 text-pretty font-medium text-white/80 md:mt-8">
         Understand what federated GraphQL API is, how it works, and why it may be the right choice
-        for your&nbsp;API.
+        for your API.
       </p>
       <CallToAction
         variant="secondary"
