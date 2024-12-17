@@ -7,7 +7,7 @@ description: Improve reliability of Hive Gateway with timeout and retry policy f
 Hive Gateway offers Retry and Timeout features to improve the reliability of the traffic between the
 gateway and the subgraphs.
 
-## Retry
+## Retry mechanism
 
 A large range of errors happening between the gateway and the upstream subgraphs are temporary
 errors. Which means a lot of errors can be solved by issuing the same request again after a short
@@ -30,7 +30,7 @@ sequenceDiagram
   Gateway->>Client: { data: { field: "value" } }
 ```
 
-### Configuration
+### Global configuration
 
 This feature can be enabled for all subgraphs at once by using `upstreamRetry` option.
 
@@ -53,7 +53,7 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-#### Configuration by subgraph
+### Per-subgraph configuration
 
 Hive Gateway lets you define different retry policy for each subgraph by providing a function to the
 `upstreamRetry` option
@@ -79,7 +79,7 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-#### Delay
+### Retry delay configuration
 
 The default delay to wait between tries.
 
@@ -99,7 +99,7 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-#### Backoff
+### Exponential backoff configuration
 
 To avoid adding pressure on a subgraph that is already potentially struggling with load, a standard
 method is to use an exponential backoff.
@@ -127,7 +127,7 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-#### Skip a request
+### Conditional retry logic
 
 Hive Gateway offer the possibility to skip retrying a specific upstream request, based on its
 context or returned value.
@@ -146,13 +146,13 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-## Timeout
+## Timeout management
 
 An upstream request timeout limit is the maximum time the gateway waits for a response from an
 upstream subgraph before aborting the request. This ensures the gateway remains responsive and
 prevents it from waiting indefinitely for a slow or unresponsive subgraphs.
 
-### Configuration
+### Global configuration
 
 Hive Gateway allows to configure a global timeout for all subgraphs at once.
 
@@ -165,7 +165,7 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-#### Configuration by subgraph
+### Per-subgraph configuration
 
 You can finely grain configure the timeout for each upstream execution request by providing a
 function instead of a number.
@@ -186,7 +186,7 @@ export const gatewayConfig = defineConfig({
 })
 ```
 
-## Mixing Retry and Timeout
+## Combining retry and timeout features
 
 If Retry and Timeout are both enabled at the same time (which is recommended), the timeout will be
 applied to each try.
