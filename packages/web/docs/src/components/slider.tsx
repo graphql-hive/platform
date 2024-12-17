@@ -35,8 +35,14 @@ export function Slider({ counter, className, style, ...rest }: SliderProps) {
       />
 
       <div // indicator
+        style={{
+          // Tailwind 4 doesn't allow to write this in a class, because
+          // --tw-translate-x has syntax: <length> | <percentage>, and this
+          // mixes units, so I don't know what CSS type that is.
+          transform: 'translateX(calc(var(--val) * (100cqi - 100%) / 100))',
+        }}
         className={cn(
-          'after:text-green-1000 pointer-events-none absolute left-0 top-0 flex size-10 translate-x-[calc(var(--val)*(100cqi-100%)/100)] select-none items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-green-700 text-center after:pointer-events-auto after:absolute after:top-[calc(-100%+3px)] after:whitespace-nowrap after:rounded-full after:bg-green-200 after:px-3 after:py-1 after:font-medium',
+          'after:text-green-1000 pointer-events-none absolute left-0 top-0 flex size-10 select-none items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-green-700 text-center after:pointer-events-auto after:absolute after:top-[calc(-100%+3px)] after:whitespace-nowrap after:rounded-full after:bg-green-200 after:px-3 after:py-1 after:font-medium',
           counter,
         )}
       >
