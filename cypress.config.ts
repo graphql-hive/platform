@@ -10,12 +10,6 @@ if (!process.env.RUN_AGAINST_LOCAL_SERVICES) {
 
 const isCI = Boolean(process.env.CI);
 
-export type Token = {
-  sAccessToken: string;
-  sFrontToken: string;
-  sRefreshToken: string;
-};
-
 export const seed = initSeed();
 
 export default defineConfig({
