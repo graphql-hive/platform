@@ -1,9 +1,9 @@
 import { Args, Flags, ux } from '@oclif/core';
 import Command from '../../base-command';
+import { Fragments } from '../../fragments/__';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
-import { renderErrors } from '../../helpers/schema';
 import { Typebox } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
@@ -144,7 +144,7 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
 
     if (result.schemaDelete.__typename === 'SchemaDeleteError') {
       this.logFailure(`Failed to delete ${service}`);
-      renderErrors.call(this, result.schemaDelete.errors);
+      Fragments.SchemaErrorConnection.log.call(this, result.schemaDelete.errors);
       return this.failure({
         context: {
           errors: result.schemaDelete.errors.nodes.map(e => {

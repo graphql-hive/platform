@@ -2,11 +2,10 @@ import { Args, Errors, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { Fragments } from '../../fragments/__';
 import { graphql } from '../../gql';
-import { SchemaWarningConnection } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
-import { loadSchema, minifySchema, renderErrors, renderWarnings } from '../../helpers/schema';
+import { loadSchema, minifySchema } from '../../helpers/schema';
 import { Typebox } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
@@ -147,17 +146,25 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      checkType: Typebox.Literal('registry'),
-      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
-      breakingChanges: Typebox.Boolean(),
+      __typename: Typebox.Literal('SchemaCheckSuccess'),
       changes: Typebox.Array(SchemaOutput.SchemaChange),
       warnings: Typebox.Array(SchemaOutput.SchemaWarning),
+      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      checkType: Typebox.Literal('github'),
+      __typename: Typebox.Literal('SchemaCheckError'),
+      changes: Typebox.Array(SchemaOutput.SchemaChange),
+      warnings: Typebox.Array(SchemaOutput.SchemaWarning),
+      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
+    }),
+    SchemaOutput.success({
+      __typename: Typebox.Literal('GitHubSchemaCheckSuccess'),
       message: Typebox.String(),
     }),
-    SchemaOutput.FailureBase,
+    SchemaOutput.success({
+      __typename: Typebox.Literal('GitHubSchemaCheckError'),
+      message: Typebox.String(),
+    }),
   );
 
   async runResult() {
@@ -223,29 +230,31 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       };
     }
 
-    const result = await this.registryApi(endpoint, accessToken).request({
-      operation: schemaCheckMutation,
-      variables: {
-        input: {
-          service,
-          sdl: minifySchema(sdl),
-          github,
-          meta:
-            !!commit && !!author
-              ? {
-                  commit,
-                  author,
-                }
-              : null,
-          contextId: flags.contextId ?? undefined,
+    const result = await this.registryApi(endpoint, accessToken)
+      .request({
+        operation: schemaCheckMutation,
+        variables: {
+          input: {
+            service,
+            sdl: minifySchema(sdl),
+            github,
+            meta:
+              !!commit && !!author
+                ? {
+                    commit,
+                    author,
+                  }
+                : null,
+            contextId: flags.contextId ?? undefined,
+          },
+          usesGitHubApp,
         },
-        usesGitHubApp,
-      },
-    });
+      })
+      .then(_ => _.schemaCheck);
 
-    if (result.schemaCheck.__typename === 'SchemaCheckSuccess') {
-      const changes = result.schemaCheck.changes;
-      if (result.schemaCheck.initial) {
+    if (result.__typename === 'SchemaCheckSuccess') {
+      const changes = result.changes;
+      if (result.initial) {
         this.logSuccess('Schema registry is empty, nothing to compare your schema with.');
       } else if (!changes?.total) {
         this.logSuccess('No changes');
@@ -254,35 +263,35 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         this.log('');
       }
 
-      const warnings = result.schemaCheck.warnings;
+      const warnings = result.warnings;
       if (warnings?.total) {
-        renderWarnings.call(this, warnings);
+        Fragments.SchemaWarningConnection.log.call(this, warnings);
         this.log('');
       }
 
-      if (result.schemaCheck.schemaCheck?.webUrl) {
-        this.log(`View full report:\n${result.schemaCheck.schemaCheck.webUrl}`);
+      if (result.schemaCheck?.webUrl) {
+        this.log(`View full report:\n${result.schemaCheck.webUrl}`);
       }
 
       return this.success({
         data: {
-          checkType: 'registry',
-          breakingChanges: false,
-          warnings: toSchemaWaring(result.schemaCheck.warnings),
-          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.schemaCheck.changes),
-          url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
+          __typename: 'SchemaCheckSuccess',
+          //   breakingChanges: false,
+          warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
+          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
+          url: result.schemaCheck?.webUrl ?? null,
         },
       });
     }
 
-    if (result.schemaCheck.__typename === 'SchemaCheckError') {
-      const changes = result.schemaCheck.changes;
-      const errors = result.schemaCheck.errors;
-      const warnings = result.schemaCheck.warnings;
-      renderErrors.call(this, errors);
+    if (result.__typename === 'SchemaCheckError') {
+      const changes = result.changes;
+      const errors = result.errors;
+      const warnings = result.warnings;
+      Fragments.SchemaErrorConnection.log.call(this, errors);
 
       if (warnings?.total) {
-        renderWarnings.call(this, warnings);
+        Fragments.SchemaWarningConnection.log.call(this, warnings);
         this.log('');
       }
 
@@ -291,9 +300,9 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         Fragments.SchemaChangeConnection.log.call(this, changes);
       }
 
-      if (result.schemaCheck.schemaCheck?.webUrl) {
+      if (result.schemaCheck?.webUrl) {
         this.log('');
-        this.log(`View full report:\n${result.schemaCheck.schemaCheck.webUrl}`);
+        this.log(`View full report:\n${result.schemaCheck.webUrl}`);
       }
 
       this.log('');
@@ -306,45 +315,35 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
       return this.success({
         data: {
-          checkType: 'registry',
-          breakingChanges: true,
-          warnings: toSchemaWaring(result.schemaCheck.warnings),
-          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.schemaCheck.changes),
-          url: result.schemaCheck?.schemaCheck?.webUrl ?? null,
+          __typename: 'SchemaCheckError',
+          warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
+          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
+          url: result.schemaCheck?.webUrl ?? null,
         },
       });
     }
 
-    if (result.schemaCheck.__typename === 'GitHubSchemaCheckSuccess') {
-      this.logSuccess(result.schemaCheck.message);
+    if (result.__typename === 'GitHubSchemaCheckSuccess') {
+      this.logSuccess(result.message);
       return this.success({
         data: {
-          checkType: 'github',
-          message: result.schemaCheck.message,
+          __typename: 'GitHubSchemaCheckSuccess',
+          message: result.message,
         },
       });
     }
 
-    if (result.schemaCheck.__typename === 'GitHubSchemaCheckError') {
-      this.logFailure(result.schemaCheck.message);
-      return this.failure({
-        message: result.schemaCheck.message,
+    if (result.__typename === 'GitHubSchemaCheckError') {
+      this.logFailure(result.message);
+      process.exitCode = 1;
+      return this.success({
+        data: {
+          __typename: 'GitHubSchemaCheckError',
+          message: result.message,
+        },
       });
     }
 
-    throw casesExhausted(result.schemaCheck);
+    throw casesExhausted(result);
   }
 }
-
-const toSchemaWaring = (
-  warnings: undefined | null | SchemaWarningConnection,
-): SchemaOutput.SchemaWarning[] => {
-  return (
-    warnings?.nodes.map(_ => ({
-      message: _.message,
-      source: _.source ?? null,
-      line: _.line ?? null,
-      column: _.column ?? null,
-    })) ?? []
-  );
-};

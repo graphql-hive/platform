@@ -9,9 +9,10 @@ import {
   CompositionResult,
 } from '@theguild/federation-composition';
 import Command from '../base-command';
+import { Fragments } from '../fragments/__';
 import { graphql } from '../gql';
 import { graphqlEndpoint } from '../helpers/config';
-import { loadSchema, renderErrors } from '../helpers/schema';
+import { loadSchema } from '../helpers/schema';
 import { invariant } from '../helpers/validation';
 
 const CLI_SchemaComposeMutation = graphql(/* GraphQL */ `
@@ -314,7 +315,7 @@ export default class Dev extends Command<typeof Dev> {
 
     if (compositionHasErrors(compositionResult)) {
       if (compositionResult.errors) {
-        renderErrors.call(this, {
+        Fragments.SchemaErrorConnection.log.call(this, {
           total: compositionResult.errors.length,
           nodes: compositionResult.errors.map(error => ({
             message: error.message,
@@ -377,7 +378,7 @@ export default class Dev extends Command<typeof Dev> {
 
     if (!valid) {
       if (compositionResult.errors) {
-        renderErrors.call(this, compositionResult.errors);
+        Fragments.SchemaErrorConnection.log.call(this, compositionResult.errors);
       }
 
       input.onError('Composition failed');

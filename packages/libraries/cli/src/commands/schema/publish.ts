@@ -8,7 +8,7 @@ import { DocumentType, graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
-import { loadSchema, minifySchema, renderErrors } from '../../helpers/schema';
+import { loadSchema, minifySchema } from '../../helpers/schema';
 import { Typebox } from '../../helpers/typebox/__';
 import { invariant } from '../../helpers/validation';
 import { SchemaOutput } from '../../schema-output/__';
@@ -147,7 +147,12 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
+      integrationStrategy: Typebox.Literal('direct'),
       changes: Typebox.Array(SchemaOutput.SchemaChange),
+    }),
+    SchemaOutput.success({
+      integrationStrategy: Typebox.Literal('gitHub'),
+      message: Typebox.String(),
     }),
     SchemaOutput.FailureBase,
   );
@@ -185,7 +190,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }
   }
 
-  async run() {
+  async runResult() {
     const { flags, args } = await this.parse(SchemaPublish);
 
     await this.require(flags);
@@ -337,6 +342,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       }
       return this.success({
         data: {
+          integrationStrategy: 'direct',
           changes: Fragments.SchemaChangeConnection.toSchemaOutput(data.changes),
         },
       });
@@ -355,7 +361,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     if (data.__typename === 'SchemaPublishError') {
       const changes = data.changes;
       const errors = data.errors;
-      renderErrors.call(this, errors);
+      Fragments.SchemaErrorConnection.log.call(this, errors);
 
       if (changes && changes.total) {
         this.log('');
@@ -373,17 +379,32 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       if (data.linkToWebsite) {
         this.logInfo(`Available at ${data.linkToWebsite}`);
       }
-      return;
+
+      return this.success({
+        data: {
+          integrationStrategy: 'direct',
+          changes: Fragments.SchemaChangeConnection.toSchemaOutput(data.changes),
+        },
+      });
     }
 
     if (data.__typename === 'GitHubSchemaPublishSuccess') {
       this.logSuccess(data.message);
-      return;
+      return this.success({
+        data: {
+          integrationStrategy: 'gitHub',
+          message: data.message,
+        },
+      });
     }
 
     if (data.__typename === 'GitHubSchemaPublishError') {
-      this.error('message' in data ? data.message : 'Unknown error');
-      return;
+      // todo: Why property check? Types suggest it is always there.
+      const message = 'message' in data ? data.message : 'Unknown error';
+      this.error(message);
+      return this.failure({
+        message,
+      });
     }
 
     throw casesExhausted(data);
