@@ -22,8 +22,3 @@ export type OptionalizePropertyUnsafe<$Object extends object, $Key extends Prope
 export type Simplify<T> = {
   [K in keyof T]: T[K];
 };
-
-// todo inline test utilities
-
-type x = Simplify<OptionalizePropertyUnsafe<{ a: number; b: string }, 'a'>>;
-type x2 = Simplify<OptionalizePropertyUnsafe<{ a: number; b: string }, 'a' | 'b'>>;

@@ -8,7 +8,7 @@ import { CommandError } from '@oclif/core/lib/interfaces';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 import { CLIFailure } from './helpers/errors/cli-failure';
 import { ClientError } from './helpers/errors/client-error';
-import { OmitNever, OptionalizePropertyUnsafe } from './helpers/general';
+import { OmitNever, OptionalizePropertyUnsafe, Simplify } from './helpers/general';
 import { Envelope, OutputType } from './helpers/output-schema';
 import { Typebox } from './helpers/typebox/__';
 
@@ -407,9 +407,11 @@ type InferFailure<$CommandClass extends typeof Command> =
 
 type InferFailureInit<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
   ? $CommandClass['output'] extends OutputType
-    ? OptionalizePropertyUnsafe<
-        Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: true }>, 'ok'>,
-        'message' | 'exitCode' | 'code' | 'url' | 'suggestions'
+    ? Simplify<
+        OptionalizePropertyUnsafe<
+          Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: true }>, 'ok'>,
+          'message' | 'exitCode' | 'code' | 'url' | 'suggestions'
+        >
       >
     : InferFailureInputError
   : InferFailureInputError;
@@ -425,9 +427,11 @@ type InferSuccess<$CommandClass extends typeof Command> = 'output' extends keyof
 
 type InferSuccessInit<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
   ? $CommandClass['output'] extends OutputType
-    ? OptionalizePropertyUnsafe<
-        Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: false }>, 'ok'>,
-        'message'
+    ? Simplify<
+        OptionalizePropertyUnsafe<
+          Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: false }>, 'ok'>,
+          'message'
+        >
       >
     : InferSuccessDataInputError
   : InferSuccessDataInputError;
