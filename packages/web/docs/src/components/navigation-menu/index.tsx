@@ -16,5 +16,12 @@ export function NavigationMenu(props: ComponentPropsWithoutRef<typeof Navbar>) {
   );
 }
 
-const landingLikePages = ['/', '/pricing', '/federation', '/oss-friends', '/ecosystem'];
+const landingLikePages = [
+  '/',
+  '/pricing',
+  '/federation',
+  '/oss-friends',
+  '/ecosystem',
+  '/partners',
+];
 export const isLandingPage = (route: string) => landingLikePages.includes(route);
