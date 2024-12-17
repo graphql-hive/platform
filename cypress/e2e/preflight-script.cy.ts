@@ -210,5 +210,3 @@ describe('Execution', () => {
     cy.get('.graphiql-execute-button').click();
   });
 });
-
-// todo: test error while setting non primitive in env
