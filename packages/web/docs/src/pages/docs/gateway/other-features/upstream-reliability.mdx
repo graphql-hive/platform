@@ -83,10 +83,10 @@ export const gatewayConfig = defineConfig({
 
 The default delay to wait between tries.
 
-If the upstream execution is using `fetch`, the delay is replaced by the response's `Retry-After`
+If the subgraph is using HTTP transport, the delay is replaced by the response's `Retry-After`
 header if present.
 
-The `Retry-After` can either contain a number of second, or a date.
+The `Retry-After` can either contain a number of second or a date.
 
 ```ts filename="gateway.config.ts"
 import { defineConfig } from '@graphql-hive/gateway'
