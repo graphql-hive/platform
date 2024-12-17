@@ -79,7 +79,7 @@
       "testkit/*": ["./integration-tests/testkit/*"]
     }
   },
-  "include": ["packages", "tsup.config.node.ts"],
+  "include": ["packages", "tsup.config.node.ts", "integration-tests/testkit/**/*.ts"],
   "exclude": [
     "**/node_modules/**",
     "**/dist",

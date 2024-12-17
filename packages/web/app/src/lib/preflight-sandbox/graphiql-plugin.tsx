@@ -23,6 +23,7 @@ import {
 import { Subtitle, Title } from '@/components/ui/page';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
+import { env } from '@/env/frontend';
 import { FragmentType, graphql, useFragment } from '@/gql';
 import { useLocalStorage, useToggle } from '@/lib/hooks';
 import { GraphiQLPlugin } from '@graphiql/react';
@@ -39,11 +40,9 @@ import { useParams } from '@tanstack/react-router';
 import type { LogMessage } from './preflight-script-worker';
 import _PreflightWorker from './preflight-script-worker?worker';
 
-const PreflightWorker =
-  // eslint-disable-next-line no-process-env -- Static analyzer replace process.env.NODE_ENV at build time
-  process.env.NODE_ENV === 'production'
-    ? Worker.bind(null, 'https://lab-worker.dev.graphql-hive.com/worker.js')
-    : _PreflightWorker;
+const PreflightWorker = env.laboratory.preflightWorkerUrl
+  ? Worker.bind(null, env.laboratory.preflightWorkerUrl)
+  : _PreflightWorker;
 
 export const preflightScriptPlugin: GraphiQLPlugin = {
   icon: () => (

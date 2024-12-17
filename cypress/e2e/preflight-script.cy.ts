@@ -1,15 +1,12 @@
-import { Token } from '../../cypress.config';
-
 beforeEach(() => {
-  cy.clearLocalStorage();
-  cy.task('deleteUser');
-  cy.task<Token>('createUser').then(result => {
-    cy.task('createOrganization', result.sAccessToken);
-    cy.task('createProject', result.sAccessToken);
-    cy.setCookie('sRefreshToken', result.sRefreshToken);
+  cy.clearLocalStorage().then(async () => {
+    cy.task('seedTarget').then(({ slug, refreshToken }: any) => {
+      cy.setCookie('sRefreshToken', refreshToken);
+
+      cy.visit(`/${slug}/laboratory`);
+      cy.get('[aria-label*="Preflight Script"]').click();
+    });
   });
-  cy.visit('/foo/my-new-project/development/laboratory');
-  cy.get('[aria-label*="Preflight Script"]').click();
 });
 
 describe('Preflight Script', () => {
