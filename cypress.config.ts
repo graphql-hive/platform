@@ -3,6 +3,11 @@ import * as fs from 'node:fs';
 import { defineConfig } from 'cypress';
 import { initSeed } from './integration-tests/testkit/seed';
 
+if (!process.env.RUN_AGAINST_LOCAL_SERVICES) {
+  const dotenv = await import('dotenv');
+  dotenv.config({ path: import.meta.dirname + '/integration-tests/.env' });
+}
+
 const isCI = Boolean(process.env.CI);
 
 export type Token = {
@@ -12,10 +17,6 @@ export type Token = {
 };
 
 export const seed = initSeed();
-
-// TODO: Load these from actual env
-process.env.SUPERTOKENS_CONNECTION_URI = 'http://127.0.0.1:3567';
-process.env.SUPERTOKENS_API_KEY = 'wowverysecuremuchsecret';
 
 export default defineConfig({
   video: isCI,
