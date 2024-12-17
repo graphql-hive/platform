@@ -65,9 +65,9 @@ const testimonials: Testimonial[] = [
   },
   {
     company: 'Prodigy',
-    logo: props => (
-      <div className="flex h-8 items-center justify-center">
-        <ProdigyLogo {...props} height={37} />
+    logo: ({ className, ...rest }) => (
+      <div className={cn('flex h-8 w-min items-center justify-center', className)}>
+        <ProdigyLogo {...rest} height={37} />
       </div>
     ),
     text: (
@@ -123,10 +123,16 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
         <Tabs.Root
           defaultValue={testimonials[0].company}
           className="flex flex-col overflow-hidden"
+          // we need scrolling for mobile, so this can't be changed to a state-driven opacity transition
           onValueChange={value => {
             const id = getTestimonialId(value);
-            const element = document.getElementById(id);
-            element?.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' });
+            const element = document.getElementById(id)?.parentElement;
+            const scrollview = scrollviewRef.current;
+
+            if (!scrollview || !element) return;
+
+            // we don't use scrollIntoView because it will also scroll vertically
+            scrollview.scrollTo({ left: element.offsetLeft, behavior: 'instant' });
           }}
         >
           <Tabs.List
@@ -139,14 +145,7 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
                 <Tabs.Trigger
                   key={testimonial.company}
                   value={testimonial.company}
-                  className={cn(
-                    'hive-focus grow-0 [&[data-state="active"]>:first-child]:bg-blue-400',
-                    'lg:rdx-state-active:bg-white lg:grow lg:bg-transparent',
-                    'justify-center p-0.5 lg:p-4',
-                    'rdx-state-active:text-green-1000 lg:rdx-state-active:border-beige-600',
-                    'border-transparent font-medium leading-6 text-green-800 lg:border',
-                    'flex flex-1 items-center rounded-[15px]',
-                  )}
+                  className='hive-focus lg:rdx-state-active:bg-white rdx-state-active:text-green-1000 lg:rdx-state-active:border-beige-600 flex flex-1 grow-0 items-center justify-center rounded-[15px] border-transparent p-0.5 font-medium leading-6 text-green-800 lg:grow lg:border lg:bg-transparent lg:p-4 [&[data-state="active"]>:first-child]:bg-blue-400'
                 >
                   <div className="size-2 rounded-full bg-blue-200 transition-colors lg:hidden" />
                   <Logo title={testimonial.company} height={32} className="max-lg:sr-only" />
@@ -214,12 +213,7 @@ export function CompanyTestimonialsSection({ className }: { className?: string }
                           {data.map(({ numbers, description }, i) => (
                             <Fragment key={i}>
                               <li>
-                                <span
-                                  className={cn(
-                                    'block text-[40px] leading-[1.2] tracking-[-0.2px]',
-                                    'md:text-6xl md:leading-[1.1875] md:tracking-[-0.64px]',
-                                  )}
-                                >
+                                <span className="block text-[40px] leading-[1.2] tracking-[-0.2px] md:text-6xl md:leading-[1.1875] md:tracking-[-0.64px]">
                                   {numbers}
                                 </span>
                                 <span className="mt-2">{description}</span>
