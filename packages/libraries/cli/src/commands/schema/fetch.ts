@@ -1,11 +1,11 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
-import { DataOutputMode, Envelope } from 'src/helpers/output-type';
-import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
+import { DataOutputMode, Envelope } from '../../helpers/output-type';
+import { Typebox } from '../../helpers/typebox/__';
 
 const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
   query SchemaVersionForActionId(

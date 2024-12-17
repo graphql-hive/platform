@@ -1,7 +1,7 @@
-import { SchemaWarningConnection } from 'src/gql/graphql';
-import { casesExhausted } from 'src/helpers/general';
-import { Envelope } from 'src/helpers/output-type';
-import { Typebox } from 'src/helpers/typebox/__';
+import { SchemaWarningConnection } from '../../gql/graphql';
+import { casesExhausted } from '../../helpers/general';
+import { Envelope } from '../../helpers/output-type';
+import { Typebox } from '../../helpers/typebox/__';
 import { Args, Errors, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql, useFragment } from '../../gql';

@@ -1,6 +1,6 @@
 import { buildSchema, GraphQLError, Source } from 'graphql';
-import { Envelope } from 'src/helpers/output-type';
-import { Typebox } from 'src/helpers/typebox/__';
+import { Envelope } from '../../helpers/output-type';
+import { Typebox } from '../../helpers/typebox/__';
 import { InvalidDocument, validate } from '@graphql-inspector/core';
 import { Args, Errors, Flags, ux } from '@oclif/core';
 import { CommandError } from '@oclif/core/lib/interfaces';

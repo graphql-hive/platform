@@ -1,11 +1,11 @@
-import { casesExhausted } from 'src/helpers/general';
-import { Envelope } from 'src/helpers/output-type';
-import { Typebox } from 'src/helpers/typebox/__';
-import { Args, Errors, Flags, ux } from '@oclif/core';
+import { Args, Flags, ux } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
+import { casesExhausted } from '../../helpers/general';
+import { Envelope } from '../../helpers/output-type';
 import { renderErrors } from '../../helpers/schema';
+import { Typebox } from '../../helpers/typebox/__';
 
 const schemaDeleteMutation = graphql(/* GraphQL */ `
   mutation schemaDelete($input: SchemaDeleteInput!) {

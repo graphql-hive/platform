@@ -1,5 +1,5 @@
-import { DataOutputMode, Envelope } from 'src/helpers/output-type';
-import { Typebox } from 'src/helpers/typebox/__';
+import { DataOutputMode, Envelope } from '../../helpers/output-type';
+import { Typebox } from '../../helpers/typebox/__';
 import { http, URL } from '@graphql-hive/core';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
