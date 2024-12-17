@@ -229,19 +229,28 @@ function UltimatePerformanceCards() {
 
 function LearnGraphQLFederationSection(props: { className?: string }) {
   return (
-    <section className={cn('bg-green-1000 rounded-3xl p-24 text-center', props.className)}>
-      <Heading as="h2" size="md" className="flex items-center justify-center gap-4 text-white">
+    <section
+      className={cn(
+        'bg-green-1000 rounded-3xl px-4 py-6 sm:py-12 md:px-6 md:text-center lg:px-24 lg:py-16',
+        props.className,
+      )}
+    >
+      <Heading
+        as="h2"
+        size="md"
+        className="flex items-center justify-center gap-4 text-pretty text-white"
+      >
         What Is GraphQL Federation?
       </Heading>
 
-      <p className="mt-8 font-medium text-white/80">
+      <p className="mt-6 font-medium text-white/80 md:mt-8">
         Understand what federated GraphQL API is, how it works, and why it may be the right choice
-        for your API.
+        for your&nbsp;API.
       </p>
       <CallToAction
         variant="secondary"
         href="/federation"
-        className="mx-auto mt-8"
+        className="mx-auto mt-6 md:mt-8"
         title="Introduction to federated GraphQL APIs"
       >
         Introduction to Federation
