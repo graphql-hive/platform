@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { createErrorHandler, handleTRPCError, maskToken, metrics } from '@hive/service-common';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { initTRPC } from '@trpc/server';
-import { cacheHits, cacheMisses } from './metrics';
+import { recordTokenRead } from './metrics';
 import { Storage } from './multi-tier-storage';
 
 const httpRequests = new metrics.Counter({
@@ -170,13 +170,12 @@ export const tokensApiRouter = t.router({
       const cachedFailure = ctx.tokenReadFailuresCache.get(hash);
 
       if (cachedFailure) {
-        cacheHits.inc(1);
         throw new Error(cachedFailure);
       }
 
       try {
         const result = await ctx.storage.readToken(hash, alias);
-
+        recordTokenRead(result ? 200 : 404);
         // removes the token from the failures cache (in case the value expired)
         ctx.tokenReadFailuresCache.delete(hash);
 
@@ -187,8 +186,8 @@ export const tokensApiRouter = t.router({
         // set token read as failure
         // so we don't try to read it again for next X minutes
         ctx.tokenReadFailuresCache.set(hash, (error as Error).message);
-        cacheMisses.inc(1);
 
+        recordTokenRead(500);
         throw error;
       }
     }),

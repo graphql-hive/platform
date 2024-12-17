@@ -5,7 +5,7 @@ import ms from 'ms';
 import { createConnectionString, createTokenStorage, Interceptor, tokens } from '@hive/storage';
 import { captureException, captureMessage } from '@sentry/node';
 import { atomic, until, useActionTracker } from './helpers';
-import { cacheHits, cacheInvalidations, cacheMisses } from './metrics';
+import { recordCacheFill, recordCacheRead } from './metrics';
 
 type CacheEntry = StorageItem | 'not-found';
 
@@ -106,6 +106,7 @@ export async function createStorage(
       }
 
       if (redisData) {
+        recordCacheFill('redis-fresh');
         logger.debug('Returning fresh data from Redis');
         return JSON.parse(redisData) as CacheEntry;
       }
@@ -114,6 +115,7 @@ export async function createStorage(
         // Nothing in Redis, let's check the DB
         const dbResult = await db.getToken({ token: hashedToken });
         const cacheEntry = dbResult ? transformToken(dbResult) : 'not-found';
+        recordCacheFill('db');
 
         // Write to Redis, so the next time we can read it from there
         await setInRedis(redis, hashedToken, cacheEntry).catch(error => {
@@ -158,6 +160,7 @@ export async function createStorage(
           throw error;
         }
 
+        recordCacheFill('redis-stale');
         logger.debug('Returning stale data from Redis');
         // Stale data will be cached in the in-memory cache only, as it's not fresh.
         return JSON.parse(staleRedisData) as CacheEntry;
@@ -189,11 +192,18 @@ export async function createStorage(
       return tokens.map(transformToken);
     },
     async readToken(hashedToken, maskedToken) {
+      const status: LRUCache.Status<CacheEntry> = {};
+      const context = { maskedToken, source: 'in-memory' };
       const data = await cache.fetch(hashedToken, {
-        context: {
-          maskedToken,
-        },
+        context,
+        status,
       });
+
+      if (status.fetch) {
+        recordCacheRead(status.fetch);
+      } else {
+        serverLogger.warn('Status of the fetch is missing');
+      }
 
       if (!data) {
         // Looked up in all layers, and the token is not found
@@ -251,8 +261,6 @@ export async function createStorage(
       if (hashedTokens.length === 0) {
         return;
       }
-
-      cacheInvalidations.inc();
 
       await redis.del(
         hashedTokens.map(generateRedisKey).concat(hashedTokens.map(generateStaleRedisKey)),
