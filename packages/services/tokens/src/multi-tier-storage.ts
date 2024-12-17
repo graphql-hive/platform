@@ -88,8 +88,11 @@ export async function createStorage(
           return null;
         });
       } else {
-        // TODO: what if redis is not ready? Should we call the DB or return null?
-        logger.warn('Redis is not ready, skipping cache read');
+        // If redis is not ready, we fallback to the Db.
+        // This will put more load on the Db, but it won't break the usage reporting.
+        // It's a temporary state, as fetched value will be written to in-memory cache,
+        // and to Redis - when it's back online.
+        logger.warn('Redis is not ready, falling back to Db');
         captureMessage('Redis was not available as secondary cache', 'warning');
       }
 
