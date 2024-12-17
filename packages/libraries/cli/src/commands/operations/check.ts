@@ -5,8 +5,8 @@ import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { loadOperations } from '../../helpers/operations';
-import { Envelope } from '../../helpers/output-type';
 import { Typebox } from '../../helpers/typebox/__';
+import { Envelope } from '../../schema/envelope';
 
 const fetchLatestVersionQuery = graphql(/* GraphQL */ `
   query fetchLatestVersion {

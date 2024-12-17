@@ -3,9 +3,10 @@ import { extname, resolve } from 'node:path';
 import { buildSchema, GraphQLError, introspectionFromSchema } from 'graphql';
 import { Args, Flags } from '@oclif/core';
 import Command from '../base-command';
-import { DataOutputMode, Envelope } from '../helpers/output-type';
 import { loadSchema } from '../helpers/schema';
 import { Typebox } from '../helpers/typebox/__';
+import { DataOutputMode } from '../schema/data';
+import { Envelope } from '../schema/envelope';
 
 export default class Introspect extends Command<typeof Introspect> {
   static output = Typebox.Union([

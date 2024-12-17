@@ -327,7 +327,16 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       if (data.linkToWebsite) {
         this.logInfo(`Available at ${data.linkToWebsite}`);
       }
-      return;
+      return this.success({
+        // todo
+        // data: {
+        //   changes: data.changes?.nodes.map(n => {
+        //     return {
+        //       message: n.message,
+        //     };
+        //   }),
+        // },
+      });
     }
 
     if (data.__typename === 'SchemaPublishMissingServiceError') {

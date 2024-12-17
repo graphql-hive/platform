@@ -3,9 +3,9 @@ import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
-import { Envelope } from '../../helpers/output-type';
 import { renderErrors } from '../../helpers/schema';
 import { Typebox } from '../../helpers/typebox/__';
+import { Envelope } from '../../schema/envelope';
 
 const schemaDeleteMutation = graphql(/* GraphQL */ `
   mutation schemaDelete($input: SchemaDeleteInput!) {

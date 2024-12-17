@@ -1,8 +1,9 @@
 import { http, URL } from '@graphql-hive/core';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
-import { DataOutputMode, Envelope } from '../../helpers/output-type';
 import { Typebox } from '../../helpers/typebox/__';
+import { DataOutputMode } from '../../schema/data';
+import { Envelope } from '../../schema/envelope';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
   static output = Typebox.Union([

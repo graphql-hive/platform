@@ -4,8 +4,9 @@ import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
-import { DataOutputMode, Envelope } from '../../helpers/output-type';
 import { Typebox } from '../../helpers/typebox/__';
+import { DataOutputMode } from '../../schema/data';
+import { Envelope } from '../../schema/envelope';
 
 const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
   query SchemaVersionForActionId(

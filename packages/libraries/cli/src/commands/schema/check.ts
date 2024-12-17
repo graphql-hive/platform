@@ -5,7 +5,6 @@ import { SchemaWarningConnection } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
-import { Envelope } from '../../helpers/output-type';
 import {
   loadSchema,
   MaskedChanges,
@@ -16,12 +15,8 @@ import {
   renderWarnings,
 } from '../../helpers/schema';
 import { Typebox } from '../../helpers/typebox/__';
-
-const CriticalityLevel = Typebox.Enum({
-  Breaking: 'Breaking',
-  Dangerous: 'Dangerous',
-  Safe: 'Safe',
-});
+import { CriticalityLevel } from '../../schema/data';
+import { Envelope } from '../../schema/envelope';
 
 const schemaCheckMutation = graphql(/* GraphQL */ `
   mutation schemaCheck($input: SchemaCheckInput!, $usesGitHubApp: Boolean!) {

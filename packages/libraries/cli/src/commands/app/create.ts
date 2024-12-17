@@ -3,8 +3,8 @@ import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { AppDeploymentStatus } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
-import { Envelope } from '../../helpers/output-type';
 import { Typebox } from '../../helpers/typebox/__';
+import { Envelope } from '../../schema/envelope';
 
 export default class AppCreate extends Command<typeof AppCreate> {
   static output = Typebox.Union([

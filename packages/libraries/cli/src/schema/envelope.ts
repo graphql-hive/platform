@@ -1,10 +1,4 @@
-import { Typebox } from './typebox/__';
-
-// prettier-ignore
-export type OutputType =
-  | Envelope.SuccessBase
-  | Envelope.FailureBase
-  | Typebox.Union<(Envelope.SuccessBase | Envelope.FailureBase)[]>
+import { Typebox } from '../helpers/typebox/__';
 
 export namespace Envelope {
   export const SuccessBase = Typebox.Object({
@@ -67,15 +61,4 @@ export namespace Envelope {
     suggestions: [],
     // context: {},
   };
-}
-
-export namespace DataOutputMode {
-  export const Stdout = Typebox.Object({
-    outputMode: Typebox.Literal('stdout'),
-    content: Typebox.String(),
-  });
-  export const File = Typebox.Object({
-    outputMode: Typebox.Literal('file'),
-    path: Typebox.String(),
-  });
 }
