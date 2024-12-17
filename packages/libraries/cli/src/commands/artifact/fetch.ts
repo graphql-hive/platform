@@ -21,10 +21,7 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       description: 'whether to write to a file instead of stdout',
     }),
   };
-  static output = SchemaOutput.output(
-    SchemaOutput.success(SchemaOutput.OutputMode.File.properties),
-    SchemaOutput.success(SchemaOutput.OutputMode.Stdout.properties),
-  );
+  static output = SchemaOutput.output(SchemaOutput.CLIOutputFile, SchemaOutput.CLIOutputStdout);
 
   async run() {
     const { flags } = await this.parse(ArtifactsFetch);

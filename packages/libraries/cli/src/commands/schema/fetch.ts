@@ -5,7 +5,6 @@ import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { SchemaOutput } from '../../schema-output/__';
-import { OutputMode } from '../../schema-output/data';
 
 const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
   query SchemaVersionForActionId(
@@ -67,10 +66,7 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(
-    SchemaOutput.success(OutputMode.File.properties),
-    SchemaOutput.success(OutputMode.Stdout.properties),
-  );
+  static output = SchemaOutput.output(SchemaOutput.CLIOutputFile, SchemaOutput.CLIOutputStdout);
 
   async run() {
     const { flags, args } = await this.parse(SchemaFetch);
