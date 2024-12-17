@@ -1,5 +1,5 @@
 import { casesExhausted } from 'src/helpers/general';
-import { Envelope } from 'src/helpers/output-schema';
+import { Envelope } from 'src/helpers/output-type';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Errors, Flags, ux } from '@oclif/core';
 import Command from '../../base-command';

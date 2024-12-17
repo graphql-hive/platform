@@ -1,5 +1,5 @@
 import { Errors } from '@oclif/core';
-import { Envelope } from '../output-schema';
+import { Envelope } from '../output-type';
 import { Typebox } from '../typebox/__';
 
 export class CLIFailure extends Errors.CLIError {

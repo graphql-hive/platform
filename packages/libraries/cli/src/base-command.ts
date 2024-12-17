@@ -9,7 +9,7 @@ import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './hel
 import { CLIFailure } from './helpers/errors/cli-failure';
 import { ClientError } from './helpers/errors/client-error';
 import { OmitNever, OptionalizePropertyUnsafe, Simplify } from './helpers/general';
-import { Envelope, OutputType } from './helpers/output-schema';
+import { Envelope, OutputType } from './helpers/output-type';
 import { Typebox } from './helpers/typebox/__';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {

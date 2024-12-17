@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
-import { DataOutputMode, Envelope } from 'src/helpers/output-schema';
+import { DataOutputMode, Envelope } from 'src/helpers/output-type';
 import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
