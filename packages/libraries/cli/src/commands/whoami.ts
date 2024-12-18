@@ -93,13 +93,14 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       env: 'HIVE_TOKEN',
     });
 
-    const result = await this.registryApi(registry, token).request({
-      operation: myTokenInfoQuery,
-    });
+    const result = await this.registryApi(registry, token)
+      .request({
+        operation: myTokenInfoQuery,
+      })
+      .then(_ => _.tokenInfo);
 
-    if (result.tokenInfo.__typename === 'TokenInfo') {
-      const { tokenInfo } = result;
-      const { organization, project, target } = tokenInfo;
+    if (result.__typename === 'TokenInfo') {
+      const { organization, project, target } = result;
 
       const organizationUrl = `https://app.graphql-hive.com/${organization.slug}`;
       const projectUrl = `${organizationUrl}/${project.slug}`;
@@ -111,42 +112,40 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       };
 
       const print = createPrinter({
-        'Token name:': [colors.bold(tokenInfo.token.name)],
+        'Token name:': [colors.bold(result.token.name)],
         ' ': [''],
         'Organization:': [colors.bold(organization.slug), colors.dim(organizationUrl)],
         'Project:': [colors.bold(project.slug), colors.dim(projectUrl)],
         'Target:': [colors.bold(target.slug), colors.dim(targetUrl)],
         '  ': [''],
-        'Access to schema:publish': [tokenInfo.canPublishSchema ? access.yes : access.not],
-        'Access to schema:check': [tokenInfo.canCheckSchema ? access.yes : access.not],
+        'Access to schema:publish': [result.canPublishSchema ? access.yes : access.not],
+        'Access to schema:check': [result.canCheckSchema ? access.yes : access.not],
       });
 
       this.log(print());
 
       return this.success({
-        data: {
-          tokenName: tokenInfo.token.name,
-          organization: organization.slug,
-          project: project.slug,
-          target: target.slug,
-          authorization: {
-            schema: {
-              publish: tokenInfo.canPublishSchema,
-              check: tokenInfo.canCheckSchema,
-            },
+        tokenName: result.token.name,
+        organization: organization.slug,
+        project: project.slug,
+        target: target.slug,
+        authorization: {
+          schema: {
+            publish: result.canPublishSchema,
+            check: result.canCheckSchema,
           },
         },
       });
     }
 
-    if (result.tokenInfo.__typename === 'TokenNotFoundError') {
-      this.error(`Token not found. Reason: ${result.tokenInfo.message}`, {
+    if (result.__typename === 'TokenNotFoundError') {
+      this.error(`Token not found. Reason: ${result.message}`, {
         exit: 0,
         suggestions: [`How to create a token? https://docs.graphql-hive.com/features/tokens`],
       });
     }
 
-    casesExhausted(result.tokenInfo);
+    casesExhausted(result);
   }
 }
 

@@ -73,7 +73,7 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       await fs.writeFile(flags.outputFile, contents);
       const message = `Wrote ${contents.length} bytes to ${flags.outputFile}`;
       this.log(message);
-      return this.success({
+      return this.successEnvelope({
         message,
         data: {
           __typename: 'CLIOutputFile',
@@ -85,10 +85,8 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
     const content = await response.text();
     this.log(content);
     return this.success({
-      data: {
-        __typename: 'CLIOutputStdout',
-        content,
-      },
+      __typename: 'CLIOutputStdout',
+      content,
     });
   }
 }

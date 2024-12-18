@@ -136,19 +136,15 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
           this.exit(1);
       }
       return this.success({
-        data: {
-          __typename: 'CLIOutputFile',
-          path: filepath,
-        },
+        __typename: 'CLIOutputFile',
+        path: filepath,
       });
     }
 
     this.log(schema);
     return this.success({
-      data: {
-        __typename: 'CLIOutputStdout',
-        content: schema,
-      },
+      __typename: 'CLIOutputStdout',
+      content: schema,
     });
   }
 }

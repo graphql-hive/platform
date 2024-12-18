@@ -8,7 +8,7 @@ import { CommandError } from '@oclif/core/lib/interfaces';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 import { CLIFailure } from './helpers/errors/cli-failure';
 import { ClientError } from './helpers/errors/client-error';
-import { OmitNever, OptionalizePropertyUnsafe, Simplify } from './helpers/general';
+import { OmitNever } from './helpers/general';
 import { Typebox } from './helpers/typebox/__';
 import { SchemaOutput } from './schema-output/__';
 
@@ -46,7 +46,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * By default this command runs {@link BaseCommand.runResult}, having logic to handle its return value.
    */
-  async run(): Promise<void | InferSuccess<$Command>> {
+  async run(): Promise<void | SchemaOutput.InferSuccess<GetOutputSchema<$Command>>> {
     const resultUnsafe = await this.runResult();
     const schema = (this.constructor as typeof BaseCommand).output as SchemaOutput.$Output;
     const result = Typebox.Value.Parse(schema, resultUnsafe);
@@ -67,7 +67,10 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * Note: You must specify your command's output type in {@link BaseCommand.output} to take advantage of this method.
    */
-  async runResult(): Promise<InferSuccess<$Command> | InferFailure<$Command>> {
+  async runResult(): Promise<
+    | SchemaOutput.InferSuccess<GetOutputSchema<$Command>>
+    | SchemaOutput.InferFailure<GetOutputSchema<$Command>>
+  > {
     throw new Error('Not implemented');
   }
 
@@ -79,21 +82,41 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 
   /**
-   * Helper function for easy creation of success data (with defaults) that
+   * Helper function for creation of success data that adheres to the type specified
+   * by your command's {@link BaseCommand.output}.
+   */
+  success(
+    data: SchemaOutput.InferSuccessData<GetOutputSchema<$Command>>,
+  ): SchemaOutput.InferSuccess<GetOutputSchema<$Command>> {
+    return this.successEnvelope({ data } as any) as any;
+  }
+
+  /**
+   * Helper function for easy creation of success envelope (with defaults) that
    * adheres to the type specified by your command's {@link BaseCommand.output}.
    */
-  success(envelopeInit: InferSuccessInit<$Command>): InferSuccess<$Command> {
+  successEnvelope(
+    envelopeInit: SchemaOutput.InferSuccessEnvelopeInit<GetOutputSchema<$Command>>,
+  ): SchemaOutput.InferSuccess<GetOutputSchema<$Command>> {
     return {
       ...SchemaOutput.successDefaults,
       ...(envelopeInit as object),
     } as any;
   }
 
+  failure(
+    data: SchemaOutput.InferFailureData<GetOutputSchema<$Command>>,
+  ): SchemaOutput.InferFailure<GetOutputSchema<$Command>> {
+    return this.failureEnvelope({ data } as any) as any;
+  }
+
   /**
    * Helper function for easy creation of failure data (with defaults) that
    * adheres to the type specified by your command's {@link BaseCommand.output}.
    */
-  failure(envelopeInit: InferFailureInit<$Command>): InferFailure<$Command> {
+  failureEnvelope(
+    envelopeInit: SchemaOutput.InferFailureEnvelopeInit<GetOutputSchema<$Command>>,
+  ): SchemaOutput.InferFailure<GetOutputSchema<$Command>> {
     return {
       ...SchemaOutput.failureDefaults,
       ...(envelopeInit as object),
@@ -398,42 +421,10 @@ export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 
-type InferFailure<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
-  ? $CommandClass['output'] extends typeof SchemaOutput.FailureBase
-    ? Typebox.Static<$CommandClass['output']>
+// prettier-ignore
+type GetOutputSchema<$CommandClass extends typeof Command> =
+  'output' extends keyof $CommandClass
+    ? $CommandClass['output'] extends SchemaOutput.$Output
+      ? $CommandClass['output']
     : never
   : never;
-
-type InferFailureInit<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
-  ? $CommandClass['output'] extends SchemaOutput.$Output
-    ? Simplify<
-        OptionalizePropertyUnsafe<
-          Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: true }>, 'ok'>,
-          'message' | 'exitCode' | 'code' | 'url' | 'suggestions'
-        >
-      >
-    : InferFailureInputError
-  : InferFailureInputError;
-
-type InferFailureInputError =
-  'Error: Missing e.g. `static output = SchemaOutput.failure({ ... })` on your command.';
-
-type InferSuccess<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
-  ? $CommandClass['output'] extends SchemaOutput.$Output
-    ? Exclude<Typebox.Static<$CommandClass['output']>, { ok: false }>
-    : never
-  : never;
-
-type InferSuccessInit<$CommandClass extends typeof Command> = 'output' extends keyof $CommandClass
-  ? $CommandClass['output'] extends SchemaOutput.$Output
-    ? Simplify<
-        OptionalizePropertyUnsafe<
-          Omit<Exclude<Typebox.Static<$CommandClass['output']>, { ok: false }>, 'ok'>,
-          'message'
-        >
-      >
-    : InferSuccessDataInputError
-  : InferSuccessDataInputError;
-
-type InferSuccessDataInputError =
-  'Error: Missing e.g. `static output = SchemaOutput.success({ ... })` on your command.';

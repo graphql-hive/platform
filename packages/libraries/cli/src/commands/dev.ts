@@ -92,6 +92,8 @@ type ServiceWithSource = {
 //
 // Presumably users would typically NOT use JSON output for this command. This task appears to be motivated by
 // the principal of simplicity via consistency.
+//
+// NDJSON (new line delimited JSON) would be a suitable output.
 
 export default class Dev extends Command<typeof Dev> {
   static description = [

@@ -274,13 +274,11 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       }
 
       return this.success({
-        data: {
-          __typename: 'SchemaCheckSuccess',
-          //   breakingChanges: false,
-          warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
-          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
-          url: result.schemaCheck?.webUrl ?? null,
-        },
+        __typename: 'SchemaCheckSuccess',
+        //   breakingChanges: false,
+        warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
+        changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
+        url: result.schemaCheck?.webUrl ?? null,
       });
     }
 
@@ -314,32 +312,26 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       }
 
       return this.success({
-        data: {
-          __typename: 'SchemaCheckError',
-          warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
-          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
-          url: result.schemaCheck?.webUrl ?? null,
-        },
+        __typename: 'SchemaCheckError',
+        warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
+        changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
+        url: result.schemaCheck?.webUrl ?? null,
       });
     }
 
     if (result.__typename === 'GitHubSchemaCheckSuccess') {
       this.logSuccess(result.message);
       return this.success({
-        data: {
-          __typename: 'GitHubSchemaCheckSuccess',
-          message: result.message,
-        },
+        __typename: 'GitHubSchemaCheckSuccess',
+        message: result.message,
       });
     }
 
     if (result.__typename === 'GitHubSchemaCheckError') {
       this.logFailure(result.message);
       return this.failure({
-        data: {
-          __typename: 'GitHubSchemaCheckError',
-          message: result.message,
-        },
+        __typename: 'GitHubSchemaCheckError',
+        message: result.message,
       });
     }
 

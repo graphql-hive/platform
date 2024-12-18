@@ -1,8 +1,8 @@
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
-import { AppDeploymentStatus } from '../../gql/graphql';
 import { graphqlEndpoint } from '../../helpers/config';
+import { SchemaHive } from '../../helpers/schema';
 import { Typebox } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
@@ -33,21 +33,21 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.successIdempotentableSkipped({
-      status: Typebox.Enum({
-        active: AppDeploymentStatus.Active,
-        pending: AppDeploymentStatus.Pending,
-        retired: AppDeploymentStatus.Retired,
-      }),
+    SchemaOutput.success({
+      __typename: Typebox.Literal('CLISkipAppCreate'),
+      status: SchemaOutput.AppDeploymentStatus,
     }),
-    SchemaOutput.successIdempotentableExecuted({
+    SchemaOutput.success({
+      __typename: Typebox.Literal('CreateAppDeploymentOk'),
       id: Typebox.StringNonEmpty,
-      name: Typebox.StringNonEmpty,
-      version: Typebox.StringNonEmpty,
+    }),
+    SchemaOutput.failure({
+      __typename: Typebox.Literal('CreateAppDeploymentError'),
+      message: Typebox.String(),
     }),
   );
 
-  async run() {
+  async runResult() {
     const { flags, args } = await this.parse(AppCreate);
 
     const endpoint = this.ensure({
@@ -68,33 +68,38 @@ export default class AppCreate extends Command<typeof AppCreate> {
     // TODO: better error message if parsing fails :)
     const operations = Typebox.Value.ParseJson(ManifestModel, contents);
 
-    const result = await this.registryApi(endpoint, accessToken).request({
-      operation: CreateAppDeploymentMutation,
-      variables: {
-        input: {
-          appName: flags['name'],
-          appVersion: flags['version'],
+    const result = await this.registryApi(endpoint, accessToken)
+      .request({
+        operation: CreateAppDeploymentMutation,
+        variables: {
+          input: {
+            appName: flags['name'],
+            appVersion: flags['version'],
+          },
         },
-      },
-    });
+      })
+      .then(_ => _.createAppDeployment);
 
-    if (result.createAppDeployment.error) {
-      // TODO: better error message formatting :)
-      throw new Error(result.createAppDeployment.error.message);
+    if (result.error) {
+      return this.failure({
+        __typename: 'CreateAppDeploymentError',
+        message: result.error.message,
+      });
     }
 
-    if (!result.createAppDeployment.ok) {
+    // TODO: Improve GraphQL API, return a union type.
+    if (!result.ok) {
       throw new Error('Unknown error');
     }
 
-    if (result.createAppDeployment.ok.createdAppDeployment.status !== AppDeploymentStatus.Pending) {
-      const message = `App deployment "${flags['name']}@${flags['version']}" is "${result.createAppDeployment.ok.createdAppDeployment.status}". Skip uploading documents...`;
+    if (result.ok.createdAppDeployment.status !== SchemaHive.AppDeploymentStatus.Pending) {
+      const message = `App deployment "${flags['name']}@${flags['version']}" is "${result.ok.createdAppDeployment.status}". Skip uploading documents...`;
       this.log(message);
-      return this.success({
+      return this.successEnvelope({
         message,
-        effect: 'skipped',
         data: {
-          status: result.createAppDeployment.ok.createdAppDeployment.status,
+          __typename: 'CLISkipAppCreate',
+          status: result.ok.createdAppDeployment.status,
         },
       });
     }
@@ -103,22 +108,22 @@ export default class AppCreate extends Command<typeof AppCreate> {
 
     const flush = async (force = false) => {
       if (buffer.length >= 100 || force) {
-        const result = await this.registryApi(endpoint, accessToken).request({
-          operation: AddDocumentsToAppDeploymentMutation,
-          variables: {
-            input: {
-              appName: flags['name'],
-              appVersion: flags['version'],
-              documents: buffer,
+        const result = await this.registryApi(endpoint, accessToken)
+          .request({
+            operation: AddDocumentsToAppDeploymentMutation,
+            variables: {
+              input: {
+                appName: flags['name'],
+                appVersion: flags['version'],
+                documents: buffer,
+              },
             },
-          },
-        });
+          })
+          .then(_ => _.addDocumentsToAppDeployment);
 
-        if (result.addDocumentsToAppDeployment.error) {
-          if (result.addDocumentsToAppDeployment.error.details) {
-            const affectedOperation = buffer.at(
-              result.addDocumentsToAppDeployment.error.details.index,
-            );
+        if (result.error) {
+          if (result.error.details) {
+            const affectedOperation = buffer.at(result.error.details.index);
 
             const maxCharacters = 40;
 
@@ -129,13 +134,13 @@ export default class AppCreate extends Command<typeof AppCreate> {
                   : affectedOperation.body
               ).replace(/\n/g, '\\n');
               this.logWarning(
-                `Failed uploading document: ${result.addDocumentsToAppDeployment.error.details.message}` +
+                `Failed uploading document: ${result.error.details.message}` +
                   `\nOperation hash: ${affectedOperation?.hash}` +
                   `\nOperation body: ${truncatedBody}`,
               );
             }
           }
-          this.error(result.addDocumentsToAppDeployment.error.message);
+          this.error(result.error.message);
         }
         buffer = [];
       }
@@ -153,13 +158,11 @@ export default class AppCreate extends Command<typeof AppCreate> {
 
     const message = `App deployment "${flags['name']}@${flags['version']}" (${counter} operations) created.\nActivate it with the "hive app:publish" command.`;
     this.log(message);
-    return this.success({
+    return this.successEnvelope({
       message,
-      effect: 'executed',
       data: {
-        id: result.createAppDeployment.ok.createdAppDeployment.id,
-        name: flags['name'],
-        version: flags['version'],
+        __typename: 'CreateAppDeploymentOk',
+        id: result.ok.createdAppDeployment.id,
       },
     });
   }

@@ -19,7 +19,6 @@ export default class Introspect extends Command<typeof Introspect> {
       multiple: true,
     }),
   };
-
   static args = {
     location: Args.string({
       name: 'location',
@@ -66,10 +65,8 @@ export default class Introspect extends Command<typeof Introspect> {
     if (!flags.write) {
       this.log(schema);
       return this.success({
-        data: {
-          __typename: 'CLIOutputStdout',
-          content: schema,
-        },
+        __typename: 'CLIOutputStdout',
+        content: schema,
       });
     }
 
@@ -102,10 +99,8 @@ export default class Introspect extends Command<typeof Introspect> {
 
       this.logSuccess(`Saved to ${filepath}`);
       return this.success({
-        data: {
-          __typename: 'CLIOutputFile',
-          path: filepath,
-        },
+        __typename: 'CLIOutputFile',
+        path: filepath,
       });
     }
   }

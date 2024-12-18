@@ -142,12 +142,10 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     if (operations.length === 0) {
       this.logInfo('No operations found');
       return this.success({
-        data: {
-          countTotal: 0,
-          countInvalid: 0,
-          countValid: 0,
-          invalidOperations: [],
-        },
+        countTotal: 0,
+        countInvalid: 0,
+        countValid: 0,
+        invalidOperations: [],
       });
     }
 
@@ -210,30 +208,28 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     }
 
     return this.success({
-      data: {
-        countTotal: operations.length,
-        countInvalid: operationsWithErrors.length,
-        countValid: operations.length - operationsWithErrors.length,
-        invalidOperations: operationsWithErrors.map(o => {
-          return {
-            source: {
-              name: o.source.name,
-            },
-            errors: o.errors.map(e => {
-              return {
-                message: e.message,
-                locations:
-                  e.locations?.map(l => {
-                    return {
-                      line: l.line,
-                      column: l.column,
-                    };
-                  }) ?? [],
-              };
-            }),
-          };
-        }),
-      },
+      countTotal: operations.length,
+      countInvalid: operationsWithErrors.length,
+      countValid: operations.length - operationsWithErrors.length,
+      invalidOperations: operationsWithErrors.map(o => {
+        return {
+          source: {
+            name: o.source.name,
+          },
+          errors: o.errors.map(e => {
+            return {
+              message: e.message,
+              locations:
+                e.locations?.map(l => {
+                  return {
+                    line: l.line,
+                    column: l.column,
+                  };
+                }) ?? [],
+            };
+          }),
+        };
+      }),
     });
   }
 

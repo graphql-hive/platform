@@ -67,7 +67,7 @@ export default class AppPublish extends Command<typeof AppPublish> {
       if (result.activateAppDeployment.ok.isSkipped) {
         const message = `App deployment "${name}" is already published. Skipping...`;
         this.warn(message);
-        return this.success({
+        return this.successEnvelope({
           message,
           effect: 'skipped',
           data: {
@@ -77,7 +77,7 @@ export default class AppPublish extends Command<typeof AppPublish> {
       }
       const message = `App deployment "${name}" published successfully.`;
       this.log(message);
-      return this.success({
+      return this.successEnvelope({
         message,
         effect: 'executed',
         data: {

@@ -1,4 +1,6 @@
+import { OptionalizePropertyUnsafe, Simplify } from '../helpers/general';
 import { Typebox } from '../helpers/typebox/__';
+import { $Output } from './output';
 
 export const SuccessBase = Typebox.Object({
   ok: Typebox.Literal(true),
@@ -60,3 +62,28 @@ export const failureDefaults: Typebox.Static<typeof FailureBase> = {
   suggestions: [],
   // context: {},
 };
+
+export type InferSuccessData<$Schema extends $Output> = Simplify<
+  // @ts-expect-error fixme
+  InferSuccess<$Schema>['data']
+>;
+
+export type InferSuccessEnvelopeInit<$Schema extends $Output> = Simplify<
+  OptionalizePropertyUnsafe<Omit<InferSuccess<$Schema>, 'ok'>, 'message'>
+>;
+
+export type InferSuccess<$Schema extends $Output> = Exclude<Typebox.Static<$Schema>, { ok: false }>;
+
+export type InferFailureData<$Schema extends $Output> = Simplify<
+  // @ts-expect-error fixme
+  InferFailure<$Schema>['data']
+>;
+
+export type InferFailureEnvelopeInit<$Schema extends $Output> = Simplify<
+  OptionalizePropertyUnsafe<
+    Omit<InferFailure<$Schema>, 'ok'>,
+    'message' | 'exitCode' | 'code' | 'url' | 'suggestions'
+  >
+>;
+
+export type InferFailure<$Schema extends $Output> = Exclude<Typebox.Static<$Schema>, { ok: true }>;

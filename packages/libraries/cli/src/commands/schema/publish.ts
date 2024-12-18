@@ -350,11 +350,9 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       }
 
       return this.success({
-        data: {
-          __typename: 'SchemaPublishSuccess',
-          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
-          url: result.linkToWebsite ?? null,
-        },
+        __typename: 'SchemaPublishSuccess',
+        changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
+        url: result.linkToWebsite ?? null,
       });
     }
 
@@ -389,22 +387,18 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       }
 
       return this.success({
-        data: {
-          __typename: 'SchemaPublishError',
-          changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
-          errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
-          url: result.linkToWebsite ?? null,
-        },
+        __typename: 'SchemaPublishError',
+        changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
+        errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
+        url: result.linkToWebsite ?? null,
       });
     }
 
     if (result.__typename === 'GitHubSchemaPublishSuccess') {
       this.logSuccess(result.message);
       return this.success({
-        data: {
-          __typename: 'GitHubSchemaPublishSuccess',
-          message: result.message,
-        },
+        __typename: 'GitHubSchemaPublishSuccess',
+        message: result.message,
       });
     }
 
@@ -413,10 +407,8 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       const message = 'message' in result ? result.message : 'Unknown error';
       this.error(message);
       return this.failure({
-        data: {
-          __typename: 'GitHubSchemaPublishError',
-          message,
-        },
+        __typename: 'GitHubSchemaPublishError',
+        message,
       });
     }
 

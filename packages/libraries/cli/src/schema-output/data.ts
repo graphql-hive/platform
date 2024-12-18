@@ -1,3 +1,4 @@
+import { SchemaHive } from '../helpers/schema';
 import { Typebox } from '../helpers/typebox/__';
 
 export const SchemaChangeCriticalityLevel = Typebox.Enum({
@@ -34,3 +35,10 @@ export const SchemaError = Typebox.Object({
   message: Typebox.String(),
 });
 export type SchemaError = Typebox.Static<typeof SchemaError>;
+
+export const AppDeploymentStatus = Typebox.Enum({
+  active: SchemaHive.AppDeploymentStatus.Active,
+  pending: SchemaHive.AppDeploymentStatus.Pending,
+  retired: SchemaHive.AppDeploymentStatus.Retired,
+});
+export type AppDeploymentStatus = Typebox.Static<typeof AppDeploymentStatus>;
