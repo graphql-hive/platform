@@ -7,12 +7,21 @@ interface Context {
   seed: Seed;
   owner: OwnerSeed;
   org: OrgSeed;
+  //
+  // "single" branch
+  //
   projectSingle: ProjectSeed;
   targetAccessTokenSingle: TargetAccessTokenSeed;
   cliSingle: CLI;
+  //
+  // "federation" branch
+  //
   projectFederation: ProjectSeed;
   targetAccessTokenFederation: TargetAccessTokenSeed;
   cliFederation: CLI;
+  //
+  // "stitching" branch
+  //
   projectStitching: ProjectSeed;
   targetAccessTokenStitching: TargetAccessTokenSeed;
   cliStitching: CLI;

@@ -2,7 +2,7 @@
 import { createHash } from 'node:crypto';
 import { ProjectType } from 'testkit/gql/graphql';
 import { createCLI, schemaCheck, schemaPublish } from '../../testkit/cli';
-import { initSeed } from '../../testkit/seed';
+import { test } from '../../testkit/test';
 
 describe.each`
   projectType               | model
@@ -19,82 +19,82 @@ describe.each`
   const serviceName = projectType === ProjectType.Single ? undefined : 'test';
   const serviceUrl = projectType === ProjectType.Single ? undefined : 'http://localhost:4000';
 
-  test.concurrent('can publish a schema with breaking, warning and safe changes', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { inviteAndJoinMember, createProject } = await createOrg();
-    await inviteAndJoinMember();
-    const { createTargetAccessToken } = await createProject(projectType, {
-      useLegacyRegistryModels: model === 'legacy',
-    });
-    const { secret } = await createTargetAccessToken({});
+  test.concurrent(
+    'can publish a schema with breaking, warning and safe changes',
+    async ({ org }) => {
+      await org.inviteAndJoinMember();
+      const { createTargetAccessToken } = await org.createProject(projectType, {
+        useLegacyRegistryModels: model === 'legacy',
+      });
+      const { secret } = await createTargetAccessToken({});
 
-    await schemaPublish([
-      '--registry.accessToken',
-      secret,
-      '--author',
-      'Kamil',
-      '--commit',
-      'abc123',
-      ...serviceNameArgs,
-      ...serviceUrlArgs,
-      'fixtures/init-schema-detailed.graphql',
-    ]);
-    await expect(
-      schemaCheck([
-        ...serviceNameArgs,
+      await schemaPublish([
         '--registry.accessToken',
         secret,
-        'fixtures/breaking-schema-detailed.graphql',
-      ]),
-    ).rejects.toThrowError(/breaking changes:|dangerous changes:|safe changes/i);
-  });
-
-  test.concurrent('can publish and check a schema with target:registry:read access', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { inviteAndJoinMember, createProject } = await createOrg();
-    await inviteAndJoinMember();
-    const { createTargetAccessToken } = await createProject(projectType, {
-      useLegacyRegistryModels: model === 'legacy',
-    });
-    const { secret } = await createTargetAccessToken({});
-
-    await schemaPublish([
-      '--registry.accessToken',
-      secret,
-      '--author',
-      'Kamil',
-      '--commit',
-      'abc123',
-      ...serviceNameArgs,
-      ...serviceUrlArgs,
-      'fixtures/init-schema.graphql',
-    ]);
-
-    await schemaCheck([
-      '--service',
-      'test',
-      '--registry.accessToken',
-      secret,
-      'fixtures/nonbreaking-schema.graphql',
-    ]);
-
-    await expect(
-      schemaCheck([
+        '--author',
+        'Kamil',
+        '--commit',
+        'abc123',
         ...serviceNameArgs,
+        ...serviceUrlArgs,
+        'fixtures/init-schema-detailed.graphql',
+      ]);
+      await expect(
+        schemaCheck([
+          ...serviceNameArgs,
+          '--registry.accessToken',
+          secret,
+          'fixtures/breaking-schema-detailed.graphql',
+        ]),
+      ).rejects.toThrowError(/breaking changes:|dangerous changes:|safe changes/i);
+    },
+  );
+
+  test.concurrent(
+    'can publish and check a schema with target:registry:read access',
+    async ({ org }) => {
+      await org.inviteAndJoinMember();
+      const { createTargetAccessToken } = await org.createProject(projectType, {
+        useLegacyRegistryModels: model === 'legacy',
+      });
+      const { secret } = await createTargetAccessToken({});
+
+      await schemaPublish([
         '--registry.accessToken',
         secret,
-        'fixtures/breaking-schema.graphql',
-      ]),
-    ).rejects.toThrowError(/breaking/i);
-  });
+        '--author',
+        'Kamil',
+        '--commit',
+        'abc123',
+        ...serviceNameArgs,
+        ...serviceUrlArgs,
+        'fixtures/init-schema.graphql',
+      ]);
+
+      await schemaCheck([
+        '--service',
+        'test',
+        '--registry.accessToken',
+        secret,
+        'fixtures/nonbreaking-schema.graphql',
+      ]);
+
+      await expect(
+        schemaCheck([
+          ...serviceNameArgs,
+          '--registry.accessToken',
+          secret,
+          'fixtures/breaking-schema.graphql',
+        ]),
+      ).rejects.toThrowError(/breaking/i);
+    },
+  );
 
   test.concurrent(
     'publishing invalid schema SDL provides meaningful feedback for the user.',
-    async () => {
-      const { createOrg } = await initSeed().createOwner();
-      const { inviteAndJoinMember, createProject } = await createOrg();
-      await inviteAndJoinMember();
-      const { createTargetAccessToken } = await createProject(projectType, {
+    async ({ org }) => {
+      await org.inviteAndJoinMember();
+      const { createTargetAccessToken } = await org.createProject(projectType, {
         useLegacyRegistryModels: model === 'legacy',
       });
       const { secret } = await createTargetAccessToken({});
@@ -123,11 +123,9 @@ describe.each`
     },
   );
 
-  test.concurrent('schema:publish should print a link to the website', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { organization, inviteAndJoinMember, createProject } = await createOrg();
-    await inviteAndJoinMember();
-    const { project, target, createTargetAccessToken } = await createProject(projectType, {
+  test.concurrent('schema:publish should print a link to the website', async ({ org }) => {
+    await org.inviteAndJoinMember();
+    const { project, target, createTargetAccessToken } = await org.createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
     const { secret } = await createTargetAccessToken({});
@@ -141,7 +139,7 @@ describe.each`
         'fixtures/init-schema.graphql',
       ]),
     ).resolves.toMatch(
-      `Available at ${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}`,
+      `Available at ${process.env.HIVE_APP_BASE_URL}/${org.organization.slug}/${project.slug}/${target.slug}`,
     );
 
     await expect(
@@ -153,15 +151,13 @@ describe.each`
         'fixtures/nonbreaking-schema.graphql',
       ]),
     ).resolves.toMatch(
-      `Available at ${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}/history/`,
+      `Available at ${process.env.HIVE_APP_BASE_URL}/${org.organization.slug}/${project.slug}/${target.slug}/history/`,
     );
   });
 
-  test.concurrent('schema:check should notify user when registry is empty', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { inviteAndJoinMember, createProject } = await createOrg();
-    await inviteAndJoinMember();
-    const { createTargetAccessToken } = await createProject(projectType, {
+  test.concurrent('schema:check should notify user when registry is empty', async ({ org }) => {
+    await org.inviteAndJoinMember();
+    const { createTargetAccessToken } = await org.createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
     const { secret } = await createTargetAccessToken({});
@@ -176,11 +172,9 @@ describe.each`
     ).resolves.toMatch('empty');
   });
 
-  test.concurrent('schema:check should throw on corrupted schema', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { inviteAndJoinMember, createProject } = await createOrg();
-    await inviteAndJoinMember();
-    const { createTargetAccessToken } = await createProject(projectType, {
+  test.concurrent('schema:check should throw on corrupted schema', async ({ org }) => {
+    await org.inviteAndJoinMember();
+    const { createTargetAccessToken } = await org.createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
     const { secret } = await createTargetAccessToken({});
@@ -212,12 +206,10 @@ describe.each`
 
   test
     .skipIf(projectType === ProjectType.Single)
-    .concurrent('can update the service url and show it in comparison query', async () => {
-      const { createOrg } = await initSeed().createOwner();
-      const { inviteAndJoinMember, createProject } = await createOrg();
-      await inviteAndJoinMember();
+    .concurrent('can update the service url and show it in comparison query', async ({ org }) => {
+      await org.inviteAndJoinMember();
       const { createTargetAccessToken, compareToPreviousVersion, fetchVersions } =
-        await createProject(projectType, {
+        await org.createProject(projectType, {
           useLegacyRegistryModels: model === 'legacy',
         });
       const { secret } = await createTargetAccessToken({});
