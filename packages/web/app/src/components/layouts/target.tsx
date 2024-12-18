@@ -542,7 +542,7 @@ function FederationModalContent(props: {
         </p>
         {authenticateSection}
         <CodeBlock className="mt-2">
-          {`docker run --name hive-gateway -rm -p 4000:4000 \\
+          {`docker run --name hive-gateway --rm -p 4000:4000 \\
   ghcr.io/graphql-hive/gateway supergraph \\
   '${props.cdnUrl}' \\
   --hive-cdn-key '<hive_cdn_access_key>'`}
@@ -562,7 +562,7 @@ function FederationModalContent(props: {
         </p>
         {authenticateSection}
         <CodeBlock>
-          {`docker run --name hive-gateway -rm \\
+          {`docker run --name hive-gateway --rm \\
   --env HIVE_CDN_ENDPOINT="${props.cdnUrl}" \\
   --env HIVE_CDN_KEY="<hive_cdn_access_key>"
   ghcr.io/graphql-hive/apollo-router`}
