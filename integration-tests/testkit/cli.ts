@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import dev from 'packages/libraries/cli/src/commands/dev';
 import { execaCommand } from '@esm2cjs/execa';
 import { HiveCLI } from '@graphql-hive/cli';
 import { fetchLatestSchema, fetchLatestValidSchema } from './flow';
