@@ -1,21 +1,8 @@
 import { Static, TAnySchema, TypeBoxError } from '@sinclair/typebox';
-import { AssertError, Value } from '@sinclair/typebox/value';
+import { Value } from '@sinclair/typebox/value';
 
 export * from '@sinclair/typebox/value';
-
-/**
- * Variant of {@link Value.Parse} that returns rather than throws an {@link AssertError}.
- */
-export const ParseSafe = <$Type extends TAnySchema>(
-  type: $Type,
-  value: unknown,
-): AssertError | Static<$Type> => {
-  try {
-    return Value.Parse(type, value);
-  } catch (e) {
-    return e;
-  }
-};
+export * from './materialized-value-error';
 
 /**
  * Parses a JSON string and validates it against a TypeBox schema

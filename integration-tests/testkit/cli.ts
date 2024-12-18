@@ -83,7 +83,9 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     expect: expectedStatus,
     legacy_force,
     legacy_acceptBreakingChanges,
+    json,
   }: {
+    json?: boolean;
     sdl: string;
     commit?: string;
     serviceName?: string;
@@ -97,6 +99,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     const commit = randomUUID();
 
     const cmd = schemaPublish([
+      ...(json ? ['--json'] : []),
       '--registry.accessToken',
       tokens.readwrite,
       '--author',

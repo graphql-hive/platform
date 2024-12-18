@@ -1,16 +1,23 @@
+import { error } from 'console';
+import { get } from 'http';
+import { env } from 'process';
 import colors from 'colors';
-import { print } from 'graphql';
+import { graphql, print } from 'graphql';
 import type { ExecutionResult } from 'graphql';
+import { any, never, string, unknown } from 'zod';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { CommandError } from '@oclif/core/lib/interfaces';
+import { Record } from '@sinclair/typebox';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 import { CLIFailure } from './helpers/errors/cli-failure';
 import { ClientError } from './helpers/errors/client-error';
-import { OmitNever } from './helpers/general';
+import { OmitNever, Simplify } from './helpers/general';
 import { tb } from './helpers/typebox/__';
 import { SchemaOutput } from './schema-output/__';
+import { failure } from './schema-output/failure';
+import { success } from './schema-output/success';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
@@ -48,25 +55,37 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * By default this command runs {@link BaseCommand.runResult}, having logic to handle its return value.
    */
   async run(): Promise<void | SchemaOutput.InferSuccess<GetOutput<$Command>>> {
-    const resultUnsafe = await this.runResult();
+    const resultUnparsed = await this.runResult();
     const schema = (this.constructor as typeof BaseCommand).output as SchemaOutput.OutputBaseT;
-    const result = tb.Value.ParseSafe(schema, resultUnsafe);
 
-    if (result instanceof tb.Value.AssertError) {
+    const errorsIterator = tb.Value.Value.Errors(schema, resultUnparsed);
+    const materializedErrors = tb.Value.MaterializeValueErrorIterator(errorsIterator);
+    if (materializedErrors.length > 0) {
+      console.dir(materializedErrors, { depth: 100 });
+      // todo: Make it easier for the Hive team to be alerted.
+      // - Alert the Hive team automatically with some opt-in telemetry?
+      // - A single-click-link with all relevant variables serialized into search parameters?
+      const message = `Whoops. This Hive CLI command tried to output a value that violates its own schema. This should never happen. Please report this issue to the Hive team at https://github.com/graphql-hive/console/issues/new.`;
+      // todo: Display data in non-json output.
+      // The default textual output of an OClif error will not display any of the data below. We will want that information in a bug report.
       throw new CLIFailure({
-        message: result.message,
-        exitCode: 1,
+        message: message,
         data: {
           __typename: 'CLIOutputTypeError',
+          schema: schema,
+          value: resultUnparsed,
+          errors: materializedErrors,
         },
       });
     }
 
-    if (SchemaOutput.isSuccess(result)) {
-      /**
-       * OClif outputs returned values as JSON.
-       */
+    // Should never throw because we checked for errors above.
+    const result = tb.Value.Parse(schema, resultUnparsed);
 
+    /**
+     * OClif outputs returned values as JSON.
+     */
+    if (SchemaOutput.isSuccess(result)) {
       return result as any;
     }
 
