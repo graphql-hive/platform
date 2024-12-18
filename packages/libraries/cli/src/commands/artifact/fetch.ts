@@ -23,7 +23,7 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
   };
   static output = SchemaOutput.output(SchemaOutput.CLIOutputFile, SchemaOutput.CLIOutputStdout);
 
-  async run() {
+  async runResult() {
     const { flags } = await this.parse(ArtifactsFetch);
 
     const cdnEndpoint = this.ensure({

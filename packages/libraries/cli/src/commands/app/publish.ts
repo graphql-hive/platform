@@ -24,15 +24,23 @@ export default class AppPublish extends Command<typeof AppPublish> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.successIdempotentableSkipped({
+    SchemaOutput.success({
+      __typename: Typebox.Literal('CLISkipAppPublish'),
       name: Typebox.StringNonEmpty,
+      version: Typebox.StringNonEmpty,
     }),
-    SchemaOutput.successIdempotentableExecuted({
+    SchemaOutput.success({
+      __typename: Typebox.Literal('ActivateAppDeploymentOk'),
       name: Typebox.StringNonEmpty,
+      version: Typebox.StringNonEmpty,
+    }),
+    SchemaOutput.failure({
+      __typename: Typebox.Literal('ActivateAppDeploymentError'),
+      message: Typebox.String(),
     }),
   );
 
-  async run() {
+  async runResult() {
     const { flags } = await this.parse(AppPublish);
 
     const endpoint = this.ensure({
@@ -47,44 +55,55 @@ export default class AppPublish extends Command<typeof AppPublish> {
       env: 'HIVE_TOKEN',
     });
 
-    const result = await this.registryApi(endpoint, accessToken).request({
-      operation: ActivateAppDeploymentMutation,
-      variables: {
-        input: {
-          appName: flags['name'],
-          appVersion: flags['version'],
+    const result = await this.registryApi(endpoint, accessToken)
+      .request({
+        operation: ActivateAppDeploymentMutation,
+        variables: {
+          input: {
+            appName: flags['name'],
+            appVersion: flags['version'],
+          },
         },
-      },
-    });
+      })
+      .then(_ => _.activateAppDeployment);
 
-    if (result.activateAppDeployment.error) {
-      throw new Error(result.activateAppDeployment.error.message);
+    if (result.error) {
+      return this.failure({
+        __typename: 'ActivateAppDeploymentError',
+        message: result.error.message,
+      });
     }
 
-    if (result.activateAppDeployment.ok) {
-      const name = `${result.activateAppDeployment.ok.activatedAppDeployment.name}@${result.activateAppDeployment.ok.activatedAppDeployment.version}`;
+    // TODO: Improve Hive API by returning a union type.
+    if (!result.ok) {
+      throw new Error('Unknown error');
+    }
 
-      if (result.activateAppDeployment.ok.isSkipped) {
-        const message = `App deployment "${name}" is already published. Skipping...`;
-        this.warn(message);
-        return this.successEnvelope({
-          message,
-          effect: 'skipped',
-          data: {
-            name,
-          },
-        });
-      }
-      const message = `App deployment "${name}" published successfully.`;
-      this.log(message);
+    const name = `${result.ok.activatedAppDeployment.name}@${result.ok.activatedAppDeployment.version}`;
+
+    if (result.ok.isSkipped) {
+      const message = `App deployment "${name}" is already published. Skipping...`;
+      this.warn(message);
       return this.successEnvelope({
         message,
-        effect: 'executed',
         data: {
-          name,
+          __typename: 'CLISkipAppPublish',
+          name: result.ok.activatedAppDeployment.name,
+          version: result.ok.activatedAppDeployment.version,
         },
       });
     }
+
+    const message = `App deployment "${name}" published successfully.`;
+    this.log(message);
+    return this.successEnvelope({
+      message,
+      data: {
+        __typename: 'ActivateAppDeploymentOk',
+        name: result.ok.activatedAppDeployment.name,
+        version: result.ok.activatedAppDeployment.version,
+      },
+    });
   }
 }
 

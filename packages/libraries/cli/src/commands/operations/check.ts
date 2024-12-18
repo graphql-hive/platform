@@ -80,6 +80,13 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
+      __typename: Typebox.Literal('CLIOperationsCheckNoneFound'),
+    }),
+    SchemaOutput.failure({
+      __typename: Typebox.Literal('CLIOperationsCheckNoSchemaFound'),
+    }),
+    SchemaOutput.success({
+      __typename: Typebox.Literal('CLIOperationsCheckResult'),
       countTotal: Typebox.Integer({ minimum: 0 }),
       countInvalid: Typebox.Integer({ minimum: 0 }),
       countValid: Typebox.Integer({ minimum: 0 }),
@@ -140,23 +147,32 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     });
 
     if (operations.length === 0) {
-      this.logInfo('No operations found');
-      return this.success({
-        countTotal: 0,
-        countInvalid: 0,
-        countValid: 0,
-        invalidOperations: [],
+      const message = 'No operations found';
+      this.logInfo(message);
+      return this.successEnvelope({
+        message,
+        data: {
+          __typename: 'CLIOperationsCheckNoneFound',
+        },
       });
     }
 
-    const result = await this.registryApi(endpoint, accessToken).request({
-      operation: fetchLatestVersionQuery,
-    });
+    const result = await this.registryApi(endpoint, accessToken)
+      .request({
+        operation: fetchLatestVersionQuery,
+      })
+      .then(_ => _.latestValidVersion);
 
-    const sdl = result.latestValidVersion?.sdl;
+    const sdl = result?.sdl;
 
     if (!sdl) {
-      this.error('Could not find a published schema. Please publish a valid schema first.');
+      return this.failureEnvelope({
+        message: 'Could not find a published schema.',
+        suggestions: ['Publish a valid schema first.'],
+        data: {
+          __typename: 'CLIOperationsCheckNoSchemaFound',
+        },
+      });
     }
 
     const schema = buildSchema(sdl, {
@@ -208,6 +224,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     }
 
     return this.success({
+      __typename: 'CLIOperationsCheckResult',
       countTotal: operations.length,
       countInvalid: operationsWithErrors.length,
       countValid: operations.length - operationsWithErrors.length,

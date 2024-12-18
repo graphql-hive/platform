@@ -63,10 +63,20 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      tokenName: Typebox.String(),
-      organization: Typebox.String(),
-      project: Typebox.String(),
-      target: Typebox.String(),
+      __typename: Typebox.Literal('TokenInfo'),
+      token: Typebox.Object({
+        name: Typebox.String(),
+      }),
+      organization: Typebox.Object({
+        slug: Typebox.String(),
+      }),
+      project: Typebox.Object({
+        type: Typebox.String(),
+        slug: Typebox.String(),
+      }),
+      target: Typebox.Object({
+        slug: Typebox.String(),
+      }),
       authorization: Typebox.Object({
         schema: Typebox.Object({
           publish: Typebox.Boolean(),
@@ -74,9 +84,13 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
         }),
       }),
     }),
+    SchemaOutput.failure({
+      __typename: Typebox.Literal('TokenNotFoundError'),
+      message: Typebox.String(),
+    }),
   );
 
-  async run() {
+  async runResult() {
     const { flags } = await this.parse(WhoAmI);
 
     const registry = this.ensure({
@@ -125,10 +139,20 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       this.log(print());
 
       return this.success({
-        tokenName: result.token.name,
-        organization: organization.slug,
-        project: project.slug,
-        target: target.slug,
+        __typename: 'TokenInfo',
+        token: {
+          name: result.token.name,
+        },
+        organization: {
+          slug: organization.slug,
+        },
+        project: {
+          type: project.type,
+          slug: project.slug,
+        },
+        target: {
+          slug: target.slug,
+        },
         authorization: {
           schema: {
             publish: result.canPublishSchema,
@@ -139,13 +163,17 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
     }
 
     if (result.__typename === 'TokenNotFoundError') {
-      this.error(`Token not found. Reason: ${result.message}`, {
-        exit: 0,
+      return this.failureEnvelope({
         suggestions: [`How to create a token? https://docs.graphql-hive.com/features/tokens`],
+        exitCode: 0,
+        data: {
+          __typename: 'TokenNotFoundError',
+          message: result.message,
+        },
       });
     }
 
-    casesExhausted(result);
+    throw casesExhausted(result);
   }
 }
 

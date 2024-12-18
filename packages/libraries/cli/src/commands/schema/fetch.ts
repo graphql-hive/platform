@@ -1,5 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
+import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
@@ -66,9 +67,21 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(SchemaOutput.CLIOutputFile, SchemaOutput.CLIOutputStdout);
+  static output = SchemaOutput.output(
+    SchemaOutput.failure({
+      __typename: Typebox.Literal('CLISchemaFetchMissingSchema'),
+    }),
+    SchemaOutput.failure({
+      __typename: Typebox.Literal('CLISchemaFetchInvalidSchema'),
+    }),
+    SchemaOutput.failure({
+      __typename: Typebox.Literal('CLISchemaFetchMissingSDLType'),
+    }),
+    SchemaOutput.CLIOutputFile,
+    SchemaOutput.CLIOutputStdout,
+  );
 
-  async run() {
+  async runResult() {
     const { flags, args } = await this.parse(SchemaFetch);
 
     const endpoint = this.ensure({
@@ -98,28 +111,44 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       defaultValue: 'sdl',
     });
 
-    const result = await this.registryApi(endpoint, accessToken).request({
-      operation: SchemaVersionForActionIdQuery,
-      variables: {
-        actionId,
-        includeSDL: sdlType === 'sdl',
-        includeSupergraph: sdlType === 'supergraph',
-      },
-    });
+    const result = await this.registryApi(endpoint, accessToken)
+      .request({
+        operation: SchemaVersionForActionIdQuery,
+        variables: {
+          actionId,
+          includeSDL: sdlType === 'sdl',
+          includeSupergraph: sdlType === 'supergraph',
+        },
+      })
+      .then(_ => _.schemaVersionForActionId);
 
-    if (result.schemaVersionForActionId == null) {
-      this.error(`No schema found for action id ${actionId}`);
+    if (result == null) {
+      return this.failureEnvelope({
+        message: `No schema found for action id ${actionId}`,
+        data: {
+          __typename: 'CLISchemaFetchMissingSchema',
+        },
+      });
     }
 
-    if (result.schemaVersionForActionId.valid === false) {
-      this.error(`Schema is invalid for action id ${actionId}`);
+    if (result.valid === false) {
+      return this.failureEnvelope({
+        message: `Schema is invalid for action id ${actionId}`,
+        data: {
+          __typename: 'CLISchemaFetchInvalidSchema',
+        },
+      });
     }
 
-    const schema =
-      result.schemaVersionForActionId.sdl ?? result.schemaVersionForActionId.supergraph;
+    const schema = result.sdl ?? result.supergraph;
 
     if (schema == null) {
-      this.error(`No ${sdlType} found for action id ${actionId}`);
+      return this.failureEnvelope({
+        message: `No ${sdlType} found for action id ${actionId}`,
+        data: {
+          __typename: 'CLISchemaFetchMissingSDLType',
+        },
+      });
     }
 
     if (flags.write) {

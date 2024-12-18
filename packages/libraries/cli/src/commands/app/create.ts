@@ -87,7 +87,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
       });
     }
 
-    // TODO: Improve GraphQL API, return a union type.
+    // TODO: Improve Hive API by returning a union type.
     if (!result.ok) {
       throw new Error('Unknown error');
     }

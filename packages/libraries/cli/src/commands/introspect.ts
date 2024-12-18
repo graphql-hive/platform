@@ -29,7 +29,7 @@ export default class Introspect extends Command<typeof Introspect> {
   };
   static output = SchemaOutput.output(SchemaOutput.CLIOutputFile, SchemaOutput.CLIOutputStdout);
 
-  async run() {
+  async runResult() {
     const { flags, args } = await this.parse(Introspect);
     const headers = flags.header?.reduce(
       (acc, header) => {
@@ -70,38 +70,35 @@ export default class Introspect extends Command<typeof Introspect> {
       });
     }
 
-    if (flags.write) {
-      const filepath = resolve(process.cwd(), flags.write);
-
-      switch (extname(flags.write.toLowerCase())) {
-        case '.graphql':
-        case '.gql':
-        case '.gqls':
-        case '.graphqls':
-          writeFileSync(filepath, schema, 'utf8');
-          break;
-        case '.json': {
-          const schemaObject = buildSchema(schema, {
-            assumeValidSDL: true,
-            assumeValid: true,
-          });
-          writeFileSync(
-            filepath,
-            JSON.stringify(introspectionFromSchema(schemaObject), null, 2),
-            'utf8',
-          );
-          break;
-        }
-        default:
-          this.logFailure(`Unsupported file extension ${extname(flags.write)}`);
-          this.exit(1);
+    const filepath = resolve(process.cwd(), flags.write);
+    switch (extname(flags.write.toLowerCase())) {
+      case '.graphql':
+      case '.gql':
+      case '.gqls':
+      case '.graphqls':
+        writeFileSync(filepath, schema, 'utf8');
+        break;
+      case '.json': {
+        const schemaObject = buildSchema(schema, {
+          assumeValidSDL: true,
+          assumeValid: true,
+        });
+        writeFileSync(
+          filepath,
+          JSON.stringify(introspectionFromSchema(schemaObject), null, 2),
+          'utf8',
+        );
+        break;
       }
-
-      this.logSuccess(`Saved to ${filepath}`);
-      return this.success({
-        __typename: 'CLIOutputFile',
-        path: filepath,
-      });
+      default:
+        this.logFailure(`Unsupported file extension ${extname(flags.write)}`);
+        this.exit(1);
     }
+
+    this.logSuccess(`Saved to ${filepath}`);
+    return this.success({
+      __typename: 'CLIOutputFile',
+      path: filepath,
+    });
   }
 }
