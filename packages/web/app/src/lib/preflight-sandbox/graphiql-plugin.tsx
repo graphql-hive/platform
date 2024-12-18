@@ -38,11 +38,11 @@ import {
 } from '@radix-ui/react-icons';
 import { useParams } from '@tanstack/react-router';
 import type { LogMessage } from './preflight-script-worker';
-import _PreflightWorker from './preflight-script-worker?worker';
+import workerUrl from './preflight-script-worker?worker&url';
 
-const PreflightWorker = env.laboratory.preflightWorkerUrl
-  ? Worker.bind(null, env.laboratory.preflightWorkerUrl)
-  : _PreflightWorker;
+const PreflightWorker = Worker.bind(null, env.laboratory.preflightWorkerUrl || workerUrl, {
+  type: import.meta.env.DEV ? 'module' : undefined,
+});
 
 export const preflightScriptPlugin: GraphiQLPlugin = {
   icon: () => (
