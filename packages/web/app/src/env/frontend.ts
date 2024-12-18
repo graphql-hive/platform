@@ -54,7 +54,7 @@ const BaseSchema = protectedObject({
     zod.union([zod.literal('1'), zod.literal('0')]).optional(),
   ),
   ZENDESK_SUPPORT: enabledOrDisabled,
-  LABORATORY_PREFLIGHT_WORKER_URL: emptyString(zod.string().url()).optional(),
+  LABORATORY_PREFLIGHT_WORKER_URL: emptyString(zod.string().url().optional()),
 });
 
 const IntegrationSlackSchema = protectedObject({
