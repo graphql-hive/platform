@@ -153,7 +153,6 @@ function safeParseJSON(str: string): Record<string, unknown> | null {
 }
 
 const enum PreflightWorkerState {
-  loading,
   running,
   ready,
 }
@@ -175,32 +174,66 @@ export function usePreflightScript(args: {
     latestEnvironmentVariablesRef.current = environmentVariables;
   });
 
-  const [state, setState] = useState<PreflightWorkerState>(PreflightWorkerState.loading);
+  const [state, setState] = useState<PreflightWorkerState>(PreflightWorkerState.ready);
   const [logs, setLogs] = useState<LogRecord[]>([]);
-  const onNextFinishRef = useRef<PromiseWithResolvers<Record<string, unknown>> | undefined>();
-  /** incrementing this number will result in a new worker with event listeners being instantiated */
 
-  function createWorker() {
+  const currentRun = useRef<null | Function>(null);
+
+  async function execute(script = target?.preflightScript?.sourceCode ?? '', isPreview = false) {
+    if (isPreview === false && !isPreflightScriptEnabled) {
+      return safeParseJSON(latestEnvironmentVariablesRef.current);
+    }
+
+    setState(PreflightWorkerState.running);
+
+    const now = Date.now();
+    setLogs(prev => [...prev, '> Start running script']);
+
     const worker = new PreflightWorker();
+    const isReadyD = Promise.withResolvers<void>();
+    const isFinishedD = Promise.withResolvers<void>();
+
+    const timeout = setTimeout(() => {
+      setLogs(logs => [
+        ...logs,
+        new Error(`Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`),
+      ]);
+      isFinishedD.resolve();
+    }, PREFLIGHT_TIMEOUT);
+
+    currentRun.current = () => {
+      clearTimeout(timeout);
+      setLogs(logs => [
+        ...logs,
+        '> Preflight script interrupted by user',
+        {
+          type: 'separator' as const,
+        },
+      ]);
+      isFinishedD.resolve();
+    };
+
     worker.onmessage = (ev: MessageEvent<WorkerMessagePayload>) => {
-      console.log(ev.data);
       if (ev.data.type === 'ready') {
-        setState(PreflightWorkerState.ready);
+        isReadyD.resolve();
         return;
       }
+
       if (ev.data.type === 'result') {
         const mergedEnvironmentVariables = {
           ...safeParseJSON(latestEnvironmentVariablesRef.current),
           ...ev.data.environmentVariables,
         };
-        setState(PreflightWorkerState.ready);
         setEnvironmentVariables(JSON.stringify(mergedEnvironmentVariables, null, 2));
-        setLogs(logs => [...logs, { type: 'separator' }]);
-
-        if (onNextFinishRef.current) {
-          onNextFinishRef.current.resolve(mergedEnvironmentVariables);
-          onNextFinishRef.current = undefined;
-        }
+        setLogs(logs => [
+          ...logs,
+          `> End running script. Done in ${(Date.now() - now) / 1000}s`,
+          {
+            type: 'separator' as const,
+          },
+        ]);
+        isFinishedD.resolve();
+        clearTimeout(timeout);
         return;
       }
       if (ev.data.type === 'log') {
@@ -211,92 +244,40 @@ export function usePreflightScript(args: {
       if (ev.data.type === 'error') {
         const error = ev.data.error;
         setLogs(logs => [...logs, error]);
-        setState(PreflightWorkerState.ready);
-        if (onNextFinishRef.current) {
-          onNextFinishRef.current.reject(error);
-          onNextFinishRef.current = undefined;
-        }
+        isFinishedD.resolve();
+        clearTimeout(timeout);
         return;
       }
 
       throw new Error('Received unexpected response from worker.');
     };
 
-    return worker;
+    await isReadyD.promise;
+
+    worker.postMessage({
+      script,
+      environmentVariables: (environmentVariables && safeParseJSON(environmentVariables)) || {},
+    });
+
+    await isFinishedD.promise;
+    setState(PreflightWorkerState.ready);
+
+    worker.onmessage = () => {};
+    worker.terminate();
+
+    return latestEnvironmentVariablesRef.current;
   }
 
-  const [worker, setWorker] = useState(createWorker);
-
-  const abort = useCallback(
-    (isTimeout = false) => {
-      console.log('WTF WTF');
-      setLogs(logs => [
-        ...logs,
-        isTimeout
-          ? new Error(
-              `Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`,
-            )
-          : '> Preflight script interrupted by user',
-      ]);
-
-      worker.terminate();
-      worker.onmessage = () => {};
-      if (onNextFinishRef.current) {
-        onNextFinishRef.current.reject(new Error('Abort'));
-      }
-      setState(PreflightWorkerState.loading);
-      setWorker(createWorker());
-    },
-    [worker],
-  );
+  function abort() {
+    currentRun.current?.();
+  }
 
   // terminate worker when leaving laboratory
   useEffect(
     () => () => {
-      worker.onmessage = () => {};
-      worker.terminate();
+      currentRun.current?.();
     },
     [],
-  );
-
-  const execute = useCallback(
-    async (
-      /** provide a script to be executed. If no script is provided, the target defined one will be used. */
-      script = target?.preflightScript?.sourceCode ?? '',
-      /** we always want to tun the script if we are in preview mode */
-      isPreview = false,
-    ) => {
-      if (isPreview === false && !isPreflightScriptEnabled) {
-        return safeParseJSON(environmentVariables);
-      }
-      const now = Date.now();
-
-      setLogs(prev => [...prev, '> Start running script']);
-      setState(PreflightWorkerState.running);
-
-      onNextFinishRef.current = Promise.withResolvers<Record<string, unknown>>();
-
-      worker.postMessage({
-        script,
-        environmentVariables: (environmentVariables && safeParseJSON(environmentVariables)) || {},
-      });
-
-      const timeoutTimer = setTimeout(() => {
-        abort(true);
-      }, PREFLIGHT_TIMEOUT);
-
-      return onNextFinishRef.current.promise.finally(() => {
-        clearTimeout(timeoutTimer);
-        setLogs(logs => [
-          ...logs,
-          `> End running script. Done in ${(Date.now() - now) / 1000}s`,
-          {
-            type: 'separator' as const,
-          },
-        ]);
-      });
-    },
-    [isPreflightScriptEnabled, target?.preflightScript, environmentVariables, worker],
   );
 
   return {
@@ -541,7 +522,6 @@ function PreflightScriptModal({
                   executeScript(scriptEditorRef.current?.getValue() ?? '');
                 }}
                 data-cy="run-preflight-script"
-                disabled={state === PreflightWorkerState.ready}
               >
                 {state === PreflightWorkerState.running && (
                   <>
@@ -555,7 +535,6 @@ function PreflightScriptModal({
                     Run Script
                   </>
                 )}
-                {state === PreflightWorkerState.loading && <>Loading...</>}
               </Button>
             </div>
             <MonacoEditor
