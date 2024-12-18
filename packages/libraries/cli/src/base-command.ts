@@ -1,10 +1,6 @@
-import { error } from 'console';
-import { get } from 'http';
-import { env } from 'process';
 import colors from 'colors';
-import { graphql, print } from 'graphql';
+import { print } from 'graphql';
 import type { ExecutionResult } from 'graphql';
-import { any, never, string, unknown } from 'zod';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Errors, Flags, Interfaces } from '@oclif/core';
@@ -13,11 +9,9 @@ import { Record } from '@sinclair/typebox';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 import { CLIFailure } from './helpers/errors/cli-failure';
 import { ClientError } from './helpers/errors/client-error';
-import { OmitNever, Simplify } from './helpers/general';
+import { OmitNever } from './helpers/general';
 import { tb } from './helpers/typebox/__';
 import { SchemaOutput } from './schema-output/__';
-import { failure } from './schema-output/failure';
-import { success } from './schema-output/success';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
