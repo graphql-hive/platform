@@ -31,6 +31,9 @@ export const test = testBase.extend<Context>({
     const org = await owner.createOrg();
     await use(org);
   },
+  //
+  // "single" branch
+  //
   projectSingle: async ({ org }, use) => {
     const project = await org.createProject(ProjectType.Single);
     await use(project);
@@ -39,7 +42,6 @@ export const test = testBase.extend<Context>({
     const targetAccessToken = await projectSingle.createTargetAccessToken({});
     await use(targetAccessToken);
   },
-  // "single" branch
   cliSingle: async ({ targetAccessTokenSingle }, use) => {
     const cli = createCLI({
       readwrite: targetAccessTokenSingle.secret,
@@ -47,6 +49,9 @@ export const test = testBase.extend<Context>({
     });
     await use(cli);
   },
+  //
+  // "federation" branch
+  //
   projectFederation: async ({ org }, use) => {
     const project = await org.createProject(ProjectType.Federation);
     await use(project);
@@ -62,6 +67,9 @@ export const test = testBase.extend<Context>({
     });
     await use(cli);
   },
+  //
+  // "stitching" branch
+  //
   projectStitching: async ({ org }, use) => {
     const project = await org.createProject(ProjectType.Stitching);
     await use(project);
