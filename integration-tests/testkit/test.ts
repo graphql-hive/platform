@@ -39,6 +39,7 @@ export const test = testBase.extend<Context>({
     const targetAccessToken = await projectSingle.createTargetAccessToken({});
     await use(targetAccessToken);
   },
+  // "single" branch
   cliSingle: async ({ targetAccessTokenSingle }, use) => {
     const cli = createCLI({
       readwrite: targetAccessTokenSingle.secret,

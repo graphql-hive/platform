@@ -118,7 +118,7 @@ describe('dev --remote', () => {
     await expect(supergraph.read()).resolves.toMatch('http://localhost/bar');
   });
 
-  test.only('uses latest composable version by default', async ({
+  test('uses latest composable version by default', async ({
     org,
     projectFederation: project,
     cliFederation: cli,
