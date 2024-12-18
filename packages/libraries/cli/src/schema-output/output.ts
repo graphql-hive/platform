@@ -1,5 +1,13 @@
 import { Typebox } from '../helpers/typebox/__';
-import { FailureBase, SuccessBase } from './envelope';
+import { FailureBase } from './failure';
+import { SuccessBase } from './success';
+
+export const Output = Typebox.Union([
+  SuccessBase,
+  FailureBase,
+  Typebox.Union([SuccessBase, FailureBase]),
+]);
+export type Output = Typebox.Static<typeof Output>;
 
 export type $Output =
   | typeof SuccessBase

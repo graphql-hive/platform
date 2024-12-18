@@ -37,24 +37,35 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     }),
   };
 
-  protected flags!: Flags<$Command>;
+  protected flags!: InferFlags<$Command>;
 
-  protected args!: Args<$Command>;
+  protected args!: InferArgs<$Command>;
 
   /**
    * Prefer implementing {@link BaseCommand.runResult} instead of this method. Refer to it for its benefits.
    *
    * By default this command runs {@link BaseCommand.runResult}, having logic to handle its return value.
    */
-  async run(): Promise<void | SchemaOutput.InferSuccess<GetOutputSchema<$Command>>> {
+  async run(): Promise<void | SchemaOutput.InferSuccess<GetOutput<$Command>>> {
     const resultUnsafe = await this.runResult();
     const schema = (this.constructor as typeof BaseCommand).output as SchemaOutput.$Output;
     const result = Typebox.Value.Parse(schema, resultUnsafe);
 
-    if (result.ok) {
+    /**
+     * OClif outputs returned values as JSON.
+     */
+
+    if (SchemaOutput.isSuccess(result)) {
       return result as any;
     }
 
+    /**
+     * OClif supports converting thrown errors into JSON.
+     *
+     * OClif will run {@link BaseCommand.toErrorJson} which
+     * allows us to convert thrown values into JSON.
+     * We throw a CLIFailure which will be specially handled it.
+     */
     throw new CLIFailure(result);
   }
 
@@ -68,12 +79,18 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * Note: You must specify your command's output type in {@link BaseCommand.output} to take advantage of this method.
    */
   async runResult(): Promise<
-    | SchemaOutput.InferSuccess<GetOutputSchema<$Command>>
-    | SchemaOutput.InferFailure<GetOutputSchema<$Command>>
+    SchemaOutput.InferSuccess<GetOutput<$Command>> | SchemaOutput.InferFailure<GetOutput<$Command>>
   > {
     throw new Error('Not implemented');
   }
 
+  /**
+   * Custom logic for how thrown values are converted into JSON.
+   *
+   * Any time a CLIFailure is thrown its public
+   * envelope property is used as the JSON output
+   * when JSON is enabled.
+   */
   toErrorJson(value: unknown) {
     if (value instanceof CLIFailure) {
       return value.envelope;
@@ -82,12 +99,10 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 
   /**
-   * Helper function for creation of success data that adheres to the type specified
-   * by your command's {@link BaseCommand.output}.
+   * Variant of {@link BaseCommand.successEnvelope} that only requires passing the data.
+   * See that method for more details.
    */
-  success(
-    data: SchemaOutput.InferSuccessData<GetOutputSchema<$Command>>,
-  ): SchemaOutput.InferSuccess<GetOutputSchema<$Command>> {
+  success(data: InferOutputSuccessData<$Command>): InferOutputSuccess<$Command> {
     return this.successEnvelope({ data } as any) as any;
   }
 
@@ -96,27 +111,33 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * adheres to the type specified by your command's {@link BaseCommand.output}.
    */
   successEnvelope(
-    envelopeInit: SchemaOutput.InferSuccessEnvelopeInit<GetOutputSchema<$Command>>,
-  ): SchemaOutput.InferSuccess<GetOutputSchema<$Command>> {
+    envelopeInit: InferOutputSuccessEnvelopeInit<$Command>,
+  ): InferOutputSuccess<$Command> {
     return {
       ...SchemaOutput.successDefaults,
       ...(envelopeInit as object),
     } as any;
   }
 
-  failure(
-    data: SchemaOutput.InferFailureData<GetOutputSchema<$Command>>,
-  ): SchemaOutput.InferFailure<GetOutputSchema<$Command>> {
+  /**
+   * Variant of {@link BaseCommand.failure} that only requires passing the data.
+   * See that method for more details.
+   */
+  failure(data: InferOutputFailureData<$Command>): InferOutputFailure<$Command> {
     return this.failureEnvelope({ data } as any) as any;
   }
 
   /**
    * Helper function for easy creation of failure data (with defaults) that
    * adheres to the type specified by your command's {@link BaseCommand.output}.
+   *
+   * This is only useful within {@link BaseCommand.runResult} which allows returning instead of throwing failures.
+   *
+   * When you return this,
    */
   failureEnvelope(
-    envelopeInit: SchemaOutput.InferFailureEnvelopeInit<GetOutputSchema<$Command>>,
-  ): SchemaOutput.InferFailure<GetOutputSchema<$Command>> {
+    envelopeInit: InferOutputFailureEnvelopeInit<$Command>,
+  ): InferOutputFailure<$Command> {
     return {
       ...SchemaOutput.failureDefaults,
       ...(envelopeInit as object),
@@ -146,8 +167,8 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       args: this.ctor.args,
       strict: this.ctor.strict,
     });
-    this.flags = flags as Flags<$Command>;
-    this.args = args as Args<$Command>;
+    this.flags = flags as InferFlags<$Command>;
+    this.args = args as InferArgs<$Command>;
   }
 
   /**
@@ -415,14 +436,40 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 }
 
-export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
-  (typeof BaseCommand)['baseFlags'] & T['flags']
->;
-
-export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
+// prettier-ignore
+type InferFlags<$CommandClass extends typeof Command> =
+  Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & $CommandClass['flags']>;
 
 // prettier-ignore
-type GetOutputSchema<$CommandClass extends typeof Command> =
+type InferArgs<$CommandClass extends typeof Command> =
+  Interfaces.InferredArgs<$CommandClass['args']>;
+
+// prettier-ignore
+type InferOutputSuccess<$CommandClass extends typeof Command> =
+  SchemaOutput.InferSuccess<GetOutput<$CommandClass>>;
+
+// prettier-ignore
+type InferOutputFailure<$CommandClass extends typeof Command> =
+  SchemaOutput.InferFailure<GetOutput<$CommandClass>>;
+
+// prettier-ignore
+type InferOutputFailureEnvelopeInit<$CommandClass extends typeof Command> =
+  SchemaOutput.InferFailureEnvelopeInit<GetOutput<$CommandClass>>;
+
+// prettier-ignore
+type InferOutputSuccessEnvelopeInit<$CommandClass extends typeof Command> =
+  SchemaOutput.InferSuccessEnvelopeInit<GetOutput<$CommandClass>>;
+
+// prettier-ignore
+type InferOutputFailureData<$CommandClass extends typeof Command> =
+  SchemaOutput.InferFailureData<GetOutput<$CommandClass>>;
+
+// prettier-ignore
+type InferOutputSuccessData<$CommandClass extends typeof Command> =
+  SchemaOutput.InferSuccessData<GetOutput<$CommandClass>>;
+
+// prettier-ignore
+type GetOutput<$CommandClass extends typeof Command> =
   'output' extends keyof $CommandClass
     ? $CommandClass['output'] extends SchemaOutput.$Output
       ? $CommandClass['output']

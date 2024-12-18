@@ -1,10 +1,10 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
-import { Typebox } from 'src/helpers/typebox/__';
 import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
+import { Typebox } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `

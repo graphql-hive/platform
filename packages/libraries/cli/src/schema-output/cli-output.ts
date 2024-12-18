@@ -1,5 +1,5 @@
 import { Typebox } from '../helpers/typebox/__';
-import { success } from './envelope';
+import { success } from './success';
 
 export const CLIOutputFile = success({
   __typename: Typebox.Literal('CLIOutputFile'),
