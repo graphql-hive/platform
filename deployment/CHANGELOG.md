@@ -1,5 +1,14 @@
 # hive
 
+## 1.2.4
+
+### Patch Changes
+
+- [#6138](https://github.com/graphql-hive/console/pull/6138)
+  [`349a67d`](https://github.com/graphql-hive/console/commit/349a67d09ccadc22c0f3b84ceafa7157c5f3e979)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Prevent stripe.js from loading
+  automatically
+
 ## 1.2.3
 
 ### Patch Changes
