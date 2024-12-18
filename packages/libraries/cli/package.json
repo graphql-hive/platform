@@ -31,6 +31,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "check:types": "tsc --noEmit",
     "oclif:pack": "npm pack && pnpm oclif pack tarballs --no-xz",
     "oclif:upload": "pnpm oclif upload tarballs --no-xz",
     "postpack": "rm -f oclif.manifest.json",
@@ -43,7 +44,6 @@
     "schema:publish:federation": "pnpm start schema:publish --service reviews --url reviews.com/graphql examples/federation.reviews.graphql",
     "start": "./bin/dev",
     "typecheck:make-me-work-in-ci": "pnpm check:types",
-    "check:types": "tsc --noEmit",
     "version": "oclif readme && git add README.md"
   },
   "dependencies": {
