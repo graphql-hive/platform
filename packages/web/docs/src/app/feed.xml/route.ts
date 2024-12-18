@@ -5,15 +5,7 @@ import RSS from 'rss';
 import { getChangelogs } from '../../components/product-updates';
 
 // Generate a TypeScript file with the latest changelogs
-const outputFilePath = path.resolve(
-  '..',
-  'app',
-  'src',
-  'components',
-  'ui',
-  'changelog',
-  'generated-changelog.ts',
-);
+const outputFilePath = path.resolve('../app/src/components/ui/changelog/generated-changelog.ts');
 
 export async function GET() {
   const feed = new RSS({
