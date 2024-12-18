@@ -4,7 +4,7 @@ import Command from '../base-command';
 import { graphql } from '../gql';
 import { graphqlEndpoint } from '../helpers/config';
 import { casesExhausted } from '../helpers/general';
-import { Typebox } from '../helpers/typebox/__';
+import { tb } from '../helpers/typebox/__';
 import { SchemaOutput } from '../schema-output/__';
 
 const myTokenInfoQuery = graphql(/* GraphQL */ `
@@ -63,30 +63,30 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: Typebox.Literal('TokenInfo'),
-      token: Typebox.Object({
-        name: Typebox.String(),
+      __typename: tb.Literal('TokenInfo'),
+      token: tb.Object({
+        name: tb.String(),
       }),
-      organization: Typebox.Object({
-        slug: Typebox.String(),
+      organization: tb.Object({
+        slug: tb.String(),
       }),
-      project: Typebox.Object({
-        type: Typebox.String(),
-        slug: Typebox.String(),
+      project: tb.Object({
+        type: tb.String(),
+        slug: tb.String(),
       }),
-      target: Typebox.Object({
-        slug: Typebox.String(),
+      target: tb.Object({
+        slug: tb.String(),
       }),
-      authorization: Typebox.Object({
-        schema: Typebox.Object({
-          publish: Typebox.Boolean(),
-          check: Typebox.Boolean(),
+      authorization: tb.Object({
+        schema: tb.Object({
+          publish: tb.Boolean(),
+          check: tb.Boolean(),
         }),
       }),
     }),
     SchemaOutput.failure({
-      __typename: Typebox.Literal('TokenNotFoundError'),
-      message: Typebox.String(),
+      __typename: tb.Literal('TokenNotFoundError'),
+      message: tb.String(),
     }),
   );
 

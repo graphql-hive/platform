@@ -9,7 +9,7 @@ import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
 import { loadSchema, minifySchema } from '../../helpers/schema';
-import { Typebox } from '../../helpers/typebox/__';
+import { tb } from '../../helpers/typebox/__';
 import { invariant } from '../../helpers/validation';
 import { SchemaOutput } from '../../schema-output/__';
 
@@ -147,23 +147,23 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: Typebox.Literal('SchemaPublishSuccess'),
-      changes: Typebox.Array(SchemaOutput.SchemaChange),
-      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
+      __typename: tb.Literal('SchemaPublishSuccess'),
+      changes: tb.Array(SchemaOutput.SchemaChange),
+      url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      __typename: Typebox.Literal('SchemaPublishError'),
-      changes: Typebox.Array(SchemaOutput.SchemaChange),
-      errors: Typebox.Array(SchemaOutput.SchemaError),
-      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
+      __typename: tb.Literal('SchemaPublishError'),
+      changes: tb.Array(SchemaOutput.SchemaChange),
+      errors: tb.Array(SchemaOutput.SchemaError),
+      url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      __typename: Typebox.Literal('GitHubSchemaPublishSuccess'),
-      message: Typebox.String(),
+      __typename: tb.Literal('GitHubSchemaPublishSuccess'),
+      message: tb.String(),
     }),
     SchemaOutput.failure({
-      __typename: Typebox.Literal('GitHubSchemaPublishError'),
-      message: Typebox.String(),
+      __typename: tb.Literal('GitHubSchemaPublishError'),
+      message: tb.String(),
     }),
   );
 

@@ -6,28 +6,10 @@ import { join } from 'node:path';
 import { ProjectType } from 'testkit/gql/graphql';
 import { createCLI } from '../../testkit/cli';
 import { initSeed } from '../../testkit/seed';
-
-function tmpFile(extension: string) {
-  const dir = tmpdir();
-  const fileName = randomUUID();
-  const filepath = join(dir, `${fileName}.${extension}`);
-
-  return {
-    filepath,
-    read() {
-      return readFile(filepath, 'utf-8');
-    },
-  };
-}
+import { test } from '../../testkit/test';
 
 describe('dev', () => {
-  test('composes only the locally provided service', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Federation);
-    const { secret } = await createTargetAccessToken({});
-    const cli = createCLI({ readwrite: secret, readonly: secret });
-
+  test.only('composes only the locally provided service', async ({ cliFederation: cli }) => {
     await cli.publish({
       sdl: 'type Query { foo: String }',
       serviceName: 'foo',
@@ -325,3 +307,16 @@ describe('dev --remote', () => {
     await expect(cmd).rejects.toThrowError('Non-shareable field');
   });
 });
+
+function tmpFile(extension: string) {
+  const dir = tmpdir();
+  const fileName = randomUUID();
+  const filepath = join(dir, `${fileName}.${extension}`);
+
+  return {
+    filepath,
+    read() {
+      return readFile(filepath, 'utf-8');
+    },
+  };
+}

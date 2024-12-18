@@ -5,7 +5,7 @@ import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { loadOperations } from '../../helpers/operations';
-import { Typebox } from '../../helpers/typebox/__';
+import { tb } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 const fetchLatestVersionQuery = graphql(/* GraphQL */ `
@@ -80,28 +80,28 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: Typebox.Literal('CLIOperationsCheckNoneFound'),
+      __typename: tb.Literal('CLIOperationsCheckNoneFound'),
     }),
     SchemaOutput.failure({
-      __typename: Typebox.Literal('CLIOperationsCheckNoSchemaFound'),
+      __typename: tb.Literal('CLIOperationsCheckNoSchemaFound'),
     }),
     SchemaOutput.success({
-      __typename: Typebox.Literal('CLIOperationsCheckResult'),
-      countTotal: Typebox.Integer({ minimum: 0 }),
-      countInvalid: Typebox.Integer({ minimum: 0 }),
-      countValid: Typebox.Integer({ minimum: 0 }),
-      invalidOperations: Typebox.Array(
-        Typebox.Object({
-          source: Typebox.Object({
-            name: Typebox.String(),
+      __typename: tb.Literal('CLIOperationsCheckResult'),
+      countTotal: tb.Integer({ minimum: 0 }),
+      countInvalid: tb.Integer({ minimum: 0 }),
+      countValid: tb.Integer({ minimum: 0 }),
+      invalidOperations: tb.Array(
+        tb.Object({
+          source: tb.Object({
+            name: tb.String(),
           }),
-          errors: Typebox.Array(
-            Typebox.Object({
-              message: Typebox.String(),
-              locations: Typebox.Array(
-                Typebox.Object({
-                  line: Typebox.Integer({ minimum: 0 }),
-                  column: Typebox.Integer({ minimum: 0 }),
+          errors: tb.Array(
+            tb.Object({
+              message: tb.String(),
+              locations: tb.Array(
+                tb.Object({
+                  line: tb.Integer({ minimum: 0 }),
+                  column: tb.Integer({ minimum: 0 }),
                 }),
               ),
             }),

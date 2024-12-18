@@ -1,12 +1,12 @@
-import { Typebox } from '../helpers/typebox/__';
+import { tb } from '../helpers/typebox/__';
 import { success } from './success';
 
 export const CLIOutputFile = success({
-  __typename: Typebox.Literal('CLIOutputFile'),
-  path: Typebox.String(),
+  __typename: tb.Literal('CLIOutputFile'),
+  path: tb.String(),
 });
 
 export const CLIOutputStdout = success({
-  __typename: Typebox.Literal('CLIOutputStdout'),
-  content: Typebox.String(),
+  __typename: tb.Literal('CLIOutputStdout'),
+  content: tb.String(),
 });

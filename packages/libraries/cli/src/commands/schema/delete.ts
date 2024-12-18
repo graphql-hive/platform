@@ -4,7 +4,7 @@ import { Fragments } from '../../fragments/__';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
-import { Typebox } from '../../helpers/typebox/__';
+import { tb } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 const schemaDeleteMutation = graphql(/* GraphQL */ `
@@ -85,11 +85,11 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: Typebox.Literal('SchemaDeleteSuccess'),
+      __typename: tb.Literal('SchemaDeleteSuccess'),
     }),
     SchemaOutput.failure({
-      __typename: Typebox.Literal('SchemaDeleteError'),
-      errors: Typebox.Array(SchemaOutput.SchemaError),
+      __typename: tb.Literal('SchemaDeleteError'),
+      errors: tb.Array(SchemaOutput.SchemaError),
     }),
   );
 

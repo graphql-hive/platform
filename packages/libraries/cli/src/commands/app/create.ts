@@ -3,7 +3,7 @@ import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { SchemaHive } from '../../helpers/schema';
-import { Typebox } from '../../helpers/typebox/__';
+import { tb } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 export default class AppCreate extends Command<typeof AppCreate> {
@@ -34,16 +34,16 @@ export default class AppCreate extends Command<typeof AppCreate> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: Typebox.Literal('CLISkipAppCreate'),
+      __typename: tb.Literal('CLISkipAppCreate'),
       status: SchemaOutput.AppDeploymentStatus,
     }),
     SchemaOutput.success({
-      __typename: Typebox.Literal('CreateAppDeploymentOk'),
-      id: Typebox.StringNonEmpty,
+      __typename: tb.Literal('CreateAppDeploymentOk'),
+      id: tb.StringNonEmpty,
     }),
     SchemaOutput.failure({
-      __typename: Typebox.Literal('CreateAppDeploymentError'),
-      message: Typebox.String(),
+      __typename: tb.Literal('CreateAppDeploymentError'),
+      message: tb.String(),
     }),
   );
 
@@ -66,7 +66,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
     const fs = await import('fs/promises');
     const contents = await fs.readFile(file, 'utf-8');
     // TODO: better error message if parsing fails :)
-    const operations = Typebox.Value.ParseJson(ManifestModel, contents);
+    const operations = tb.Value.ParseJson(ManifestModel, contents);
 
     const result = await this.registryApi(endpoint, accessToken)
       .request({
@@ -168,7 +168,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
   }
 }
 
-const ManifestModel = Typebox.Record(Typebox.String(), Typebox.String());
+const ManifestModel = tb.Record(tb.String(), tb.String());
 
 const CreateAppDeploymentMutation = graphql(/* GraphQL */ `
   mutation CreateAppDeployment($input: CreateAppDeploymentInput!) {

@@ -6,7 +6,7 @@ import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
 import { loadSchema, minifySchema } from '../../helpers/schema';
-import { Typebox } from '../../helpers/typebox/__';
+import { tb } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 const schemaCheckMutation = graphql(/* GraphQL */ `
@@ -146,24 +146,24 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: Typebox.Literal('SchemaCheckSuccess'),
-      changes: Typebox.Array(SchemaOutput.SchemaChange),
-      warnings: Typebox.Array(SchemaOutput.SchemaWarning),
-      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
+      __typename: tb.Literal('SchemaCheckSuccess'),
+      changes: tb.Array(SchemaOutput.SchemaChange),
+      warnings: tb.Array(SchemaOutput.SchemaWarning),
+      url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      __typename: Typebox.Literal('SchemaCheckError'),
-      changes: Typebox.Array(SchemaOutput.SchemaChange),
-      warnings: Typebox.Array(SchemaOutput.SchemaWarning),
-      url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
+      __typename: tb.Literal('SchemaCheckError'),
+      changes: tb.Array(SchemaOutput.SchemaChange),
+      warnings: tb.Array(SchemaOutput.SchemaWarning),
+      url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      __typename: Typebox.Literal('GitHubSchemaCheckSuccess'),
-      message: Typebox.String(),
+      __typename: tb.Literal('GitHubSchemaCheckSuccess'),
+      message: tb.String(),
     }),
     SchemaOutput.failure({
-      __typename: Typebox.Literal('GitHubSchemaCheckError'),
-      message: Typebox.String(),
+      __typename: tb.Literal('GitHubSchemaCheckError'),
+      message: tb.String(),
     }),
   );
 

@@ -1,19 +1,12 @@
-import { Typebox } from '../helpers/typebox/__';
+import { tb } from '../helpers/typebox/__';
 import { FailureBase } from './failure';
 import { SuccessBase } from './success';
 
-export const Output = Typebox.Union([
-  SuccessBase,
-  FailureBase,
-  Typebox.Union([SuccessBase, FailureBase]),
-]);
-export type Output = Typebox.Static<typeof Output>;
+export const OutputBase = tb.Union([SuccessBase, FailureBase]);
+export type OutputBase = tb.Static<typeof OutputBase>;
 
-export type $Output =
-  | typeof SuccessBase
-  | typeof FailureBase
-  | Typebox.Union<(typeof SuccessBase | typeof FailureBase)[]>;
+export type OutputBaseTypesT = typeof SuccessBase | typeof FailureBase;
+export type OutputBaseT = tb.Union<OutputBaseTypesT[]>;
 
-export const output = <$Types extends (typeof SuccessBase | typeof FailureBase)[]>(
-  ...types: $Types
-): Typebox.Union<$Types> => Typebox.Union(types) as any;
+export const output = <$Types extends OutputBaseTypesT[]>(...types: $Types): tb.Union<$Types> =>
+  tb.Union(types) as any;

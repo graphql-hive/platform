@@ -4,7 +4,7 @@ import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
-import { Typebox } from '../../helpers/typebox/__';
+import { tb } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
@@ -69,13 +69,13 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.failure({
-      __typename: Typebox.Literal('CLISchemaFetchMissingSchema'),
+      __typename: tb.Literal('CLISchemaFetchMissingSchema'),
     }),
     SchemaOutput.failure({
-      __typename: Typebox.Literal('CLISchemaFetchInvalidSchema'),
+      __typename: tb.Literal('CLISchemaFetchInvalidSchema'),
     }),
     SchemaOutput.failure({
-      __typename: Typebox.Literal('CLISchemaFetchMissingSDLType'),
+      __typename: tb.Literal('CLISchemaFetchMissingSDLType'),
     }),
     SchemaOutput.CLIOutputFile,
     SchemaOutput.CLIOutputStdout,

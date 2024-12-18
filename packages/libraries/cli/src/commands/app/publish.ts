@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
-import { Typebox } from '../../helpers/typebox/__';
+import { tb } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 export default class AppPublish extends Command<typeof AppPublish> {
@@ -25,18 +25,18 @@ export default class AppPublish extends Command<typeof AppPublish> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: Typebox.Literal('CLISkipAppPublish'),
-      name: Typebox.StringNonEmpty,
-      version: Typebox.StringNonEmpty,
+      __typename: tb.Literal('CLISkipAppPublish'),
+      name: tb.StringNonEmpty,
+      version: tb.StringNonEmpty,
     }),
     SchemaOutput.success({
-      __typename: Typebox.Literal('ActivateAppDeploymentOk'),
-      name: Typebox.StringNonEmpty,
-      version: Typebox.StringNonEmpty,
+      __typename: tb.Literal('ActivateAppDeploymentOk'),
+      name: tb.StringNonEmpty,
+      version: tb.StringNonEmpty,
     }),
     SchemaOutput.failure({
-      __typename: Typebox.Literal('ActivateAppDeploymentError'),
-      message: Typebox.String(),
+      __typename: tb.Literal('ActivateAppDeploymentError'),
+      message: tb.String(),
     }),
   );
 

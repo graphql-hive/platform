@@ -1,1 +1,1 @@
-export * as Typebox from './_';
+export * as tb from './_';

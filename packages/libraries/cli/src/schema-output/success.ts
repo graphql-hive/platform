@@ -1,58 +1,48 @@
 import { OptionalizePropertyUnsafe, Simplify } from '../helpers/general';
-import { Typebox } from '../helpers/typebox/__';
+import { tb } from '../helpers/typebox/__';
 import { ExcludeFailure } from './failure';
-import { $Output, Output } from './output';
+import { OutputBase, OutputBaseT } from './output';
 
-export const SuccessBase = Typebox.Object({
-  ok: Typebox.Literal(true),
-  message: Typebox.String(),
+export const SuccessBase = tb.Object({
+  ok: tb.Literal(true),
+  message: tb.String(),
 });
-export type SuccessBase = Typebox.Static<typeof SuccessBase>;
+export type SuccessBase = tb.Static<typeof SuccessBase>;
 
-export const successDefaults: Typebox.Static<typeof SuccessBase> = {
+export const SuccessGeneric = tb.Composite([
+  SuccessBase,
+  tb.Object({
+    data: tb.Record(tb.String(), tb.Any()),
+  }),
+]);
+export type SuccessGeneric = tb.Static<typeof SuccessGeneric>;
+
+export const successDefaults: tb.Static<typeof SuccessGeneric> = {
   ok: true,
   message: 'Command succeeded.',
+  data: {},
 };
 
-export const isSuccess = <$Output extends Output>(
+export const isSuccess = <$Output extends OutputBase>(
   schema: $Output,
 ): schema is ExcludeFailure<$Output> => schema.ok;
 
 export type ExcludeSuccess<$Type> = Exclude<$Type, { ok: true }>;
 
-export const success = <$DataInit extends Typebox.TProperties>(data: $DataInit) =>
-  Typebox.Composite([
+export const success = <$DataInit extends tb.TProperties>(data: $DataInit) =>
+  tb.Composite([
     SuccessBase,
-    Typebox.Object({
-      data: Typebox.Object(data),
+    tb.Object({
+      data: tb.Object(data),
     }),
   ]);
 
-export const successIdempotentableSkipped = <$Data extends Typebox.TProperties>(data: $Data) =>
-  Typebox.Composite([
-    SuccessBase,
-    Typebox.Object({
-      effect: Typebox.Literal('skipped'),
-      data: Typebox.Object(data),
-    }),
-  ]);
-
-export const successIdempotentableExecuted = <$Data extends Typebox.TProperties>(data: $Data) =>
-  Typebox.Composite([
-    SuccessBase,
-    Typebox.Object({
-      effect: Typebox.Literal('executed'),
-      data: Typebox.Object(data),
-    }),
-  ]);
-
-export type InferSuccessData<$Schema extends $Output> = Simplify<
+export type InferSuccessData<$Schema extends OutputBaseT> =
   // @ts-expect-error fixme
-  InferSuccess<$Schema>['data']
+  Simplify<InferSuccess<$Schema>['data']>;
+
+export type InferSuccessEnvelopeInit<$Schema extends OutputBaseT> = Simplify<
+  OptionalizePropertyUnsafe<Omit<InferSuccess<$Schema>, 'ok'>, 'message' | 'data'>
 >;
 
-export type InferSuccessEnvelopeInit<$Schema extends $Output> = Simplify<
-  OptionalizePropertyUnsafe<Omit<InferSuccess<$Schema>, 'ok'>, 'message'>
->;
-
-export type InferSuccess<$Schema extends $Output> = ExcludeFailure<Typebox.Static<$Schema>>;
+export type InferSuccess<$Schema extends OutputBaseT> = ExcludeFailure<tb.Static<$Schema>>;

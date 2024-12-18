@@ -9,7 +9,7 @@ import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './hel
 import { CLIFailure } from './helpers/errors/cli-failure';
 import { ClientError } from './helpers/errors/client-error';
 import { OmitNever } from './helpers/general';
-import { Typebox } from './helpers/typebox/__';
+import { tb } from './helpers/typebox/__';
 import { SchemaOutput } from './schema-output/__';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
@@ -27,7 +27,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * Used by methods: {@link BaseCommand.success}, {@link BaseCommand.failure}, {@link BaseCommand.runResult}.
    */
-  public static output: SchemaOutput.$Output = SchemaOutput.SuccessBase;
+  public static output: SchemaOutput.OutputBaseT = SchemaOutput.OutputBase;
 
   protected _userConfig: Config | undefined;
 
@@ -49,14 +49,24 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    */
   async run(): Promise<void | SchemaOutput.InferSuccess<GetOutput<$Command>>> {
     const resultUnsafe = await this.runResult();
-    const schema = (this.constructor as typeof BaseCommand).output as SchemaOutput.$Output;
-    const result = Typebox.Value.Parse(schema, resultUnsafe);
+    const schema = (this.constructor as typeof BaseCommand).output as SchemaOutput.OutputBaseT;
+    const result = tb.Value.ParseSafe(schema, resultUnsafe);
 
-    /**
-     * OClif outputs returned values as JSON.
-     */
+    if (result instanceof tb.Value.AssertError) {
+      throw new CLIFailure({
+        message: result.message,
+        exitCode: 1,
+        data: {
+          __typename: 'CLIOutputTypeError',
+        },
+      });
+    }
 
     if (SchemaOutput.isSuccess(result)) {
+      /**
+       * OClif outputs returned values as JSON.
+       */
+
       return result as any;
     }
 
@@ -473,7 +483,7 @@ type InferOutputSuccessData<$CommandClass extends typeof Command> =
 // prettier-ignore
 type GetOutput<$CommandClass extends typeof Command> =
   'output' extends keyof $CommandClass
-    ? $CommandClass['output'] extends SchemaOutput.$Output
+    ? $CommandClass['output'] extends SchemaOutput.OutputBaseT
       ? $CommandClass['output']
     : never
   : never;

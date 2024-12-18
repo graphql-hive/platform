@@ -1,48 +1,54 @@
 import { OptionalizePropertyUnsafe, Simplify } from '../helpers/general';
-import { Typebox } from '../helpers/typebox/__';
-import { $Output, Output } from './output';
+import { tb } from '../helpers/typebox/__';
+import { OutputBase, OutputBaseT } from './output';
 import { ExcludeSuccess } from './success';
 
-export const FailureBase = Typebox.Object({
-  ok: Typebox.Literal(false),
-  exitCode: Typebox.Integer({ minimum: 1 }),
-  code: Typebox.String(),
-  message: Typebox.String(),
-  url: Typebox.Nullable(Typebox.String({ format: 'uri' })),
-  suggestions: Typebox.Array(Typebox.String()),
-  // data: Typebox.Record(Typebox.String(), Typebox.Any()),
+export const FailureBase = tb.Object({
+  ok: tb.Literal(false),
+  exitCode: tb.Integer({ minimum: 1 }),
+  code: tb.String(),
+  message: tb.String(),
+  url: tb.Nullable(tb.String({ format: 'uri' })),
+  suggestions: tb.Array(tb.String()),
 });
-export type FailureBase = Typebox.Static<typeof FailureBase>;
+export type FailureBase = tb.Static<typeof FailureBase>;
 
-export const failure = <$Context extends Typebox.TProperties>(context: $Context) =>
-  Typebox.Composite([FailureBase, Typebox.Object({ data: Typebox.Object(context) })]);
+export const FailureGeneric = tb.Composite([
+  FailureBase,
+  tb.Object({
+    data: tb.Record(tb.String(), tb.Any()),
+  }),
+]);
+export type FailureGeneric = tb.Static<typeof FailureGeneric>;
 
-export const isFailure = <$Ouput extends Output>(
+export const failure = <$Context extends tb.TProperties>(context: $Context) =>
+  tb.Composite([FailureBase, tb.Object({ data: tb.Object(context) })]);
+
+export const isFailure = <$Ouput extends OutputBase>(
   schema: $Ouput,
 ): schema is ExcludeSuccess<$Ouput> => !schema.ok;
 
 export type ExcludeFailure<$Type> = Exclude<$Type, { ok: false }>;
 
-export const failureDefaults: Typebox.Static<typeof FailureBase> = {
+export const failureDefaults: tb.Static<typeof FailureGeneric> = {
   ok: false,
   exitCode: 1,
   code: 'unexpected',
   message: 'Command failed.',
   url: null,
   suggestions: [],
-  // context: {},
+  data: {},
 };
 
-export type InferFailureData<$Schema extends $Output> = Simplify<
+export type InferFailureData<$Schema extends OutputBaseT> =
   // @ts-expect-error fixme
-  InferFailure<$Schema>['data']
->;
+  Simplify<InferFailure<$Schema>['data']>;
 
-export type InferFailureEnvelopeInit<$Schema extends $Output> = Simplify<
+export type InferFailureEnvelopeInit<$Schema extends OutputBaseT> = Simplify<
   OptionalizePropertyUnsafe<
     Omit<InferFailure<$Schema>, 'ok'>,
     'message' | 'exitCode' | 'code' | 'url' | 'suggestions'
   >
 >;
 
-export type InferFailure<$Schema extends $Output> = ExcludeSuccess<Typebox.Static<$Schema>>;
+export type InferFailure<$Schema extends OutputBaseT> = ExcludeSuccess<tb.Static<$Schema>>;

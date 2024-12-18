@@ -1,7 +1,21 @@
 import { Static, TAnySchema, TypeBoxError } from '@sinclair/typebox';
-import { Value } from '@sinclair/typebox/value';
+import { AssertError, Value } from '@sinclair/typebox/value';
 
 export * from '@sinclair/typebox/value';
+
+/**
+ * Variant of {@link Value.Parse} that returns rather than throws an {@link AssertError}.
+ */
+export const ParseSafe = <$Type extends TAnySchema>(
+  type: $Type,
+  value: unknown,
+): AssertError | Static<$Type> => {
+  try {
+    return Value.Parse(type, value);
+  } catch (e) {
+    return e;
+  }
+};
 
 /**
  * Parses a JSON string and validates it against a TypeBox schema
@@ -10,7 +24,7 @@ export * from '@sinclair/typebox/value';
  *
  * @throwsError {@link TypeBoxError} If JSON parsing fails or if validation fails
  */
-export function ParseJson<$Type extends TAnySchema>(
+export const ParseJson = <$Type extends TAnySchema>(
   /**
    * The TypeBox schema to validate against
    */
@@ -19,7 +33,7 @@ export function ParseJson<$Type extends TAnySchema>(
    * The JSON string to parse
    */
   jsonString: string,
-): Static<$Type> {
+): Static<$Type> => {
   let rawData: unknown;
   try {
     rawData = JSON.parse(jsonString);
@@ -28,4 +42,4 @@ export function ParseJson<$Type extends TAnySchema>(
   }
 
   return Value.Parse(type, rawData);
-}
+};

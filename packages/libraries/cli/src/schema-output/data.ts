@@ -1,44 +1,44 @@
 import { SchemaHive } from '../helpers/schema';
-import { Typebox } from '../helpers/typebox/__';
+import { tb } from '../helpers/typebox/__';
 
-export const SchemaChangeCriticalityLevel = Typebox.Enum({
+export const SchemaChangeCriticalityLevel = tb.Enum({
   Breaking: 'Breaking',
   Dangerous: 'Dangerous',
   Safe: 'Safe',
 });
 
-export const SchemaChange = Typebox.Object({
-  message: Typebox.String(),
+export const SchemaChange = tb.Object({
+  message: tb.String(),
   criticality: SchemaChangeCriticalityLevel,
-  isSafeBasedOnUsage: Typebox.Boolean(),
-  approval: Typebox.Nullable(
-    Typebox.Object({
-      by: Typebox.Nullable(
-        Typebox.Object({
-          displayName: Typebox.Nullable(Typebox.String()),
+  isSafeBasedOnUsage: tb.Boolean(),
+  approval: tb.Nullable(
+    tb.Object({
+      by: tb.Nullable(
+        tb.Object({
+          displayName: tb.Nullable(tb.String()),
         }),
       ),
     }),
   ),
 });
-export type SchemaChange = Typebox.Static<typeof SchemaChange>;
+export type SchemaChange = tb.Static<typeof SchemaChange>;
 
-export const SchemaWarning = Typebox.Object({
-  message: Typebox.String(),
-  source: Typebox.Nullable(Typebox.String()),
-  line: Typebox.Nullable(Typebox.Number()),
-  column: Typebox.Nullable(Typebox.Number()),
+export const SchemaWarning = tb.Object({
+  message: tb.String(),
+  source: tb.Nullable(tb.String()),
+  line: tb.Nullable(tb.Number()),
+  column: tb.Nullable(tb.Number()),
 });
-export type SchemaWarning = Typebox.Static<typeof SchemaWarning>;
+export type SchemaWarning = tb.Static<typeof SchemaWarning>;
 
-export const SchemaError = Typebox.Object({
-  message: Typebox.String(),
+export const SchemaError = tb.Object({
+  message: tb.String(),
 });
-export type SchemaError = Typebox.Static<typeof SchemaError>;
+export type SchemaError = tb.Static<typeof SchemaError>;
 
-export const AppDeploymentStatus = Typebox.Enum({
+export const AppDeploymentStatus = tb.Enum({
   active: SchemaHive.AppDeploymentStatus.Active,
   pending: SchemaHive.AppDeploymentStatus.Pending,
   retired: SchemaHive.AppDeploymentStatus.Retired,
 });
-export type AppDeploymentStatus = Typebox.Static<typeof AppDeploymentStatus>;
+export type AppDeploymentStatus = tb.Static<typeof AppDeploymentStatus>;
