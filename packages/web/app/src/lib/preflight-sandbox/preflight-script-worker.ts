@@ -140,3 +140,5 @@ function appendLineAndColumn(error: Error, { columnOffset = 0 } = {}): string {
   const { line, column } = error.stack?.match(regex)?.groups || {};
   return ` (Line: ${Number(line) - 3}, Column: ${Number(column) - columnOffset})`;
 }
+
+postMessage({ type: 'ready' });

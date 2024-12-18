@@ -104,11 +104,12 @@ const monacoProps = {
   },
 } satisfies Record<'script' | 'env', ComponentPropsWithoutRef<typeof MonacoEditor>>;
 
-type ResultLog = { type: 'log'; message: string };
-type ResultError = { type: 'error'; error: Error };
-type ResultEnv = { type: 'result'; environmentVariables: Record<string, unknown> };
+type PayloadLog = { type: 'log'; message: string };
+type PayloadError = { type: 'error'; error: Error };
+type PayloadResult = { type: 'result'; environmentVariables: Record<string, unknown> };
+type PayloadReady = { type: 'ready' };
 
-type PreflightScriptResult = ResultEnv | ResultLog | ResultError;
+type WorkerMessagePayload = PayloadResult | PayloadLog | PayloadError | PayloadReady;
 
 const PREFLIGHT_TIMEOUT = 30_000;
 
@@ -151,11 +152,16 @@ function safeParseJSON(str: string): Record<string, unknown> | null {
   }
 }
 
+const enum PreflightWorkerState {
+  loading,
+  running,
+  ready,
+}
+
 export function usePreflightScript(args: {
   target: FragmentType<typeof PreflightScript_TargetFragment> | null;
 }) {
   const target = useFragment(PreflightScript_TargetFragment, args.target);
-  const [worker, setWorker] = useState(() => new PreflightWorker());
   const [isPreflightScriptEnabled, setIsPreflightScriptEnabled] = useLocalStorage(
     'hive:laboratory:isPreflightScriptEnabled',
     false,
@@ -165,22 +171,29 @@ export function usePreflightScript(args: {
     '',
   );
   const latestEnvironmentVariablesRef = useRef(environmentVariables);
-  const [isRunning, setIsRunning] = useState(false);
-  const [logs, setLogs] = useState<LogRecord[]>([]);
-  const onNextFinishRef = useRef<PromiseWithResolvers<Record<string, unknown>> | undefined>();
-
   useEffect(() => {
     latestEnvironmentVariablesRef.current = environmentVariables;
   });
 
-  useEffect(() => {
-    worker.onmessage = (ev: MessageEvent<PreflightScriptResult>) => {
+  const [state, setState] = useState<PreflightWorkerState>(PreflightWorkerState.loading);
+  const [logs, setLogs] = useState<LogRecord[]>([]);
+  const onNextFinishRef = useRef<PromiseWithResolvers<Record<string, unknown>> | undefined>();
+  /** incrementing this number will result in a new worker with event listeners being instantiated */
+
+  function createWorker() {
+    const worker = new PreflightWorker();
+    worker.onmessage = (ev: MessageEvent<WorkerMessagePayload>) => {
+      console.log(ev.data);
+      if (ev.data.type === 'ready') {
+        setState(PreflightWorkerState.ready);
+        return;
+      }
       if (ev.data.type === 'result') {
         const mergedEnvironmentVariables = {
           ...safeParseJSON(latestEnvironmentVariablesRef.current),
           ...ev.data.environmentVariables,
         };
-        setIsRunning(false);
+        setState(PreflightWorkerState.ready);
         setEnvironmentVariables(JSON.stringify(mergedEnvironmentVariables, null, 2));
         setLogs(logs => [...logs, { type: 'separator' }]);
 
@@ -198,7 +211,7 @@ export function usePreflightScript(args: {
       if (ev.data.type === 'error') {
         const error = ev.data.error;
         setLogs(logs => [...logs, error]);
-        setIsRunning(false);
+        setState(PreflightWorkerState.ready);
         if (onNextFinishRef.current) {
           onNextFinishRef.current.reject(error);
           onNextFinishRef.current = undefined;
@@ -209,15 +222,14 @@ export function usePreflightScript(args: {
       throw new Error('Received unexpected response from worker.');
     };
 
-    // terminate worker when leaving laboratory
-    return () => {
-      worker.onmessage = () => {};
-      worker.terminate();
-    };
-  }, [worker]);
+    return worker;
+  }
+
+  const [worker, setWorker] = useState(createWorker);
 
   const abort = useCallback(
     (isTimeout = false) => {
+      console.log('WTF WTF');
       setLogs(logs => [
         ...logs,
         isTimeout
@@ -232,10 +244,19 @@ export function usePreflightScript(args: {
       if (onNextFinishRef.current) {
         onNextFinishRef.current.reject(new Error('Abort'));
       }
-      setIsRunning(false);
-      setWorker(new PreflightWorker());
+      setState(PreflightWorkerState.loading);
+      setWorker(createWorker());
     },
     [worker],
+  );
+
+  // terminate worker when leaving laboratory
+  useEffect(
+    () => () => {
+      worker.onmessage = () => {};
+      worker.terminate();
+    },
+    [],
   );
 
   const execute = useCallback(
@@ -251,7 +272,7 @@ export function usePreflightScript(args: {
       const now = Date.now();
 
       setLogs(prev => [...prev, '> Start running script']);
-      setIsRunning(true);
+      setState(PreflightWorkerState.running);
 
       onNextFinishRef.current = Promise.withResolvers<Record<string, unknown>>();
 
@@ -286,7 +307,7 @@ export function usePreflightScript(args: {
     script: target?.preflightScript?.sourceCode ?? '',
     environmentVariables,
     setEnvironmentVariables,
-    isRunning,
+    state,
     logs,
     clearLogs: () => setLogs([]),
   } as const;
@@ -350,7 +371,7 @@ function PreflightScriptContent() {
             // swallow error as it is already displayed in the logs.
           })
         }
-        isRunning={preflightScript.isRunning}
+        state={preflightScript.state}
         abortScriptRun={preflightScript.abort}
         logs={preflightScript.logs}
         clearLogs={preflightScript.clearLogs}
@@ -428,7 +449,7 @@ function PreflightScriptModal({
   toggle,
   scriptValue,
   executeScript,
-  isRunning,
+  state,
   abortScriptRun,
   logs,
   clearLogs,
@@ -440,7 +461,7 @@ function PreflightScriptModal({
   toggle: () => void;
   scriptValue?: string;
   executeScript: (script: string) => void;
-  isRunning: boolean;
+  state: PreflightWorkerState;
   abortScriptRun: () => void;
   logs: Array<LogRecord>;
   clearLogs: () => void;
@@ -512,7 +533,7 @@ function PreflightScriptModal({
                 size="icon-sm"
                 className="size-auto gap-1"
                 onClick={() => {
-                  if (isRunning) {
+                  if (state === PreflightWorkerState.running) {
                     abortScriptRun();
                     return;
                   }
@@ -520,18 +541,21 @@ function PreflightScriptModal({
                   executeScript(scriptEditorRef.current?.getValue() ?? '');
                 }}
                 data-cy="run-preflight-script"
+                disabled={state === PreflightWorkerState.ready}
               >
-                {isRunning ? (
+                {state === PreflightWorkerState.running && (
                   <>
                     <Cross2Icon className="shrink-0" />
                     Stop Script
                   </>
-                ) : (
+                )}
+                {state === PreflightWorkerState.ready && (
                   <>
                     <TriangleRightIcon className="shrink-0" />
                     Run Script
                   </>
                 )}
+                {state === PreflightWorkerState.loading && <>Loading...</>}
               </Button>
             </div>
             <MonacoEditor
@@ -555,7 +579,7 @@ function PreflightScriptModal({
                 size="icon-sm"
                 className="size-auto gap-1"
                 onClick={clearLogs}
-                disabled={isRunning}
+                disabled={state === PreflightWorkerState.running}
               >
                 <Cross2Icon className="shrink-0" height="12" />
                 Clear Output
