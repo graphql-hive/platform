@@ -265,7 +265,7 @@ export function usePreflightScript(args: {
     worker.onmessage = () => {};
     worker.terminate();
 
-    return latestEnvironmentVariablesRef.current;
+    return safeParseJSON(latestEnvironmentVariablesRef.current);
   }
 
   function abort() {
