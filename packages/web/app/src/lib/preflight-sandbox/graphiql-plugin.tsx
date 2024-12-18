@@ -183,87 +183,105 @@ export function usePreflightScript(args: {
     if (isPreview === false && !isPreflightScriptEnabled) {
       return safeParseJSON(latestEnvironmentVariablesRef.current);
     }
+    try {
+      setState(PreflightWorkerState.running);
 
-    setState(PreflightWorkerState.running);
+      const now = Date.now();
+      setLogs(prev => [...prev, '> Start running script']);
 
-    const now = Date.now();
-    setLogs(prev => [...prev, '> Start running script']);
+      const worker = new PreflightWorker();
 
-    const worker = new PreflightWorker();
-    const isReadyD = Promise.withResolvers<void>();
-    const isFinishedD = Promise.withResolvers<void>();
+      const isReadyD = Promise.withResolvers<void>();
+      const isFinishedD = Promise.withResolvers<void>();
 
-    const timeout = setTimeout(() => {
-      setLogs(logs => [
-        ...logs,
-        new Error(`Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`),
-      ]);
-      isFinishedD.resolve();
-    }, PREFLIGHT_TIMEOUT);
-
-    currentRun.current = () => {
-      clearTimeout(timeout);
-      setLogs(logs => [
-        ...logs,
-        '> Preflight script interrupted by user',
-        {
-          type: 'separator' as const,
-        },
-      ]);
-      isFinishedD.resolve();
-    };
-
-    worker.onmessage = (ev: MessageEvent<WorkerMessagePayload>) => {
-      if (ev.data.type === 'ready') {
-        isReadyD.resolve();
-        return;
-      }
-
-      if (ev.data.type === 'result') {
-        const mergedEnvironmentVariables = {
-          ...safeParseJSON(latestEnvironmentVariablesRef.current),
-          ...ev.data.environmentVariables,
-        };
-        setEnvironmentVariables(JSON.stringify(mergedEnvironmentVariables, null, 2));
+      const timeout = setTimeout(() => {
         setLogs(logs => [
           ...logs,
-          `> End running script. Done in ${(Date.now() - now) / 1000}s`,
+          new Error(
+            `Preflight script execution timed out after ${PREFLIGHT_TIMEOUT / 1000} seconds`,
+          ),
+        ]);
+        isFinishedD.resolve();
+      }, PREFLIGHT_TIMEOUT);
+
+      currentRun.current = () => {
+        clearTimeout(timeout);
+        setLogs(logs => [
+          ...logs,
+          '> Preflight script interrupted by user',
           {
             type: 'separator' as const,
           },
         ]);
         isFinishedD.resolve();
-        clearTimeout(timeout);
-        return;
+      };
+
+      worker.onmessage = (ev: MessageEvent<WorkerMessagePayload>) => {
+        if (ev.data.type === 'ready') {
+          isReadyD.resolve();
+          return;
+        }
+
+        if (ev.data.type === 'result') {
+          const mergedEnvironmentVariables = {
+            ...safeParseJSON(latestEnvironmentVariablesRef.current),
+            ...ev.data.environmentVariables,
+          };
+          setEnvironmentVariables(JSON.stringify(mergedEnvironmentVariables, null, 2));
+          setLogs(logs => [
+            ...logs,
+            `> End running script. Done in ${(Date.now() - now) / 1000}s`,
+            {
+              type: 'separator' as const,
+            },
+          ]);
+          isFinishedD.resolve();
+          clearTimeout(timeout);
+          return;
+        }
+        if (ev.data.type === 'log') {
+          const message = ev.data.message;
+          setLogs(logs => [...logs, message]);
+          return;
+        }
+        if (ev.data.type === 'error') {
+          const error = ev.data.error;
+          setLogs(logs => [...logs, error]);
+          isFinishedD.resolve();
+          clearTimeout(timeout);
+          return;
+        }
+
+        throw new Error('Received unexpected response from worker.');
+      };
+
+      await isReadyD.promise;
+
+      worker.postMessage({
+        script,
+        environmentVariables: (environmentVariables && safeParseJSON(environmentVariables)) || {},
+      });
+
+      await isFinishedD.promise;
+      setState(PreflightWorkerState.ready);
+
+      worker.onmessage = () => {};
+      worker.terminate();
+    } catch (err) {
+      if (err instanceof Error) {
+        setLogs(prev => [
+          ...prev,
+          err,
+          '> Preflight script failed',
+          {
+            type: 'separator' as const,
+          },
+        ]);
+        setState(PreflightWorkerState.ready);
+        return safeParseJSON(latestEnvironmentVariablesRef.current);
       }
-      if (ev.data.type === 'log') {
-        const message = ev.data.message;
-        setLogs(logs => [...logs, message]);
-        return;
-      }
-      if (ev.data.type === 'error') {
-        const error = ev.data.error;
-        setLogs(logs => [...logs, error]);
-        isFinishedD.resolve();
-        clearTimeout(timeout);
-        return;
-      }
-
-      throw new Error('Received unexpected response from worker.');
-    };
-
-    await isReadyD.promise;
-
-    worker.postMessage({
-      script,
-      environmentVariables: (environmentVariables && safeParseJSON(environmentVariables)) || {},
-    });
-
-    await isFinishedD.promise;
-    setState(PreflightWorkerState.ready);
-
-    worker.onmessage = () => {};
-    worker.terminate();
+      throw err;
+    }
 
     return safeParseJSON(latestEnvironmentVariablesRef.current);
   }
@@ -348,8 +366,8 @@ function PreflightScriptContent() {
         toggle={toggleShowModal}
         scriptValue={preflightScript.script}
         executeScript={value =>
-          preflightScript.execute(value, true).catch(() => {
-            // swallow error as it is already displayed in the logs.
+          preflightScript.execute(value, true).catch(err => {
+            console.error(err);
           })
         }
         state={preflightScript.state}
