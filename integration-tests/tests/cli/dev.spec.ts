@@ -1,11 +1,5 @@
 /* eslint-disable no-process-env */
-import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { ProjectType } from 'testkit/gql/graphql';
-import { createCLI } from '../../testkit/cli';
-import { initSeed } from '../../testkit/seed';
+import { tmpFile } from '../../testkit/fs';
 import { test } from '../../testkit/test';
 
 describe('dev', () => {
@@ -124,18 +118,14 @@ describe('dev --remote', () => {
     await expect(supergraph.read()).resolves.toMatch('http://localhost/bar');
   });
 
-  test('uses latest composable version by default', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { createProject, setFeatureFlag } = await createOrg();
-    const { createTargetAccessToken, setNativeFederation } = await createProject(
-      ProjectType.Federation,
-    );
-    const { secret } = await createTargetAccessToken({});
-    const cli = createCLI({ readwrite: secret, readonly: secret });
-
+  test.only('uses latest composable version by default', async ({
+    org,
+    projectFederation: project,
+    cliFederation: cli,
+  }) => {
     // Once we ship native federation v2 composition by default, we can remove these two lines
-    await setFeatureFlag('compareToPreviousComposableVersion', true);
-    await setNativeFederation(true);
+    await org.setFeatureFlag('compareToPreviousComposableVersion', true);
+    await project.setNativeFederation(true);
 
     await cli.publish({
       sdl: /* GraphQL */ `
@@ -204,18 +194,14 @@ describe('dev --remote', () => {
     expect(content).toMatch('http://localhost/baz');
   });
 
-  test('uses latest version when requested', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { createProject, setFeatureFlag } = await createOrg();
-    const { createTargetAccessToken, setNativeFederation } = await createProject(
-      ProjectType.Federation,
-    );
-    const { secret } = await createTargetAccessToken({});
-    const cli = createCLI({ readwrite: secret, readonly: secret });
-
+  test('uses latest version when requested', async ({
+    org,
+    projectFederation: project,
+    cliFederation: cli,
+  }) => {
     // Once we ship native federation v2 composition by default, we can remove these two lines
-    await setFeatureFlag('compareToPreviousComposableVersion', true);
-    await setNativeFederation(true);
+    await org.setFeatureFlag('compareToPreviousComposableVersion', true);
+    await project.setNativeFederation(true);
 
     await cli.publish({
       sdl: /* GraphQL */ `
@@ -283,16 +269,3 @@ describe('dev --remote', () => {
     await expect(cmd).rejects.toThrowError('Non-shareable field');
   });
 });
-
-function tmpFile(extension: string) {
-  const dir = tmpdir();
-  const fileName = randomUUID();
-  const filepath = join(dir, `${fileName}.${extension}`);
-
-  return {
-    filepath,
-    read() {
-      return readFile(filepath, 'utf-8');
-    },
-  };
-}
