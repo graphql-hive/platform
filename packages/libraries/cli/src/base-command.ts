@@ -16,7 +16,8 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   public static enableJsonFlag = true;
 
   /**
-   * A description of the action that this command performs.
+   * A *description fragment* of the action that this command performs.
+   * Formulate your words such that it can be appended to e.g. "Failed to ${descriptionOfAction}".
    * Used in certain automated error messages.
    */
   public static descriptionOfAction = 'perform action';
