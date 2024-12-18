@@ -18,7 +18,7 @@ const fetchLatestVersionQuery = graphql(/* GraphQL */ `
 
 export default class OperationsCheck extends Command<typeof OperationsCheck> {
   static description = 'checks operations against a published schema';
-  static descriptionOfAction = 'validate operations';
+  static descriptionFragmentForAction = 'validate operations';
   static flags = {
     'registry.endpoint': Flags.string({
       description: 'registry endpoint',

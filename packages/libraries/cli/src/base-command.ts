@@ -17,10 +17,10 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
 
   /**
    * A *description fragment* of the action that this command performs.
-   * Formulate your words such that it can be appended to e.g. "Failed to ${descriptionOfAction}".
+   * Formulate your words such that it can be appended to e.g. "Failed to ${descriptionFragmentForAction}".
    * Used in certain automated error messages.
    */
-  public static descriptionOfAction = 'perform action';
+  public static descriptionFragmentForAction = 'perform action';
 
   /**
    * The data type returned by this command when executed.
@@ -391,8 +391,9 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     if (error instanceof Errors.CLIError) {
       await super.catch(error);
     } else {
-      const descriptionOfAction = (this.constructor as typeof BaseCommand).descriptionOfAction;
-      this.logFailure(`Failed to ${descriptionOfAction}`);
+      const descriptionFragmentForAction = (this.constructor as typeof BaseCommand)
+        .descriptionFragmentForAction;
+      this.logFailure(`Failed to ${descriptionFragmentForAction}`);
       this.handleFetchError(error);
     }
   }

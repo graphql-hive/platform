@@ -86,7 +86,7 @@ const schemaCheckMutation = graphql(/* GraphQL */ `
 
 export default class SchemaCheck extends Command<typeof SchemaCheck> {
   static description = 'checks schema';
-  static descriptionOfAction = 'check schema';
+  static descriptionFragmentForAction = 'check schema';
   static flags = {
     service: Flags.string({
       description: 'service name (only for distributed schemas)',

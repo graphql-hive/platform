@@ -72,7 +72,7 @@ const schemaPublishMutation = graphql(/* GraphQL */ `
 
 export default class SchemaPublish extends Command<typeof SchemaPublish> {
   static description = 'publishes schema';
-  static descriptionOfAction = 'publish schema';
+  static descriptionFragmentForAction = 'publish schema';
   static flags = {
     service: Flags.string({
       description: 'service name (only for distributed schemas)',
