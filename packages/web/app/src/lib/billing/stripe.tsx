@@ -9,23 +9,23 @@ import { loadStripe } from '@stripe/stripe-js/pure';
 import { getStripePublicKey } from './stripe-public-key';
 
 export const HiveStripeWrapper: FC<{ children: ReactNode }> = ({ children }) => {
-  if (env.nodeEnv !== 'production') {
-    return;
-  }
-
-  const stripePublicKey = getStripePublicKey();
-
-  if (!stripePublicKey) {
-    return null;
-  }
-
   // eslint-disable-next-line react/hook-use-state -- we don't need setter
   const [stripe] = useState<ReturnType<typeof loadStripe> | void>(() => {
+    if (env.nodeEnv !== 'production') {
+      return;
+    }
+
+    const stripePublicKey = getStripePublicKey();
+
+    if (!stripePublicKey) {
+      return;
+    }
+
     return loadStripe(stripePublicKey);
   });
 
   if (!stripe) {
-    return children as any;
+    return children;
   }
 
   return (
