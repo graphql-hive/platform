@@ -2,7 +2,9 @@ import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import dev from 'packages/libraries/cli/src/commands/dev';
 import { execaCommand } from '@esm2cjs/execa';
+import { HiveCLI } from '@graphql-hive/cli';
 import { fetchLatestSchema, fetchLatestValidSchema } from './flow';
 import { getServiceHost } from './utils';
 
@@ -35,40 +37,18 @@ async function exec(cmd: string) {
   return outout.stdout;
 }
 
-export async function schemaPublish(args: string[]) {
-  const registryAddress = await getServiceHost('server', 8082);
-  return await exec(
-    ['schema:publish', `--registry.endpoint`, `http://${registryAddress}/graphql`, ...args].join(
-      ' ',
-    ),
-  );
-}
-
-export async function schemaCheck(args: string[]) {
-  const registryAddress = await getServiceHost('server', 8082);
-
-  return await exec(
-    ['schema:check', `--registry.endpoint`, `http://${registryAddress}/graphql`, ...args].join(' '),
-  );
-}
-
-export async function schemaDelete(args: string[]) {
-  const registryAddress = await getServiceHost('server', 8082);
-
-  return await exec(
-    ['schema:delete', `--registry.endpoint`, `http://${registryAddress}/graphql`, ...args].join(
-      ' ',
-    ),
-  );
-}
-
-async function dev(args: string[]) {
-  const registryAddress = await getServiceHost('server', 8082);
-
-  return await exec(
-    ['dev', `--registry.endpoint`, `http://${registryAddress}/graphql`, ...args].join(' '),
-  );
-}
+export const hiveCLI = HiveCLI.create({
+  execute: exec,
+  middleware: {
+    args: async args => {
+      const registryAddress = await getServiceHost('server', 8082);
+      return {
+        'registry.endpoint': `http://${registryAddress}/graphql`,
+        ...args,
+      };
+    },
+  },
+});
 
 export type CLI = ReturnType<typeof createCLI>;
 
@@ -98,21 +78,18 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     const publishName = ` #${++publishCount}`;
     const commit = randomUUID();
 
-    const cmd = schemaPublish([
-      ...(json ? ['--json'] : []),
-      '--registry.accessToken',
-      tokens.readwrite,
-      '--author',
-      'Kamil',
-      '--commit',
+    const cmd = hiveCLI.schemaPublish({
+      $positional: [await generateTmpFile(sdl, 'graphql')],
+      json,
+      'registry.accessToken': tokens.readwrite,
+      author: 'Kamil',
       commit,
-      ...(serviceName ? ['--service', serviceName] : []),
-      ...(serviceUrl ? ['--url', serviceUrl] : []),
-      ...(metadata ? ['--metadata', await generateTmpFile(JSON.stringify(metadata), 'json')] : []),
-      ...(legacy_force ? ['--force'] : []),
-      ...(legacy_acceptBreakingChanges ? ['--experimental_acceptBreakingChanges'] : []),
-      await generateTmpFile(sdl, 'graphql'),
-    ]);
+      service: serviceName,
+      url: serviceUrl,
+      metadata: metadata ? await generateTmpFile(JSON.stringify(metadata), 'json') : undefined,
+      force: legacy_force,
+      experimental_acceptBreakingChanges: legacy_acceptBreakingChanges,
+    });
 
     const expectedCommit = expect.objectContaining({
       commit,
@@ -187,12 +164,11 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     serviceName?: string;
     expect: 'approved' | 'rejected';
   }): Promise<string> {
-    const cmd = schemaCheck([
-      '--registry.accessToken',
-      tokens.readonly,
-      ...(serviceName ? ['--service', serviceName] : []),
-      await generateTmpFile(sdl, 'graphql'),
-    ]);
+    const cmd = hiveCLI.schemaCheck({
+      'registry.accessToken': tokens.readonly,
+      service: serviceName,
+      $positional: [await generateTmpFile(sdl, 'graphql')],
+    });
 
     if (expectedStatus === 'rejected') {
       await expect(cmd).rejects.toThrow();
@@ -208,7 +184,11 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     serviceName?: string;
     expect: 'latest' | 'latest-composable' | 'rejected';
   }): Promise<string> {
-    const cmd = schemaDelete(['--token', tokens.readwrite, '--confirm', serviceName ?? '']);
+    const cmd = hiveCLI.schemaDelete({
+      'registry.accessToken': tokens.readwrite,
+      // @ts-expect-error fixme: confirm is a boolean flag so why is a string being passed here?
+      confirm: serviceName ?? '',
+    });
 
     const before = {
       latest: await fetchLatestSchema(tokens.readonly).then(r => r.expectNoGraphQLErrors()),
@@ -268,29 +248,42 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     write?: string;
     useLatestVersion?: boolean;
   }) {
-    return dev([
-      ...(input.remote
-        ? [
-            '--remote',
-            '--registry.accessToken',
-            tokens.readonly,
-            input.useLatestVersion ? '--unstable__forceLatest' : '',
-          ]
-        : []),
-      input.write ? `--write ${input.write}` : '',
-      ...(await Promise.all(
-        input.services.map(async ({ name, url, sdl }) => {
-          return [
-            '--service',
-            name,
-            '--url',
-            url,
-            '--schema',
-            await generateTmpFile(sdl, 'graphql'),
-          ].join(' ');
-        }),
-      )),
-    ]);
+    const servicesFlags = await Promise.all(
+      input.services.map(async ({ name, url, sdl }) => {
+        return {
+          service: name,
+          url,
+          schema: await generateTmpFile(sdl, 'graphql'),
+        };
+      }),
+    ).then(argsGroups => {
+      return argsGroups.reduce(
+        (argsAcc, args) => {
+          return {
+            service: [...argsAcc.service, args.service],
+            url: [...argsAcc.url, args.url],
+            schema: [...argsAcc.schema, args.schema],
+          };
+        },
+        { service: [], url: [], schema: [] } as {
+          service: string[];
+          url: string[];
+          schema: string[];
+        },
+      );
+    });
+    const remoteFlags = input.remote
+      ? {
+          remote: true,
+          'registry.accessToken': tokens.readonly,
+          unstable__forceLatest: input.useLatestVersion,
+        }
+      : {};
+    return hiveCLI.dev({
+      write: input.write,
+      ...remoteFlags,
+      ...(servicesFlags as any), // todo: type-level support for flag multiples
+    });
   }
 
   return {

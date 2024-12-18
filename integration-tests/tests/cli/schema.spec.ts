@@ -1,7 +1,7 @@
 /* eslint-disable no-process-env */
 import { createHash } from 'node:crypto';
 import { ProjectType } from 'testkit/gql/graphql';
-import { createCLI, schemaCheck, schemaPublish } from '../../testkit/cli';
+import { createCLI, hiveCLI } from '../../testkit/cli';
 import { test } from '../../testkit/test';
 
 describe.each`
@@ -13,9 +13,8 @@ describe.each`
   ${ProjectType.Stitching}  | ${'legacy'}
   ${ProjectType.Federation} | ${'legacy'}
 `('$projectType ($model)', ({ projectType, model }) => {
-  const serviceNameArgs = projectType === ProjectType.Single ? [] : ['--service', 'test'];
-  const serviceUrlArgs =
-    projectType === ProjectType.Single ? [] : ['--url', 'http://localhost:4000'];
+  const serviceNameArgs = projectType === ProjectType.Single ? {} : { service: 'test' };
+  const serviceUrlArgs = projectType === ProjectType.Single ? {} : { url: 'http://localhost:4000' };
   const serviceName = projectType === ProjectType.Single ? undefined : 'test';
   const serviceUrl = projectType === ProjectType.Single ? undefined : 'http://localhost:4000';
 
@@ -28,24 +27,21 @@ describe.each`
       });
       const { secret } = await createTargetAccessToken({});
 
-      await schemaPublish([
-        '--registry.accessToken',
-        secret,
-        '--author',
-        'Kamil',
-        '--commit',
-        'abc123',
+      await hiveCLI.schemaPublish({
+        'registry.accessToken': secret,
+        author: 'Kamil',
+        commit: 'abc123',
         ...serviceNameArgs,
         ...serviceUrlArgs,
-        'fixtures/init-schema-detailed.graphql',
-      ]);
+        $positional: ['fixtures/init-schema-detailed.graphql'],
+      });
+
       await expect(
-        schemaCheck([
+        hiveCLI.schemaCheck({
           ...serviceNameArgs,
-          '--registry.accessToken',
-          secret,
-          'fixtures/breaking-schema-detailed.graphql',
-        ]),
+          'registry.accessToken': secret,
+          $positional: ['fixtures/breaking-schema-detailed.graphql'],
+        }),
       ).rejects.toThrowError(/breaking changes:|dangerous changes:|safe changes/i);
     },
   );
@@ -59,33 +55,27 @@ describe.each`
       });
       const { secret } = await createTargetAccessToken({});
 
-      await schemaPublish([
-        '--registry.accessToken',
-        secret,
-        '--author',
-        'Kamil',
-        '--commit',
-        'abc123',
+      await hiveCLI.schemaPublish({
+        'registry.accessToken': secret,
+        author: 'Kamil',
+        commit: 'abc123',
         ...serviceNameArgs,
         ...serviceUrlArgs,
-        'fixtures/init-schema.graphql',
-      ]);
+        $positional: ['fixtures/init-schema.graphql'],
+      });
 
-      await schemaCheck([
-        '--service',
-        'test',
-        '--registry.accessToken',
-        secret,
-        'fixtures/nonbreaking-schema.graphql',
-      ]);
+      await hiveCLI.schemaCheck({
+        service: 'test',
+        'registry.accessToken': secret,
+        $positional: ['fixtures/nonbreaking-schema.graphql'],
+      });
 
       await expect(
-        schemaCheck([
+        hiveCLI.schemaCheck({
           ...serviceNameArgs,
-          '--registry.accessToken',
-          secret,
-          'fixtures/breaking-schema.graphql',
-        ]),
+          'registry.accessToken': secret,
+          $positional: ['fixtures/breaking-schema.graphql'],
+        }),
       ).rejects.toThrowError(/breaking/i);
     },
   );
@@ -101,17 +91,15 @@ describe.each`
 
       const allocatedError = new Error('Should have thrown.');
       try {
-        await schemaPublish([
-          '--registry.accessToken',
-          secret,
-          '--author',
-          'Kamil',
-          '--commit',
-          'abc123',
+        await hiveCLI.schemaPublish({
+          'registry.accessToken': secret,
+          author: 'Kamil',
+          commit: 'abc123',
           ...serviceNameArgs,
           ...serviceUrlArgs,
-          'fixtures/init-invalid-schema.graphql',
-        ]);
+          $positional: ['fixtures/init-invalid-schema.graphql'],
+        });
+
         throw allocatedError;
       } catch (err) {
         if (err === allocatedError) {
@@ -131,25 +119,23 @@ describe.each`
     const { secret } = await createTargetAccessToken({});
 
     await expect(
-      schemaPublish([
+      hiveCLI.schemaPublish({
         ...serviceNameArgs,
         ...serviceUrlArgs,
-        '--registry.accessToken',
-        secret,
-        'fixtures/init-schema.graphql',
-      ]),
+        'registry.accessToken': secret,
+        $positional: ['fixtures/init-schema.graphql'],
+      }),
     ).resolves.toMatch(
       `Available at ${process.env.HIVE_APP_BASE_URL}/${org.organization.slug}/${project.slug}/${target.slug}`,
     );
 
     await expect(
-      schemaPublish([
+      hiveCLI.schemaPublish({
         ...serviceNameArgs,
         ...serviceUrlArgs,
-        '--registry.accessToken',
-        secret,
-        'fixtures/nonbreaking-schema.graphql',
-      ]),
+        'registry.accessToken': secret,
+        $positional: ['fixtures/nonbreaking-schema.graphql'],
+      }),
     ).resolves.toMatch(
       `Available at ${process.env.HIVE_APP_BASE_URL}/${org.organization.slug}/${project.slug}/${target.slug}/history/`,
     );
@@ -163,12 +149,11 @@ describe.each`
     const { secret } = await createTargetAccessToken({});
 
     await expect(
-      schemaCheck([
-        '--registry.accessToken',
-        secret,
+      hiveCLI.schemaCheck({
+        'registry.accessToken': secret,
         ...serviceNameArgs,
-        'fixtures/init-schema.graphql',
-      ]),
+        $positional: ['fixtures/init-schema.graphql'],
+      }),
     ).resolves.toMatch('empty');
   });
 
@@ -179,12 +164,11 @@ describe.each`
     });
     const { secret } = await createTargetAccessToken({});
 
-    const output = schemaCheck([
+    const output = hiveCLI.schemaCheck({
       ...serviceNameArgs,
-      '--registry.accessToken',
-      secret,
-      'fixtures/missing-type.graphql',
-    ]);
+      'registry.accessToken': secret,
+      $positional: ['fixtures/missing-type.graphql'],
+    });
     await expect(output).rejects.toThrowError('Unknown type');
   });
 
@@ -192,13 +176,12 @@ describe.each`
     'schema:publish should see Invalid Token error when token is invalid',
     async () => {
       const invalidToken = createHash('md5').update('nope').digest('hex').substring(0, 31);
-      const output = schemaPublish([
+      const output = hiveCLI.schemaPublish({
         ...serviceNameArgs,
         ...serviceUrlArgs,
-        '--registry.accessToken',
-        invalidToken,
-        'fixtures/init-schema.graphql',
-      ]);
+        'registry.accessToken': invalidToken,
+        $positional: ['fixtures/init-schema.graphql'],
+      });
 
       await expect(output).rejects.toThrowError('Invalid token provided');
     },

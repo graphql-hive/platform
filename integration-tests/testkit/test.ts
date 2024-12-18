@@ -1,3 +1,8 @@
+/**
+ * This module uses Vitest's fixture system to make common usage patterns
+ * of our testkit easily consumable in test cases. @see https://vitest.dev/guide/test-context.html#test-extend
+ */
+
 import { test as testBase } from 'vitest';
 import { CLI, createCLI } from './cli';
 import { ProjectType } from './gql/graphql';

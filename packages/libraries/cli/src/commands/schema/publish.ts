@@ -73,6 +73,23 @@ const schemaPublishMutation = graphql(/* GraphQL */ `
 export default class SchemaPublish extends Command<typeof SchemaPublish> {
   static description = 'publishes schema';
   static descriptionFragmentForAction = 'publish schema';
+  static parameters = {
+    positional: tb.Tuple([tb.String()]),
+    named: tb.Object({
+      json: tb.Optional(tb.Boolean()),
+      service: tb.Optional(tb.String()),
+      url: tb.Optional(tb.String()),
+      metadata: tb.Optional(tb.String()),
+      'registry.endpoint': tb.Optional(tb.String()),
+      'registry.accessToken': tb.Optional(tb.String()),
+      author: tb.Optional(tb.String()),
+      commit: tb.Optional(tb.String()),
+      github: tb.Optional(tb.Boolean()),
+      force: tb.Optional(tb.Boolean()),
+      experimental_acceptBreakingChanges: tb.Optional(tb.Boolean()),
+      require: tb.Optional(tb.Array(tb.String())),
+    }),
+  };
   static flags = {
     service: Flags.string({
       description: 'service name (only for distributed schemas)',

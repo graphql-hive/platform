@@ -35,7 +35,7 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
   }
 `);
 
-export default class WhoAmI extends Command<typeof WhoAmI> {
+export default class Whoami extends Command<typeof Whoami> {
   static description = 'shows information about the current token';
   static flags = {
     'registry.endpoint': Flags.string({
@@ -91,7 +91,7 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
   );
 
   async runResult() {
-    const { flags } = await this.parse(WhoAmI);
+    const { flags } = await this.parse(Whoami);
 
     const registry = this.ensure({
       key: 'registry.endpoint',
