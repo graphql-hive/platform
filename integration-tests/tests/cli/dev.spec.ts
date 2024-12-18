@@ -9,7 +9,7 @@ import { initSeed } from '../../testkit/seed';
 import { test } from '../../testkit/test';
 
 describe('dev', () => {
-  test.only('composes only the locally provided service', async ({ cliFederation: cli }) => {
+  test('composes only the locally provided service', async ({ cliFederation: cli }) => {
     await cli.publish({
       sdl: 'type Query { foo: String }',
       serviceName: 'foo',
@@ -37,13 +37,7 @@ describe('dev', () => {
 });
 
 describe('dev --remote', () => {
-  test('not available for SINGLE project', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Single);
-    const { secret } = await createTargetAccessToken({});
-    const cli = createCLI({ readwrite: secret, readonly: secret });
-
+  test('not available for SINGLE project', async ({ cliSingle: cli }) => {
     const cmd = cli.dev({
       remote: true,
       services: [
@@ -58,13 +52,7 @@ describe('dev --remote', () => {
     await expect(cmd).rejects.toThrowError(/Only Federation projects are supported/);
   });
 
-  test('not available for STITCHING project', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Stitching);
-    const { secret } = await createTargetAccessToken({});
-    const cli = createCLI({ readwrite: secret, readonly: secret });
-
+  test('not available for STITCHING project', async ({ cliStitching: cli }) => {
     const cmd = cli.dev({
       remote: true,
       services: [
@@ -79,13 +67,7 @@ describe('dev --remote', () => {
     await expect(cmd).rejects.toThrowError(/Only Federation projects are supported/);
   });
 
-  test('adds a service', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Federation);
-    const { secret } = await createTargetAccessToken({});
-    const cli = createCLI({ readwrite: secret, readonly: secret });
-
+  test('adds a service', async ({ cliFederation: cli }) => {
     await cli.publish({
       sdl: 'type Query { foo: String }',
       serviceName: 'foo',
@@ -110,13 +92,7 @@ describe('dev --remote', () => {
     await expect(supergraph.read()).resolves.toMatch('http://localhost/bar');
   });
 
-  test('replaces a service', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { createProject } = await createOrg();
-    const { createTargetAccessToken } = await createProject(ProjectType.Federation);
-    const { secret } = await createTargetAccessToken({});
-    const cli = createCLI({ readwrite: secret, readonly: secret });
-
+  test('replaces a service', async ({ cliFederation: cli }) => {
     await cli.publish({
       sdl: 'type Query { foo: String }',
       serviceName: 'foo',

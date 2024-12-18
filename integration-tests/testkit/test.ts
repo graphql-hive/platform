@@ -13,6 +13,9 @@ interface Context {
   projectFederation: ProjectSeed;
   targetAccessTokenFederation: TargetAccessTokenSeed;
   cliFederation: CLI;
+  projectStitching: ProjectSeed;
+  targetAccessTokenStitching: TargetAccessTokenSeed;
+  cliStitching: CLI;
 }
 
 export const test = testBase.extend<Context>({
@@ -55,6 +58,21 @@ export const test = testBase.extend<Context>({
     const cli = createCLI({
       readwrite: targetAccessTokenFederation.secret,
       readonly: targetAccessTokenFederation.secret,
+    });
+    await use(cli);
+  },
+  projectStitching: async ({ org }, use) => {
+    const project = await org.createProject(ProjectType.Stitching);
+    await use(project);
+  },
+  targetAccessTokenStitching: async ({ projectStitching }, use) => {
+    const targetAccessToken = await projectStitching.createTargetAccessToken({});
+    await use(targetAccessToken);
+  },
+  cliStitching: async ({ targetAccessTokenStitching }, use) => {
+    const cli = createCLI({
+      readwrite: targetAccessTokenStitching.secret,
+      readonly: targetAccessTokenStitching.secret,
     });
     await use(cli);
   },
