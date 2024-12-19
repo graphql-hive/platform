@@ -7,7 +7,7 @@ import { Command, Errors, Flags, Interfaces } from '@oclif/core';
 import { CommandError } from '@oclif/core/lib/interfaces';
 import { Record } from '@sinclair/typebox';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
-import { CLIFailure } from './helpers/errors/cli-failure';
+import { CLIErrorWithData } from './helpers/errors/cli-error-with-data';
 import { ClientError } from './helpers/errors/client-error';
 import { OmitNever } from './helpers/general';
 import { tb } from './helpers/typebox/__';
@@ -75,7 +75,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       const message = `Whoops. This Hive CLI command tried to output a value that violates its own schema. This should never happen. Please report this issue to the Hive team at https://github.com/graphql-hive/console/issues/new.`;
       // todo: Display data in non-json output.
       // The default textual output of an OClif error will not display any of the data below. We will want that information in a bug report.
-      throw new CLIFailure({
+      throw new CLIErrorWithData({
         message: message,
         data: {
           __typename: 'CLIOutputTypeError',
@@ -103,7 +103,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
      * allows us to convert thrown values into JSON.
      * We throw a CLIFailure which will be specially handled it.
      */
-    throw new CLIFailure(result);
+    throw new CLIErrorWithData(result);
   }
 
   /**
@@ -423,7 +423,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * Custom logic for how thrown values are converted into JSON.
    */
   toErrorJson(value: unknown) {
-    if (value instanceof CLIFailure) {
+    if (value instanceof CLIErrorWithData) {
       return value.envelope;
     }
     if (value instanceof Errors.CLIError) {
@@ -479,7 +479,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 }
 
-const clientErrorToCLIFailure = (error: ClientError): CLIFailure => {
+const clientErrorToCLIFailure = (error: ClientError): CLIErrorWithData => {
   const requestId = cleanRequestId(error.response?.headers?.get('x-request-id'));
   const errors =
     error.response?.errors?.map(e => {
@@ -494,7 +494,7 @@ const clientErrorToCLIFailure = (error: ClientError): CLIFailure => {
       : `Caused by:\n${error.message}`;
   const message = `Request to Hive API failed. ${causedByMessage}`;
 
-  return new CLIFailure({
+  return new CLIErrorWithData({
     message,
     reference: requestId,
     code: 'HiveApiRequestError',

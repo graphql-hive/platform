@@ -34,12 +34,12 @@ export const cliOutput: SnapshotSerializer = {
 
 const variableReplacements = [
   {
-    pattern: /("reference": ")([^"]+)"/gi,
-    mask: '$1__ID__"',
+    pattern: /("reference": "|"requestId": "|"https?:\/\/)[^"]+/gi,
+    mask: '$1__ID__',
   },
   {
-    pattern: /("requestId": ")([^"]+)"/gi,
-    mask: '$1__ID__"',
+    pattern: /"https?:\/\/[^"]+/gi,
+    mask: '"__URL__',
   },
   {
     pattern: /(Reference: )[^ ]+/gi,
@@ -48,10 +48,6 @@ const variableReplacements = [
   {
     pattern: /(https?:\/\/)[^ ]+/gi,
     mask: '$1__PATH__',
-  },
-  {
-    pattern: /\/.*(\/cli\/bin\/run)/gi,
-    mask: '__PATH__$1',
   },
 ];
 
@@ -63,7 +59,7 @@ const clean = (value: string) => {
   // and we don't care enough about CLI output styling to fork our snapshots for it.
   value = stripAnsi(value);
   for (const replacement of variableReplacements) {
-    value = value.replace(replacement.pattern, replacement.mask);
+    value = value.replaceAll(replacement.pattern, replacement.mask);
   }
   return value;
 };

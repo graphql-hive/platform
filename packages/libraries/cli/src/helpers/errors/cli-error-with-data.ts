@@ -1,7 +1,7 @@
 import { Errors } from '@oclif/core';
 import { SchemaOutput } from '../../schema-output/__';
 
-export class CLIFailure extends Errors.CLIError {
+export class CLIErrorWithData extends Errors.CLIError {
   public envelope: SchemaOutput.FailureGeneric;
   constructor(envelopeInit: Partial<SchemaOutput.FailureGeneric>) {
     const envelope = {

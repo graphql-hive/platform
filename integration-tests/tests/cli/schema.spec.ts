@@ -17,6 +17,11 @@ describe.each`
   ${ProjectType.Stitching}  | ${'legacy'} | ${false}
   ${ProjectType.Federation} | ${'legacy'} | ${false}
   ${ProjectType.Single}     | ${'modern'} | ${true}
+  ${ProjectType.Stitching}  | ${'modern'} | ${true}
+  ${ProjectType.Federation} | ${'modern'} | ${true}
+  ${ProjectType.Single}     | ${'legacy'} | ${true}
+  ${ProjectType.Stitching}  | ${'legacy'} | ${true}
+  ${ProjectType.Federation} | ${'legacy'} | ${true}
 `('projectType: $projectType | model: $model | json: $json', ({ projectType, model, json }) => {
   const serviceNameArgs = projectType === ProjectType.Single ? [] : ['--service', 'test'];
   const serviceUrlArgs =
@@ -258,6 +263,7 @@ describe.each`
 
         await expect(
           cli.publish({
+            json,
             sdl,
             commit: 'push1',
             serviceName,
@@ -269,6 +275,7 @@ describe.each`
         const newServiceUrl = serviceUrl + '/new';
         await expect(
           cli.publish({
+            json,
             sdl,
             commit: 'push2',
             serviceName,

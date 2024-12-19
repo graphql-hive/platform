@@ -91,10 +91,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'FEDERATION' | model: 'legacy' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-1
+2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -135,6 +135,245 @@ stderr--------------------------------------------:
  ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can publish a schema with breaking, warning and safe changes > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Enum value 'VIEWER' was added to enum 'UserRole'",
+        "criticality": "Dangerous",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'address' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'User.role' changed type from 'UserRole' to 'UserRole!'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (breaking) 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (non-breaking) 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'nickname' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can publish and check a schema with target:registry:read access > schemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can update the service url and show it in comparison query > schemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can update the service url and show it in comparison query > schemaPublish 2`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [
+      {
+        "message": "[test] New service url: 'http://__PATH__ (previously: 'http://__PATH__        "criticality": "Dangerous",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 2,
+  "code": "unexpected",
+  "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
+  "reference": null,
+  "data": {
+    "__typename": "CLIError"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > schema:check should notify user when registry is empty > schemaCheck 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > schema:check should throw on corrupted schema > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 1,
+  "code": "HiveApiRequestError",
+  "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
+  "reference": "__ID__",
+  "suggestions": [],
+  "data": {
+    "__typename": "HiveApiRequestError",
+    "requestId": "__ID__",
+    "errors": [
+      {
+        "message": "Invalid token provided"
+      }
+    ]
+  }
+}
 `;
 
 exports[`projectType: 'FEDERATION' | model: 'modern' | json: false > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -228,10 +467,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'FEDERATION' | model: 'modern' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-1
+2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -270,6 +509,239 @@ stderr--------------------------------------------:
  ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can publish a schema with breaking, warning and safe changes > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Enum value 'VIEWER' was added to enum 'UserRole'",
+        "criticality": "Dangerous",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'address' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'User.role' changed type from 'UserRole' to 'UserRole!'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (breaking) 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (non-breaking) 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'nickname' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can publish and check a schema with target:registry:read access > schemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can update the service url and show it in comparison query > schemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can update the service url and show it in comparison query > schemaPublish 2`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 2,
+  "code": "unexpected",
+  "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
+  "reference": null,
+  "data": {
+    "__typename": "CLIError"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > schema:check should notify user when registry is empty > schemaCheck 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > schema:check should throw on corrupted schema > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 1,
+  "code": "HiveApiRequestError",
+  "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
+  "reference": "__ID__",
+  "suggestions": [],
+  "data": {
+    "__typename": "HiveApiRequestError",
+    "requestId": "__ID__",
+    "errors": [
+      {
+        "message": "Invalid token provided"
+      }
+    ]
+  }
+}
 `;
 
 exports[`projectType: 'SINGLE' | model: 'legacy' | json: false > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -348,10 +820,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'SINGLE' | model: 'legacy' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-1
+2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -390,6 +862,209 @@ stderr--------------------------------------------:
  ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
+`;
+
+exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > can publish a schema with breaking, warning and safe changes > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Enum value 'VIEWER' was added to enum 'UserRole'",
+        "criticality": "Dangerous",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'address' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'User.role' changed type from 'UserRole' to 'UserRole!'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (breaking) 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (non-breaking) 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'nickname' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > can publish and check a schema with target:registry:read access > schemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 2,
+  "code": "unexpected",
+  "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
+  "reference": null,
+  "data": {
+    "__typename": "CLIError"
+  }
+}
+`;
+
+exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > schema:check should notify user when registry is empty > schemaCheck 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > schema:check should throw on corrupted schema > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 1,
+  "code": "HiveApiRequestError",
+  "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
+  "reference": "__ID__",
+  "suggestions": [],
+  "data": {
+    "__typename": "HiveApiRequestError",
+    "requestId": "__ID__",
+    "errors": [
+      {
+        "message": "Invalid token provided"
+      }
+    ]
+  }
+}
 `;
 
 exports[`projectType: 'SINGLE' | model: 'modern' | json: false > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -468,10 +1143,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'SINGLE' | model: 'modern' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-1
+2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -522,7 +1197,8 @@ stdout--------------------------------------------:
   "data": {
     "__typename": "SchemaPublishSuccess",
     "changes": [],
-    "url": "http://__PATH__  }
+    "url": "__URL__"
+  }
 }
 `;
 
@@ -565,7 +1241,8 @@ stdout--------------------------------------------:
         "approval": null
       }
     ],
-    "url": "http://__PATH__  }
+    "url": "__URL__"
+  }
 }
 `;
 
@@ -590,7 +1267,8 @@ stdout--------------------------------------------:
         "approval": null
       }
     ],
-    "url": "http://__PATH__  }
+    "url": "__URL__"
+  }
 }
 `;
 
@@ -612,7 +1290,8 @@ stdout--------------------------------------------:
         "approval": null
       }
     ],
-    "url": "http://__PATH__  }
+    "url": "__URL__"
+  }
 }
 `;
 
@@ -626,7 +1305,8 @@ stdout--------------------------------------------:
   "data": {
     "__typename": "SchemaPublishSuccess",
     "changes": [],
-    "url": "http://__PATH__  }
+    "url": "__URL__"
+  }
 }
 `;
 
@@ -639,11 +1319,10 @@ __NONE__
 stdout--------------------------------------------:
 {
   "ok": false,
-  "exitCode": 1,
+  "exitCode": 2,
   "code": "unexpected",
   "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
   "reference": null,
-  "suggestions": [],
   "data": {
     "__typename": "CLIError"
   }
@@ -661,7 +1340,8 @@ stdout--------------------------------------------:
     "__typename": "SchemaCheckSuccess",
     "warnings": [],
     "changes": [],
-    "url": "http://__PATH__  }
+    "url": "__URL__"
+  }
 }
 `;
 
@@ -679,7 +1359,8 @@ stdout--------------------------------------------:
     "__typename": "SchemaCheckError",
     "warnings": [],
     "changes": [],
-    "url": "http://__PATH__  }
+    "url": "__URL__"
+  }
 }
 `;
 
@@ -800,10 +1481,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'STITCHING' | model: 'legacy' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-1
+2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -844,6 +1525,245 @@ stderr--------------------------------------------:
  ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can publish a schema with breaking, warning and safe changes > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Enum value 'VIEWER' was added to enum 'UserRole'",
+        "criticality": "Dangerous",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'address' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'User.role' changed type from 'UserRole' to 'UserRole!'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (breaking) 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (non-breaking) 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'nickname' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can publish and check a schema with target:registry:read access > schemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can update the service url and show it in comparison query > schemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can update the service url and show it in comparison query > schemaPublish 2`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [
+      {
+        "message": "[test] New service url: 'http://__PATH__ (previously: 'http://__PATH__        "criticality": "Dangerous",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 2,
+  "code": "unexpected",
+  "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
+  "reference": null,
+  "data": {
+    "__typename": "CLIError"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > schema:check should notify user when registry is empty > schemaCheck 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > schema:check should throw on corrupted schema > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 1,
+  "code": "HiveApiRequestError",
+  "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
+  "reference": "__ID__",
+  "suggestions": [],
+  "data": {
+    "__typename": "HiveApiRequestError",
+    "requestId": "__ID__",
+    "errors": [
+      {
+        "message": "Invalid token provided"
+      }
+    ]
+  }
+}
 `;
 
 exports[`projectType: 'STITCHING' | model: 'modern' | json: false > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -937,10 +1857,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'STITCHING' | model: 'modern' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-1
+2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -981,4 +1901,237 @@ stderr--------------------------------------------:
  ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can publish a schema with breaking, warning and safe changes > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Enum value 'VIEWER' was added to enum 'UserRole'",
+        "criticality": "Dangerous",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'address' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      },
+      {
+        "message": "Field 'User.role' changed type from 'UserRole' to 'UserRole!'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (breaking) 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'email' was removed from object type 'User'",
+        "criticality": "Breaking",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can publish and check a schema with target:registry:read access > schemaCheck (non-breaking) 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [
+      {
+        "message": "Field 'nickname' was added to object type 'User'",
+        "criticality": "Safe",
+        "isSafeBasedOnUsage": false,
+        "approval": null
+      }
+    ],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can publish and check a schema with target:registry:read access > schemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can update the service url and show it in comparison query > schemaPublish 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can update the service url and show it in comparison query > schemaPublish 2`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaPublishSuccess",
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 2,
+  "code": "unexpected",
+  "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
+  "reference": null,
+  "data": {
+    "__typename": "CLIError"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > schema:check should notify user when registry is empty > schemaCheck 1`] = `
+:::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::
+
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckSuccess",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > schema:check should throw on corrupted schema > schemaCheck 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": true,
+  "message": "Command succeeded.",
+  "data": {
+    "__typename": "SchemaCheckError",
+    "warnings": [],
+    "changes": [],
+    "url": "__URL__"
+  }
+}
+`;
+
+exports[`projectType: 'STITCHING' | model: 'modern' | json: true > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
+:::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
+exitCode------------------------------------------:
+1
+stderr--------------------------------------------:
+__NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 1,
+  "code": "HiveApiRequestError",
+  "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
+  "reference": "__ID__",
+  "suggestions": [],
+  "data": {
+    "__typename": "HiveApiRequestError",
+    "requestId": "__ID__",
+    "errors": [
+      {
+        "message": "Invalid token provided"
+      }
+    ]
+  }
+}
 `;

@@ -83,6 +83,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     expect: expectedStatus,
     legacy_force,
     legacy_acceptBreakingChanges,
+    json,
   }: {
     sdl: string;
     commit?: string;
@@ -92,6 +93,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     legacy_force?: boolean;
     legacy_acceptBreakingChanges?: boolean;
     expect: 'latest' | 'latest-composable' | 'ignored' | 'rejected';
+    json?: boolean;
   }): Promise<string> {
     const publishName = ` #${++publishCount}`;
     const commit = randomUUID();
@@ -108,6 +110,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
       ...(metadata ? ['--metadata', await generateTmpFile(JSON.stringify(metadata), 'json')] : []),
       ...(legacy_force ? ['--force'] : []),
       ...(legacy_acceptBreakingChanges ? ['--experimental_acceptBreakingChanges'] : []),
+      ...(json ? ['--json'] : []),
       await generateTmpFile(sdl, 'graphql'),
     ]);
 
@@ -181,10 +184,10 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     expect: expectedStatus,
     json,
   }: {
-    json?: boolean;
     sdl: string;
     serviceName?: string;
     expect: 'approved' | 'rejected';
+    json?: boolean;
   }): Promise<string> {
     const cmd = schemaCheck([
       '--registry.accessToken',
