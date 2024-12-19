@@ -212,10 +212,20 @@ export const gatewayConfig = defineConfig({
   supergraph: {
     /* Supergraph Configuration */
   },
-  // Poll the schema registry every 10 seconds
-  pollingInterval: 10_000
+  // By default it polls the schema registry every 10 seconds
+  polling: '10s'
 })
 ```
+
+<Callout>
+If you use a source like Hive CDN or a custom URL as a source for the supergraph schema,
+CLI will automatically poll the source for changes and update the schema accordingly with 10 seconds interval.
+If you want to change this behavior by setting the `--polling=10s` flag or `polling` in the configuration file.
+
+[Learn more about the configuration file](/docs/api-reference/gateway-config)
+[Learn more about the CLI flags](/docs/api-reference/gateway-cli)
+
+</Callout>
 
 ## Proxy
 
