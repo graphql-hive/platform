@@ -318,7 +318,7 @@ export interface Token {
   project: string;
   organization: string;
   date: string;
-  lastUsedAt: string | null;
+  lastUsedAt: string;
   scopes: readonly string[];
 }
 

@@ -18,8 +18,9 @@ import {
 } from '@hive/service-common';
 import * as Sentry from '@sentry/node';
 import { Context, tokensApiRouter } from './api';
+import { useCache } from './cache';
 import { env } from './environment';
-import { createStorage } from './multi-tier-storage';
+import { createStorage } from './storage';
 
 export async function main() {
   let tracing: TracingInstance | undefined;
@@ -82,11 +83,10 @@ export async function main() {
     tls: env.redis.tlsEnabled ? {} : undefined,
   });
 
-  const storage = await createStorage(
-    env.postgres,
+  const { start, stop, readiness, getStorage } = useCache(
+    createStorage(env.postgres, tracing ? [tracing.instrumentSlonik()] : []),
     redis,
     server.log,
-    tracing ? [tracing.instrumentSlonik()] : [],
   );
 
   const stopHeartbeats = env.heartbeat
@@ -95,14 +95,14 @@ export async function main() {
         endpoint: env.heartbeat.endpoint,
         intervalInMS: 20_000,
         onError: e => server.log.error(e, `Heartbeat failed with error`),
-        isReady: storage.isReady,
+        isReady: readiness,
       })
     : startHeartbeats({ enabled: false });
 
   async function shutdown() {
     stopHeartbeats();
     await server.close();
-    await storage.close();
+    await stop();
   }
 
   try {
@@ -146,7 +146,7 @@ export async function main() {
         return {
           req,
           errorHandler,
-          storage,
+          getStorage,
           tokenReadFailuresCache,
         };
       },
@@ -164,7 +164,7 @@ export async function main() {
       method: ['GET', 'HEAD'],
       url: '/_readiness',
       async handler(_, res) {
-        const isReady = await storage.isReady();
+        const isReady = await readiness();
         reportReadiness(isReady);
         void res.status(isReady ? 200 : 400).send();
       },
@@ -178,6 +178,8 @@ export async function main() {
       port: env.http.port,
       host: '::',
     });
+
+    await start();
   } catch (error) {
     server.log.fatal(error);
     Sentry.captureException(error, {
