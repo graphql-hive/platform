@@ -333,10 +333,12 @@ deployCloudFlareSecurityTransform({
     // Staging
     'staging.graphql-hive.com',
     'app.staging.graphql-hive.com',
+    'lab-worker.staging.graphql-hive.com',
     'cdn.staging.graphql-hive.com',
     // Dev
     'dev.graphql-hive.com',
     'app.dev.graphql-hive.com',
+    'lab-worker.dev.graphql-hive.com',
     'cdn.dev.graphql-hive.com',
   ],
 });
