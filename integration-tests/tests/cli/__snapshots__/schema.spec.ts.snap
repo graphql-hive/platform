@@ -1,0 +1,181 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`'FEDERATION' ('legacy') > can publish a schema with breaking, warning and safe changes 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'FEDERATION' ('legacy') > can publish a schema with breaking, warning and safe changes 2`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 4 changes
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   Safe changes:
+   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
+   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
+   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'FEDERATION' ('modern') > can publish a schema with breaking, warning and safe changes 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'FEDERATION' ('modern') > can publish a schema with breaking, warning and safe changes 2`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 4 changes
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   Safe changes:
+   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
+   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
+   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('legacy') > can publish a schema with breaking, warning and safe changes 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'SINGLE' ('legacy') > can publish a schema with breaking, warning and safe changes 2`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 4 changes
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   Safe changes:
+   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
+   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
+   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('modern') > can publish a schema with breaking, warning and safe changes 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'SINGLE' ('modern') > can publish a schema with breaking, warning and safe changes 2`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 4 changes
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   Safe changes:
+   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
+   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
+   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('legacy') > can publish a schema with breaking, warning and safe changes 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'STITCHING' ('legacy') > can publish a schema with breaking, warning and safe changes 2`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 4 changes
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   Safe changes:
+   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
+   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
+   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('modern') > can publish a schema with breaking, warning and safe changes 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'STITCHING' ('modern') > can publish a schema with breaking, warning and safe changes 2`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 4 changes
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   Safe changes:
+   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
+   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
+   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+
+View full report:
+http://__PATH__
+`;

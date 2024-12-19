@@ -2,12 +2,25 @@ import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { execaCommand } from '@esm2cjs/execa';
+import { execaCommand, ExecaError, ExecaReturnValue } from '@esm2cjs/execa';
 import { fetchLatestSchema, fetchLatestValidSchema } from './flow';
 import { getServiceHost } from './utils';
 
 const binPath = resolve(__dirname, '../../packages/libraries/cli/bin/run');
 const cliDir = resolve(__dirname, '../../packages/libraries/cli');
+
+export class ExecError extends Error {
+  public readonly stdout: string;
+  public readonly stderr: string;
+  public readonly exitCode: number;
+
+  constructor(result: ExecaReturnValue<string>) {
+    super(result.stderr);
+    this.stdout = result.stdout;
+    this.stderr = result.stderr;
+    this.exitCode = result.exitCode;
+  }
+}
 
 async function generateTmpFile(content: string, extension: string) {
   const dir = tmpdir();
@@ -29,7 +42,7 @@ async function exec(cmd: string) {
   });
 
   if (outout.failed) {
-    throw new Error(outout.stderr);
+    throw new ExecError(outout);
   }
 
   return outout.stdout;
