@@ -1,22 +1,6 @@
 /* eslint-disable no-process-env */
-import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { tmpFile } from '../../testkit/fs';
 import { test } from '../../testkit/test';
-
-function tmpFile(extension: string) {
-  const dir = tmpdir();
-  const fileName = randomUUID();
-  const filepath = join(dir, `${fileName}.${extension}`);
-
-  return {
-    filepath,
-    read() {
-      return readFile(filepath, 'utf-8');
-    },
-  };
-}
 
 describe('dev', () => {
   test('composes only the locally provided service', async ({ cliFederation: cli }) => {
