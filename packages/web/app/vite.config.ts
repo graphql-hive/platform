@@ -1,4 +1,5 @@
 import type { UserConfig } from 'vite';
+import { resolve } from 'node:path';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import react from '@vitejs/plugin-react';
 
@@ -11,6 +12,14 @@ export default {
     rollupOptions: {
       output: {
         file: 'preflight-script-worker.js',
+      },
+    },
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        index: resolve(__dirname, 'index.html'),
+        ['preflight-worker-embed']: resolve(__dirname, 'preflight-worker-embed.html'),
       },
     },
   },

@@ -16,6 +16,9 @@ patchedDependencies:
   '@apollo/federation@0.38.1':
     hash: rjgakkkphrejw6qrtph4ar24zq
     path: patches/@apollo__federation@0.38.1.patch
+  '@fastify/vite':
+    hash: wz23vdqq6qtsz64wb433afnvou
+    path: patches/@fastify__vite.patch
   '@graphiql/react':
     hash: bru5she67j343rpipomank3vn4
     path: patches/@graphiql__react.patch
@@ -1664,8 +1667,8 @@ importers:
         specifier: 7.0.4
         version: 7.0.4
       '@fastify/vite':
-        specifier: 6.0.7
-        version: 6.0.7(@types/node@22.9.3)(less@4.2.0)(lightningcss@1.28.1)(terser@5.36.0)
+        specifier: 6.0.6
+        version: 6.0.6(patch_hash=wz23vdqq6qtsz64wb433afnvou)(@types/node@22.9.3)(less@4.2.0)(lightningcss@1.28.1)(terser@5.36.0)
       '@graphiql/plugin-explorer':
         specifier: 4.0.0-alpha.2
         version: 4.0.0-alpha.2(@graphiql/react@1.0.0-alpha.4(patch_hash=bru5she67j343rpipomank3vn4)(@codemirror/language@6.10.2)(@types/node@22.9.3)(@types/react-dom@18.3.1)(@types/react@18.3.12)(graphql-ws@5.16.0(graphql@16.9.0))(graphql@16.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(graphql@16.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3883,9 +3886,8 @@ packages:
   '@fastify/static@7.0.4':
     resolution: {integrity: sha512-p2uKtaf8BMOZWLs6wu+Ihg7bWNBdjNgCwDza4MJtTqg+5ovKmcbgbR9Xs5/smZ1YISfzKOCNYmZV8LaCj+eJ1Q==}
 
-  '@fastify/vite@6.0.7':
-    resolution: {integrity: sha512-+dRo9KUkvmbqdmBskG02SwigWl06Mwkw8SBDK1zTNH6vd4DyXbRvI7RmJEmBkLouSU81KTzy1+OzwHSffqSD6w==}
-    bundledDependencies: []
+  '@fastify/vite@6.0.6':
+    resolution: {integrity: sha512-FsWJC92murm5tjeTezTTvMLyZido/ZWy0wYWpVkh/bDe1gAUAabYLB7Vp8hokXGsRE/mOpqYVsRDAKENY2qPUQ==}
 
   '@floating-ui/core@1.2.6':
     resolution: {integrity: sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==}
@@ -16319,8 +16321,8 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16427,11 +16429,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso-oidc@3.596.0':
+  '@aws-sdk/client-sso-oidc@3.596.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16470,6 +16472,7 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
 
   '@aws-sdk/client-sso-oidc@3.693.0(@aws-sdk/client-sts@3.693.0)':
@@ -16603,11 +16606,11 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sts@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)':
+  '@aws-sdk/client-sts@3.596.0':
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/core': 3.592.0
       '@aws-sdk/credential-provider-node': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/middleware-host-header': 3.577.0
@@ -16646,7 +16649,6 @@ snapshots:
       '@smithy/util-utf8': 3.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
-      - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
   '@aws-sdk/client-sts@3.693.0':
@@ -16760,7 +16762,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-ini@3.596.0(@aws-sdk/client-sso-oidc@3.596.0)(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/credential-provider-env': 3.587.0
       '@aws-sdk/credential-provider-http': 3.596.0
       '@aws-sdk/credential-provider-process': 3.587.0
@@ -16879,7 +16881,7 @@ snapshots:
 
   '@aws-sdk/credential-provider-web-identity@3.587.0(@aws-sdk/client-sts@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sts': 3.596.0(@aws-sdk/client-sso-oidc@3.596.0)
+      '@aws-sdk/client-sts': 3.596.0
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/types': 3.6.0
@@ -17054,7 +17056,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.587.0(@aws-sdk/client-sso-oidc@3.596.0)':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.596.0
+      '@aws-sdk/client-sso-oidc': 3.596.0(@aws-sdk/client-sts@3.596.0)
       '@aws-sdk/types': 3.577.0
       '@smithy/property-provider': 3.1.8
       '@smithy/shared-ini-file-loader': 3.1.9
@@ -18413,7 +18415,7 @@ snapshots:
       fastq: 1.17.1
       glob: 10.3.12
 
-  '@fastify/vite@6.0.7(@types/node@22.9.3)(less@4.2.0)(lightningcss@1.28.1)(terser@5.36.0)':
+  '@fastify/vite@6.0.6(patch_hash=wz23vdqq6qtsz64wb433afnvou)(@types/node@22.9.3)(less@4.2.0)(lightningcss@1.28.1)(terser@5.36.0)':
     dependencies:
       '@fastify/middie': 8.3.1
       '@fastify/static': 6.12.0
@@ -23511,8 +23513,8 @@ snapshots:
       '@typescript-eslint/parser': 7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3)
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
       eslint-config-prettier: 9.1.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       eslint-plugin-jsonc: 2.11.1(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       eslint-plugin-mdx: 3.0.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
@@ -26229,13 +26231,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
     dependencies:
       debug: 4.3.7(supports-color@8.1.1)
       enhanced-resolve: 5.17.1
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.13.1
@@ -26266,14 +26268,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
+  eslint-module-utils@2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
     dependencies:
       debug: 3.2.7(supports-color@8.1.1)
     optionalDependencies:
       '@typescript-eslint/parser': 7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3)
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
     transitivePeerDependencies:
       - supports-color
 
@@ -26289,7 +26291,7 @@ snapshots:
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
       eslint-compat-utils: 0.1.2(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)):
     dependencies:
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
@@ -26299,7 +26301,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva)))(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.1(patch_hash=fjbpfrtrjd6idngyeqxnwopfva))
       hasown: 2.0.0
       is-core-module: 2.13.1
       is-glob: 4.0.3
