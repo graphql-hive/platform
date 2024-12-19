@@ -225,16 +225,23 @@ export function usePreflightScript(args: {
           return;
         }
 
-        if (ev.data.type === 'log') {
-          const log = ev.data.log;
-          setLogs(logs => [...logs, log]);
+        if (ev.data.type === 'error') {
+          const error = ev.data.error;
+          setLogs(logs => [
+            ...logs,
+            error,
+            '> Preflight script failed',
+            {
+              type: 'separator' as const,
+            },
+          ]);
+          isFinishedD.resolve();
           return;
         }
 
-        if (ev.data.type === 'error') {
-          const error = ev.data.error;
-          setLogs(logs => [...logs, error]);
-          isFinishedD.resolve();
+        if (ev.data.type === 'log') {
+          const log = ev.data.log;
+          setLogs(logs => [...logs, log]);
           return;
         }
       }
