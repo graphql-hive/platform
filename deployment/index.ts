@@ -333,12 +333,10 @@ deployCloudFlareSecurityTransform({
     // Staging
     'staging.graphql-hive.com',
     'app.staging.graphql-hive.com',
-    'lab-worker.staging.graphql-hive.com',
     'cdn.staging.graphql-hive.com',
     // Dev
     'dev.graphql-hive.com',
     'app.dev.graphql-hive.com',
-    'lab-worker.dev.graphql-hive.com',
     'cdn.dev.graphql-hive.com',
   ],
 });
@@ -351,4 +349,4 @@ export const schemaApiServiceId = schema.service.id;
 export const webhooksApiServiceId = webhooks.service.id;
 
 export const appId = app.deployment.id;
-export const publicIp = proxy!.status.loadBalancer.ingress[0].ip;
+export const publicIp = proxy.get()!.status.loadBalancer.ingress[0].ip;
