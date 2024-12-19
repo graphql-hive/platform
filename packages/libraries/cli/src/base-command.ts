@@ -104,8 +104,12 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
      * allows us to convert thrown values into JSON.
      * We throw a CLIFailure which will be specially handled it.
      */
-    // @ts-expect-error fixme
-    throw new CLIErrorWithData({ data: result, message: result.message ?? 'Unknown error.' });
+    throw new CLIErrorWithData({
+      // @ts-expect-error fixme
+      data: result.data,
+      // @ts-expect-error fixme
+      message: result.data.message ?? 'Unknown error.',
+    });
   }
 
   /**
@@ -408,12 +412,6 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * @see https://oclif.io/docs/error_handling/#error-handling-in-the-catch-method
    */
   async catch(error: CommandError): Promise<void> {
-    // prettier-ignore
-    const descriptionFragmentForAction = (this.constructor as typeof BaseCommand).descriptionFragmentForAction;
-    if (descriptionFragmentForAction) {
-      this.logFailure(`Failed to ${descriptionFragmentForAction}`);
-    }
-
     if (error instanceof ClientError) {
       await super.catch(clientErrorToCLIFailure(error));
     } else {

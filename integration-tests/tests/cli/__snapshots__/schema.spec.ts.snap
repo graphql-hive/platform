@@ -93,10 +93,10 @@ exports[`projectType: 'FEDERATION' | model: 'legacy' | json: false > publishing 
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
-✖ Failed to publish schema
+✖ The SDL is not valid at line 1, column 1:
+ Syntax Error: Unexpected Name "iliketurtles".
 `;
 
 exports[`projectType: 'FEDERATION' | model: 'legacy' | json: false > schema:check should notify user when registry is empty > schemaCheck 1`] = `
@@ -133,7 +133,7 @@ stderr--------------------------------------------:
  ›   Error: Request to Hive API failed. Caused by error(s):
  ›   Invalid token provided
 stdout--------------------------------------------:
-✖ Failed to publish schema
+__NONE__
 `;
 
 exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -298,9 +298,16 @@ stdout--------------------------------------------:
 {
   "type": "failure",
   "reference": null,
+  "suggestions": [],
   "data": {
-    "type": "CLIError",
-    "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\"."
+    "type": "CLIInvalidGraphQLSchema",
+    "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
+    "locations": [
+      {
+        "line": 1,
+        "column": 1
+      }
+    ]
   }
 }
 `;
@@ -455,10 +462,10 @@ exports[`projectType: 'FEDERATION' | model: 'modern' | json: false > publishing 
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
-✖ Failed to publish schema
+✖ The SDL is not valid at line 1, column 1:
+ Syntax Error: Unexpected Name "iliketurtles".
 `;
 
 exports[`projectType: 'FEDERATION' | model: 'modern' | json: false > schema:check should notify user when registry is empty > schemaCheck 1`] = `
@@ -493,7 +500,7 @@ stderr--------------------------------------------:
  ›   Error: Request to Hive API failed. Caused by error(s):
  ›   Invalid token provided
 stdout--------------------------------------------:
-✖ Failed to publish schema
+__NONE__
 `;
 
 exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -652,9 +659,16 @@ stdout--------------------------------------------:
 {
   "type": "failure",
   "reference": null,
+  "suggestions": [],
   "data": {
-    "type": "CLIError",
-    "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\"."
+    "type": "CLIInvalidGraphQLSchema",
+    "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
+    "locations": [
+      {
+        "line": 1,
+        "column": 1
+      }
+    ]
   }
 }
 `;
@@ -794,10 +808,10 @@ exports[`projectType: 'SINGLE' | model: 'legacy' | json: false > publishing inva
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
-✖ Failed to publish schema
+✖ The SDL is not valid at line 1, column 1:
+ Syntax Error: Unexpected Name "iliketurtles".
 `;
 
 exports[`projectType: 'SINGLE' | model: 'legacy' | json: false > schema:check should notify user when registry is empty > schemaCheck 1`] = `
@@ -832,7 +846,7 @@ stderr--------------------------------------------:
  ›   Error: Request to Hive API failed. Caused by error(s):
  ›   Invalid token provided
 stdout--------------------------------------------:
-✖ Failed to publish schema
+__NONE__
 `;
 
 exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -963,9 +977,16 @@ stdout--------------------------------------------:
 {
   "type": "failure",
   "reference": null,
+  "suggestions": [],
   "data": {
-    "type": "CLIError",
-    "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\"."
+    "type": "CLIInvalidGraphQLSchema",
+    "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
+    "locations": [
+      {
+        "line": 1,
+        "column": 1
+      }
+    ]
   }
 }
 `;
@@ -1105,10 +1126,10 @@ exports[`projectType: 'SINGLE' | model: 'modern' | json: false > publishing inva
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
-✖ Failed to publish schema
+✖ The SDL is not valid at line 1, column 1:
+ Syntax Error: Unexpected Name "iliketurtles".
 `;
 
 exports[`projectType: 'SINGLE' | model: 'modern' | json: false > schema:check should notify user when registry is empty > schemaCheck 1`] = `
@@ -1143,7 +1164,7 @@ stderr--------------------------------------------:
  ›   Error: Request to Hive API failed. Caused by error(s):
  ›   Invalid token provided
 stdout--------------------------------------------:
-✖ Failed to publish schema
+__NONE__
 `;
 
 exports[`projectType: 'SINGLE' | model: 'modern' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -1274,9 +1295,16 @@ stdout--------------------------------------------:
 {
   "type": "failure",
   "reference": null,
+  "suggestions": [],
   "data": {
-    "type": "CLIError",
-    "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\"."
+    "type": "CLIInvalidGraphQLSchema",
+    "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
+    "locations": [
+      {
+        "line": 1,
+        "column": 1
+      }
+    ]
   }
 }
 `;
@@ -1431,10 +1459,10 @@ exports[`projectType: 'STITCHING' | model: 'legacy' | json: false > publishing i
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
-✖ Failed to publish schema
+✖ The SDL is not valid at line 1, column 1:
+ Syntax Error: Unexpected Name "iliketurtles".
 `;
 
 exports[`projectType: 'STITCHING' | model: 'legacy' | json: false > schema:check should notify user when registry is empty > schemaCheck 1`] = `
@@ -1471,7 +1499,7 @@ stderr--------------------------------------------:
  ›   Error: Request to Hive API failed. Caused by error(s):
  ›   Invalid token provided
 stdout--------------------------------------------:
-✖ Failed to publish schema
+__NONE__
 `;
 
 exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -1636,9 +1664,16 @@ stdout--------------------------------------------:
 {
   "type": "failure",
   "reference": null,
+  "suggestions": [],
   "data": {
-    "type": "CLIError",
-    "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\"."
+    "type": "CLIInvalidGraphQLSchema",
+    "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
+    "locations": [
+      {
+        "line": 1,
+        "column": 1
+      }
+    ]
   }
 }
 `;
@@ -1793,10 +1828,10 @@ exports[`projectType: 'STITCHING' | model: 'modern' | json: false > publishing i
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
-✖ Failed to publish schema
+✖ The SDL is not valid at line 1, column 1:
+ Syntax Error: Unexpected Name "iliketurtles".
 `;
 
 exports[`projectType: 'STITCHING' | model: 'modern' | json: false > schema:check should notify user when registry is empty > schemaCheck 1`] = `
@@ -1833,7 +1868,7 @@ stderr--------------------------------------------:
  ›   Error: Request to Hive API failed. Caused by error(s):
  ›   Invalid token provided
 stdout--------------------------------------------:
-✖ Failed to publish schema
+__NONE__
 `;
 
 exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -1992,9 +2027,16 @@ stdout--------------------------------------------:
 {
   "type": "failure",
   "reference": null,
+  "suggestions": [],
   "data": {
-    "type": "CLIError",
-    "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\"."
+    "type": "CLIInvalidGraphQLSchema",
+    "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
+    "locations": [
+      {
+        "line": 1,
+        "column": 1
+      }
+    ]
   }
 }
 `;

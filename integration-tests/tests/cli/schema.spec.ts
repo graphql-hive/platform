@@ -2,7 +2,6 @@
 import { createHash } from 'node:crypto';
 import { ProjectType } from 'testkit/gql/graphql';
 import { createCLI, schemaCheck, schemaPublish } from '../../testkit/cli';
-import { initSeed } from '../../testkit/seed';
 import { test } from '../../testkit/test';
 import { SnapshotSerializers } from './__snapshot_serializers__/__';
 
@@ -112,7 +111,6 @@ describe.each`
     },
   );
 
-  // todo this case failing on ci, snapshots have stacks in ci.
   test.concurrent(
     'publishing invalid schema SDL provides meaningful feedback for the user.',
     async ({ expect, org }) => {
@@ -173,25 +171,26 @@ describe.each`
     );
   });
 
-  test.concurrent('schema:check should notify user when registry is empty', async ({ expect }) => {
-    const { createOrg } = await initSeed().createOwner();
-    const { inviteAndJoinMember, createProject } = await createOrg();
-    await inviteAndJoinMember();
-    const { createTargetAccessToken } = await createProject(projectType, {
-      useLegacyRegistryModels: model === 'legacy',
-    });
-    const { secret } = await createTargetAccessToken({});
+  test.concurrent(
+    'schema:check should notify user when registry is empty',
+    async ({ expect, org }) => {
+      await org.inviteAndJoinMember();
+      const { createTargetAccessToken } = await org.createProject(projectType, {
+        useLegacyRegistryModels: model === 'legacy',
+      });
+      const { secret } = await createTargetAccessToken({});
 
-    await expect(
-      schemaCheck([
-        ...(json ? ['--json'] : []),
-        '--registry.accessToken',
-        secret,
-        ...serviceNameArgs,
-        'fixtures/init-schema.graphql',
-      ]),
-    ).resolves.toMatchSnapshot('schemaCheck');
-  });
+      await expect(
+        schemaCheck([
+          ...(json ? ['--json'] : []),
+          '--registry.accessToken',
+          secret,
+          ...serviceNameArgs,
+          'fixtures/init-schema.graphql',
+        ]),
+      ).resolves.toMatchSnapshot('schemaCheck');
+    },
+  );
 
   test.concurrent('schema:check should throw on corrupted schema', async ({ expect, org }) => {
     await org.inviteAndJoinMember();

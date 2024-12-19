@@ -72,7 +72,6 @@ const schemaPublishMutation = graphql(/* GraphQL */ `
 
 export default class SchemaPublish extends Command<typeof SchemaPublish> {
   static description = 'publishes schema';
-  static descriptionFragmentForAction = 'publish schema';
   static parameters = {
     positional: tb.Tuple([tb.String()]),
     named: tb.Object({
@@ -177,6 +176,15 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }),
     SchemaOutput.failure('GitHubSchemaPublishError', {
       message: tb.String(),
+    }),
+    SchemaOutput.failure('CLIInvalidGraphQLSchema', {
+      message: tb.String(),
+      locations: tb.Array(
+        tb.Object({
+          line: tb.Readonly(tb.Number()),
+          column: tb.Readonly(tb.Number()),
+        }),
+      ),
     }),
   );
 
@@ -297,11 +305,17 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       sdl = minifySchema(transformedSDL);
     } catch (err) {
       if (err instanceof GraphQLError) {
-        const location = err.locations?.[0];
-        const locationString = location
-          ? ` at line ${location.line}, column ${location.column}`
-          : '';
-        throw new Errors.CLIError(`The SDL is not valid${locationString}:\n ${err.message}`);
+        const locations = err.locations?.map(location => ({ ...location })) ?? [];
+        const locationString =
+          locations.length > 0
+            ? ` at line ${locations[0].line}, column ${locations[0].column}`
+            : '';
+        this.logFailure(`The SDL is not valid${locationString}:\n ${err.message}`);
+        return this.failure({
+          type: 'CLIInvalidGraphQLSchema',
+          message: err.message,
+          locations,
+        });
       }
       throw err;
     }
