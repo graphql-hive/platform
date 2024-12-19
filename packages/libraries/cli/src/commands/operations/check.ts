@@ -80,13 +80,13 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: tb.Literal('CLIOperationsCheckNoneFound'),
+      type: tb.Literal('CLIOperationsCheckNoneFound'),
     }),
     SchemaOutput.failure({
-      __typename: tb.Literal('CLIOperationsCheckNoSchemaFound'),
+      type: tb.Literal('CLIOperationsCheckNoSchemaFound'),
     }),
     SchemaOutput.success({
-      __typename: tb.Literal('CLIOperationsCheckResult'),
+      type: tb.Literal('CLIOperationsCheckResult'),
       countTotal: tb.Integer({ minimum: 0 }),
       countInvalid: tb.Integer({ minimum: 0 }),
       countValid: tb.Integer({ minimum: 0 }),
@@ -150,9 +150,8 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       const message = 'No operations found';
       this.logInfo(message);
       return this.successEnvelope({
-        message,
         data: {
-          __typename: 'CLIOperationsCheckNoneFound',
+          type: 'CLIOperationsCheckNoneFound',
         },
       });
     }
@@ -166,11 +165,11 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     const sdl = result?.sdl;
 
     if (!sdl) {
+      this.logFailure('Could not find a published schema.');
       return this.failureEnvelope({
-        message: 'Could not find a published schema.',
         suggestions: ['Publish a valid schema first.'],
         data: {
-          __typename: 'CLIOperationsCheckNoSchemaFound',
+          type: 'CLIOperationsCheckNoSchemaFound',
         },
       });
     }
@@ -224,7 +223,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     }
 
     return this.success({
-      __typename: 'CLIOperationsCheckResult',
+      type: 'CLIOperationsCheckResult',
       countTotal: operations.length,
       countInvalid: operationsWithErrors.length,
       countValid: operations.length - operationsWithErrors.length,

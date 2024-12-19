@@ -146,23 +146,23 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: tb.Literal('SchemaCheckSuccess'),
+      type: tb.Literal('SchemaCheckSuccess'),
       changes: tb.Array(SchemaOutput.SchemaChange),
       warnings: tb.Array(SchemaOutput.SchemaWarning),
       url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      __typename: tb.Literal('SchemaCheckError'),
+      type: tb.Literal('SchemaCheckError'),
       changes: tb.Array(SchemaOutput.SchemaChange),
       warnings: tb.Array(SchemaOutput.SchemaWarning),
       url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      __typename: tb.Literal('GitHubSchemaCheckSuccess'),
+      type: tb.Literal('GitHubSchemaCheckSuccess'),
       message: tb.String(),
     }),
     SchemaOutput.failure({
-      __typename: tb.Literal('GitHubSchemaCheckError'),
+      type: tb.Literal('GitHubSchemaCheckError'),
       message: tb.String(),
     }),
   );
@@ -274,7 +274,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       }
 
       return this.success({
-        __typename: 'SchemaCheckSuccess',
+        type: 'SchemaCheckSuccess',
         //   breakingChanges: false,
         warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
@@ -312,7 +312,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       }
 
       return this.success({
-        __typename: 'SchemaCheckError',
+        type: 'SchemaCheckError',
         warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         url: result.schemaCheck?.webUrl ?? null,
@@ -322,7 +322,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     if (result.__typename === 'GitHubSchemaCheckSuccess') {
       this.logSuccess(result.message);
       return this.success({
-        __typename: 'GitHubSchemaCheckSuccess',
+        type: 'GitHubSchemaCheckSuccess',
         message: result.message,
       });
     }
@@ -330,7 +330,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     if (result.__typename === 'GitHubSchemaCheckError') {
       this.logFailure(result.message);
       return this.failure({
-        __typename: 'GitHubSchemaCheckError',
+        type: 'GitHubSchemaCheckError',
         message: result.message,
       });
     }

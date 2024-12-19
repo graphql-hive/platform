@@ -69,13 +69,16 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.failure({
-      __typename: tb.Literal('CLISchemaFetchMissingSchema'),
+      type: tb.Literal('CLISchemaFetchMissingSchema'),
+      message: tb.String(),
     }),
     SchemaOutput.failure({
-      __typename: tb.Literal('CLISchemaFetchInvalidSchema'),
+      type: tb.Literal('CLISchemaFetchInvalidSchema'),
+      message: tb.String(),
     }),
     SchemaOutput.failure({
-      __typename: tb.Literal('CLISchemaFetchMissingSDLType'),
+      type: tb.Literal('CLISchemaFetchMissingSDLType'),
+      message: tb.String(),
     }),
     SchemaOutput.CLIOutputFile,
     SchemaOutput.CLIOutputStdout,
@@ -124,18 +127,18 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
 
     if (result == null) {
       return this.failureEnvelope({
-        message: `No schema found for action id ${actionId}`,
         data: {
-          __typename: 'CLISchemaFetchMissingSchema',
+          type: 'CLISchemaFetchMissingSchema',
+          message: `No schema found for action id ${actionId}`,
         },
       });
     }
 
     if (result.valid === false) {
       return this.failureEnvelope({
-        message: `Schema is invalid for action id ${actionId}`,
         data: {
-          __typename: 'CLISchemaFetchInvalidSchema',
+          type: 'CLISchemaFetchInvalidSchema',
+          message: `Schema is invalid for action id ${actionId}`,
         },
       });
     }
@@ -144,9 +147,9 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
 
     if (schema == null) {
       return this.failureEnvelope({
-        message: `No ${sdlType} found for action id ${actionId}`,
         data: {
-          __typename: 'CLISchemaFetchMissingSDLType',
+          type: 'CLISchemaFetchMissingSDLType',
+          message: `No ${sdlType} found for action id ${actionId}`,
         },
       });
     }
@@ -165,14 +168,14 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
           this.exit(1);
       }
       return this.success({
-        __typename: 'CLIOutputFile',
+        type: 'CLIOutputFile',
         path: filepath,
       });
     }
 
     this.log(schema);
     return this.success({
-      __typename: 'CLIOutputStdout',
+      type: 'CLIOutputStdout',
       content: schema,
     });
   }

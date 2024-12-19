@@ -25,17 +25,17 @@ export default class AppPublish extends Command<typeof AppPublish> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: tb.Literal('CLISkipAppPublish'),
+      type: tb.Literal('CLISkipAppPublish'),
       name: tb.StringNonEmpty,
       version: tb.StringNonEmpty,
     }),
     SchemaOutput.success({
-      __typename: tb.Literal('ActivateAppDeploymentOk'),
+      type: tb.Literal('ActivateAppDeploymentOk'),
       name: tb.StringNonEmpty,
       version: tb.StringNonEmpty,
     }),
     SchemaOutput.failure({
-      __typename: tb.Literal('ActivateAppDeploymentError'),
+      type: tb.Literal('ActivateAppDeploymentError'),
       message: tb.String(),
     }),
   );
@@ -69,7 +69,7 @@ export default class AppPublish extends Command<typeof AppPublish> {
 
     if (result.error) {
       return this.failure({
-        __typename: 'ActivateAppDeploymentError',
+        type: 'ActivateAppDeploymentError',
         message: result.error.message,
       });
     }
@@ -82,24 +82,20 @@ export default class AppPublish extends Command<typeof AppPublish> {
     const name = `${result.ok.activatedAppDeployment.name}@${result.ok.activatedAppDeployment.version}`;
 
     if (result.ok.isSkipped) {
-      const message = `App deployment "${name}" is already published. Skipping...`;
-      this.warn(message);
+      this.warn(`App deployment "${name}" is already published. Skipping...`);
       return this.successEnvelope({
-        message,
         data: {
-          __typename: 'CLISkipAppPublish',
+          type: 'CLISkipAppPublish',
           name: result.ok.activatedAppDeployment.name,
           version: result.ok.activatedAppDeployment.version,
         },
       });
     }
 
-    const message = `App deployment "${name}" published successfully.`;
-    this.log(message);
+    this.log(`App deployment "${name}" published successfully.`);
     return this.successEnvelope({
-      message,
       data: {
-        __typename: 'ActivateAppDeploymentOk',
+        type: 'ActivateAppDeploymentOk',
         name: result.ok.activatedAppDeployment.name,
         version: result.ok.activatedAppDeployment.version,
       },

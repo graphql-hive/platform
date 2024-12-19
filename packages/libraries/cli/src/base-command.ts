@@ -76,9 +76,10 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       // todo: Display data in non-json output.
       // The default textual output of an OClif error will not display any of the data below. We will want that information in a bug report.
       throw new CLIErrorWithData({
-        message: message,
+        message,
         data: {
-          __typename: 'CLIOutputTypeError',
+          type: 'CLIOutputTypeError',
+          message,
           schema: schema,
           value: resultUnparsed,
           errors: materializedErrors,
@@ -103,7 +104,8 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
      * allows us to convert thrown values into JSON.
      * We throw a CLIFailure which will be specially handled it.
      */
-    throw new CLIErrorWithData(result);
+    // @ts-expect-error fixme
+    throw new CLIErrorWithData({ data: result, message: result.message ?? 'Unknown error.' });
   }
 
   /**
@@ -428,21 +430,20 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     }
     if (value instanceof Errors.CLIError) {
       return this.failureEnvelope({
-        message: value.message,
         suggestions: value.suggestions,
-        exitCode: value.oclif.exit,
         // @ts-expect-error fixme
         data: {
-          __typename: 'CLIError',
+          type: 'CLIError',
+          message: value.message,
         },
       });
     }
     if (value instanceof Error) {
       return this.failureEnvelope({
-        message: value.message,
         // @ts-expect-error fixme
         data: {
-          __typename: 'CLIError',
+          type: 'CLIError',
+          message: value.message,
         },
       });
     }
@@ -496,10 +497,10 @@ const clientErrorToCLIFailure = (error: ClientError): CLIErrorWithData => {
 
   return new CLIErrorWithData({
     message,
-    reference: requestId,
-    code: 'HiveApiRequestError',
+    ref: requestId,
     data: {
-      __typename: 'HiveApiRequestError',
+      type: 'HiveApiRequestError',
+      message,
       requestId,
       errors,
     },

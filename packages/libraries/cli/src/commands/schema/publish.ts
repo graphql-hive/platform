@@ -164,22 +164,22 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: tb.Literal('SchemaPublishSuccess'),
+      type: tb.Literal('SchemaPublishSuccess'),
       changes: tb.Array(SchemaOutput.SchemaChange),
       url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      __typename: tb.Literal('SchemaPublishError'),
+      type: tb.Literal('SchemaPublishError'),
       changes: tb.Array(SchemaOutput.SchemaChange),
       errors: tb.Array(SchemaOutput.SchemaError),
       url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
     SchemaOutput.success({
-      __typename: tb.Literal('GitHubSchemaPublishSuccess'),
+      type: tb.Literal('GitHubSchemaPublishSuccess'),
       message: tb.String(),
     }),
     SchemaOutput.failure({
-      __typename: tb.Literal('GitHubSchemaPublishError'),
+      type: tb.Literal('GitHubSchemaPublishError'),
       message: tb.String(),
     }),
   );
@@ -367,7 +367,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       }
 
       return this.success({
-        __typename: 'SchemaPublishSuccess',
+        type: 'SchemaPublishSuccess',
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         url: result.linkToWebsite ?? null,
       });
@@ -404,7 +404,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       }
 
       return this.success({
-        __typename: 'SchemaPublishError',
+        type: 'SchemaPublishError',
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
         url: result.linkToWebsite ?? null,
@@ -414,7 +414,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     if (result.__typename === 'GitHubSchemaPublishSuccess') {
       this.logSuccess(result.message);
       return this.success({
-        __typename: 'GitHubSchemaPublishSuccess',
+        type: 'GitHubSchemaPublishSuccess',
         message: result.message,
       });
     }
@@ -424,7 +424,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       const message = 'message' in result ? result.message : 'Unknown error';
       this.error(message);
       return this.failure({
-        __typename: 'GitHubSchemaPublishError',
+        type: 'GitHubSchemaPublishError',
         message,
       });
     }

@@ -112,6 +112,7 @@ describe.each`
     },
   );
 
+  // todo this case failing on ci, snapshots have stacks in ci.
   test.concurrent(
     'publishing invalid schema SDL provides meaningful feedback for the user.',
     async ({ expect, org }) => {

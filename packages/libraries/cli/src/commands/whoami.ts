@@ -63,7 +63,7 @@ export default class Whoami extends Command<typeof Whoami> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: tb.Literal('TokenInfo'),
+      type: tb.Literal('TokenInfo'),
       token: tb.Object({
         name: tb.String(),
       }),
@@ -85,7 +85,7 @@ export default class Whoami extends Command<typeof Whoami> {
       }),
     }),
     SchemaOutput.failure({
-      __typename: tb.Literal('TokenNotFoundError'),
+      type: tb.Literal('TokenNotFoundError'),
       message: tb.String(),
     }),
   );
@@ -139,7 +139,7 @@ export default class Whoami extends Command<typeof Whoami> {
       this.log(print());
 
       return this.success({
-        __typename: 'TokenInfo',
+        type: 'TokenInfo',
         token: {
           name: result.token.name,
         },
@@ -163,11 +163,11 @@ export default class Whoami extends Command<typeof Whoami> {
     }
 
     if (result.__typename === 'TokenNotFoundError') {
+      process.exitCode = 0;
       return this.failureEnvelope({
         suggestions: [`How to create a token? https://docs.graphql-hive.com/features/tokens`],
-        exitCode: 0,
         data: {
-          __typename: 'TokenNotFoundError',
+          type: 'TokenNotFoundError',
           message: result.message,
         },
       });

@@ -44,15 +44,15 @@ export default class AppCreate extends Command<typeof AppCreate> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: tb.Literal('CLISkipAppCreate'),
+      type: tb.Literal('CLISkipAppCreate'),
       status: SchemaOutput.AppDeploymentStatus,
     }),
     SchemaOutput.success({
-      __typename: tb.Literal('CreateAppDeploymentOk'),
+      type: tb.Literal('CreateAppDeploymentOk'),
       id: tb.StringNonEmpty,
     }),
     SchemaOutput.failure({
-      __typename: tb.Literal('CreateAppDeploymentError'),
+      type: tb.Literal('CreateAppDeploymentError'),
       message: tb.String(),
     }),
   );
@@ -92,7 +92,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
 
     if (result.error) {
       return this.failure({
-        __typename: 'CreateAppDeploymentError',
+        type: 'CreateAppDeploymentError',
         message: result.error.message,
       });
     }
@@ -103,14 +103,12 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }
 
     if (result.ok.createdAppDeployment.status !== SchemaHive.AppDeploymentStatus.Pending) {
-      const message = `App deployment "${flags['name']}@${flags['version']}" is "${result.ok.createdAppDeployment.status}". Skip uploading documents...`;
-      this.log(message);
-      return this.successEnvelope({
-        message,
-        data: {
-          __typename: 'CLISkipAppCreate',
-          status: result.ok.createdAppDeployment.status,
-        },
+      this.log(
+        `App deployment "${flags['name']}@${flags['version']}" is "${result.ok.createdAppDeployment.status}". Skip uploading documents...`,
+      );
+      return this.success({
+        type: 'CLISkipAppCreate',
+        status: result.ok.createdAppDeployment.status,
       });
     }
 
@@ -166,14 +164,12 @@ export default class AppCreate extends Command<typeof AppCreate> {
 
     await flush(true);
 
-    const message = `App deployment "${flags['name']}@${flags['version']}" (${counter} operations) created.\nActivate it with the "hive app:publish" command.`;
-    this.log(message);
-    return this.successEnvelope({
-      message,
-      data: {
-        __typename: 'CreateAppDeploymentOk',
-        id: result.ok.createdAppDeployment.id,
-      },
+    this.log(
+      `App deployment "${flags['name']}@${flags['version']}" (${counter} operations) created.\nActivate it with the "hive app:publish" command.`,
+    );
+    return this.success({
+      type: 'CreateAppDeploymentOk',
+      id: result.ok.createdAppDeployment.id,
     });
   }
 }

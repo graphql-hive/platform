@@ -96,10 +96,10 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
   };
   static output = SchemaOutput.output(
     SchemaOutput.success({
-      __typename: tb.Literal('SchemaDeleteSuccess'),
+      type: tb.Literal('SchemaDeleteSuccess'),
     }),
     SchemaOutput.failure({
-      __typename: tb.Literal('SchemaDeleteError'),
+      type: tb.Literal('SchemaDeleteError'),
       errors: tb.Array(SchemaOutput.SchemaError),
     }),
   );
@@ -150,9 +150,8 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       const message = `${service} deleted`;
       this.logSuccess(message);
       return this.successEnvelope({
-        message,
         data: {
-          __typename: 'SchemaDeleteSuccess',
+          type: 'SchemaDeleteSuccess',
         },
       });
     }
@@ -162,9 +161,8 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       this.logFailure(message);
       Fragments.SchemaErrorConnection.log.call(this, result.errors);
       return this.failureEnvelope({
-        message,
         data: {
-          __typename: 'SchemaDeleteError',
+          type: 'SchemaDeleteError',
           errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
         },
       });

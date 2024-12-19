@@ -4,7 +4,6 @@ import { OutputBase, OutputBaseT } from './output';
 
 export const SuccessBase = tb.Object({
   type: tb.Literal('success'),
-  message: tb.String(),
 });
 export type SuccessBase = tb.Static<typeof SuccessBase>;
 
@@ -18,13 +17,13 @@ export type SuccessGeneric = tb.Static<typeof SuccessGeneric>;
 
 export const successDefaults: tb.Static<typeof SuccessGeneric> = {
   type: 'success',
-  message: 'Command succeeded.',
   data: {},
 };
 
 export const isSuccess = <$Output extends OutputBase>(
   schema: $Output,
-): schema is Extract<$Output, { type: 'success' }> => schema.type === 'success';
+): schema is Extract<$Output, { type: 'success' }> =>
+  schema.type === SuccessBase.properties.type.const;
 
 export const success = <$DataInit extends tb.TProperties>(data: $DataInit) =>
   tb.Composite([
@@ -39,7 +38,7 @@ export type InferSuccessData<$Schema extends OutputBaseT> =
   Simplify<InferSuccess<$Schema>['data']>;
 
 export type InferSuccessEnvelopeInit<$Schema extends OutputBaseT> = Simplify<
-  OptionalizePropertyUnsafe<Omit<InferSuccess<$Schema>, 'type'>, 'message' | 'data'>
+  OptionalizePropertyUnsafe<Omit<InferSuccess<$Schema>, 'type'>, 'data'>
 >;
 
 export type InferSuccess<$Schema extends OutputBaseT> = Extract<
