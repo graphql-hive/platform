@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { execaCommand } from '@esm2cjs/execa';
 import { HiveCLI } from '@graphql-hive/cli';
+import { Static } from '@sinclair/typebox';
 import { fetchLatestSchema, fetchLatestValidSchema } from './flow';
 import { getServiceHost } from './utils';
 
@@ -237,51 +238,16 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     return cmd;
   }
 
-  async function devCmd(input: {
-    services: Array<{
-      name: string;
-      url: string;
-      sdl: string;
-    }>;
-    remote: boolean;
-    write?: string;
-    useLatestVersion?: boolean;
-  }) {
-    const servicesFlags = await Promise.all(
-      input.services.map(async ({ name, url, sdl }) => {
-        return {
-          service: name,
-          url,
-          schema: await generateTmpFile(sdl, 'graphql'),
-        };
-      }),
-    ).then(argsGroups => {
-      return argsGroups.reduce(
-        (argsAcc, args) => {
-          return {
-            service: [...argsAcc.service, args.service],
-            url: [...argsAcc.url, args.url],
-            schema: [...argsAcc.schema, args.schema],
-          };
-        },
-        { service: [], url: [], schema: [] } as {
-          service: string[];
-          url: string[];
-          schema: string[];
-        },
-      );
-    });
-    const remoteFlags = input.remote
-      ? {
-          remote: true,
-          'registry.accessToken': tokens.readonly,
-          unstable__forceLatest: input.useLatestVersion,
-        }
-      : {};
+  async function devCommand(args: Static<typeof HiveCLI.Commands.Dev.parameters.named>) {
+    const schema = await Promise.all(
+      args.schema?.map(async schema => generateTmpFile(schema, 'graphql')) ?? [],
+    );
+    const accessToken = args.remote ? tokens.readonly : undefined;
+
     return hiveCLI.dev({
-      write: input.write,
-      ...remoteFlags,
-      ...servicesFlags,
+      ...args,
+      'registry.accessToken': accessToken,
+      schema,
     });
   }
 
@@ -289,6 +255,6 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     publish,
     check,
     delete: deleteCommand,
-    dev: devCmd,
+    dev: devCommand,
   };
 }

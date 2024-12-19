@@ -1,8 +1,8 @@
 import BaseCommand from '../base-command';
 import { tb } from '../helpers/typebox/__';
 
-export type Infer<$Commands extends CommandRegistry> = {
-  [_ in keyof $Commands]: InferFunction<$Commands[_]>;
+export type Infer<$Commands extends CommandIndexGeneric> = {
+  [K in keyof $Commands as K extends string ? Uncapitalize<K> : K]: InferFunction<$Commands[K]>;
 };
 
 export type InferFunction<$Command extends typeof BaseCommand<any>> = <
@@ -58,7 +58,7 @@ export const renderSubcommandExecution = (
   return execArgs;
 };
 
-export type CommandRegistry = Record<string, typeof BaseCommand<any>>;
+export type CommandIndexGeneric = Record<string, typeof BaseCommand<any>>;
 
 export interface Args {
   [name: string]: unknown;

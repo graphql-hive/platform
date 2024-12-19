@@ -36,3 +36,7 @@ export const toSnakeCase = (str: string): string => {
       .toLowerCase()
   );
 };
+
+export const uncapitalize = <$String extends string>(str: $String): Uncapitalize<$String> => {
+  return (str.charAt(0).toLowerCase() + str.slice(1)) as Uncapitalize<$String>;
+};

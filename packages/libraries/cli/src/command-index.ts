@@ -19,10 +19,10 @@ import Whoami from './commands/whoami';
 // todo raise issue with respective ESLint lib author about type imports used in JSDoc being marked as "unused"
 // eslint-disable-next-line
 import type { Infer } from './library/infer';
-import { CommandRegistry } from './library/infer';
+import { CommandIndexGeneric } from './library/infer';
 
-export const commandRegistry = {
-  dev: Dev,
+export const commandIndex = {
+  Dev,
   whoami: Whoami,
   introspect: Introspect,
   // app:
@@ -37,4 +37,6 @@ export const commandRegistry = {
   artifactFetch: ArtifactsFetch,
   // operations:
   operationsCheck: OperationsCheck,
-} satisfies CommandRegistry;
+} satisfies CommandIndexGeneric;
+
+export type CommandIndex = typeof commandIndex;

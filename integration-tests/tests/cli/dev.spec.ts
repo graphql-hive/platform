@@ -12,19 +12,15 @@ describe('dev', () => {
     });
 
     const supergraph = tmpFile('graphql');
-    const cmd = cli.dev({
+    const running = cli.dev({
       remote: false,
-      services: [
-        {
-          name: 'bar',
-          url: 'http://localhost/bar',
-          sdl: 'type Query { bar: String }',
-        },
-      ],
+      service: ['bar'],
+      url: ['http://localhost/bar'],
+      schema: ['type Query { bar: String }'],
       write: supergraph.filepath,
     });
 
-    await expect(cmd).resolves.toMatch(supergraph.filepath);
+    await expect(running).resolves.toMatch(supergraph.filepath);
     await expect(supergraph.read()).resolves.toMatch('http://localhost/bar');
     await expect(supergraph.read()).resolves.not.toMatch('http://localhost/foo');
   });
@@ -32,33 +28,25 @@ describe('dev', () => {
 
 describe('dev --remote', () => {
   test('not available for SINGLE project', async ({ cliSingle: cli }) => {
-    const cmd = cli.dev({
+    const running = cli.dev({
       remote: true,
-      services: [
-        {
-          name: 'foo',
-          url: 'http://localhost/foo',
-          sdl: 'type Query { foo: String }',
-        },
-      ],
+      service: ['foo'],
+      url: ['http://localhost/foo'],
+      schema: ['type Query { foo: String }'],
     });
 
-    await expect(cmd).rejects.toThrowError(/Only Federation projects are supported/);
+    await expect(running).rejects.toThrowError(/Only Federation projects are supported/);
   });
 
   test('not available for STITCHING project', async ({ cliStitching: cli }) => {
-    const cmd = cli.dev({
+    const running = cli.dev({
       remote: true,
-      services: [
-        {
-          name: 'foo',
-          url: 'http://localhost/foo',
-          sdl: 'type Query { foo: String }',
-        },
-      ],
+      service: ['foo'],
+      url: ['http://localhost/foo'],
+      schema: ['type Query { foo: String }'],
     });
 
-    await expect(cmd).rejects.toThrowError(/Only Federation projects are supported/);
+    await expect(running).rejects.toThrowError(/Only Federation projects are supported/);
   });
 
   test('adds a service', async ({ cliFederation: cli }) => {
@@ -72,13 +60,9 @@ describe('dev --remote', () => {
     const supergraph = tmpFile('graphql');
     const cmd = cli.dev({
       remote: true,
-      services: [
-        {
-          name: 'bar',
-          url: 'http://localhost/bar',
-          sdl: 'type Query { bar: String }',
-        },
-      ],
+      service: ['bar'],
+      url: ['http://localhost/bar'],
+      schema: ['type Query { bar: String }'],
       write: supergraph.filepath,
     });
 
@@ -102,19 +86,15 @@ describe('dev --remote', () => {
     });
 
     const supergraph = tmpFile('graphql');
-    const cmd = cli.dev({
+    const running = cli.dev({
       remote: true,
-      services: [
-        {
-          name: 'bar',
-          url: 'http://localhost/bar',
-          sdl: 'type Query { bar: String }',
-        },
-      ],
+      service: ['bar'],
+      url: ['http://localhost/bar'],
+      schema: ['type Query { bar: String }'],
       write: supergraph.filepath,
     });
 
-    await expect(cmd).resolves.toMatch(supergraph.filepath);
+    await expect(running).resolves.toMatch(supergraph.filepath);
     await expect(supergraph.read()).resolves.toMatch('http://localhost/bar');
   });
 
@@ -167,23 +147,21 @@ describe('dev --remote', () => {
     const supergraph = tmpFile('graphql');
     const cmd = cli.dev({
       remote: true,
-      services: [
-        {
-          name: 'baz',
-          url: 'http://localhost/baz',
-          sdl: /* GraphQL */ `
-            extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+      service: ['baz'],
+      url: ['http://localhost/baz'],
+      schema: [
+        /* GraphQL */ `
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
 
-            type Query {
-              baz: String
-            }
+          type Query {
+            baz: String
+          }
 
-            type User @key(fields: "id") {
-              id: ID!
-              baz: String!
-            }
-          `,
-        },
+          type User @key(fields: "id") {
+            id: ID!
+            baz: String!
+          }
+        `,
       ],
       write: supergraph.filepath,
     });
@@ -241,31 +219,30 @@ describe('dev --remote', () => {
     });
 
     const supergraph = tmpFile('graphql');
-    const cmd = cli.dev({
+    const running = cli.dev({
       remote: true,
-      useLatestVersion: true,
-      services: [
-        {
-          name: 'baz',
-          url: 'http://localhost/baz',
-          sdl: /* GraphQL */ `
-            extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+      unstable__forceLatest: true,
+      service: ['baz'],
+      url: ['http://localhost/baz'],
+      schema: [
+        /* GraphQL */ `
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
 
-            type Query {
-              baz: String
-            }
+          type Query {
+            baz: String
+          }
 
-            type User @key(fields: "id") {
-              id: ID!
-              baz: String!
-            }
-          `,
-        },
+          type User @key(fields: "id") {
+            id: ID!
+            baz: String!
+          }
+        `,
       ],
       write: supergraph.filepath,
     });
 
-    // The command should fail because the latest version contains a non-shareable field and we don't override the corrupted subgraph
-    await expect(cmd).rejects.toThrowError('Non-shareable field');
+    // The command should fail because the latest version contains a
+    // non-shareable field and we don't override the corrupted subgraph
+    await expect(running).rejects.toThrowError('Non-shareable field');
   });
 });

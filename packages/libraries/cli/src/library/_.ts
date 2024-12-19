@@ -1,7 +1,9 @@
 import { Command } from '@oclif/core';
-import { commandRegistry } from '../command-registry';
-import { toSnakeCase } from '../helpers/general';
+import { commandIndex } from '../command-index';
+import { toSnakeCase, uncapitalize } from '../helpers/general';
 import { Args, Infer, renderSubcommandExecution } from './infer';
+
+export { commandIndex as Commands };
 
 export const create = (config: {
   /**
@@ -18,11 +20,13 @@ export const create = (config: {
    * that invokes the CLI like a real user would.
    */
   execute: (command: string) => Promise<string>;
-}): Infer<typeof commandRegistry> => {
+}): Infer<typeof commandIndex> => {
   return Object.fromEntries(
-    Object.entries(commandRegistry).map(([handle, commandClass]) => {
+    Object.entries(commandIndex).map(([commandClassName, commandClass]) => {
       return [
-        handle,
+        // The property name on the CLI object.
+        uncapitalize(commandClassName),
+        // The method that runs the command.
         async (args: Args) => {
           const args_ = (await config.middleware?.args?.(args)) ?? args;
           const subCommandPath = inferCommandPath(commandClass);
