@@ -2,8 +2,13 @@ import CryptoJS from 'crypto-js';
 import CryptoJSPackageJson from 'crypto-js/package.json';
 import { ALLOWED_GLOBALS } from './allowed-globals';
 import { isJSONPrimitive, JSONPrimitive } from './json';
+import { WorkerEvents } from './shared-types';
 
 export type LogMessage = string | Error;
+
+function sendMessage(data: WorkerEvents.Outgoing.EventData) {
+  postMessage(data);
+}
 
 self.onmessage = async event => {
   await execute(event.data);
@@ -11,7 +16,7 @@ self.onmessage = async event => {
 
 self.addEventListener('unhandledrejection', event => {
   const error = 'reason' in event ? new Error(event.reason) : event;
-  postMessage({ type: 'error', error });
+  sendMessage({ type: WorkerEvents.Outgoing.Event.error, error });
 });
 
 async function execute(args: {
@@ -128,10 +133,13 @@ ${script}})()`;
     if (error instanceof Error) {
       error.message += appendLineAndColumn(error);
     }
-    postMessage({ type: 'error', error });
+    sendMessage({ type: WorkerEvents.Outgoing.Event.error, error: error as Error });
     return;
   }
-  postMessage({ type: 'result', environmentVariables: workingEnvironmentVariables });
+  sendMessage({
+    type: WorkerEvents.Outgoing.Event.result,
+    environmentVariables: workingEnvironmentVariables,
+  });
 }
 
 function appendLineAndColumn(error: Error, { columnOffset = 0 } = {}): string {
@@ -141,4 +149,4 @@ function appendLineAndColumn(error: Error, { columnOffset = 0 } = {}): string {
   return ` (Line: ${Number(line) - 3}, Column: ${Number(column) - columnOffset})`;
 }
 
-postMessage({ type: 'ready' });
+sendMessage({ type: WorkerEvents.Outgoing.Event.ready });
