@@ -89,7 +89,7 @@ export async function createTokenStorage(
             )})
           RETURNING *
         `,
-      )
+      );
 
       return transformToken(row);
     },
