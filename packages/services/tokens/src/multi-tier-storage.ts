@@ -2,7 +2,7 @@ import type { FastifyBaseLogger } from 'fastify';
 import type { Redis } from 'ioredis';
 import { LRUCache } from 'lru-cache';
 import ms from 'ms';
-import { createConnectionString, createTokenStorage, Interceptor, tokens } from '@hive/storage';
+import { createConnectionString, createTokenStorage, Interceptor } from '@hive/storage';
 import { captureException, captureMessage } from '@sentry/node';
 import { atomic, until, useActionTracker } from './helpers';
 import { recordCacheFill, recordCacheRead } from './metrics';
