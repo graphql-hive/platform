@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`'FEDERATION' ('legacy') > can publish a schema with breaking, warning and safe changes 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'FEDERATION' ('legacy') > can publish a schema with breaking, warning and safe changes 2`] = `
@@ -13,33 +13,33 @@ exports[`'FEDERATION' ('legacy') > can publish a schema with breaking, warning a
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 4 changes
+ℹ Detected 4 changes
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
    Safe changes:
-   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
-   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
-   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+   - Enum value VIEWER was added to enum UserRole
+   - Field address was added to object type User
+   - Field User.role changed type from UserRole to UserRole!
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'FEDERATION' ('legacy') > can publish and check a schema with target:registry:read access 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'FEDERATION' ('legacy') > can publish and check a schema with target:registry:read access 2`] = `
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Safe changes:
-   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+   - Field nickname was added to object type User
 
 View full report:
 http://__PATH__
@@ -53,25 +53,25 @@ exports[`'FEDERATION' ('legacy') > can publish and check a schema with target:re
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'FEDERATION' ('legacy') > can update the service url and show it in comparison query 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
-exports[`'FEDERATION' ('legacy') > can update the service url and show it in comparison query 2`] = `[32m✔[39m New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
+exports[`'FEDERATION' ('legacy') > can update the service url and show it in comparison query 2`] = `✔ New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
 
 exports[`'FEDERATION' ('legacy') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
 --------------------------------------------exitCode:
@@ -82,11 +82,11 @@ exports[`'FEDERATION' ('legacy') > publishing invalid schema SDL provides meanin
      Syntax Error: Unexpected Name "iliketurtles".
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'FEDERATION' ('legacy') > schema:check should notify user when registry is empty 1`] = `
-[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+✔ Schema registry is empty, nothing to compare your schema with.
 View full report:
 http://__PATH__
 `;
@@ -99,11 +99,11 @@ exports[`'FEDERATION' ('legacy') > schema:check should throw on corrupted schema
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 3 errors
+✖ Detected 3 errors
 
-   [31m-[39m Unknown type: [1mUser[22m.
-   [31m-[39m Unknown type [1mUser[22m.
-   [31m-[39m Type Query must define one or more fields.
+   - Unknown type: User.
+   - Unknown type User.
+   - Type Query must define one or more fields.
 
 View full report:
 http://__PATH__
@@ -118,12 +118,12 @@ exports[`'FEDERATION' ('legacy') > schema:publish should see Invalid Token error
  ›   Reference: __ID__
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'FEDERATION' ('modern') > can publish a schema with breaking, warning and safe changes 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'FEDERATION' ('modern') > can publish a schema with breaking, warning and safe changes 2`] = `
@@ -134,33 +134,33 @@ exports[`'FEDERATION' ('modern') > can publish a schema with breaking, warning a
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 4 changes
+ℹ Detected 4 changes
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
    Safe changes:
-   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
-   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
-   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+   - Enum value VIEWER was added to enum UserRole
+   - Field address was added to object type User
+   - Field User.role changed type from UserRole to UserRole!
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'FEDERATION' ('modern') > can publish and check a schema with target:registry:read access 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'FEDERATION' ('modern') > can publish and check a schema with target:registry:read access 2`] = `
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Safe changes:
-   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+   - Field nickname was added to object type User
 
 View full report:
 http://__PATH__
@@ -174,25 +174,25 @@ exports[`'FEDERATION' ('modern') > can publish and check a schema with target:re
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'FEDERATION' ('modern') > can update the service url and show it in comparison query 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
-exports[`'FEDERATION' ('modern') > can update the service url and show it in comparison query 2`] = `[32m✔[39m New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
+exports[`'FEDERATION' ('modern') > can update the service url and show it in comparison query 2`] = `✔ New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
 
 exports[`'FEDERATION' ('modern') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
 --------------------------------------------exitCode:
@@ -203,11 +203,11 @@ exports[`'FEDERATION' ('modern') > publishing invalid schema SDL provides meanin
      Syntax Error: Unexpected Name "iliketurtles".
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'FEDERATION' ('modern') > schema:check should notify user when registry is empty 1`] = `
-[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+✔ Schema registry is empty, nothing to compare your schema with.
 View full report:
 http://__PATH__
 `;
@@ -220,9 +220,9 @@ exports[`'FEDERATION' ('modern') > schema:check should throw on corrupted schema
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m [test] Unknown type User
+   - [test] Unknown type User
 
 View full report:
 http://__PATH__
@@ -237,12 +237,12 @@ exports[`'FEDERATION' ('modern') > schema:publish should see Invalid Token error
  ›   Reference: __ID__
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'SINGLE' ('legacy') > can publish a schema with breaking, warning and safe changes 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'SINGLE' ('legacy') > can publish a schema with breaking, warning and safe changes 2`] = `
@@ -253,33 +253,33 @@ exports[`'SINGLE' ('legacy') > can publish a schema with breaking, warning and s
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 4 changes
+ℹ Detected 4 changes
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
    Safe changes:
-   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
-   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
-   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+   - Enum value VIEWER was added to enum UserRole
+   - Field address was added to object type User
+   - Field User.role changed type from UserRole to UserRole!
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'SINGLE' ('legacy') > can publish and check a schema with target:registry:read access 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'SINGLE' ('legacy') > can publish and check a schema with target:registry:read access 2`] = `
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Safe changes:
-   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+   - Field nickname was added to object type User
 
 View full report:
 http://__PATH__
@@ -293,14 +293,14 @@ exports[`'SINGLE' ('legacy') > can publish and check a schema with target:regist
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
 View full report:
 http://__PATH__
@@ -315,11 +315,11 @@ exports[`'SINGLE' ('legacy') > publishing invalid schema SDL provides meaningful
      Syntax Error: Unexpected Name "iliketurtles".
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'SINGLE' ('legacy') > schema:check should notify user when registry is empty 1`] = `
-[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+✔ Schema registry is empty, nothing to compare your schema with.
 View full report:
 http://__PATH__
 `;
@@ -332,9 +332,9 @@ exports[`'SINGLE' ('legacy') > schema:check should throw on corrupted schema 1`]
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Unknown type [1mUser[22m.
+   - Unknown type User.
 
 View full report:
 http://__PATH__
@@ -349,12 +349,12 @@ exports[`'SINGLE' ('legacy') > schema:publish should see Invalid Token error whe
  ›   Reference: __ID__
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'SINGLE' ('modern') > can publish a schema with breaking, warning and safe changes 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'SINGLE' ('modern') > can publish a schema with breaking, warning and safe changes 2`] = `
@@ -365,33 +365,33 @@ exports[`'SINGLE' ('modern') > can publish a schema with breaking, warning and s
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 4 changes
+ℹ Detected 4 changes
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
    Safe changes:
-   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
-   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
-   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+   - Enum value VIEWER was added to enum UserRole
+   - Field address was added to object type User
+   - Field User.role changed type from UserRole to UserRole!
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'SINGLE' ('modern') > can publish and check a schema with target:registry:read access 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'SINGLE' ('modern') > can publish and check a schema with target:registry:read access 2`] = `
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Safe changes:
-   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+   - Field nickname was added to object type User
 
 View full report:
 http://__PATH__
@@ -405,14 +405,14 @@ exports[`'SINGLE' ('modern') > can publish and check a schema with target:regist
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
 View full report:
 http://__PATH__
@@ -427,11 +427,11 @@ exports[`'SINGLE' ('modern') > publishing invalid schema SDL provides meaningful
      Syntax Error: Unexpected Name "iliketurtles".
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'SINGLE' ('modern') > schema:check should notify user when registry is empty 1`] = `
-[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+✔ Schema registry is empty, nothing to compare your schema with.
 View full report:
 http://__PATH__
 `;
@@ -444,9 +444,9 @@ exports[`'SINGLE' ('modern') > schema:check should throw on corrupted schema 1`]
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Unknown type [1mUser[22m.
+   - Unknown type User.
 
 View full report:
 http://__PATH__
@@ -461,12 +461,12 @@ exports[`'SINGLE' ('modern') > schema:publish should see Invalid Token error whe
  ›   Reference: __ID__
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'STITCHING' ('legacy') > can publish a schema with breaking, warning and safe changes 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'STITCHING' ('legacy') > can publish a schema with breaking, warning and safe changes 2`] = `
@@ -477,33 +477,33 @@ exports[`'STITCHING' ('legacy') > can publish a schema with breaking, warning an
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 4 changes
+ℹ Detected 4 changes
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
    Safe changes:
-   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
-   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
-   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+   - Enum value VIEWER was added to enum UserRole
+   - Field address was added to object type User
+   - Field User.role changed type from UserRole to UserRole!
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'STITCHING' ('legacy') > can publish and check a schema with target:registry:read access 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'STITCHING' ('legacy') > can publish and check a schema with target:registry:read access 2`] = `
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Safe changes:
-   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+   - Field nickname was added to object type User
 
 View full report:
 http://__PATH__
@@ -517,25 +517,25 @@ exports[`'STITCHING' ('legacy') > can publish and check a schema with target:reg
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'STITCHING' ('legacy') > can update the service url and show it in comparison query 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
-exports[`'STITCHING' ('legacy') > can update the service url and show it in comparison query 2`] = `[32m✔[39m New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
+exports[`'STITCHING' ('legacy') > can update the service url and show it in comparison query 2`] = `✔ New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
 
 exports[`'STITCHING' ('legacy') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
 --------------------------------------------exitCode:
@@ -546,11 +546,11 @@ exports[`'STITCHING' ('legacy') > publishing invalid schema SDL provides meaning
      Syntax Error: Unexpected Name "iliketurtles".
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'STITCHING' ('legacy') > schema:check should notify user when registry is empty 1`] = `
-[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+✔ Schema registry is empty, nothing to compare your schema with.
 View full report:
 http://__PATH__
 `;
@@ -563,11 +563,11 @@ exports[`'STITCHING' ('legacy') > schema:check should throw on corrupted schema 
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 3 errors
+✖ Detected 3 errors
 
-   [31m-[39m Unknown type [1mUser[22m.
-   [31m-[39m Unknown type: [1mUser[22m.
-   [31m-[39m Error: Unknown type: [1mUser[22m.
+   - Unknown type User.
+   - Unknown type: User.
+   - Error: Unknown type: User.
 
 View full report:
 http://__PATH__
@@ -582,12 +582,12 @@ exports[`'STITCHING' ('legacy') > schema:publish should see Invalid Token error 
  ›   Reference: __ID__
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'STITCHING' ('modern') > can publish a schema with breaking, warning and safe changes 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'STITCHING' ('modern') > can publish a schema with breaking, warning and safe changes 2`] = `
@@ -598,33 +598,33 @@ exports[`'STITCHING' ('modern') > can publish a schema with breaking, warning an
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 4 changes
+ℹ Detected 4 changes
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
    Safe changes:
-   [32m-[39m Enum value [1mVIEWER[22m was added to enum [1mUserRole[22m
-   [32m-[39m Field [1maddress[22m was added to object type [1mUser[22m
-   [32m-[39m Field [1mUser.role[22m changed type from [1mUserRole[22m to [1mUserRole![22m
+   - Enum value VIEWER was added to enum UserRole
+   - Field address was added to object type User
+   - Field User.role changed type from UserRole to UserRole!
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'STITCHING' ('modern') > can publish and check a schema with target:registry:read access 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
 exports[`'STITCHING' ('modern') > can publish and check a schema with target:registry:read access 2`] = `
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Safe changes:
-   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+   - Field nickname was added to object type User
 
 View full report:
 http://__PATH__
@@ -638,25 +638,25 @@ exports[`'STITCHING' ('modern') > can publish and check a schema with target:reg
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 1 error
+✖ Detected 1 error
 
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
-[33mℹ[39m Detected 1 change
+ℹ Detected 1 change
 
    Breaking changes:
-   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+   - Field email was removed from object type User
 
 View full report:
 http://__PATH__
 `;
 
 exports[`'STITCHING' ('modern') > can update the service url and show it in comparison query 1`] = `
-[32m✔[39m Published initial schema.
-[33mℹ[39m Available at http://__PATH__
+✔ Published initial schema.
+ℹ Available at http://__PATH__
 `;
 
-exports[`'STITCHING' ('modern') > can update the service url and show it in comparison query 2`] = `[32m✔[39m New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
+exports[`'STITCHING' ('modern') > can update the service url and show it in comparison query 2`] = `✔ New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
 
 exports[`'STITCHING' ('modern') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
 --------------------------------------------exitCode:
@@ -667,11 +667,11 @@ exports[`'STITCHING' ('modern') > publishing invalid schema SDL provides meaning
      Syntax Error: Unexpected Name "iliketurtles".
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;
 
 exports[`'STITCHING' ('modern') > schema:check should notify user when registry is empty 1`] = `
-[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+✔ Schema registry is empty, nothing to compare your schema with.
 View full report:
 http://__PATH__
 `;
@@ -684,11 +684,11 @@ exports[`'STITCHING' ('modern') > schema:check should throw on corrupted schema 
 
 
 --------------------------------------------stdout:
-[31m✖[39m Detected 3 errors
+✖ Detected 3 errors
 
-   [31m-[39m Unknown type [1mUser[22m.
-   [31m-[39m Unknown type: [1mUser[22m.
-   [31m-[39m Unknown type: [1mUser[22m.
+   - Unknown type User.
+   - Unknown type: User.
+   - Unknown type: User.
 
 View full report:
 http://__PATH__
@@ -703,5 +703,5 @@ exports[`'STITCHING' ('modern') > schema:publish should see Invalid Token error 
  ›   Reference: __ID__
 
 --------------------------------------------stdout:
-[31m✖[39m Failed to publish schema
+✖ Failed to publish schema
 `;

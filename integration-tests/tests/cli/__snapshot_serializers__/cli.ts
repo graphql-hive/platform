@@ -1,3 +1,4 @@
+import stripAnsi from 'strip-ansi';
 import type { SnapshotSerializer } from 'vitest';
 import { ExecaError } from '@esm2cjs/execa';
 
@@ -10,16 +11,16 @@ export const path: SnapshotSerializer = {
   },
   serialize: (value: unknown) => {
     if (typeof value === 'string') {
-      return maskVariables(value);
+      return clean(value);
     }
     if (isExecaError(value)) {
       let valueSerialized = '';
       valueSerialized += '--------------------------------------------exitCode:\n';
       valueSerialized += value.exitCode;
       valueSerialized += '\n\n--------------------------------------------stderr:\n';
-      valueSerialized += maskVariables(value.stderr);
+      valueSerialized += clean(value.stderr);
       valueSerialized += '\n\n--------------------------------------------stdout:\n';
-      valueSerialized += maskVariables(value.stdout);
+      valueSerialized += clean(value.stdout);
       return valueSerialized;
     }
     return String(value);
@@ -41,7 +42,13 @@ const variableReplacements = [
   },
 ];
 
-const maskVariables = (value: string) => {
+/**
+ * Strip ANSI codes and mask variables.
+ */
+const clean = (value: string) => {
+  // We strip ANSI codes because their output can vary by platform (e.g. between macOS and GH CI linux-based runner)
+  // and we don't care enough about CLI output styling to fork our snapshots for it.
+  value = stripAnsi(value);
   for (const replacement of variableReplacements) {
     value = value.replace(replacement.pattern, replacement.mask);
   }
