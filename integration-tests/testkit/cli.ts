@@ -3,8 +3,6 @@ import { writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { execaCommand } from '@esm2cjs/execa';
-import { HiveCLI } from '@graphql-hive/cli';
-import { Static } from '@sinclair/typebox';
 import { fetchLatestSchema, fetchLatestValidSchema } from './flow';
 import { getServiceHost } from './utils';
 
@@ -37,25 +35,45 @@ async function exec(cmd: string) {
   return outout.stdout;
 }
 
-export const hiveCLI = HiveCLI.create({
-  execute: exec,
-  middleware: {
-    args: async args => {
-      const registryAddress = await getServiceHost('server', 8082);
-      return {
-        'registry.endpoint': `http://${registryAddress}/graphql`,
-        ...args,
-      };
-    },
-  },
-});
+export async function schemaPublish(args: string[]) {
+  const registryAddress = await getServiceHost('server', 8082);
+  return await exec(
+    ['schema:publish', `--registry.endpoint`, `http://${registryAddress}/graphql`, ...args].join(
+      ' ',
+    ),
+  );
+}
 
-export type CLI = ReturnType<typeof createCLI>;
+export async function schemaCheck(args: string[]) {
+  const registryAddress = await getServiceHost('server', 8082);
+
+  return await exec(
+    ['schema:check', `--registry.endpoint`, `http://${registryAddress}/graphql`, ...args].join(' '),
+  );
+}
+
+export async function schemaDelete(args: string[]) {
+  const registryAddress = await getServiceHost('server', 8082);
+
+  return await exec(
+    ['schema:delete', `--registry.endpoint`, `http://${registryAddress}/graphql`, ...args].join(
+      ' ',
+    ),
+  );
+}
+
+async function dev(args: string[]) {
+  const registryAddress = await getServiceHost('server', 8082);
+
+  return await exec(
+    ['dev', `--registry.endpoint`, `http://${registryAddress}/graphql`, ...args].join(' '),
+  );
+}
 
 export function createCLI(tokens: { readwrite: string; readonly: string }) {
   let publishCount = 0;
 
-  async function schemaPublish({
+  async function publish({
     sdl,
     serviceName,
     serviceUrl,
@@ -63,9 +81,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     expect: expectedStatus,
     legacy_force,
     legacy_acceptBreakingChanges,
-    json,
   }: {
-    json?: boolean;
     sdl: string;
     commit?: string;
     serviceName?: string;
@@ -78,18 +94,20 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     const publishName = ` #${++publishCount}`;
     const commit = randomUUID();
 
-    const cmd = hiveCLI.schemaPublish({
-      $positional: [await generateTmpFile(sdl, 'graphql')],
-      json,
-      'registry.accessToken': tokens.readwrite,
-      author: 'Kamil',
+    const cmd = schemaPublish([
+      '--registry.accessToken',
+      tokens.readwrite,
+      '--author',
+      'Kamil',
+      '--commit',
       commit,
-      service: serviceName,
-      url: serviceUrl,
-      metadata: metadata ? await generateTmpFile(JSON.stringify(metadata), 'json') : undefined,
-      force: legacy_force,
-      experimental_acceptBreakingChanges: legacy_acceptBreakingChanges,
-    });
+      ...(serviceName ? ['--service', serviceName] : []),
+      ...(serviceUrl ? ['--url', serviceUrl] : []),
+      ...(metadata ? ['--metadata', await generateTmpFile(JSON.stringify(metadata), 'json')] : []),
+      ...(legacy_force ? ['--force'] : []),
+      ...(legacy_acceptBreakingChanges ? ['--experimental_acceptBreakingChanges'] : []),
+      await generateTmpFile(sdl, 'graphql'),
+    ]);
 
     const expectedCommit = expect.objectContaining({
       commit,
@@ -155,7 +173,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     return await cmd;
   }
 
-  async function schemaCheck({
+  async function check({
     sdl,
     serviceName,
     expect: expectedStatus,
@@ -164,11 +182,12 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     serviceName?: string;
     expect: 'approved' | 'rejected';
   }): Promise<string> {
-    const cmd = hiveCLI.schemaCheck({
-      'registry.accessToken': tokens.readonly,
-      service: serviceName,
-      $positional: [await generateTmpFile(sdl, 'graphql')],
-    });
+    const cmd = schemaCheck([
+      '--registry.accessToken',
+      tokens.readonly,
+      ...(serviceName ? ['--service', serviceName] : []),
+      await generateTmpFile(sdl, 'graphql'),
+    ]);
 
     if (expectedStatus === 'rejected') {
       await expect(cmd).rejects.toThrow();
@@ -177,18 +196,14 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     return cmd;
   }
 
-  async function schemaDelete({
+  async function deleteCommand({
     serviceName,
     expect: expectedStatus,
   }: {
     serviceName?: string;
     expect: 'latest' | 'latest-composable' | 'rejected';
   }): Promise<string> {
-    const cmd = hiveCLI.schemaDelete({
-      'registry.accessToken': tokens.readwrite,
-      // @ts-expect-error fixme: confirm is a boolean flag so why is a string being passed here?
-      confirm: serviceName ?? '',
-    });
+    const cmd = schemaDelete(['--token', tokens.readwrite, '--confirm', serviceName ?? '']);
 
     const before = {
       latest: await fetchLatestSchema(tokens.readonly).then(r => r.expectNoGraphQLErrors()),
@@ -238,23 +253,45 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     return cmd;
   }
 
-  async function dev(args: Static<typeof HiveCLI.Commands.Dev.parameters.named>) {
-    const schema = await Promise.all(
-      args.schema?.map(async schema => generateTmpFile(schema, 'graphql')) ?? [],
-    );
-    const accessToken = args.remote ? tokens.readonly : undefined;
-
-    return hiveCLI.dev({
-      ...args,
-      'registry.accessToken': accessToken,
-      schema,
-    });
+  async function devCmd(input: {
+    services: Array<{
+      name: string;
+      url: string;
+      sdl: string;
+    }>;
+    remote: boolean;
+    write?: string;
+    useLatestVersion?: boolean;
+  }) {
+    return dev([
+      ...(input.remote
+        ? [
+            '--remote',
+            '--registry.accessToken',
+            tokens.readonly,
+            input.useLatestVersion ? '--unstable__forceLatest' : '',
+          ]
+        : []),
+      input.write ? `--write ${input.write}` : '',
+      ...(await Promise.all(
+        input.services.map(async ({ name, url, sdl }) => {
+          return [
+            '--service',
+            name,
+            '--url',
+            url,
+            '--schema',
+            await generateTmpFile(sdl, 'graphql'),
+          ].join(' ');
+        }),
+      )),
+    ]);
   }
 
   return {
-    publish: schemaPublish,
-    check: schemaCheck,
-    delete: schemaDelete,
-    dev,
+    publish,
+    check,
+    delete: deleteCommand,
+    dev: devCmd,
   };
 }

@@ -1,8 +1,8 @@
 /* eslint-disable no-process-env */
 import { createHash } from 'node:crypto';
 import { ProjectType } from 'testkit/gql/graphql';
-import { createCLI, hiveCLI } from '../../testkit/cli';
-import { test } from '../../testkit/test';
+import { createCLI, schemaCheck, schemaPublish } from '../../testkit/cli';
+import { initSeed } from '../../testkit/seed';
 
 describe.each`
   projectType               | model
@@ -13,93 +13,105 @@ describe.each`
   ${ProjectType.Stitching}  | ${'legacy'}
   ${ProjectType.Federation} | ${'legacy'}
 `('$projectType ($model)', ({ projectType, model }) => {
-  const serviceNameArgs = projectType === ProjectType.Single ? {} : { service: 'test' };
-  const serviceUrlArgs = projectType === ProjectType.Single ? {} : { url: 'http://localhost:4000' };
+  const serviceNameArgs = projectType === ProjectType.Single ? [] : ['--service', 'test'];
+  const serviceUrlArgs =
+    projectType === ProjectType.Single ? [] : ['--url', 'http://localhost:4000'];
   const serviceName = projectType === ProjectType.Single ? undefined : 'test';
   const serviceUrl = projectType === ProjectType.Single ? undefined : 'http://localhost:4000';
 
-  test.concurrent(
-    'can publish a schema with breaking, warning and safe changes',
-    async ({ org }) => {
-      await org.inviteAndJoinMember();
-      const { createTargetAccessToken } = await org.createProject(projectType, {
-        useLegacyRegistryModels: model === 'legacy',
-      });
-      const { secret } = await createTargetAccessToken({});
+  test.concurrent('can publish a schema with breaking, warning and safe changes', async () => {
+    const { createOrg } = await initSeed().createOwner();
+    const { inviteAndJoinMember, createProject } = await createOrg();
+    await inviteAndJoinMember();
+    const { createTargetAccessToken } = await createProject(projectType, {
+      useLegacyRegistryModels: model === 'legacy',
+    });
+    const { secret } = await createTargetAccessToken({});
 
-      await hiveCLI.schemaPublish({
-        'registry.accessToken': secret,
-        author: 'Kamil',
-        commit: 'abc123',
+    await schemaPublish([
+      '--registry.accessToken',
+      secret,
+      '--author',
+      'Kamil',
+      '--commit',
+      'abc123',
+      ...serviceNameArgs,
+      ...serviceUrlArgs,
+      'fixtures/init-schema-detailed.graphql',
+    ]);
+    await expect(
+      schemaCheck([
         ...serviceNameArgs,
-        ...serviceUrlArgs,
-        $positional: ['fixtures/init-schema-detailed.graphql'],
-      });
+        '--registry.accessToken',
+        secret,
+        'fixtures/breaking-schema-detailed.graphql',
+      ]),
+    ).rejects.toThrowError(/breaking changes:|dangerous changes:|safe changes/i);
+  });
 
-      await expect(
-        hiveCLI.schemaCheck({
-          ...serviceNameArgs,
-          'registry.accessToken': secret,
-          $positional: ['fixtures/breaking-schema-detailed.graphql'],
-        }),
-      ).rejects.toThrowError(/breaking changes:|dangerous changes:|safe changes/i);
-    },
-  );
+  test.concurrent('can publish and check a schema with target:registry:read access', async () => {
+    const { createOrg } = await initSeed().createOwner();
+    const { inviteAndJoinMember, createProject } = await createOrg();
+    await inviteAndJoinMember();
+    const { createTargetAccessToken } = await createProject(projectType, {
+      useLegacyRegistryModels: model === 'legacy',
+    });
+    const { secret } = await createTargetAccessToken({});
 
-  test.concurrent(
-    'can publish and check a schema with target:registry:read access',
-    async ({ org }) => {
-      await org.inviteAndJoinMember();
-      const { createTargetAccessToken } = await org.createProject(projectType, {
-        useLegacyRegistryModels: model === 'legacy',
-      });
-      const { secret } = await createTargetAccessToken({});
+    await schemaPublish([
+      '--registry.accessToken',
+      secret,
+      '--author',
+      'Kamil',
+      '--commit',
+      'abc123',
+      ...serviceNameArgs,
+      ...serviceUrlArgs,
+      'fixtures/init-schema.graphql',
+    ]);
 
-      await hiveCLI.schemaPublish({
-        'registry.accessToken': secret,
-        author: 'Kamil',
-        commit: 'abc123',
+    await schemaCheck([
+      '--service',
+      'test',
+      '--registry.accessToken',
+      secret,
+      'fixtures/nonbreaking-schema.graphql',
+    ]);
+
+    await expect(
+      schemaCheck([
         ...serviceNameArgs,
-        ...serviceUrlArgs,
-        $positional: ['fixtures/init-schema.graphql'],
-      });
-
-      await hiveCLI.schemaCheck({
-        service: 'test',
-        'registry.accessToken': secret,
-        $positional: ['fixtures/nonbreaking-schema.graphql'],
-      });
-
-      await expect(
-        hiveCLI.schemaCheck({
-          ...serviceNameArgs,
-          'registry.accessToken': secret,
-          $positional: ['fixtures/breaking-schema.graphql'],
-        }),
-      ).rejects.toThrowError(/breaking/i);
-    },
-  );
+        '--registry.accessToken',
+        secret,
+        'fixtures/breaking-schema.graphql',
+      ]),
+    ).rejects.toThrowError(/breaking/i);
+  });
 
   test.concurrent(
     'publishing invalid schema SDL provides meaningful feedback for the user.',
-    async ({ org }) => {
-      await org.inviteAndJoinMember();
-      const { createTargetAccessToken } = await org.createProject(projectType, {
+    async () => {
+      const { createOrg } = await initSeed().createOwner();
+      const { inviteAndJoinMember, createProject } = await createOrg();
+      await inviteAndJoinMember();
+      const { createTargetAccessToken } = await createProject(projectType, {
         useLegacyRegistryModels: model === 'legacy',
       });
       const { secret } = await createTargetAccessToken({});
 
       const allocatedError = new Error('Should have thrown.');
       try {
-        await hiveCLI.schemaPublish({
-          'registry.accessToken': secret,
-          author: 'Kamil',
-          commit: 'abc123',
+        await schemaPublish([
+          '--registry.accessToken',
+          secret,
+          '--author',
+          'Kamil',
+          '--commit',
+          'abc123',
           ...serviceNameArgs,
           ...serviceUrlArgs,
-          $positional: ['fixtures/init-invalid-schema.graphql'],
-        });
-
+          'fixtures/init-invalid-schema.graphql',
+        ]);
         throw allocatedError;
       } catch (err) {
         if (err === allocatedError) {
@@ -111,64 +123,74 @@ describe.each`
     },
   );
 
-  test.concurrent('schema:publish should print a link to the website', async ({ org }) => {
-    await org.inviteAndJoinMember();
-    const { project, target, createTargetAccessToken } = await org.createProject(projectType, {
+  test.concurrent('schema:publish should print a link to the website', async () => {
+    const { createOrg } = await initSeed().createOwner();
+    const { organization, inviteAndJoinMember, createProject } = await createOrg();
+    await inviteAndJoinMember();
+    const { project, target, createTargetAccessToken } = await createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
     const { secret } = await createTargetAccessToken({});
 
     await expect(
-      hiveCLI.schemaPublish({
+      schemaPublish([
         ...serviceNameArgs,
         ...serviceUrlArgs,
-        'registry.accessToken': secret,
-        $positional: ['fixtures/init-schema.graphql'],
-      }),
+        '--registry.accessToken',
+        secret,
+        'fixtures/init-schema.graphql',
+      ]),
     ).resolves.toMatch(
-      `Available at ${process.env.HIVE_APP_BASE_URL}/${org.organization.slug}/${project.slug}/${target.slug}`,
+      `Available at ${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}`,
     );
 
     await expect(
-      hiveCLI.schemaPublish({
+      schemaPublish([
         ...serviceNameArgs,
         ...serviceUrlArgs,
-        'registry.accessToken': secret,
-        $positional: ['fixtures/nonbreaking-schema.graphql'],
-      }),
+        '--registry.accessToken',
+        secret,
+        'fixtures/nonbreaking-schema.graphql',
+      ]),
     ).resolves.toMatch(
-      `Available at ${process.env.HIVE_APP_BASE_URL}/${org.organization.slug}/${project.slug}/${target.slug}/history/`,
+      `Available at ${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}/history/`,
     );
   });
 
-  test.concurrent('schema:check should notify user when registry is empty', async ({ org }) => {
-    await org.inviteAndJoinMember();
-    const { createTargetAccessToken } = await org.createProject(projectType, {
+  test.concurrent('schema:check should notify user when registry is empty', async () => {
+    const { createOrg } = await initSeed().createOwner();
+    const { inviteAndJoinMember, createProject } = await createOrg();
+    await inviteAndJoinMember();
+    const { createTargetAccessToken } = await createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
     const { secret } = await createTargetAccessToken({});
 
     await expect(
-      hiveCLI.schemaCheck({
-        'registry.accessToken': secret,
+      schemaCheck([
+        '--registry.accessToken',
+        secret,
         ...serviceNameArgs,
-        $positional: ['fixtures/init-schema.graphql'],
-      }),
+        'fixtures/init-schema.graphql',
+      ]),
     ).resolves.toMatch('empty');
   });
 
-  test.concurrent('schema:check should throw on corrupted schema', async ({ org }) => {
-    await org.inviteAndJoinMember();
-    const { createTargetAccessToken } = await org.createProject(projectType, {
+  test.concurrent('schema:check should throw on corrupted schema', async () => {
+    const { createOrg } = await initSeed().createOwner();
+    const { inviteAndJoinMember, createProject } = await createOrg();
+    await inviteAndJoinMember();
+    const { createTargetAccessToken } = await createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
     const { secret } = await createTargetAccessToken({});
 
-    const output = hiveCLI.schemaCheck({
+    const output = schemaCheck([
       ...serviceNameArgs,
-      'registry.accessToken': secret,
-      $positional: ['fixtures/missing-type.graphql'],
-    });
+      '--registry.accessToken',
+      secret,
+      'fixtures/missing-type.graphql',
+    ]);
     await expect(output).rejects.toThrowError('Unknown type');
   });
 
@@ -176,12 +198,13 @@ describe.each`
     'schema:publish should see Invalid Token error when token is invalid',
     async () => {
       const invalidToken = createHash('md5').update('nope').digest('hex').substring(0, 31);
-      const output = hiveCLI.schemaPublish({
+      const output = schemaPublish([
         ...serviceNameArgs,
         ...serviceUrlArgs,
-        'registry.accessToken': invalidToken,
-        $positional: ['fixtures/init-schema.graphql'],
-      });
+        '--registry.accessToken',
+        invalidToken,
+        'fixtures/init-schema.graphql',
+      ]);
 
       await expect(output).rejects.toThrowError('Invalid token provided');
     },
@@ -189,10 +212,12 @@ describe.each`
 
   test
     .skipIf(projectType === ProjectType.Single)
-    .concurrent('can update the service url and show it in comparison query', async ({ org }) => {
-      await org.inviteAndJoinMember();
+    .concurrent('can update the service url and show it in comparison query', async () => {
+      const { createOrg } = await initSeed().createOwner();
+      const { inviteAndJoinMember, createProject } = await createOrg();
+      await inviteAndJoinMember();
       const { createTargetAccessToken, compareToPreviousVersion, fetchVersions } =
-        await org.createProject(projectType, {
+        await createProject(projectType, {
           useLegacyRegistryModels: model === 'legacy',
         });
       const { secret } = await createTargetAccessToken({});
