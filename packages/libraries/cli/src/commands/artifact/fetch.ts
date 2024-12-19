@@ -1,6 +1,7 @@
 import { http, URL } from '@graphql-hive/core';
 import { Flags } from '@oclif/core';
 import Command from '../../base-command';
+import { SchemaOutput } from '../../schema-output/__';
 
 export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
   static description = 'fetch artifacts from the CDN';
@@ -20,8 +21,9 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       description: 'whether to write to a file instead of stdout',
     }),
   };
+  static output = SchemaOutput.output(SchemaOutput.CLIOutputFile, SchemaOutput.CLIOutputStdout);
 
-  async run() {
+  async runResult() {
     const { flags } = await this.parse(ArtifactsFetch);
 
     const cdnEndpoint = this.ensure({
@@ -69,10 +71,21 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       const fs = await import('fs/promises');
       const contents = Buffer.from(await response.arrayBuffer());
       await fs.writeFile(flags.outputFile, contents);
-      this.log(`Wrote ${contents.length} bytes to ${flags.outputFile}`);
-      return;
+      const message = `Wrote ${contents.length} bytes to ${flags.outputFile}`;
+      this.log(message);
+      return this.successEnvelope({
+        data: {
+          type: 'CLIOutputFile',
+          path: flags.outputFile,
+        },
+      });
     }
 
-    this.log(await response.text());
+    const content = await response.text();
+    this.log(content);
+    return this.success({
+      type: 'CLIOutputStdout',
+      content,
+    });
   }
 }

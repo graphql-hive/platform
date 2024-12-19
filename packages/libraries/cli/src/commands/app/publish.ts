@@ -2,6 +2,8 @@ import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
+import { tb } from '../../helpers/typebox/__';
+import { SchemaOutput } from '../../schema-output/__';
 
 export default class AppPublish extends Command<typeof AppPublish> {
   static description = 'publish an app deployment';
@@ -21,8 +23,24 @@ export default class AppPublish extends Command<typeof AppPublish> {
       required: true,
     }),
   };
+  static output = SchemaOutput.output(
+    SchemaOutput.success({
+      type: tb.Literal('CLISkipAppPublish'),
+      name: tb.StringNonEmpty,
+      version: tb.StringNonEmpty,
+    }),
+    SchemaOutput.success({
+      type: tb.Literal('ActivateAppDeploymentOk'),
+      name: tb.StringNonEmpty,
+      version: tb.StringNonEmpty,
+    }),
+    SchemaOutput.failure({
+      type: tb.Literal('ActivateAppDeploymentError'),
+      message: tb.String(),
+    }),
+  );
 
-  async run() {
+  async runResult() {
     const { flags } = await this.parse(AppPublish);
 
     const endpoint = this.ensure({
@@ -37,29 +55,51 @@ export default class AppPublish extends Command<typeof AppPublish> {
       env: 'HIVE_TOKEN',
     });
 
-    const result = await this.registryApi(endpoint, accessToken).request({
-      operation: ActivateAppDeploymentMutation,
-      variables: {
-        input: {
-          appName: flags['name'],
-          appVersion: flags['version'],
+    const result = await this.registryApi(endpoint, accessToken)
+      .request({
+        operation: ActivateAppDeploymentMutation,
+        variables: {
+          input: {
+            appName: flags['name'],
+            appVersion: flags['version'],
+          },
         },
+      })
+      .then(_ => _.activateAppDeployment);
+
+    if (result.error) {
+      return this.failure({
+        type: 'ActivateAppDeploymentError',
+        message: result.error.message,
+      });
+    }
+
+    // TODO: Improve Hive API by returning a union type.
+    if (!result.ok) {
+      throw new Error('Unknown error');
+    }
+
+    const name = `${result.ok.activatedAppDeployment.name}@${result.ok.activatedAppDeployment.version}`;
+
+    if (result.ok.isSkipped) {
+      this.warn(`App deployment "${name}" is already published. Skipping...`);
+      return this.successEnvelope({
+        data: {
+          type: 'CLISkipAppPublish',
+          name: result.ok.activatedAppDeployment.name,
+          version: result.ok.activatedAppDeployment.version,
+        },
+      });
+    }
+
+    this.log(`App deployment "${name}" published successfully.`);
+    return this.successEnvelope({
+      data: {
+        type: 'ActivateAppDeploymentOk',
+        name: result.ok.activatedAppDeployment.name,
+        version: result.ok.activatedAppDeployment.version,
       },
     });
-
-    if (result.activateAppDeployment.error) {
-      throw new Error(result.activateAppDeployment.error.message);
-    }
-
-    if (result.activateAppDeployment.ok) {
-      const name = `${result.activateAppDeployment.ok.activatedAppDeployment.name}@${result.activateAppDeployment.ok.activatedAppDeployment.version}`;
-
-      if (result.activateAppDeployment.ok.isSkipped) {
-        this.warn(`App deployment "${name}" is already published. Skipping...`);
-        return;
-      }
-      this.log(`App deployment "${name}" published successfully.`);
-    }
   }
 }
 

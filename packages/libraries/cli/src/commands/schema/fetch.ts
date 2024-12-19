@@ -4,6 +4,8 @@ import { Args, Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
+import { tb } from '../../helpers/typebox/__';
+import { SchemaOutput } from '../../schema-output/__';
 
 const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
   query SchemaVersionForActionId(
@@ -57,7 +59,6 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       description: 'whether to write to a file instead of stdout',
     }),
   };
-
   static args = {
     actionId: Args.string({
       name: 'actionId' as const,
@@ -66,8 +67,24 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       hidden: false,
     }),
   };
+  static output = SchemaOutput.output(
+    SchemaOutput.failure({
+      type: tb.Literal('CLISchemaFetchMissingSchema'),
+      message: tb.String(),
+    }),
+    SchemaOutput.failure({
+      type: tb.Literal('CLISchemaFetchInvalidSchema'),
+      message: tb.String(),
+    }),
+    SchemaOutput.failure({
+      type: tb.Literal('CLISchemaFetchMissingSDLType'),
+      message: tb.String(),
+    }),
+    SchemaOutput.CLIOutputFile,
+    SchemaOutput.CLIOutputStdout,
+  );
 
-  async run() {
+  async runResult() {
     const { flags, args } = await this.parse(SchemaFetch);
 
     const endpoint = this.ensure({
@@ -97,28 +114,44 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       defaultValue: 'sdl',
     });
 
-    const result = await this.registryApi(endpoint, accessToken).request({
-      operation: SchemaVersionForActionIdQuery,
-      variables: {
-        actionId,
-        includeSDL: sdlType === 'sdl',
-        includeSupergraph: sdlType === 'supergraph',
-      },
-    });
+    const result = await this.registryApi(endpoint, accessToken)
+      .request({
+        operation: SchemaVersionForActionIdQuery,
+        variables: {
+          actionId,
+          includeSDL: sdlType === 'sdl',
+          includeSupergraph: sdlType === 'supergraph',
+        },
+      })
+      .then(_ => _.schemaVersionForActionId);
 
-    if (result.schemaVersionForActionId == null) {
-      return this.error(`No schema found for action id ${actionId}`);
+    if (result == null) {
+      return this.failureEnvelope({
+        data: {
+          type: 'CLISchemaFetchMissingSchema',
+          message: `No schema found for action id ${actionId}`,
+        },
+      });
     }
 
-    if (result.schemaVersionForActionId.valid === false) {
-      return this.error(`Schema is invalid for action id ${actionId}`);
+    if (result.valid === false) {
+      return this.failureEnvelope({
+        data: {
+          type: 'CLISchemaFetchInvalidSchema',
+          message: `Schema is invalid for action id ${actionId}`,
+        },
+      });
     }
 
-    const schema =
-      result.schemaVersionForActionId.sdl ?? result.schemaVersionForActionId.supergraph;
+    const schema = result.sdl ?? result.supergraph;
 
     if (schema == null) {
-      return this.error(`No ${sdlType} found for action id ${actionId}`);
+      return this.failureEnvelope({
+        data: {
+          type: 'CLISchemaFetchMissingSDLType',
+          message: `No ${sdlType} found for action id ${actionId}`,
+        },
+      });
     }
 
     if (flags.write) {
@@ -131,11 +164,19 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
           await writeFile(filepath, schema, 'utf8');
           break;
         default:
-          this.fail(`Unsupported file extension ${extname(flags.write)}`);
+          this.logFailure(`Unsupported file extension ${extname(flags.write)}`);
           this.exit(1);
       }
-      return;
+      return this.success({
+        type: 'CLIOutputFile',
+        path: filepath,
+      });
     }
+
     this.log(schema);
+    return this.success({
+      type: 'CLIOutputStdout',
+      content: schema,
+    });
   }
 }
