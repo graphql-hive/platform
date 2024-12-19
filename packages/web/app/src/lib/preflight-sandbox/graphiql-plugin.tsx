@@ -205,11 +205,16 @@ export function usePreflightScript(args: {
       // eslint-disable-next-line no-inner-declarations
       function eventHandler(ev: MessageEvent<WorkerMessagePayload>) {
         if (ev.data.type === 'result') {
-          const mergedEnvironmentVariables = {
-            ...safeParseJSON(latestEnvironmentVariablesRef.current),
-            ...ev.data.environmentVariables,
-          };
-          setEnvironmentVariables(JSON.stringify(mergedEnvironmentVariables, null, 2));
+          const mergedEnvironmentVariables = JSON.stringify(
+            {
+              ...safeParseJSON(latestEnvironmentVariablesRef.current),
+              ...ev.data.environmentVariables,
+            },
+            null,
+            2,
+          );
+          setEnvironmentVariables(mergedEnvironmentVariables);
+          latestEnvironmentVariablesRef.current = mergedEnvironmentVariables;
           setLogs(logs => [
             ...logs,
             `> End running script. Done in ${(Date.now() - now) / 1000}s`,
@@ -519,7 +524,7 @@ function PreflightScriptModal({
           </DialogDescription>
         </DialogHeader>
         <div className="grid h-[60vh] grid-cols-2 [&_section]:grow">
-          <div className="flex flex-col">
+          <div className="mr-4 flex flex-col">
             <div className="flex justify-between p-2">
               <Title className="flex gap-2">
                 Script Editor
