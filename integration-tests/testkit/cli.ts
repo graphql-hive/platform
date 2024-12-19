@@ -70,6 +70,8 @@ async function dev(args: string[]) {
   );
 }
 
+export type CLI = ReturnType<typeof createCLI>;
+
 export function createCLI(tokens: { readwrite: string; readonly: string }) {
   let publishCount = 0;
 
@@ -177,7 +179,9 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     sdl,
     serviceName,
     expect: expectedStatus,
+    json,
   }: {
+    json?: boolean;
     sdl: string;
     serviceName?: string;
     expect: 'approved' | 'rejected';
@@ -186,6 +190,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
       '--registry.accessToken',
       tokens.readonly,
       ...(serviceName ? ['--service', serviceName] : []),
+      ...(json ? ['--json'] : []),
       await generateTmpFile(sdl, 'graphql'),
     ]);
 
@@ -199,11 +204,19 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
   async function deleteCommand({
     serviceName,
     expect: expectedStatus,
+    json,
   }: {
     serviceName?: string;
+    json?: boolean;
     expect: 'latest' | 'latest-composable' | 'rejected';
   }): Promise<string> {
-    const cmd = schemaDelete(['--token', tokens.readwrite, '--confirm', serviceName ?? '']);
+    const cmd = schemaDelete([
+      '--token',
+      tokens.readwrite,
+      '--confirm',
+      serviceName ?? '',
+      ...(json ? ['--json'] : []),
+    ]);
 
     const before = {
       latest: await fetchLatestSchema(tokens.readonly).then(r => r.expectNoGraphQLErrors()),
@@ -259,11 +272,13 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
       url: string;
       sdl: string;
     }>;
+    json?: boolean;
     remote: boolean;
     write?: string;
     useLatestVersion?: boolean;
   }) {
     return dev([
+      ...(input.json ? ['--json'] : []),
       ...(input.remote
         ? [
             '--remote',
