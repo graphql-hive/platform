@@ -54,7 +54,6 @@ const BaseSchema = protectedObject({
     zod.union([zod.literal('1'), zod.literal('0')]).optional(),
   ),
   ZENDESK_SUPPORT: enabledOrDisabled,
-  LABORATORY_PREFLIGHT_EMBED_URL: emptyString(zod.string().url().optional()),
 });
 
 const IntegrationSlackSchema = protectedObject({
@@ -173,9 +172,6 @@ function buildConfig() {
     zendeskSupport: base.ZENDESK_SUPPORT === '1',
     migrations: {
       member_roles_deadline: migrations.MEMBER_ROLES_DEADLINE ?? null,
-    },
-    laboratory: {
-      preflightEmbedUrl: base.LABORATORY_PREFLIGHT_EMBED_URL ?? null,
     },
   } as const;
 }

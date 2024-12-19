@@ -7,35 +7,6 @@ import { GraphQL } from './graphql';
 import { Observability } from './observability';
 import { Usage } from './usage';
 
-export function deployLabWorker({
-  reverseProxy,
-  app,
-  environment,
-}: {
-  reverseProxy: Proxy;
-  app: App;
-  environment: Environment;
-}) {
-  const dnsName = `lab-worker.${environment.rootDns}`;
-
-  reverseProxy.registerInternalProxy(dnsName, {
-    path: '/preflight-worker-embed.js',
-    service: app.service,
-    host: dnsName,
-    customRewrite: '/preflight-worker-embed.js',
-  });
-  reverseProxy.registerInternalProxy(dnsName, {
-    path: '/',
-    service: app.service,
-    host: dnsName,
-    customRewrite: '/__preflight-embed',
-  });
-
-  return {
-    workerUrl: `https://${dnsName}${path}`,
-  };
-}
-
 export function deployProxy({
   graphql,
   app,

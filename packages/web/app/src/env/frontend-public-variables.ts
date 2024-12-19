@@ -24,7 +24,6 @@ export const ALLOWED_ENVIRONMENT_VARIABLES = [
   'SENTRY',
   'SENTRY_DSN',
   'MEMBER_ROLES_DEADLINE',
-  'LABORATORY_PREFLIGHT_EMBED_URL',
 ] as const;
 
 export type AllowedEnvironmentVariables = (typeof ALLOWED_ENVIRONMENT_VARIABLES)[number];

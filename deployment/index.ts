@@ -16,7 +16,7 @@ import { deployKafka } from './services/kafka';
 import { deployObservability } from './services/observability';
 import { deploySchemaPolicy } from './services/policy';
 import { deployPostgres } from './services/postgres';
-import { deployLabWorker, deployProxy } from './services/proxy';
+import { deployProxy } from './services/proxy';
 import { deployRateLimit } from './services/rate-limit';
 import { deployRedis } from './services/redis';
 import { deployS3, deployS3Mirror } from './services/s3';
@@ -313,12 +313,6 @@ const proxy = deployProxy({
   environment,
 });
 
-deployLabWorker({
-  reverseProxy: proxy,
-  app,
-  environment,
-});
-
 deployCloudFlareSecurityTransform({
   environment,
   // Paths used by 3rd-party software.
@@ -339,12 +333,10 @@ deployCloudFlareSecurityTransform({
     // Staging
     'staging.graphql-hive.com',
     'app.staging.graphql-hive.com',
-    'lab-worker.staging.graphql-hive.com',
     'cdn.staging.graphql-hive.com',
     // Dev
     'dev.graphql-hive.com',
     'app.dev.graphql-hive.com',
-    'lab-worker.dev.graphql-hive.com',
     'cdn.dev.graphql-hive.com',
   ],
 });
