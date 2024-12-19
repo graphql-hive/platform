@@ -23,20 +23,20 @@ import { CommandIndexGeneric } from './library/infer';
 
 export const commandIndex = {
   Dev,
-  whoami: Whoami,
-  introspect: Introspect,
+  Whoami,
+  Introspect,
   // app:
-  appCreate: AppCreate,
-  appPublish: AppPublish,
+  AppCreate,
+  AppPublish,
   // schema:
-  schemaPublish: SchemaPublish,
-  schemaCheck: SchemaCheck,
-  schemaDelete: SchemaDelete,
-  schemaFetch: SchemaFetch,
+  SchemaPublish,
+  SchemaCheck,
+  SchemaDelete,
+  SchemaFetch,
   // artifact:
-  artifactFetch: ArtifactsFetch,
+  ArtifactsFetch,
   // operations:
-  operationsCheck: OperationsCheck,
+  OperationsCheck,
 } satisfies CommandIndexGeneric;
 
 export type CommandIndex = typeof commandIndex;
