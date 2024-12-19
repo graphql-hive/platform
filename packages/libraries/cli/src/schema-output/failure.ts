@@ -47,7 +47,7 @@ export type InferFailureData<$Schema extends OutputBaseT> =
 export type InferFailureEnvelopeInit<$Schema extends OutputBaseT> = Simplify<
   OptionalizePropertyUnsafe<
     Omit<InferFailure<$Schema>, 'ok'>,
-    'message' | 'exitCode' | 'code' | 'url' | 'suggestions'
+    'message' | 'exitCode' | 'code' | 'url' | 'suggestions' | 'reference'
   >
 >;
 
