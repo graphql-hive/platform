@@ -72,7 +72,6 @@ export function deployApp({
         AUTH_ORGANIZATION_OIDC: '1',
         MEMBER_ROLES_DEADLINE: appEnv.MEMBER_ROLES_DEADLINE,
         PORT: '3000',
-        LABORATORY_PREFLIGHT_WORKER_URL: `https://${environment.labWorkerDns}/worker.js?hash=${randomUUID()}`,
       },
       port: 3000,
     },
