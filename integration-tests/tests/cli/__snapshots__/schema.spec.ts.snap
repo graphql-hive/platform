@@ -142,7 +142,7 @@ exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can publish 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -160,7 +160,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -204,7 +204,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -227,7 +227,7 @@ exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can publish 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -250,7 +250,7 @@ exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can publish 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -265,7 +265,7 @@ exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can update t
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -280,7 +280,7 @@ exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > can update t
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -304,7 +304,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 2,
   "code": "unexpected",
   "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
@@ -320,7 +320,7 @@ exports[`projectType: 'FEDERATION' | model: 'legacy' | json: true > schema:check
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -339,7 +339,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -358,7 +358,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 1,
   "code": "HiveApiRequestError",
   "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
@@ -516,7 +516,7 @@ exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can publish 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -534,7 +534,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -578,7 +578,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -601,7 +601,7 @@ exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can publish 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -624,7 +624,7 @@ exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can publish 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -639,7 +639,7 @@ exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can update t
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -654,7 +654,7 @@ exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > can update t
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -672,7 +672,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 2,
   "code": "unexpected",
   "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
@@ -688,7 +688,7 @@ exports[`projectType: 'FEDERATION' | model: 'modern' | json: true > schema:check
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -707,7 +707,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -726,7 +726,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 1,
   "code": "HiveApiRequestError",
   "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
@@ -869,7 +869,7 @@ exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > can publish a sc
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -887,7 +887,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -931,7 +931,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -954,7 +954,7 @@ exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > can publish and 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -977,7 +977,7 @@ exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > can publish and 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -995,7 +995,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 2,
   "code": "unexpected",
   "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
@@ -1011,7 +1011,7 @@ exports[`projectType: 'SINGLE' | model: 'legacy' | json: true > schema:check sho
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -1030,7 +1030,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -1049,7 +1049,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 1,
   "code": "HiveApiRequestError",
   "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
@@ -1192,7 +1192,7 @@ exports[`projectType: 'SINGLE' | model: 'modern' | json: true > can publish a sc
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -1210,7 +1210,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -1254,7 +1254,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -1277,7 +1277,7 @@ exports[`projectType: 'SINGLE' | model: 'modern' | json: true > can publish and 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -1300,7 +1300,7 @@ exports[`projectType: 'SINGLE' | model: 'modern' | json: true > can publish and 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -1318,7 +1318,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 2,
   "code": "unexpected",
   "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
@@ -1334,7 +1334,7 @@ exports[`projectType: 'SINGLE' | model: 'modern' | json: true > schema:check sho
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -1353,7 +1353,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -1372,7 +1372,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 1,
   "code": "HiveApiRequestError",
   "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
@@ -1532,7 +1532,7 @@ exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can publish a
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -1550,7 +1550,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -1594,7 +1594,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -1617,7 +1617,7 @@ exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can publish a
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -1640,7 +1640,7 @@ exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can publish a
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -1655,7 +1655,7 @@ exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can update th
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -1670,7 +1670,7 @@ exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > can update th
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -1694,7 +1694,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 2,
   "code": "unexpected",
   "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
@@ -1710,7 +1710,7 @@ exports[`projectType: 'STITCHING' | model: 'legacy' | json: true > schema:check 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -1729,7 +1729,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -1748,7 +1748,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 1,
   "code": "HiveApiRequestError",
   "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
@@ -1908,7 +1908,7 @@ exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can publish a
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -1926,7 +1926,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -1970,7 +1970,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -1993,7 +1993,7 @@ exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can publish a
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -2016,7 +2016,7 @@ exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can publish a
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -2031,7 +2031,7 @@ exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can update th
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -2046,7 +2046,7 @@ exports[`projectType: 'STITCHING' | model: 'modern' | json: true > can update th
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaPublishSuccess",
@@ -2064,7 +2064,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 2,
   "code": "unexpected",
   "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
@@ -2080,7 +2080,7 @@ exports[`projectType: 'STITCHING' | model: 'modern' | json: true > schema:check 
 
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckSuccess",
@@ -2099,7 +2099,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": true,
+  "type": "success",
   "message": "Command succeeded.",
   "data": {
     "__typename": "SchemaCheckError",
@@ -2118,7 +2118,7 @@ stderr--------------------------------------------:
 __NONE__
 stdout--------------------------------------------:
 {
-  "ok": false,
+  "type": "failure",
   "exitCode": 1,
   "code": "HiveApiRequestError",
   "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",

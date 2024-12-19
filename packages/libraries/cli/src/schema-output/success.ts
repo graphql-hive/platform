@@ -1,10 +1,9 @@
 import { OptionalizePropertyUnsafe, Simplify } from '../helpers/general';
 import { tb } from '../helpers/typebox/__';
-import { ExcludeFailure } from './failure';
 import { OutputBase, OutputBaseT } from './output';
 
 export const SuccessBase = tb.Object({
-  ok: tb.Literal(true),
+  type: tb.Literal('success'),
   message: tb.String(),
 });
 export type SuccessBase = tb.Static<typeof SuccessBase>;
@@ -18,16 +17,14 @@ export const SuccessGeneric = tb.Composite([
 export type SuccessGeneric = tb.Static<typeof SuccessGeneric>;
 
 export const successDefaults: tb.Static<typeof SuccessGeneric> = {
-  ok: true,
+  type: 'success',
   message: 'Command succeeded.',
   data: {},
 };
 
 export const isSuccess = <$Output extends OutputBase>(
   schema: $Output,
-): schema is ExcludeFailure<$Output> => schema.ok;
-
-export type ExcludeSuccess<$Type> = Exclude<$Type, { ok: true }>;
+): schema is Extract<$Output, { type: 'success' }> => schema.type === 'success';
 
 export const success = <$DataInit extends tb.TProperties>(data: $DataInit) =>
   tb.Composite([
@@ -42,7 +39,10 @@ export type InferSuccessData<$Schema extends OutputBaseT> =
   Simplify<InferSuccess<$Schema>['data']>;
 
 export type InferSuccessEnvelopeInit<$Schema extends OutputBaseT> = Simplify<
-  OptionalizePropertyUnsafe<Omit<InferSuccess<$Schema>, 'ok'>, 'message' | 'data'>
+  OptionalizePropertyUnsafe<Omit<InferSuccess<$Schema>, 'type'>, 'message' | 'data'>
 >;
 
-export type InferSuccess<$Schema extends OutputBaseT> = ExcludeFailure<tb.Static<$Schema>>;
+export type InferSuccess<$Schema extends OutputBaseT> = Extract<
+  tb.Static<$Schema>,
+  { type: 'success' }
+>;
