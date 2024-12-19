@@ -247,6 +247,14 @@ export function usePreflightScript(args: {
       }
 
       window.addEventListener('message', eventHandler);
+      currentRun.current = () => {
+        contentWindow.postMessage({
+          type: 'abort',
+          id,
+        });
+        currentRun.current = null;
+      };
+
       await isFinishedD.promise;
       window.removeEventListener('message', eventHandler);
 
