@@ -123,7 +123,7 @@ export function parseDateTime(value: number | string | Date): Date {
   if (typeof value === 'number') {
     try {
       return new UTCDate(value);
-    } catch (e) {
+    } catch {
       throw new TypeError('DateTime cannot represent an invalid Unix timestamp ' + value);
     }
   }
