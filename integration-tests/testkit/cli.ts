@@ -70,6 +70,8 @@ async function dev(args: string[]) {
   );
 }
 
+export type CLI = ReturnType<typeof createCLI>;
+
 export function createCLI(tokens: { readwrite: string; readonly: string }) {
   let publishCount = 0;
 
