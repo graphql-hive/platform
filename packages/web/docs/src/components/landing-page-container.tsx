@@ -15,8 +15,6 @@ export function LandingPageContainer(props: { children: ReactNode; className?: s
           /* css */ `
           html {
             scroll-behavior: smooth;
-          }
-          body {
             background: #fff;
           }
 
