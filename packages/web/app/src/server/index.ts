@@ -25,7 +25,7 @@ const server = Fastify({
 const preflightWorkerEmbed = {
   path: '/__preflight-embed',
   htmlFile: 'preflight-worker-embed.html',
-}
+};
 
 async function main() {
   /**
@@ -45,9 +45,11 @@ async function main() {
     // We need to know if the request is for the preflight worker embed or not to determine which html file to serve.
     server.decorateRequest('viteHtmlFile', {
       getter() {
-        return this.url.startsWith(preflightWorkerEmbed.path) ? preflightWorkerEmbed.htmlFile : 'index.html';
-      }
-    })
+        return this.url.startsWith(preflightWorkerEmbed.path)
+          ? preflightWorkerEmbed.htmlFile
+          : 'index.html';
+      },
+    });
 
     await server.register(FastifyVite, {
       // The root directory of @hive/app (where the package.json is located)
