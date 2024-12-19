@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { ProjectType } from 'testkit/gql/graphql';
 import { createCLI, schemaCheck, schemaPublish } from '../../testkit/cli';
 import { initSeed } from '../../testkit/seed';
+import { test } from '../../testkit/test';
 
 describe.each`
   projectType               | model
