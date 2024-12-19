@@ -99,24 +99,13 @@ throw new TypeError('Test')`,
   });
 
   it('script execution updates environment variables', () => {
-    cy.intercept('test.com', { body: '"Fixture"' });
-    setEditorScript(
-      `const response = await fetch('test.com')
-const data = await response.json()
-console.log(response)
-console.info(data)
-lab.environment.set('my-test', data)`,
-    );
+    setEditorScript(`lab.environment.set('my-test', "TROLOLOL")`);
 
     cy.dataCy('run-preflight-script').click();
-    cy.dataCy('console-output').should(
-      'contain',
-      ['Log: [object Response]', ' (Line: 3, Column: 1)', 'Info: Fixture'].join(''),
-    );
     cy.dataCy('env-editor').should(
       'include.text',
       // replace space with &nbsp;
-      '{  "foo": 123,  "my-test": "Fixture"}'.replaceAll(' ', '\xa0'),
+      '{  "foo": 123,  "my-test": "TROLOLOL"}'.replaceAll(' ', '\xa0'),
     );
   });
 

@@ -8,13 +8,6 @@ const __dirname = new URL('.', import.meta.url).pathname;
 export default {
   root: __dirname,
   plugins: [tsconfigPaths(), react()],
-  worker: {
-    rollupOptions: {
-      output: {
-        file: 'preflight-script-worker.js',
-      },
-    },
-  },
   build: {
     rollupOptions: {
       input: {
