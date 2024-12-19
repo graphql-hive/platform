@@ -6,14 +6,14 @@ import { initSeed } from '../../testkit/seed';
 import { test } from '../../testkit/test';
 
 describe.each`
-  projectType               | model
-  ${ProjectType.Single}     | ${'modern'}
-  ${ProjectType.Stitching}  | ${'modern'}
-  ${ProjectType.Federation} | ${'modern'}
-  ${ProjectType.Single}     | ${'legacy'}
-  ${ProjectType.Stitching}  | ${'legacy'}
-  ${ProjectType.Federation} | ${'legacy'}
-`('$projectType ($model)', ({ projectType, model }) => {
+  projectType               | model       | json
+  ${ProjectType.Single}     | ${'modern'} | ${false}
+  ${ProjectType.Stitching}  | ${'modern'} | ${false}
+  ${ProjectType.Federation} | ${'modern'} | ${false}
+  ${ProjectType.Single}     | ${'legacy'} | ${false}
+  ${ProjectType.Stitching}  | ${'legacy'} | ${false}
+  ${ProjectType.Federation} | ${'legacy'} | ${false}
+`('$projectType ($model)', ({ projectType, model, json }) => {
   const serviceNameArgs = projectType === ProjectType.Single ? [] : ['--service', 'test'];
   const serviceUrlArgs =
     projectType === ProjectType.Single ? [] : ['--url', 'http://localhost:4000'];
@@ -30,6 +30,7 @@ describe.each`
     const { secret } = await createTargetAccessToken({});
 
     await schemaPublish([
+      ...(json ? ['--json'] : []),
       '--registry.accessToken',
       secret,
       '--author',
@@ -42,6 +43,7 @@ describe.each`
     ]);
     await expect(
       schemaCheck([
+        ...(json ? ['--json'] : []),
         ...serviceNameArgs,
         '--registry.accessToken',
         secret,
@@ -60,6 +62,7 @@ describe.each`
     const { secret } = await createTargetAccessToken({});
 
     await schemaPublish([
+      ...(json ? ['--json'] : []),
       '--registry.accessToken',
       secret,
       '--author',
@@ -72,6 +75,7 @@ describe.each`
     ]);
 
     await schemaCheck([
+      ...(json ? ['--json'] : []),
       '--service',
       'test',
       '--registry.accessToken',
@@ -81,6 +85,7 @@ describe.each`
 
     await expect(
       schemaCheck([
+        ...(json ? ['--json'] : []),
         ...serviceNameArgs,
         '--registry.accessToken',
         secret,
@@ -103,6 +108,7 @@ describe.each`
       const allocatedError = new Error('Should have thrown.');
       try {
         await schemaPublish([
+          ...(json ? ['--json'] : []),
           '--registry.accessToken',
           secret,
           '--author',
@@ -135,6 +141,7 @@ describe.each`
 
     await expect(
       schemaPublish([
+        ...(json ? ['--json'] : []),
         ...serviceNameArgs,
         ...serviceUrlArgs,
         '--registry.accessToken',
@@ -147,6 +154,7 @@ describe.each`
 
     await expect(
       schemaPublish([
+        ...(json ? ['--json'] : []),
         ...serviceNameArgs,
         ...serviceUrlArgs,
         '--registry.accessToken',
@@ -169,6 +177,7 @@ describe.each`
 
     await expect(
       schemaCheck([
+        ...(json ? ['--json'] : []),
         '--registry.accessToken',
         secret,
         ...serviceNameArgs,
@@ -187,6 +196,7 @@ describe.each`
     const { secret } = await createTargetAccessToken({});
 
     const output = schemaCheck([
+      ...(json ? ['--json'] : []),
       ...serviceNameArgs,
       '--registry.accessToken',
       secret,
@@ -200,6 +210,7 @@ describe.each`
     async () => {
       const invalidToken = createHash('md5').update('nope').digest('hex').substring(0, 31);
       const output = schemaPublish([
+        ...(json ? ['--json'] : []),
         ...serviceNameArgs,
         ...serviceUrlArgs,
         '--registry.accessToken',
