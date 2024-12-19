@@ -8,7 +8,7 @@ export const FailureBase = tb.Object({
   exitCode: tb.Integer({ minimum: 1 }),
   code: tb.String(),
   message: tb.String(),
-  url: tb.Nullable(tb.String({ format: 'uri' })),
+  reference: tb.Nullable(tb.String()),
   suggestions: tb.Array(tb.String()),
 });
 export type FailureBase = tb.Static<typeof FailureBase>;
@@ -35,7 +35,7 @@ export const failureDefaults: tb.Static<typeof FailureGeneric> = {
   exitCode: 1,
   code: 'unexpected',
   message: 'Command failed.',
-  url: null,
+  reference: null,
   suggestions: [],
   data: {},
 };

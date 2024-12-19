@@ -12,7 +12,7 @@ export class CLIFailure extends Errors.CLIError {
       exit: envelope.exitCode,
       message: envelope.message,
       code: envelope.code,
-      ref: envelope.url ?? undefined,
+      ref: envelope.reference ?? undefined,
       suggestions: envelope.suggestions,
     });
     this.envelope = envelope;

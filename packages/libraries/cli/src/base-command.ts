@@ -69,7 +69,6 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     const errorsIterator = tb.Value.Value.Errors(schema, resultUnparsed);
     const materializedErrors = tb.Value.MaterializeValueErrorIterator(errorsIterator);
     if (materializedErrors.length > 0) {
-      console.dir(materializedErrors, { depth: 100 });
       // todo: Make it easier for the Hive team to be alerted.
       // - Alert the Hive team automatically with some opt-in telemetry?
       // - A single-click-link with all relevant variables serialized into search parameters?
@@ -339,10 +338,6 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     throw new Errors.CLIError(`Missing "${String(key)}"`);
   }
 
-  cleanRequestId(requestId?: string | null) {
-    return requestId ? requestId.split(',')[0].trim() : undefined;
-  }
-
   registryApi(registry: string, token: string) {
     const requestHeaders = {
       Authorization: `Bearer ${token}`,
@@ -425,40 +420,33 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * @see https://oclif.io/docs/error_handling/#error-handling-in-the-catch-method
    */
   async catch(error: CommandError): Promise<void> {
+    const descriptionFragmentForAction = (this.constructor as typeof BaseCommand)
+      .descriptionFragmentForAction;
+    this.logFailure(`Failed to ${descriptionFragmentForAction}`);
+
     if (error instanceof Errors.CLIError) {
       await super.catch(error);
+    } else if (error instanceof ClientError) {
+      await super.catch(clientErrorToCLIFailure(error));
     } else {
-      const descriptionFragmentForAction = (this.constructor as typeof BaseCommand)
-        .descriptionFragmentForAction;
-      this.logFailure(`Failed to ${descriptionFragmentForAction}`);
-      this.handleFetchError(error);
+      this.error(error);
     }
   }
 
   handleFetchError(error: unknown): never {
     if (typeof error === 'string') {
-      return this.error(error);
+      this.error(error);
+    }
+
+    if (error instanceof ClientError) {
+      this.error(clientErrorToCLIFailure(error));
     }
 
     if (error instanceof Error) {
-      if (error instanceof ClientError) {
-        const errors = error.response?.errors;
-
-        if (Array.isArray(errors) && errors.length > 0) {
-          return this.error(errors[0].message, {
-            ref: this.cleanRequestId(error.response?.headers?.get('x-request-id')),
-          });
-        }
-
-        return this.error(error.message, {
-          ref: this.cleanRequestId(error.response?.headers?.get('x-request-id')),
-        });
-      }
-
-      return this.error(error);
+      this.error(error);
     }
 
-    return this.error(JSON.stringify(error));
+    this.error(JSON.stringify(error));
   }
 
   async require<
@@ -474,6 +462,33 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     }
   }
 }
+
+const clientErrorToCLIFailure = (error: ClientError): CLIFailure => {
+  const requestId = cleanRequestId(error.response?.headers?.get('x-request-id'));
+  const errors =
+    error.response?.errors?.map(e => {
+      return {
+        message: e.message,
+      };
+    }) ?? [];
+  // todo: Use error chains & aggregate errors.
+  const causedByMessage =
+    errors.length > 0
+      ? `Caused by error(s):\n${errors.map(e => e.message).join('\n')}`
+      : `Caused by:\n${error.message}`;
+  const message = `Request to Hive API failed. ${causedByMessage}`;
+
+  return new CLIFailure({
+    message,
+    reference: requestId,
+    code: 'HiveApiRequestError',
+    data: {
+      __typename: 'HiveApiRequestError',
+      requestId,
+      errors,
+    },
+  });
+};
 
 // prettier-ignore
 type InferFlags<$CommandClass extends typeof Command> =
@@ -514,3 +529,7 @@ type GetOutput<$CommandClass extends typeof Command> =
       ? $CommandClass['output']
     : never
   : never;
+
+const cleanRequestId = (requestId?: string | null) => {
+  return requestId ? requestId.split(',')[0].trim() : undefined;
+};

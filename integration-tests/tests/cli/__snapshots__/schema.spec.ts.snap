@@ -128,10 +128,11 @@ http://__PATH__
 exports[`projectType: 'FEDERATION' | model: 'legacy' | json: false > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: Invalid token provided
- ›   Reference: __ID__
+ ›   Error: Request to Hive API failed. Caused by error(s):
+ ›   Invalid token provided
+ ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -262,10 +263,11 @@ http://__PATH__
 exports[`projectType: 'FEDERATION' | model: 'modern' | json: false > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: Invalid token provided
- ›   Reference: __ID__
+ ›   Error: Request to Hive API failed. Caused by error(s):
+ ›   Invalid token provided
+ ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -381,10 +383,11 @@ http://__PATH__
 exports[`projectType: 'SINGLE' | model: 'legacy' | json: false > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: Invalid token provided
- ›   Reference: __ID__
+ ›   Error: Request to Hive API failed. Caused by error(s):
+ ›   Invalid token provided
+ ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -500,10 +503,11 @@ http://__PATH__
 exports[`projectType: 'SINGLE' | model: 'modern' | json: false > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: Invalid token provided
- ›   Reference: __ID__
+ ›   Error: Request to Hive API failed. Caused by error(s):
+ ›   Invalid token provided
+ ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -673,12 +677,27 @@ stdout--------------------------------------------:
 exports[`projectType: 'SINGLE' | model: 'modern' | json: true > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: Invalid token provided
- ›   Reference: __ID__
-stdout--------------------------------------------:
 __NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 1,
+  "code": "HiveApiRequestError",
+  "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
+  "reference": "qEAobFbnSBeHsUxPJW4r2A/0000010836",
+  "suggestions": [],
+  "data": {
+    "__typename": "HiveApiRequestError",
+    "requestId": "qEAobFbnSBeHsUxPJW4r2A/0000010836",
+    "errors": [
+      {
+        "message": "Invalid token provided"
+      }
+    ]
+  }
+}
 `;
 
 exports[`projectType: 'STITCHING' | model: 'legacy' | json: false > can publish a schema with breaking, warning and safe changes > SchemaPublish 1`] = `
@@ -809,10 +828,11 @@ http://__PATH__
 exports[`projectType: 'STITCHING' | model: 'legacy' | json: false > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: Invalid token provided
- ›   Reference: __ID__
+ ›   Error: Request to Hive API failed. Caused by error(s):
+ ›   Invalid token provided
+ ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -945,10 +965,11 @@ http://__PATH__
 exports[`projectType: 'STITCHING' | model: 'modern' | json: false > schema:publish should see Invalid Token error when token is invalid > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: Invalid token provided
- ›   Reference: __ID__
+ ›   Error: Request to Hive API failed. Caused by error(s):
+ ›   Invalid token provided
+ ›   Code: HiveApiRequestError
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
