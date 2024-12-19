@@ -9,8 +9,31 @@ beforeEach(() => {
   });
 });
 
+/** Helper function for setting the text within a monaco editor as typing manually results in flaky tests */
+function setMonacoEditorContents(editorCyName: string, text: string) {
+  // wait for textarea appearing which indicates monaco is loaded
+  cy.dataCy(editorCyName).find('textarea');
+  cy.window().then(win => {
+    // First, check if monaco is available on the main window
+    const editor = (win as any).monaco.editor
+      .getEditors()
+      .find(e => e.getContainerDomNode().parentElement.getAttribute('data-cy') === editorCyName);
+
+    // If Monaco instance is found
+    if (editor) {
+      editor.setValue(text);
+    } else {
+      throw new Error('Monaco editor not found on the window or frames[0]');
+    }
+  });
+}
+
+function setEditorScript(script: string) {
+  setMonacoEditorContents('preflight-script-editor', script);
+}
+
 describe('Preflight Script', () => {
-  it('mini script editor should be read only', () => {
+  it('mini script editor is read only', () => {
     cy.dataCy('toggle-preflight-script').click();
     // Wait loading disappears
     cy.dataCy('preflight-script-editor-mini').should('not.contain', 'Loading');
@@ -31,24 +54,13 @@ describe('Preflight Script Modal', () => {
   const script = 'console.log("Hello_world")';
   const env = '{"foo":123}';
 
-  const writeScript = (script: string) => {
-    cy.dataCy('preflight-script-editor').within(() => {
-      cy.get('textarea').type(script, { delay: 0, force: true });
-    });
-  };
-
   beforeEach(() => {
     cy.dataCy('preflight-script-modal-button').click();
-    cy.dataCy('env-editor').within(() => {
-      cy.get('textarea').type(env, {
-        parseSpecialCharSequences: false,
-        force: true,
-      });
-    });
+    setMonacoEditorContents('env-editor', env);
   });
 
-  it('should save script and env variables when submitting', () => {
-    writeScript(script);
+  it('save script and environment variables when submitting', () => {
+    setEditorScript(script);
     cy.dataCy('preflight-script-modal-submit').click();
     cy.dataCy('env-editor-mini').should('have.text', env);
     cy.dataCy('toggle-preflight-script').click();
@@ -59,21 +71,18 @@ describe('Preflight Script Modal', () => {
     cy.dataCy('preflight-script-editor-mini').should('have.text', script);
   });
 
-  it('should run script and show console/error output', () => {
-    writeScript(script);
+  it('logs show console/error information', () => {
+    setEditorScript(script);
     cy.dataCy('run-preflight-script').click();
     cy.dataCy('console-output').should('contain', 'Log: Hello_world (Line: 1, Column: 1)');
 
-    cy.dataCy('preflight-script-editor').within(() => {
-      cy.get('textarea').type('{CMD}{A}{Backspace}', { force: true });
-      cy.get('textarea').type(
-        `console.info(1)
+    setEditorScript(
+      `console.info(1)
 console.warn(true)
 console.error('Fatal')
 throw new TypeError('Test')`,
-        { force: true },
-      );
-    });
+    );
+
     cy.dataCy('run-preflight-script').click();
     // First log previous log message
     cy.dataCy('console-output').should('contain', 'Log: Hello_world (Line: 1, Column: 1)');
@@ -89,18 +98,15 @@ throw new TypeError('Test')`,
     );
   });
 
-  it('should run script and update env variables', () => {
+  it('script execution updates environment variables', () => {
     cy.intercept('test.com', { body: '"Fixture"' });
-    cy.dataCy('preflight-script-editor').within(() => {
-      cy.get('textarea').type(
-        `const response = await fetch('test.com')
+    setEditorScript(
+      `const response = await fetch('test.com')
 const data = await response.json()
 console.log(response)
 console.info(data)
 lab.environment.set('my-test', data)`,
-        { force: true },
-      );
-    });
+    );
 
     cy.dataCy('run-preflight-script').click();
     cy.dataCy('console-output').should(
@@ -114,10 +120,8 @@ lab.environment.set('my-test', data)`,
     );
   });
 
-  it('`crypto-js` should works, since we removed `...Buffer` and `...Array` global variables', () => {
-    cy.dataCy('preflight-script-editor').within(() => {
-      cy.get('textarea').type('console.log(lab.CryptoJS.SHA256("🐝"))', { delay: 0, force: true });
-    });
+  it('`crypto-js` can be used for generating hashes', () => {
+    setEditorScript('console.log(lab.CryptoJS.SHA256("🐝"))');
     cy.dataCy('run-preflight-script').click();
     cy.dataCy('console-output').should('contain', 'Info: Using crypto-js version:');
     cy.dataCy('console-output').should(
@@ -126,25 +130,21 @@ lab.environment.set('my-test', data)`,
     );
   });
 
-  it('should disallow eval', () => {
-    cy.dataCy('preflight-script-editor').within(() => {
-      cy.get('textarea').type('eval()', { delay: 0, force: true });
-    });
+  it('scripts can not use `eval`', () => {
+    setEditorScript('eval()');
     cy.dataCy('preflight-script-modal-submit').click();
     cy.get('body').contains('Usage of dangerous statement like eval() or Function("").');
   });
 
-  it('should disallow invalid code', () => {
-    cy.dataCy('preflight-script-editor').within(() => {
-      cy.get('textarea').type('🐝', { delay: 0, force: true });
-    });
+  it('invalid code is rejected and can not be saved', () => {
+    setEditorScript('🐝');
     cy.dataCy('preflight-script-modal-submit').click();
     cy.get('body').contains("[1:1]: Illegal character '}");
   });
 });
 
 describe('Execution', () => {
-  it('should replace with env editor values', () => {
+  it('header placeholders are substituted with environment variables', () => {
     cy.dataCy('toggle-preflight-script').click();
     cy.get('[data-name="headers"]').click();
     cy.get('.graphiql-editor-tool .graphiql-editor:last-child textarea').type(
@@ -166,7 +166,7 @@ describe('Execution', () => {
     cy.get('body').type('{ctrl}{enter}');
   });
 
-  it('should execute script, update env editor and replace headers', () => {
+  it('executed script updates update env editor and substitute headers', () => {
     cy.dataCy('toggle-preflight-script').click();
     cy.get('[data-name="headers"]').click();
     cy.get('.graphiql-editor-tool .graphiql-editor:last-child textarea').type(
@@ -177,9 +177,7 @@ describe('Execution', () => {
       },
     );
     cy.dataCy('preflight-script-modal-button').click();
-    cy.dataCy('preflight-script-editor').within(() => {
-      cy.get('textarea').type(`lab.environment.set('foo', 92)`, { force: true });
-    });
+    setMonacoEditorContents('preflight-script-editor', `lab.environment.set('foo', 92)`);
     cy.dataCy('preflight-script-modal-submit').click();
     cy.intercept('/api/lab/foo/my-new-project/development', req => {
       expect(req.headers.__test).to.equal('92');
@@ -187,7 +185,7 @@ describe('Execution', () => {
     cy.get('.graphiql-execute-button').click();
   });
 
-  it('should not execute script if disabled', () => {
+  it('disabled script is not executed', () => {
     cy.get('[data-name="headers"]').click();
     cy.get('.graphiql-editor-tool .graphiql-editor:last-child textarea').type(
       '{ "__test": "{{foo}}" }',
@@ -197,12 +195,9 @@ describe('Execution', () => {
       },
     );
     cy.dataCy('preflight-script-modal-button').click();
-    cy.dataCy('preflight-script-editor').within(() => {
-      cy.get('textarea').type(`lab.environment.set('foo', 92)`, { force: true });
-    });
-    cy.dataCy('env-editor').within(() => {
-      cy.get('textarea').type(`{"foo":10}`, { force: true, parseSpecialCharSequences: false });
-    });
+    setMonacoEditorContents('preflight-script-editor', `lab.environment.set('foo', 92)`);
+    setMonacoEditorContents('env-editor', `{"foo":10}`);
+
     cy.dataCy('preflight-script-modal-submit').click();
     cy.intercept('/api/lab/foo/my-new-project/development', req => {
       expect(req.headers.__test).to.equal('10');
