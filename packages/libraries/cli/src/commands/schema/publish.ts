@@ -199,7 +199,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       const exists = existsSync(metadata);
 
       if (!exists) {
-        throw new Errors.CLIError(
+        throw new Error(
           `Failed to load metadata from "${metadata}": Please specify a path to an existing file, or a string with valid JSON.`,
         );
       }
@@ -210,7 +210,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
 
         return fileContent;
       } catch (e) {
-        throw new Errors.CLIError(
+        throw new Error(
           `Failed to load metadata from file "${metadata}": Please make sure the file is readable and contains a valid JSON`,
         );
       }
@@ -305,7 +305,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         const locationString = location
           ? ` at line ${location.line}, column ${location.column}`
           : '';
-        throw new Errors.CLIError(`The SDL is not valid${locationString}:\n ${err.message}`);
+        throw new Error(`The SDL is not valid${locationString}:\n ${err.message}`);
       }
       throw err;
     }

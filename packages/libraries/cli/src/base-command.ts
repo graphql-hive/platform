@@ -33,9 +33,9 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   /**
    * A *description fragment* of the action that this command performs.
    * Formulate your words such that it can be appended to e.g. "Failed to ${descriptionFragmentForAction}".
-   * Used in certain automated error messages.
+   * When non-null, used in certain automated error messages.
    */
-  public static descriptionFragmentForAction = 'perform action';
+  public static descriptionFragmentForAction: string | null = null;
 
   /**
    * The data type returned by this command when executed.
@@ -406,16 +406,16 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * @see https://oclif.io/docs/error_handling/#error-handling-in-the-catch-method
    */
   async catch(error: CommandError): Promise<void> {
-    const descriptionFragmentForAction = (this.constructor as typeof BaseCommand)
-      .descriptionFragmentForAction;
-    this.logFailure(`Failed to ${descriptionFragmentForAction}`);
+    // prettier-ignore
+    const descriptionFragmentForAction = (this.constructor as typeof BaseCommand).descriptionFragmentForAction;
+    if (descriptionFragmentForAction) {
+      this.logFailure(`Failed to ${descriptionFragmentForAction}`);
+    }
 
-    if (error instanceof Errors.CLIError) {
-      await super.catch(error);
-    } else if (error instanceof ClientError) {
+    if (error instanceof ClientError) {
       await super.catch(clientErrorToCLIFailure(error));
     } else {
-      this.error(error);
+      await super.catch(error);
     }
   }
 

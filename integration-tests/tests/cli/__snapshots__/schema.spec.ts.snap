@@ -91,10 +91,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'FEDERATION' | model: 'legacy' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -228,10 +228,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'FEDERATION' | model: 'modern' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -348,10 +348,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'SINGLE' | model: 'legacy' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -468,10 +468,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'SINGLE' | model: 'modern' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -639,10 +639,11 @@ __NONE__
 stdout--------------------------------------------:
 {
   "ok": false,
-  "exitCode": 2,
+  "exitCode": 1,
   "code": "unexpected",
   "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
   "reference": null,
+  "suggestions": [],
   "data": {
     "__typename": "CLIError"
   }
@@ -799,10 +800,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'STITCHING' | model: 'legacy' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -936,10 +937,10 @@ stdout--------------------------------------------:
 exports[`projectType: 'STITCHING' | model: 'modern' | json: false > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
- ›   Error: The SDL is not valid at line 1, column 1:
- ›    Syntax Error: Unexpected Name "iliketurtles".
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
