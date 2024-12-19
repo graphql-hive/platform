@@ -135,7 +135,6 @@ describe.each`
         if (err === allocatedError) {
           throw err;
         }
-        // todo: missing json output
         expect(err).toMatchSnapshot('schemaPublish');
       }
     },
@@ -225,7 +224,6 @@ describe.each`
         invalidToken,
         'fixtures/init-schema.graphql',
       ]);
-      // todo: missing json output
       await expect(output).rejects.toMatchSnapshot('schemaPublish');
     },
   );

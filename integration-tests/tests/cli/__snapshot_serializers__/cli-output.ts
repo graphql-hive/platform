@@ -34,6 +34,14 @@ export const cliOutput: SnapshotSerializer = {
 
 const variableReplacements = [
   {
+    pattern: /("reference": ")([^"]+)"/gi,
+    mask: '$1__ID__"',
+  },
+  {
+    pattern: /("requestId": ")([^"]+)"/gi,
+    mask: '$1__ID__"',
+  },
+  {
     pattern: /(Reference: )[^ ]+/gi,
     mask: '$1__ID__',
   },

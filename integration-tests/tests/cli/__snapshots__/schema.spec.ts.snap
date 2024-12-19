@@ -93,8 +93,8 @@ exports[`projectType: 'FEDERATION' | model: 'legacy' | json: false > publishing 
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -230,8 +230,8 @@ exports[`projectType: 'FEDERATION' | model: 'modern' | json: false > publishing 
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -350,8 +350,8 @@ exports[`projectType: 'SINGLE' | model: 'legacy' | json: false > publishing inva
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -470,8 +470,8 @@ exports[`projectType: 'SINGLE' | model: 'modern' | json: false > publishing inva
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -633,12 +633,20 @@ stdout--------------------------------------------:
 exports[`projectType: 'SINGLE' | model: 'modern' | json: true > publishing invalid schema SDL provides meaningful feedback for the user. > schemaPublish 1`] = `
 :::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::
 exitCode------------------------------------------:
-2
+1
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
-stdout--------------------------------------------:
 __NONE__
+stdout--------------------------------------------:
+{
+  "ok": false,
+  "exitCode": 2,
+  "code": "unexpected",
+  "message": "The SDL is not valid at line 1, column 1:\\n Syntax Error: Unexpected Name \\"iliketurtles\\".",
+  "reference": null,
+  "data": {
+    "__typename": "CLIError"
+  }
+}
 `;
 
 exports[`projectType: 'SINGLE' | model: 'modern' | json: true > schema:check should notify user when registry is empty > schemaCheck 1`] = `
@@ -686,11 +694,11 @@ stdout--------------------------------------------:
   "exitCode": 1,
   "code": "HiveApiRequestError",
   "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
-  "reference": "qEAobFbnSBeHsUxPJW4r2A/0000010836",
+  "reference": "__ID__",
   "suggestions": [],
   "data": {
     "__typename": "HiveApiRequestError",
-    "requestId": "qEAobFbnSBeHsUxPJW4r2A/0000010836",
+    "requestId": "__ID__",
     "errors": [
       {
         "message": "Invalid token provided"
@@ -793,8 +801,8 @@ exports[`projectType: 'STITCHING' | model: 'legacy' | json: false > publishing i
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;
@@ -930,8 +938,8 @@ exports[`projectType: 'STITCHING' | model: 'modern' | json: false > publishing i
 exitCode------------------------------------------:
 2
 stderr--------------------------------------------:
-    Error: The SDL is not valid at line 1, column 1:
-     Syntax Error: Unexpected Name "iliketurtles".
+ ›   Error: The SDL is not valid at line 1, column 1:
+ ›    Syntax Error: Unexpected Name "iliketurtles".
 stdout--------------------------------------------:
 ✖ Failed to publish schema
 `;

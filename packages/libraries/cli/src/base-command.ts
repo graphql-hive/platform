@@ -122,20 +122,6 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 
   /**
-   * Custom logic for how thrown values are converted into JSON.
-   *
-   * Any time a CLIFailure is thrown its public
-   * envelope property is used as the JSON output
-   * when JSON is enabled.
-   */
-  toErrorJson(value: unknown) {
-    if (value instanceof CLIFailure) {
-      return value.envelope;
-    }
-    return super.toErrorJson(value);
-  }
-
-  /**
    * Variant of {@link BaseCommand.successEnvelope} that only requires passing the data.
    * See that method for more details.
    */
@@ -431,6 +417,36 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     } else {
       this.error(error);
     }
+  }
+
+  /**
+   * Custom logic for how thrown values are converted into JSON.
+   */
+  toErrorJson(value: unknown) {
+    if (value instanceof CLIFailure) {
+      return value.envelope;
+    }
+    if (value instanceof Errors.CLIError) {
+      return this.failureEnvelope({
+        message: value.message,
+        suggestions: value.suggestions,
+        exitCode: value.oclif.exit,
+        // @ts-expect-error fixme
+        data: {
+          __typename: 'CLIError',
+        },
+      });
+    }
+    if (value instanceof Error) {
+      return this.failureEnvelope({
+        message: value.message,
+        // @ts-expect-error fixme
+        data: {
+          __typename: 'CLIError',
+        },
+      });
+    }
+    return super.toErrorJson(value);
   }
 
   handleFetchError(error: unknown): never {
