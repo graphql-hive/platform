@@ -163,23 +163,19 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success({
-      type: tb.Literal('SchemaPublishSuccess'),
+    SchemaOutput.success('SchemaPublishSuccess', {
       changes: tb.Array(SchemaOutput.SchemaChange),
       url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
-    SchemaOutput.success({
-      type: tb.Literal('SchemaPublishError'),
+    SchemaOutput.success('SchemaPublishError', {
       changes: tb.Array(SchemaOutput.SchemaChange),
       errors: tb.Array(SchemaOutput.SchemaError),
       url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
-    SchemaOutput.success({
-      type: tb.Literal('GitHubSchemaPublishSuccess'),
+    SchemaOutput.success('GitHubSchemaPublishSuccess', {
       message: tb.String(),
     }),
-    SchemaOutput.failure({
-      type: tb.Literal('GitHubSchemaPublishError'),
+    SchemaOutput.failure('GitHubSchemaPublishError', {
       message: tb.String(),
     }),
   );

@@ -79,14 +79,9 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success({
-      type: tb.Literal('CLIOperationsCheckNoneFound'),
-    }),
-    SchemaOutput.failure({
-      type: tb.Literal('CLIOperationsCheckNoSchemaFound'),
-    }),
-    SchemaOutput.success({
-      type: tb.Literal('CLIOperationsCheckResult'),
+    SchemaOutput.success('CLIOperationsCheckNoneFound', {}),
+    SchemaOutput.failure('CLIOperationsCheckNoSchemaFound', {}),
+    SchemaOutput.success('CLIOperationsCheckResult', {
       countTotal: tb.Integer({ minimum: 0 }),
       countInvalid: tb.Integer({ minimum: 0 }),
       countValid: tb.Integer({ minimum: 0 }),

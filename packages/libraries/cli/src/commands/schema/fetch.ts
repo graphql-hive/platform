@@ -68,18 +68,9 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.failure({
-      type: tb.Literal('CLISchemaFetchMissingSchema'),
-      message: tb.String(),
-    }),
-    SchemaOutput.failure({
-      type: tb.Literal('CLISchemaFetchInvalidSchema'),
-      message: tb.String(),
-    }),
-    SchemaOutput.failure({
-      type: tb.Literal('CLISchemaFetchMissingSDLType'),
-      message: tb.String(),
-    }),
+    SchemaOutput.failure('CLISchemaFetchMissingSchema', {}),
+    SchemaOutput.failure('CLISchemaFetchInvalidSchema', {}),
+    SchemaOutput.failure('CLISchemaFetchMissingSDLType', {}),
     SchemaOutput.CLIOutputFile,
     SchemaOutput.CLIOutputStdout,
   );
@@ -126,31 +117,25 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       .then(_ => _.schemaVersionForActionId);
 
     if (result == null) {
-      return this.failureEnvelope({
-        data: {
-          type: 'CLISchemaFetchMissingSchema',
-          message: `No schema found for action id ${actionId}`,
-        },
+      this.logFailure(`No schema found for action id ${actionId}`);
+      return this.failure({
+        type: 'CLISchemaFetchMissingSchema',
       });
     }
 
     if (result.valid === false) {
-      return this.failureEnvelope({
-        data: {
-          type: 'CLISchemaFetchInvalidSchema',
-          message: `Schema is invalid for action id ${actionId}`,
-        },
+      this.logFailure(`Schema is invalid for action id ${actionId}`);
+      return this.failure({
+        type: 'CLISchemaFetchInvalidSchema',
       });
     }
 
     const schema = result.sdl ?? result.supergraph;
 
     if (schema == null) {
-      return this.failureEnvelope({
-        data: {
-          type: 'CLISchemaFetchMissingSDLType',
-          message: `No ${sdlType} found for action id ${actionId}`,
-        },
+      this.logFailure(`No ${sdlType} found for action id ${actionId}`);
+      return this.failure({
+        type: 'CLISchemaFetchMissingSDLType',
       });
     }
 

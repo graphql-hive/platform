@@ -43,16 +43,13 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success({
-      type: tb.Literal('CLISkipAppCreate'),
+    SchemaOutput.success('CLISkipAppCreate', {
       status: SchemaOutput.AppDeploymentStatus,
     }),
-    SchemaOutput.success({
-      type: tb.Literal('CreateAppDeploymentOk'),
+    SchemaOutput.success('CreateAppDeploymentOk', {
       id: tb.StringNonEmpty,
     }),
-    SchemaOutput.failure({
-      type: tb.Literal('CreateAppDeploymentError'),
+    SchemaOutput.failure('CreateAppDeploymentError', {
       message: tb.String(),
     }),
   );

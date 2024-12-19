@@ -3,7 +3,7 @@ import { tb } from '../helpers/typebox/__';
 import { OutputBase, OutputBaseT } from './output';
 
 export const SuccessBase = tb.Object({
-  type: tb.Literal('success'),
+  type: tb.Literal('success', { default: 'success' }),
 });
 export type SuccessBase = tb.Static<typeof SuccessBase>;
 
@@ -25,13 +25,26 @@ export const isSuccess = <$Output extends OutputBase>(
 ): schema is Extract<$Output, { type: 'success' }> =>
   schema.type === SuccessBase.properties.type.const;
 
-export const success = <$DataInit extends tb.TProperties>(data: $DataInit) =>
+export const success = <$DataInit extends tb.TProperties, $TypeName extends string>(
+  typeName: $TypeName,
+  data: $DataInit,
+): tb.TComposite<
+  [
+    typeof SuccessBase,
+    tb.TObject<{
+      data: tb.TComposite<[tb.TObject<{ type: tb.TLiteral<$TypeName> }>, tb.TObject<$DataInit>]>;
+    }>,
+  ]
+> =>
   tb.Composite([
     SuccessBase,
     tb.Object({
-      data: tb.Object(data),
+      data: tb.Composite([
+        tb.Object({ type: tb.Literal(typeName, { default: typeName }) }),
+        tb.Object(data),
+      ]),
     }),
-  ]);
+  ]) as any;
 
 export type InferSuccessData<$Schema extends OutputBaseT> =
   // @ts-expect-error fixme

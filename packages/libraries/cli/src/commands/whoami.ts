@@ -62,8 +62,7 @@ export default class Whoami extends Command<typeof Whoami> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success({
-      type: tb.Literal('TokenInfo'),
+    SchemaOutput.success('TokenInfo', {
       token: tb.Object({
         name: tb.String(),
       }),
@@ -84,8 +83,7 @@ export default class Whoami extends Command<typeof Whoami> {
         }),
       }),
     }),
-    SchemaOutput.failure({
-      type: tb.Literal('TokenNotFoundError'),
+    SchemaOutput.failure('TokenNotFoundError', {
       message: tb.String(),
     }),
   );

@@ -145,24 +145,20 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success({
-      type: tb.Literal('SchemaCheckSuccess'),
+    SchemaOutput.success('SchemaCheckSuccess', {
       changes: tb.Array(SchemaOutput.SchemaChange),
       warnings: tb.Array(SchemaOutput.SchemaWarning),
       url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
-    SchemaOutput.success({
-      type: tb.Literal('SchemaCheckError'),
+    SchemaOutput.success('SchemaCheckError', {
       changes: tb.Array(SchemaOutput.SchemaChange),
       warnings: tb.Array(SchemaOutput.SchemaWarning),
       url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
-    SchemaOutput.success({
-      type: tb.Literal('GitHubSchemaCheckSuccess'),
+    SchemaOutput.success('GitHubSchemaCheckSuccess', {
       message: tb.String(),
     }),
-    SchemaOutput.failure({
-      type: tb.Literal('GitHubSchemaCheckError'),
+    SchemaOutput.failure('GitHubSchemaCheckError', {
       message: tb.String(),
     }),
   );

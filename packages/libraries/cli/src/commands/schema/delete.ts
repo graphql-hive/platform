@@ -95,11 +95,8 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success({
-      type: tb.Literal('SchemaDeleteSuccess'),
-    }),
-    SchemaOutput.failure({
-      type: tb.Literal('SchemaDeleteError'),
+    SchemaOutput.success('SchemaDeleteSuccess', {}),
+    SchemaOutput.failure('SchemaDeleteError', {
       errors: tb.Array(SchemaOutput.SchemaError),
     }),
   );

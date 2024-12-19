@@ -17,8 +17,26 @@ export const FailureGeneric = tb.Composite([
 ]);
 export type FailureGeneric = tb.Static<typeof FailureGeneric>;
 
-export const failure = <$Context extends tb.TProperties>(context: $Context) =>
-  tb.Composite([FailureBase, tb.Object({ data: tb.Object(context) })]);
+export const failure = <$Data extends tb.TProperties, $TypeName extends string>(
+  typeName: $TypeName,
+  context: $Data,
+): tb.TComposite<
+  [
+    typeof FailureBase,
+    tb.TObject<{
+      data: tb.TComposite<[tb.TObject<{ type: tb.TLiteral<$TypeName> }>, tb.TObject<$Data>]>;
+    }>,
+  ]
+> =>
+  tb.Composite([
+    FailureBase,
+    tb.Object({
+      data: tb.Composite([
+        tb.Object({ type: tb.Literal(typeName, { default: typeName }) }),
+        tb.Object(context),
+      ]),
+    }),
+  ]) as any;
 
 export const isFailure = <$Output extends OutputBase>(
   schema: $Output,
