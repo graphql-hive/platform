@@ -14,7 +14,7 @@ interface StorageItem {
   name: string;
   tokenAlias: string;
   date: string;
-  lastUsedAt: string;
+  lastUsedAt: string | null;
   organization: string;
   project: string;
   target: string;
@@ -114,7 +114,7 @@ export async function createStorage(
       try {
         // Nothing in Redis, let's check the DB
         const dbResult = await db.getToken({ token: hashedToken });
-        const cacheEntry = dbResult ? transformToken(dbResult) : 'not-found';
+        const cacheEntry = dbResult ?? 'not-found';
         recordCacheFill('db');
 
         // Write to Redis, so the next time we can read it from there
@@ -188,8 +188,7 @@ export async function createStorage(
       return false;
     }),
     async readTarget(target) {
-      const tokens = await db.getTokens({ target });
-      return tokens.map(transformToken);
+      return db.getTokens({ target });
     },
     async readToken(hashedToken, maskedToken) {
       const status: LRUCache.Status<CacheEntry> = {};
@@ -225,7 +224,7 @@ export async function createStorage(
       // We write to Redis, so in case the token is used,
       // we reuse it for the in-memory cache, without hitting the DB.
       const hashedToken = result.token;
-      const cacheEntry = transformToken(result);
+      const cacheEntry = result;
 
       // Write to Redis gracefully. If it fails, we log the error, but we don't throw.
       // The token won't be in Redis cache, but it will be possible to retrieve it from the DB.
@@ -269,20 +268,6 @@ export async function createStorage(
         cache.delete(hashedToken);
       }
     }),
-  };
-}
-
-function transformToken(item: tokens): StorageItem {
-  return {
-    token: item.token,
-    tokenAlias: item.token_alias,
-    name: item.name,
-    date: item.created_at as any,
-    lastUsedAt: item.last_used_at as any,
-    organization: item.organization_id,
-    project: item.project_id,
-    target: item.target_id,
-    scopes: item.scopes || [],
   };
 }
 
