@@ -115,7 +115,7 @@ exports[`'FEDERATION' ('legacy') > schema:publish should see Invalid Token error
 
 --------------------------------------------stderr:
  ›   Error: Invalid token provided
- ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005866
+ ›   Reference: __ID__
 
 --------------------------------------------stdout:
 [31m✖[39m Failed to publish schema
@@ -234,7 +234,7 @@ exports[`'FEDERATION' ('modern') > schema:publish should see Invalid Token error
 
 --------------------------------------------stderr:
  ›   Error: Invalid token provided
- ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005703
+ ›   Reference: __ID__
 
 --------------------------------------------stdout:
 [31m✖[39m Failed to publish schema
@@ -346,7 +346,7 @@ exports[`'SINGLE' ('legacy') > schema:publish should see Invalid Token error whe
 
 --------------------------------------------stderr:
  ›   Error: Invalid token provided
- ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005760
+ ›   Reference: __ID__
 
 --------------------------------------------stdout:
 [31m✖[39m Failed to publish schema
@@ -458,7 +458,7 @@ exports[`'SINGLE' ('modern') > schema:publish should see Invalid Token error whe
 
 --------------------------------------------stderr:
  ›   Error: Invalid token provided
- ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005606
+ ›   Reference: __ID__
 
 --------------------------------------------stdout:
 [31m✖[39m Failed to publish schema
@@ -579,7 +579,7 @@ exports[`'STITCHING' ('legacy') > schema:publish should see Invalid Token error 
 
 --------------------------------------------stderr:
  ›   Error: Invalid token provided
- ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005806
+ ›   Reference: __ID__
 
 --------------------------------------------stdout:
 [31m✖[39m Failed to publish schema
@@ -700,7 +700,7 @@ exports[`'STITCHING' ('modern') > schema:publish should see Invalid Token error 
 
 --------------------------------------------stderr:
  ›   Error: Invalid token provided
- ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005647
+ ›   Reference: __ID__
 
 --------------------------------------------stdout:
 [31m✖[39m Failed to publish schema

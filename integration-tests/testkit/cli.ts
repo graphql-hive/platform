@@ -9,19 +9,6 @@ import { getServiceHost } from './utils';
 const binPath = resolve(__dirname, '../../packages/libraries/cli/bin/run');
 const cliDir = resolve(__dirname, '../../packages/libraries/cli');
 
-export class ExecError extends Error {
-  public readonly stdout: string;
-  public readonly stderr: string;
-  public readonly exitCode: number;
-
-  constructor(result: ExecaReturnValue<string>) {
-    super(result.stderr);
-    this.stdout = result.stdout;
-    this.stderr = result.stderr;
-    this.exitCode = result.exitCode;
-  }
-}
-
 async function generateTmpFile(content: string, extension: string) {
   const dir = tmpdir();
   const fileName = randomUUID();
@@ -42,7 +29,7 @@ async function exec(cmd: string) {
   });
 
   if (outout.failed) {
-    throw new ExecError(outout);
+    throw new Error(outout.stderr);
   }
 
   return outout.stdout;
