@@ -34,19 +34,20 @@ describe.each`
       });
       const { secret } = await createTargetAccessToken({});
 
-      const result = await schemaPublish([
-        ...(json ? ['--json'] : []),
-        '--registry.accessToken',
-        secret,
-        '--author',
-        'Kamil',
-        '--commit',
-        'abc123',
-        ...serviceNameArgs,
-        ...serviceUrlArgs,
-        'fixtures/init-schema-detailed.graphql',
-      ]);
-      expect(result).toMatchSnapshot();
+      await expect(
+        schemaPublish([
+          ...(json ? ['--json'] : []),
+          '--registry.accessToken',
+          secret,
+          '--author',
+          'Kamil',
+          '--commit',
+          'abc123',
+          ...serviceNameArgs,
+          ...serviceUrlArgs,
+          'fixtures/init-schema-detailed.graphql',
+        ]),
+      ).resolves.toMatchSnapshot();
 
       await expect(
         schemaCheck([
@@ -60,51 +61,58 @@ describe.each`
     },
   );
 
-  test.concurrent('can publish and check a schema with target:registry:read access', async () => {
-    const { createOrg } = await initSeed().createOwner();
-    const { inviteAndJoinMember, createProject } = await createOrg();
-    await inviteAndJoinMember();
-    const { createTargetAccessToken } = await createProject(projectType, {
-      useLegacyRegistryModels: model === 'legacy',
-    });
-    const { secret } = await createTargetAccessToken({});
+  test.concurrent(
+    'can publish and check a schema with target:registry:read access',
+    async ({ expect }) => {
+      const { createOrg } = await initSeed().createOwner();
+      const { inviteAndJoinMember, createProject } = await createOrg();
+      await inviteAndJoinMember();
+      const { createTargetAccessToken } = await createProject(projectType, {
+        useLegacyRegistryModels: model === 'legacy',
+      });
+      const { secret } = await createTargetAccessToken({});
 
-    await schemaPublish([
-      ...(json ? ['--json'] : []),
-      '--registry.accessToken',
-      secret,
-      '--author',
-      'Kamil',
-      '--commit',
-      'abc123',
-      ...serviceNameArgs,
-      ...serviceUrlArgs,
-      'fixtures/init-schema.graphql',
-    ]);
+      await expect(
+        schemaPublish([
+          ...(json ? ['--json'] : []),
+          '--registry.accessToken',
+          secret,
+          '--author',
+          'Kamil',
+          '--commit',
+          'abc123',
+          ...serviceNameArgs,
+          ...serviceUrlArgs,
+          'fixtures/init-schema.graphql',
+        ]),
+      ).resolves.toMatchSnapshot();
 
-    await schemaCheck([
-      ...(json ? ['--json'] : []),
-      '--service',
-      'test',
-      '--registry.accessToken',
-      secret,
-      'fixtures/nonbreaking-schema.graphql',
-    ]);
+      await expect(
+        schemaCheck([
+          ...(json ? ['--json'] : []),
+          '--service',
+          'test',
+          '--registry.accessToken',
+          secret,
+          'fixtures/nonbreaking-schema.graphql',
+        ]),
+      ).resolves.toMatchSnapshot();
 
-    await expect(
-      schemaCheck([
-        ...(json ? ['--json'] : []),
-        ...serviceNameArgs,
-        '--registry.accessToken',
-        secret,
-        'fixtures/breaking-schema.graphql',
-      ]),
-    ).rejects.toThrowError(/breaking/i);
-  });
+      await expect(
+        schemaCheck([
+          ...(json ? ['--json'] : []),
+          ...serviceNameArgs,
+          '--registry.accessToken',
+          secret,
+          'fixtures/breaking-schema.graphql',
+        ]),
+      ).rejects.toMatchSnapshot();
+    },
+  );
 
   test.concurrent(
     'publishing invalid schema SDL provides meaningful feedback for the user.',
-    async () => {
+    async ({ expect }) => {
       const { createOrg } = await initSeed().createOwner();
       const { inviteAndJoinMember, createProject } = await createOrg();
       await inviteAndJoinMember();
@@ -132,13 +140,12 @@ describe.each`
         if (err === allocatedError) {
           throw err;
         }
-        expect(String(err)).toMatch(`The SDL is not valid at line 1, column 1:`);
-        expect(String(err)).toMatch(`Syntax Error: Unexpected Name "iliketurtles"`);
+        expect(err).toMatchSnapshot();
       }
     },
   );
 
-  test.concurrent('schema:publish should print a link to the website', async () => {
+  test.concurrent('schema:publish should print a link to the website', async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { organization, inviteAndJoinMember, createProject } = await createOrg();
     await inviteAndJoinMember();
@@ -157,7 +164,7 @@ describe.each`
         'fixtures/init-schema.graphql',
       ]),
     ).resolves.toMatch(
-      `Available at ${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}`,
+      `${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}`,
     );
 
     await expect(
@@ -170,11 +177,11 @@ describe.each`
         'fixtures/nonbreaking-schema.graphql',
       ]),
     ).resolves.toMatch(
-      `Available at ${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}/history/`,
+      `${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}/history/`,
     );
   });
 
-  test.concurrent('schema:check should notify user when registry is empty', async () => {
+  test.concurrent('schema:check should notify user when registry is empty', async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { inviteAndJoinMember, createProject } = await createOrg();
     await inviteAndJoinMember();
@@ -191,10 +198,10 @@ describe.each`
         ...serviceNameArgs,
         'fixtures/init-schema.graphql',
       ]),
-    ).resolves.toMatch('empty');
+    ).resolves.toMatchSnapshot();
   });
 
-  test.concurrent('schema:check should throw on corrupted schema', async () => {
+  test.concurrent('schema:check should throw on corrupted schema', async ({ expect }) => {
     const { createOrg } = await initSeed().createOwner();
     const { inviteAndJoinMember, createProject } = await createOrg();
     await inviteAndJoinMember();
@@ -203,19 +210,20 @@ describe.each`
     });
     const { secret } = await createTargetAccessToken({});
 
-    const output = schemaCheck([
-      ...(json ? ['--json'] : []),
-      ...serviceNameArgs,
-      '--registry.accessToken',
-      secret,
-      'fixtures/missing-type.graphql',
-    ]);
-    await expect(output).rejects.toThrowError('Unknown type');
+    await expect(
+      schemaCheck([
+        ...(json ? ['--json'] : []),
+        ...serviceNameArgs,
+        '--registry.accessToken',
+        secret,
+        'fixtures/missing-type.graphql',
+      ]),
+    ).rejects.toMatchSnapshot();
   });
 
   test.concurrent(
     'schema:publish should see Invalid Token error when token is invalid',
-    async () => {
+    async ({ expect }) => {
       const invalidToken = createHash('md5').update('nope').digest('hex').substring(0, 31);
       const output = schemaPublish([
         ...(json ? ['--json'] : []),
@@ -225,80 +233,80 @@ describe.each`
         invalidToken,
         'fixtures/init-schema.graphql',
       ]);
-
-      await expect(output).rejects.toThrowError('Invalid token provided');
+      await expect(output).rejects.toMatchSnapshot();
     },
   );
 
   test
     .skipIf(projectType === ProjectType.Single)
-    .concurrent('can update the service url and show it in comparison query', async () => {
-      const { createOrg } = await initSeed().createOwner();
-      const { inviteAndJoinMember, createProject } = await createOrg();
-      await inviteAndJoinMember();
-      const { createTargetAccessToken, compareToPreviousVersion, fetchVersions } =
-        await createProject(projectType, {
-          useLegacyRegistryModels: model === 'legacy',
+    .concurrent(
+      'can update the service url and show it in comparison query',
+      async ({ expect, org }) => {
+        await org.inviteAndJoinMember();
+        const { createTargetAccessToken, compareToPreviousVersion, fetchVersions } =
+          await org.createProject(projectType, {
+            useLegacyRegistryModels: model === 'legacy',
+          });
+        const { secret } = await createTargetAccessToken({});
+        const cli = createCLI({
+          readonly: secret,
+          readwrite: secret,
         });
-      const { secret } = await createTargetAccessToken({});
-      const cli = createCLI({
-        readonly: secret,
-        readwrite: secret,
-      });
 
-      const sdl = /* GraphQL */ `
-        type Query {
-          users: [User!]
-        }
+        const sdl = /* GraphQL */ `
+          type Query {
+            users: [User!]
+          }
 
-        type User {
-          id: ID!
-          name: String!
-          email: String!
-        }
-      `;
+          type User {
+            id: ID!
+            name: String!
+            email: String!
+          }
+        `;
 
-      await expect(
-        cli.publish({
-          sdl,
-          commit: 'push1',
-          serviceName,
-          serviceUrl,
-          expect: 'latest-composable',
-        }),
-      ).resolves.toMatch(/published/i);
+        await expect(
+          cli.publish({
+            sdl,
+            commit: 'push1',
+            serviceName,
+            serviceUrl,
+            expect: 'latest-composable',
+          }),
+        ).resolves.toMatchSnapshot();
 
-      const newServiceUrl = serviceUrl + '/new';
-      await expect(
-        cli.publish({
-          sdl,
-          commit: 'push2',
-          serviceName,
-          serviceUrl: newServiceUrl,
-          expect: 'latest-composable',
-        }),
-      ).resolves.toMatch(/New service url/i);
+        const newServiceUrl = serviceUrl + '/new';
+        await expect(
+          cli.publish({
+            sdl,
+            commit: 'push2',
+            serviceName,
+            serviceUrl: newServiceUrl,
+            expect: 'latest-composable',
+          }),
+        ).resolves.toMatchSnapshot();
 
-      const versions = await fetchVersions(3);
-      expect(versions).toHaveLength(2);
+        const versions = await fetchVersions(3);
+        expect(versions).toHaveLength(2);
 
-      const versionWithNewServiceUrl = versions[0];
+        const versionWithNewServiceUrl = versions[0];
 
-      expect(await compareToPreviousVersion(versionWithNewServiceUrl.id)).toEqual(
-        expect.objectContaining({
-          target: expect.objectContaining({
-            schemaVersion: expect.objectContaining({
-              safeSchemaChanges: expect.objectContaining({
-                nodes: expect.arrayContaining([
-                  expect.objectContaining({
-                    criticality: 'Dangerous',
-                    message: `[${serviceName}] New service url: '${newServiceUrl}' (previously: '${serviceUrl}')`,
-                  }),
-                ]),
+        expect(await compareToPreviousVersion(versionWithNewServiceUrl.id)).toEqual(
+          expect.objectContaining({
+            target: expect.objectContaining({
+              schemaVersion: expect.objectContaining({
+                safeSchemaChanges: expect.objectContaining({
+                  nodes: expect.arrayContaining([
+                    expect.objectContaining({
+                      criticality: 'Dangerous',
+                      message: `[${serviceName}] New service url: '${newServiceUrl}' (previously: '${serviceUrl}')`,
+                    }),
+                  ]),
+                }),
               }),
             }),
           }),
-        }),
-      );
-    });
+        );
+      },
+    );
 });

@@ -30,6 +30,97 @@ View full report:
 http://__PATH__
 `;
 
+exports[`'FEDERATION' ('legacy') > can publish and check a schema with target:registry:read access 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'FEDERATION' ('legacy') > can publish and check a schema with target:registry:read access 2`] = `
+[33mℹ[39m Detected 1 change
+
+   Safe changes:
+   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'FEDERATION' ('legacy') > can publish and check a schema with target:registry:read access 3`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 1 change
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'FEDERATION' ('legacy') > can update the service url and show it in comparison query 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'FEDERATION' ('legacy') > can update the service url and show it in comparison query 2`] = `[32m✔[39m New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
+
+exports[`'FEDERATION' ('legacy') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
+`;
+
+exports[`'FEDERATION' ('legacy') > schema:check should notify user when registry is empty 1`] = `
+[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+View full report:
+http://__PATH__
+`;
+
+exports[`'FEDERATION' ('legacy') > schema:check should throw on corrupted schema 1`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 3 errors
+
+   [31m-[39m Unknown type: [1mUser[22m.
+   [31m-[39m Unknown type [1mUser[22m.
+   [31m-[39m Type Query must define one or more fields.
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'FEDERATION' ('legacy') > schema:publish should see Invalid Token error when token is invalid 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+ ›   Error: Invalid token provided
+ ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005866
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
+`;
+
 exports[`'FEDERATION' ('modern') > can publish a schema with breaking, warning and safe changes 1`] = `
 [32m✔[39m Published initial schema.
 [33mℹ[39m Available at http://__PATH__
@@ -58,6 +149,95 @@ exports[`'FEDERATION' ('modern') > can publish a schema with breaking, warning a
 
 View full report:
 http://__PATH__
+`;
+
+exports[`'FEDERATION' ('modern') > can publish and check a schema with target:registry:read access 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'FEDERATION' ('modern') > can publish and check a schema with target:registry:read access 2`] = `
+[33mℹ[39m Detected 1 change
+
+   Safe changes:
+   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'FEDERATION' ('modern') > can publish and check a schema with target:registry:read access 3`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 1 change
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'FEDERATION' ('modern') > can update the service url and show it in comparison query 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'FEDERATION' ('modern') > can update the service url and show it in comparison query 2`] = `[32m✔[39m New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
+
+exports[`'FEDERATION' ('modern') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
+`;
+
+exports[`'FEDERATION' ('modern') > schema:check should notify user when registry is empty 1`] = `
+[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+View full report:
+http://__PATH__
+`;
+
+exports[`'FEDERATION' ('modern') > schema:check should throw on corrupted schema 1`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m [test] Unknown type User
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'FEDERATION' ('modern') > schema:publish should see Invalid Token error when token is invalid 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+ ›   Error: Invalid token provided
+ ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005703
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
 `;
 
 exports[`'SINGLE' ('legacy') > can publish a schema with breaking, warning and safe changes 1`] = `
@@ -90,6 +270,88 @@ View full report:
 http://__PATH__
 `;
 
+exports[`'SINGLE' ('legacy') > can publish and check a schema with target:registry:read access 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'SINGLE' ('legacy') > can publish and check a schema with target:registry:read access 2`] = `
+[33mℹ[39m Detected 1 change
+
+   Safe changes:
+   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('legacy') > can publish and check a schema with target:registry:read access 3`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 1 change
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('legacy') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
+`;
+
+exports[`'SINGLE' ('legacy') > schema:check should notify user when registry is empty 1`] = `
+[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('legacy') > schema:check should throw on corrupted schema 1`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Unknown type [1mUser[22m.
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('legacy') > schema:publish should see Invalid Token error when token is invalid 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+ ›   Error: Invalid token provided
+ ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005760
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
+`;
+
 exports[`'SINGLE' ('modern') > can publish a schema with breaking, warning and safe changes 1`] = `
 [32m✔[39m Published initial schema.
 [33mℹ[39m Available at http://__PATH__
@@ -118,6 +380,88 @@ exports[`'SINGLE' ('modern') > can publish a schema with breaking, warning and s
 
 View full report:
 http://__PATH__
+`;
+
+exports[`'SINGLE' ('modern') > can publish and check a schema with target:registry:read access 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'SINGLE' ('modern') > can publish and check a schema with target:registry:read access 2`] = `
+[33mℹ[39m Detected 1 change
+
+   Safe changes:
+   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('modern') > can publish and check a schema with target:registry:read access 3`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 1 change
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('modern') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
+`;
+
+exports[`'SINGLE' ('modern') > schema:check should notify user when registry is empty 1`] = `
+[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('modern') > schema:check should throw on corrupted schema 1`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Unknown type [1mUser[22m.
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'SINGLE' ('modern') > schema:publish should see Invalid Token error when token is invalid 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+ ›   Error: Invalid token provided
+ ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005606
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
 `;
 
 exports[`'STITCHING' ('legacy') > can publish a schema with breaking, warning and safe changes 1`] = `
@@ -150,6 +494,97 @@ View full report:
 http://__PATH__
 `;
 
+exports[`'STITCHING' ('legacy') > can publish and check a schema with target:registry:read access 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'STITCHING' ('legacy') > can publish and check a schema with target:registry:read access 2`] = `
+[33mℹ[39m Detected 1 change
+
+   Safe changes:
+   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('legacy') > can publish and check a schema with target:registry:read access 3`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 1 change
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('legacy') > can update the service url and show it in comparison query 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'STITCHING' ('legacy') > can update the service url and show it in comparison query 2`] = `[32m✔[39m New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
+
+exports[`'STITCHING' ('legacy') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
+`;
+
+exports[`'STITCHING' ('legacy') > schema:check should notify user when registry is empty 1`] = `
+[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('legacy') > schema:check should throw on corrupted schema 1`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 3 errors
+
+   [31m-[39m Unknown type [1mUser[22m.
+   [31m-[39m Unknown type: [1mUser[22m.
+   [31m-[39m Error: Unknown type: [1mUser[22m.
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('legacy') > schema:publish should see Invalid Token error when token is invalid 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+ ›   Error: Invalid token provided
+ ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005806
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
+`;
+
 exports[`'STITCHING' ('modern') > can publish a schema with breaking, warning and safe changes 1`] = `
 [32m✔[39m Published initial schema.
 [33mℹ[39m Available at http://__PATH__
@@ -178,4 +613,95 @@ exports[`'STITCHING' ('modern') > can publish a schema with breaking, warning an
 
 View full report:
 http://__PATH__
+`;
+
+exports[`'STITCHING' ('modern') > can publish and check a schema with target:registry:read access 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'STITCHING' ('modern') > can publish and check a schema with target:registry:read access 2`] = `
+[33mℹ[39m Detected 1 change
+
+   Safe changes:
+   [32m-[39m Field [1mnickname[22m was added to object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('modern') > can publish and check a schema with target:registry:read access 3`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 1 error
+
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+[33mℹ[39m Detected 1 change
+
+   Breaking changes:
+   [31m-[39m Field [1memail[22m was removed from object type [1mUser[22m
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('modern') > can update the service url and show it in comparison query 1`] = `
+[32m✔[39m Published initial schema.
+[33mℹ[39m Available at http://__PATH__
+`;
+
+exports[`'STITCHING' ('modern') > can update the service url and show it in comparison query 2`] = `[32m✔[39m New service url: http://__PATH__ (previously: http://__PATH__ Available at http://__PATH__`;
+
+exports[`'STITCHING' ('modern') > publishing invalid schema SDL provides meaningful feedback for the user. 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+    Error: The SDL is not valid at line 1, column 1:
+     Syntax Error: Unexpected Name "iliketurtles".
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
+`;
+
+exports[`'STITCHING' ('modern') > schema:check should notify user when registry is empty 1`] = `
+[32m✔[39m Schema registry is empty, nothing to compare your schema with.
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('modern') > schema:check should throw on corrupted schema 1`] = `
+--------------------------------------------exitCode:
+1
+
+--------------------------------------------stderr:
+
+
+--------------------------------------------stdout:
+[31m✖[39m Detected 3 errors
+
+   [31m-[39m Unknown type [1mUser[22m.
+   [31m-[39m Unknown type: [1mUser[22m.
+   [31m-[39m Unknown type: [1mUser[22m.
+
+View full report:
+http://__PATH__
+`;
+
+exports[`'STITCHING' ('modern') > schema:publish should see Invalid Token error when token is invalid 1`] = `
+--------------------------------------------exitCode:
+2
+
+--------------------------------------------stderr:
+ ›   Error: Invalid token provided
+ ›   Reference: qEAobFbnSBeHsUxPJW4r2A/0000005647
+
+--------------------------------------------stdout:
+[31m✖[39m Failed to publish schema
 `;
