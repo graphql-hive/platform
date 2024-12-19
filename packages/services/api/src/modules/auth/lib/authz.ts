@@ -322,35 +322,35 @@ function schemaCheckOrPublishIdentity(
  * This is the place to do so.
  */
 const actionDefinitions = {
-  'organization:describe': defaultOrgIdentity,
-  'organization:modifySlug': defaultOrgIdentity,
-  'organization:delete': defaultOrgIdentity,
-  'gitHubIntegration:modify': defaultOrgIdentity,
-  'slackIntegration:modify': defaultOrgIdentity,
-  'oidc:modify': defaultOrgIdentity,
-  'support:manageTickets': defaultOrgIdentity,
-  'billing:describe': defaultOrgIdentity,
-  'billing:update': defaultOrgIdentity,
+  'organization:describe': defaultOrgIdentity, // done
+  'organization:modifySlug': defaultOrgIdentity, // done
+  'organization:delete': defaultOrgIdentity, // done
+  'gitHubIntegration:modify': defaultOrgIdentity, // done
+  'slackIntegration:modify': defaultOrgIdentity, // done
+  'oidc:modify': defaultOrgIdentity, // done
+  'support:manageTickets': defaultOrgIdentity, // done
+  'billing:describe': defaultOrgIdentity, // done
+  'billing:update': defaultOrgIdentity, // done
   'targetAccessToken:modify': defaultTargetIdentity,
   'cdnAccessToken:modify': defaultTargetIdentity,
-  'member:describe': defaultOrgIdentity,
-  'member:assignRole': defaultOrgIdentity,
-  'member:modifyRole': defaultOrgIdentity,
-  'member:removeMember': defaultOrgIdentity,
-  'member:manageInvites': defaultOrgIdentity,
-  'project:create': defaultOrgIdentity,
-  'project:describe': defaultProjectIdentity,
-  'project:delete': defaultProjectIdentity,
-  'project:modifySettings': defaultProjectIdentity,
+  'member:describe': defaultOrgIdentity, // done
+  'member:assignRole': defaultOrgIdentity, // done
+  'member:modifyRole': defaultOrgIdentity, // done
+  'member:removeMember': defaultOrgIdentity, // done
+  'member:manageInvites': defaultOrgIdentity, // done
+  'project:create': defaultOrgIdentity, // done
+  'project:describe': defaultProjectIdentity, // done
+  'project:delete': defaultProjectIdentity, // done
+  'project:modifySettings': defaultProjectIdentity, // done
   'alert:modify': defaultProjectIdentity,
-  'schemaLinting:modifyOrganizationRules': defaultOrgIdentity,
+  'schemaLinting:modifyOrganizationRules': defaultOrgIdentity, // done
   'schemaLinting:modifyProjectRules': defaultProjectIdentity,
-  'target:create': defaultProjectIdentity,
-  'target:delete': defaultTargetIdentity,
-  'target:modifySettings': defaultTargetIdentity,
-  'laboratory:describe': defaultTargetIdentity,
-  'laboratory:modify': defaultTargetIdentity,
-  'appDeployment:describe': defaultTargetIdentity,
+  'target:create': defaultProjectIdentity, // done
+  'target:delete': defaultTargetIdentity, // done
+  'target:modifySettings': defaultTargetIdentity, // done
+  'laboratory:describe': defaultTargetIdentity, // done
+  'laboratory:modify': defaultTargetIdentity, // done
+  'appDeployment:describe': defaultTargetIdentity, // done
   'appDeployment:create': defaultAppDeploymentIdentity,
   'appDeployment:publish': defaultAppDeploymentIdentity,
   'appDeployment:retire': defaultAppDeploymentIdentity,
