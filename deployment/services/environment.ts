@@ -39,6 +39,7 @@ export function prepareEnvironment(input: {
     release: input.release,
     appDns,
     rootDns: input.rootDns,
+    labWorkerDns: `lab-worker.${input.rootDns}`,
   };
 }
 
