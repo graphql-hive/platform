@@ -23,7 +23,6 @@ import {
 import { Subtitle, Title } from '@/components/ui/page';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
-import { env } from '@/env/frontend';
 import { FragmentType, graphql, useFragment } from '@/gql';
 import { useLocalStorage, useToggle } from '@/lib/hooks';
 import { GraphiQLPlugin } from '@graphiql/react';
@@ -99,14 +98,12 @@ const monacoProps = {
   },
 } satisfies Record<'script' | 'env', ComponentPropsWithoutRef<typeof MonacoEditor>>;
 
-type PayloadLog = { type: 'log'; message: string };
+type PayloadLog = { type: 'log'; log: string };
 type PayloadError = { type: 'error'; error: Error };
 type PayloadResult = { type: 'result'; environmentVariables: Record<string, unknown> };
 type PayloadReady = { type: 'ready' };
 
 type WorkerMessagePayload = PayloadResult | PayloadLog | PayloadError | PayloadReady;
-
-const PREFLIGHT_TIMEOUT = 30_000;
 
 const UpdatePreflightScriptMutation = graphql(`
   mutation UpdatePreflightScript($input: UpdatePreflightScriptInput!) {
@@ -155,7 +152,7 @@ const enum PreflightWorkerState {
 export function usePreflightScript(args: {
   target: FragmentType<typeof PreflightScript_TargetFragment> | null;
 }) {
-  const iframeRef = useRef<HTMLIFrameElement | undefined>();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const target = useFragment(PreflightScript_TargetFragment, args.target);
   const [isPreflightScriptEnabled, setIsPreflightScriptEnabled] = useLocalStorage(
@@ -206,8 +203,7 @@ export function usePreflightScript(args: {
       const isFinishedD = Promise.withResolvers<void>();
 
       // eslint-disable-next-line no-inner-declarations
-      function eventHandler(ev: MessageEvent) {
-        console.log(ev.data);
+      function eventHandler(ev: MessageEvent<WorkerMessagePayload>) {
         if (ev.data.type === 'result') {
           const mergedEnvironmentVariables = {
             ...safeParseJSON(latestEnvironmentVariablesRef.current),
@@ -310,7 +306,6 @@ export function usePreflightScript(args: {
          * In PROD the webworker is not
          */
         sandbox={import.meta.env.DEV ? 'allow-scripts allow-same-origin' : 'allow-scripts'}
-        // @ts-expect-error ref typings
         ref={iframeRef}
       />
     ),
@@ -518,7 +513,7 @@ function PreflightScriptModal({
           <DialogTitle>Edit your Preflight Script</DialogTitle>
           <DialogDescription>
             This script will run in each user's browser and be stored in plain text on our servers.
-            Don't share any secrets here 🤫.
+            Don't share any secrets here.
             <br />
             All team members can view the script and toggle it off when they need to.
           </DialogDescription>
