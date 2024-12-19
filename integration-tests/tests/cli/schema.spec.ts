@@ -122,9 +122,8 @@ describe.each`
       });
       const { secret } = await createTargetAccessToken({});
 
-      const allocatedError = new Error('Should have thrown.');
-      try {
-        await schemaPublish([
+      await expect(
+        schemaPublish([
           ...(json ? ['--json'] : []),
           '--registry.accessToken',
           secret,
@@ -135,14 +134,8 @@ describe.each`
           ...serviceNameArgs,
           ...serviceUrlArgs,
           'fixtures/init-invalid-schema.graphql',
-        ]);
-        throw allocatedError;
-      } catch (err) {
-        if (err === allocatedError) {
-          throw err;
-        }
-        expect(err).toMatchSnapshot('schemaPublish');
-      }
+        ]),
+      ).rejects.toMatchSnapshot('schemaPublish');
     },
   );
 
