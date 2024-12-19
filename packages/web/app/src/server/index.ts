@@ -101,7 +101,7 @@ async function main() {
 
   server.get(preflightWorkerEmbed.path, (_req, reply) => {
     if (isDev) {
-      // If in development mode, return the Vite index.html.
+      // If in development mode, return the Vite preflight-worker-embed.html.
       return reply.html();
     }
 
