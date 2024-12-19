@@ -6,7 +6,7 @@ import { initSeed } from '../../testkit/seed';
 import { test } from '../../testkit/test';
 import { SnapshotSerializers } from './__snapshot_serializers__/__';
 
-expect.addSnapshotSerializer(SnapshotSerializers.path);
+expect.addSnapshotSerializer(SnapshotSerializers.cliOutput);
 
 describe.each`
   projectType               | model       | json
@@ -16,7 +16,8 @@ describe.each`
   ${ProjectType.Single}     | ${'legacy'} | ${false}
   ${ProjectType.Stitching}  | ${'legacy'} | ${false}
   ${ProjectType.Federation} | ${'legacy'} | ${false}
-`('$projectType ($model)', ({ projectType, model, json }) => {
+  ${ProjectType.Single}     | ${'modern'} | ${true}
+`('projectType: $projectType | model: $model | json: $json', ({ projectType, model, json }) => {
   const serviceNameArgs = projectType === ProjectType.Single ? [] : ['--service', 'test'];
   const serviceUrlArgs =
     projectType === ProjectType.Single ? [] : ['--url', 'http://localhost:4000'];
@@ -25,11 +26,9 @@ describe.each`
 
   test.concurrent(
     'can publish a schema with breaking, warning and safe changes',
-    async ({ expect }) => {
-      const { createOrg } = await initSeed().createOwner();
-      const { inviteAndJoinMember, createProject } = await createOrg();
-      await inviteAndJoinMember();
-      const { createTargetAccessToken } = await createProject(projectType, {
+    async ({ expect, org }) => {
+      await org.inviteAndJoinMember();
+      const { createTargetAccessToken } = await org.createProject(projectType, {
         useLegacyRegistryModels: model === 'legacy',
       });
       const { secret } = await createTargetAccessToken({});
@@ -47,7 +46,7 @@ describe.each`
           ...serviceUrlArgs,
           'fixtures/init-schema-detailed.graphql',
         ]),
-      ).resolves.toMatchSnapshot();
+      ).resolves.toMatchSnapshot('SchemaPublish');
 
       await expect(
         schemaCheck([
@@ -57,17 +56,15 @@ describe.each`
           secret,
           'fixtures/breaking-schema-detailed.graphql',
         ]),
-      ).rejects.toMatchSnapshot();
+      ).rejects.toMatchSnapshot('schemaCheck');
     },
   );
 
   test.concurrent(
     'can publish and check a schema with target:registry:read access',
-    async ({ expect }) => {
-      const { createOrg } = await initSeed().createOwner();
-      const { inviteAndJoinMember, createProject } = await createOrg();
-      await inviteAndJoinMember();
-      const { createTargetAccessToken } = await createProject(projectType, {
+    async ({ expect, org }) => {
+      await org.inviteAndJoinMember();
+      const { createTargetAccessToken } = await org.createProject(projectType, {
         useLegacyRegistryModels: model === 'legacy',
       });
       const { secret } = await createTargetAccessToken({});
@@ -85,7 +82,7 @@ describe.each`
           ...serviceUrlArgs,
           'fixtures/init-schema.graphql',
         ]),
-      ).resolves.toMatchSnapshot();
+      ).resolves.toMatchSnapshot('schemaPublish');
 
       await expect(
         schemaCheck([
@@ -96,7 +93,7 @@ describe.each`
           secret,
           'fixtures/nonbreaking-schema.graphql',
         ]),
-      ).resolves.toMatchSnapshot();
+      ).resolves.toMatchSnapshot('schemaCheck (non-breaking)');
 
       await expect(
         schemaCheck([
@@ -106,17 +103,15 @@ describe.each`
           secret,
           'fixtures/breaking-schema.graphql',
         ]),
-      ).rejects.toMatchSnapshot();
+      ).rejects.toMatchSnapshot('schemaCheck (breaking)');
     },
   );
 
   test.concurrent(
     'publishing invalid schema SDL provides meaningful feedback for the user.',
-    async ({ expect }) => {
-      const { createOrg } = await initSeed().createOwner();
-      const { inviteAndJoinMember, createProject } = await createOrg();
-      await inviteAndJoinMember();
-      const { createTargetAccessToken } = await createProject(projectType, {
+    async ({ expect, org }) => {
+      await org.inviteAndJoinMember();
+      const { createTargetAccessToken } = await org.createProject(projectType, {
         useLegacyRegistryModels: model === 'legacy',
       });
       const { secret } = await createTargetAccessToken({});
@@ -140,16 +135,15 @@ describe.each`
         if (err === allocatedError) {
           throw err;
         }
-        expect(err).toMatchSnapshot();
+        // todo: missing json output
+        expect(err).toMatchSnapshot('schemaPublish');
       }
     },
   );
 
-  test.concurrent('schema:publish should print a link to the website', async ({ expect }) => {
-    const { createOrg } = await initSeed().createOwner();
-    const { organization, inviteAndJoinMember, createProject } = await createOrg();
-    await inviteAndJoinMember();
-    const { project, target, createTargetAccessToken } = await createProject(projectType, {
+  test.concurrent('schema:publish should print a link to the website', async ({ expect, org }) => {
+    await org.inviteAndJoinMember();
+    const { createTargetAccessToken, project, target } = await org.createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
     const { secret } = await createTargetAccessToken({});
@@ -164,7 +158,7 @@ describe.each`
         'fixtures/init-schema.graphql',
       ]),
     ).resolves.toMatch(
-      `${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}`,
+      `${process.env.HIVE_APP_BASE_URL}/${org.organization.slug}/${project.slug}/${target.slug}`,
     );
 
     await expect(
@@ -177,7 +171,7 @@ describe.each`
         'fixtures/nonbreaking-schema.graphql',
       ]),
     ).resolves.toMatch(
-      `${process.env.HIVE_APP_BASE_URL}/${organization.slug}/${project.slug}/${target.slug}/history/`,
+      `${process.env.HIVE_APP_BASE_URL}/${org.organization.slug}/${project.slug}/${target.slug}/history/`,
     );
   });
 
@@ -198,14 +192,12 @@ describe.each`
         ...serviceNameArgs,
         'fixtures/init-schema.graphql',
       ]),
-    ).resolves.toMatchSnapshot();
+    ).resolves.toMatchSnapshot('schemaCheck');
   });
 
-  test.concurrent('schema:check should throw on corrupted schema', async ({ expect }) => {
-    const { createOrg } = await initSeed().createOwner();
-    const { inviteAndJoinMember, createProject } = await createOrg();
-    await inviteAndJoinMember();
-    const { createTargetAccessToken } = await createProject(projectType, {
+  test.concurrent('schema:check should throw on corrupted schema', async ({ expect, org }) => {
+    await org.inviteAndJoinMember();
+    const { createTargetAccessToken } = await org.createProject(projectType, {
       useLegacyRegistryModels: model === 'legacy',
     });
     const { secret } = await createTargetAccessToken({});
@@ -218,7 +210,7 @@ describe.each`
         secret,
         'fixtures/missing-type.graphql',
       ]),
-    ).rejects.toMatchSnapshot();
+    ).rejects.toMatchSnapshot('schemaCheck');
   });
 
   test.concurrent(
@@ -233,7 +225,8 @@ describe.each`
         invalidToken,
         'fixtures/init-schema.graphql',
       ]);
-      await expect(output).rejects.toMatchSnapshot();
+      // todo: missing json output
+      await expect(output).rejects.toMatchSnapshot('schemaPublish');
     },
   );
 
@@ -273,7 +266,7 @@ describe.each`
             serviceUrl,
             expect: 'latest-composable',
           }),
-        ).resolves.toMatchSnapshot();
+        ).resolves.toMatchSnapshot('schemaPublish');
 
         const newServiceUrl = serviceUrl + '/new';
         await expect(
@@ -284,7 +277,7 @@ describe.each`
             serviceUrl: newServiceUrl,
             expect: 'latest-composable',
           }),
-        ).resolves.toMatchSnapshot();
+        ).resolves.toMatchSnapshot('schemaPublish');
 
         const versions = await fetchVersions(3);
         expect(versions).toHaveLength(2);

@@ -2,7 +2,7 @@ import stripAnsi from 'strip-ansi';
 import type { SnapshotSerializer } from 'vitest';
 import { ExecaError } from '@esm2cjs/execa';
 
-export const path: SnapshotSerializer = {
+export const cliOutput: SnapshotSerializer = {
   test: (value: unknown) => {
     if (typeof value === 'string') {
       return variableReplacements.some(replacement => replacement.pattern.test(value));
@@ -11,16 +11,21 @@ export const path: SnapshotSerializer = {
   },
   serialize: (value: unknown) => {
     if (typeof value === 'string') {
-      return clean(value);
+      let valueSerialized = '';
+      valueSerialized += ':::::::::::::::: CLI SUCCESS OUTPUT :::::::::::::::::\n';
+      valueSerialized += '\nstdout--------------------------------------------:\n';
+      valueSerialized += clean(value);
+      return valueSerialized;
     }
     if (isExecaError(value)) {
       let valueSerialized = '';
-      valueSerialized += '--------------------------------------------exitCode:\n';
+      valueSerialized += ':::::::::::::::: CLI FAILURE OUTPUT :::::::::::::::\n';
+      valueSerialized += 'exitCode------------------------------------------:\n';
       valueSerialized += value.exitCode;
-      valueSerialized += '\n\n--------------------------------------------stderr:\n';
-      valueSerialized += clean(value.stderr);
-      valueSerialized += '\n\n--------------------------------------------stdout:\n';
-      valueSerialized += clean(value.stdout);
+      valueSerialized += '\nstderr--------------------------------------------:\n';
+      valueSerialized += clean(value.stderr || '__NONE__');
+      valueSerialized += '\nstdout--------------------------------------------:\n';
+      valueSerialized += clean(value.stdout || '__NONE__');
       return valueSerialized;
     }
     return String(value);
