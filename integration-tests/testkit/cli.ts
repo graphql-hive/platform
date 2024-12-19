@@ -55,7 +55,7 @@ export type CLI = ReturnType<typeof createCLI>;
 export function createCLI(tokens: { readwrite: string; readonly: string }) {
   let publishCount = 0;
 
-  async function publish({
+  async function schemaPublish({
     sdl,
     serviceName,
     serviceUrl,
@@ -155,7 +155,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     return await cmd;
   }
 
-  async function check({
+  async function schemaCheck({
     sdl,
     serviceName,
     expect: expectedStatus,
@@ -177,7 +177,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     return cmd;
   }
 
-  async function deleteCommand({
+  async function schemaDelete({
     serviceName,
     expect: expectedStatus,
   }: {
@@ -238,7 +238,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     return cmd;
   }
 
-  async function devCommand(args: Static<typeof HiveCLI.Commands.Dev.parameters.named>) {
+  async function dev(args: Static<typeof HiveCLI.Commands.Dev.parameters.named>) {
     const schema = await Promise.all(
       args.schema?.map(async schema => generateTmpFile(schema, 'graphql')) ?? [],
     );
@@ -252,9 +252,9 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
   }
 
   return {
-    publish,
-    check,
-    delete: deleteCommand,
-    dev: devCommand,
+    publish: schemaPublish,
+    check: schemaCheck,
+    delete: schemaDelete,
+    dev,
   };
 }
