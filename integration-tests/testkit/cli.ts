@@ -281,7 +281,7 @@ export function createCLI(tokens: { readwrite: string; readonly: string }) {
     return hiveCLI.dev({
       write: input.write,
       ...remoteFlags,
-      ...(servicesFlags as any), // todo: type-level support for flag multiples
+      ...servicesFlags,
     });
   }
 

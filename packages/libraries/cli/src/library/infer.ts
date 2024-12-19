@@ -23,7 +23,7 @@ type InferFunctionParameters<$Command extends typeof BaseCommand<any>> =
 		// todo *optional* positional inference
 		& (
 			// @ts-expect-error fixme
-			$Command['parameters']['positional'] extends tb.Tuple<any>
+			'positional' extends keyof $Command['parameters']
 			? {
 				// @ts-expect-error fixme
 				$positional: tb.Static<$Command['parameters']['positional']>

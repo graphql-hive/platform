@@ -111,9 +111,9 @@ export default class Dev extends Command<typeof Dev> {
     named: tb.Object({
       'registry.endpoint': tb.Optional(tb.String()),
       'registry.accessToken': tb.Optional(tb.String()),
-      service: tb.Optional(tb.String()),
-      url: tb.Optional(tb.String()),
-      schema: tb.Optional(tb.String()),
+      service: tb.Optional(tb.Array(tb.String())),
+      url: tb.Optional(tb.Array(tb.String())),
+      schema: tb.Optional(tb.Array(tb.String())),
       watch: tb.Optional(tb.Boolean()),
       'watch.interval': tb.Optional(tb.Number()),
       write: tb.Optional(tb.String()),
