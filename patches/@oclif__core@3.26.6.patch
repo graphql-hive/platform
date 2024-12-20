@@ -1,8 +1,8 @@
 diff --git a/lib/command.js b/lib/command.js
-index 2212e16d9b8eb4dd3e575e0f58acef0f4db92849..0d0ae40ea99a551e1dd901dbeba275f4ff770e5d 100644
+index 2212e16d9b8eb4dd3e575e0f58acef0f4db92849..1e023f845a26075a65a714836f3c27bb406aa853 100644
 --- a/lib/command.js
 +++ b/lib/command.js
-@@ -140,6 +140,7 @@ class Command {
+@@ -140,13 +140,19 @@ class Command {
       * @returns {Promise<unknown>} result
       */
      static async run(argv, opts) {
@@ -10,15 +10,19 @@ index 2212e16d9b8eb4dd3e575e0f58acef0f4db92849..0d0ae40ea99a551e1dd901dbeba275f4
          if (!argv)
              argv = process.argv.slice(2);
          // Handle the case when a file URL string is passed in such as 'import.meta.url'; covert to file path.
-@@ -147,6 +148,7 @@ class Command {
+         if (typeof opts === 'string' && opts.startsWith('file://')) {
              opts = (0, node_url_1.fileURLToPath)(opts);
          }
++        console.log('will load config')
++        console.log('opts', opts)
++        console.log('require.main?.filename', require.main?.filename)
++        console.log('__dirname', __dirname)
          const config = await config_1.Config.load(opts || require.main?.filename || __dirname);
 +        console.log('did load config, debug.debug', config.debug)
          const cmd = new this(argv, config);
          if (!cmd.id) {
              const id = cmd.constructor.name.toLowerCase();
-@@ -190,9 +192,12 @@ class Command {
+@@ -190,9 +196,12 @@ class Command {
          }
      }
      async init() {
@@ -31,7 +35,7 @@ index 2212e16d9b8eb4dd3e575e0f58acef0f4db92849..0d0ae40ea99a551e1dd901dbeba275f4
          if (this.config.errlog)
              Errors.config.errlog = this.config.errlog;
          const g = global;
-@@ -302,6 +307,7 @@ class Command {
+@@ -302,6 +311,7 @@ class Command {
          }
      }
      async _run() {
@@ -40,21 +44,30 @@ index 2212e16d9b8eb4dd3e575e0f58acef0f4db92849..0d0ae40ea99a551e1dd901dbeba275f4
          let result;
          try {
 diff --git a/lib/config/config.js b/lib/config/config.js
-index fc3c2862d9b85cbac670d51c94629df6f7e61e6a..46ced0fe7b0ecd609f7448ad0c2bf2b8c60a6360 100644
+index fc3c2862d9b85cbac670d51c94629df6f7e61e6a..edf9280079f1170b4d38fca962490aba02f68998 100644
 --- a/lib/config/config.js
 +++ b/lib/config/config.js
-@@ -429,8 +429,11 @@ class Config {
+@@ -429,8 +429,12 @@ class Config {
              }
          }
          const command = await c.load();
 +        console.log('did command.load')
          await this.runHook('prerun', { Command: command, argv });
 +        console.log('did runHook')
++        console.log('will run command.run with this.debug:', this.debug)
          const result = (await command.run(argv, this));
 +        console.log('did command.run')
          // If plugins:uninstall was run, we need to remove all the uninstalled plugins
          // from this.plugins so that the postrun hook doesn't attempt to run any
          // hooks that might have existed in the uninstalled plugins.
+@@ -625,6 +629,7 @@ class Config {
+         return process.env.USERPROFILE;
+     }
+     _debug() {
++        console.log('this.scopedEnvVarTrue("DEBUG")', this.scopedEnvVarTrue('DEBUG'))
+         if (this.scopedEnvVarTrue('DEBUG'))
+             return 1;
+         try {
 diff --git a/lib/errors/config.js b/lib/errors/config.js
 index fa9837368913762ed76809bf27d0d98f12595ca7..61ea92f2dd53f7d9bd58fece400eea17f13e7d6b 100644
 --- a/lib/errors/config.js
