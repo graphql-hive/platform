@@ -1,3 +1,23 @@
+diff --git a/lib/command.js b/lib/command.js
+index 2212e16d9b8eb4dd3e575e0f58acef0f4db92849..8e8aedf53359c5eb75ea45279389ceb80b90d2a0 100644
+--- a/lib/command.js
++++ b/lib/command.js
+@@ -140,6 +140,7 @@ class Command {
+      * @returns {Promise<unknown>} result
+      */
+     static async run(argv, opts) {
++        console.log('static run')
+         if (!argv)
+             argv = process.argv.slice(2);
+         // Handle the case when a file URL string is passed in such as 'import.meta.url'; covert to file path.
+@@ -302,6 +303,7 @@ class Command {
+         }
+     }
+     async _run() {
++        console.log('command._run')
+         let err;
+         let result;
+         try {
 diff --git a/lib/config/config.js b/lib/config/config.js
 index fc3c2862d9b85cbac670d51c94629df6f7e61e6a..46ced0fe7b0ecd609f7448ad0c2bf2b8c60a6360 100644
 --- a/lib/config/config.js
