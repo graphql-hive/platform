@@ -1,8 +1,8 @@
 diff --git a/lib/errors/config.js b/lib/errors/config.js
-index fa9837368913762ed76809bf27d0d98f12595ca7..e5e6151ccf0a10eb4c8450387726cec0880cdccc 100644
+index fa9837368913762ed76809bf27d0d98f12595ca7..61ea92f2dd53f7d9bd58fece400eea17f13e7d6b 100644
 --- a/lib/errors/config.js
 +++ b/lib/errors/config.js
-@@ -14,6 +14,7 @@ function displayWarnings() {
+@@ -14,9 +14,11 @@ function displayWarnings() {
  }
  exports.config = {
      get debug() {
@@ -10,6 +10,10 @@ index fa9837368913762ed76809bf27d0d98f12595ca7..e5e6151ccf0a10eb4c8450387726cec0
          return Boolean(settings_1.settings.debug);
      },
      set debug(enabled) {
++        console.log('SETTING THE DAMN THING', enabled)
+         settings_1.settings.debug = enabled;
+         if (enabled)
+             displayWarnings();
 diff --git a/lib/errors/errors/pretty-print.js b/lib/errors/errors/pretty-print.js
 index ee08f1c70c4acd98a22846079c0342323ae9c053..58349a144a302681e27ad5cf85a6a3170cb5eef7 100644
 --- a/lib/errors/errors/pretty-print.js
@@ -67,6 +71,18 @@ index ab8cf3d9b13f052f963dee065c1d349e7313c5f1..30530521cf05996aee452728bd013a0b
      return (0, main_1.run)(options.args ?? process.argv.slice(2), options.loadOptions ?? options.dir)
          .then(async (result) => {
          (0, flush_1.flush)();
+diff --git a/lib/main.js b/lib/main.js
+index 3fad85a60c45c0ead854eabc5726403fec48805d..899f3a9323fda2d584ad1402a5d11b58aaeb2cb9 100644
+--- a/lib/main.js
++++ b/lib/main.js
+@@ -89,6 +89,7 @@ async function run(argv, options) {
+     }
+     initMarker?.stop();
+     try {
++        console.log('1 config.debug', config.debug)
+         return await config.runCommand(id, argvSlice, cmd);
+     }
+     finally {
 diff --git a/lib/module-loader.js b/lib/module-loader.js
 index 6162032e60f1e44ecfa19525ee07eecee1186208..58cfe558d025fc29e2e837b4435a3847b6e30585 100644
 --- a/lib/module-loader.js
