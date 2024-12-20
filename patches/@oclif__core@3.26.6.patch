@@ -1,8 +1,20 @@
+diff --git a/lib/errors/errors/pretty-print.js b/lib/errors/errors/pretty-print.js
+index ee08f1c70c4acd98a22846079c0342323ae9c053..58349a144a302681e27ad5cf85a6a3170cb5eef7 100644
+--- a/lib/errors/errors/pretty-print.js
++++ b/lib/errors/errors/pretty-print.js
+@@ -30,6 +30,7 @@ const formatSuggestions = (suggestions) => {
+     return `${label}\n${(0, indent_string_1.default)(multiple, 2)}`;
+ };
+ function prettyPrint(error) {
++    console.log('debug', config_1.config.debug)
+     if (config_1.config.debug) {
+         return error.stack;
+     }
 diff --git a/lib/errors/handle.js b/lib/errors/handle.js
-index 23e4602cb24e1f135a6ef9e5967067e70e93ad26..f0a16ce65cec189986eb64fd959587d94e5fa216 100644
+index 23e4602cb24e1f135a6ef9e5967067e70e93ad26..912058532cd6adad7caec4c6959d5b263356342c 100644
 --- a/lib/errors/handle.js
 +++ b/lib/errors/handle.js
-@@ -23,14 +23,18 @@ exports.Exit = {
+@@ -23,13 +23,18 @@ exports.Exit = {
      },
  };
  async function handle(err) {
@@ -15,13 +27,13 @@ index 23e4602cb24e1f135a6ef9e5967067e70e93ad26..f0a16ce65cec189986eb64fd959587d9
          const shouldPrint = !(err instanceof exit_1.ExitError) && !err.skipOclifErrorHandling;
 +        console.log('shouldPrint', shouldPrint);
          const pretty = (0, pretty_print_1.default)(err);
-+        console.log('pretty', pretty);
++        console.log('pretty---------------------------------------------');
++        console.log(pretty);
++        console.log('pretty---------------------------------------------');
          const stack = (0, clean_stack_1.default)(err.stack || '', { pretty: true });
-+        console.log('stack', stack);
          if (shouldPrint) {
              console.error(pretty ?? stack);
-             const config = cache_1.default.getInstance().get('config');
-@@ -46,7 +50,9 @@ async function handle(err) {
+@@ -46,7 +51,9 @@ async function handle(err) {
              }
          }
          const exitCode = err.oclif?.exit ?? 1;
