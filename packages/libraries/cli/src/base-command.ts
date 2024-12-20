@@ -11,24 +11,10 @@ import { ClientError } from './helpers/errors/client-error';
 import { OmitNever } from './helpers/general';
 import { Tex } from './helpers/tex/__';
 import { tb } from './helpers/typebox/__';
-// todo raise issue with respective ESLint lib author about type imports used in JSDoc being marked as "unused"
-// eslint-disable-next-line
-import type { Infer } from './library/infer';
 import { SchemaOutput } from './schema-output/__';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
-
-  /**
-   * The path to this command as it is executed in your CLI for the purposes of
-   * library inference. See {@link Infer} for more information.
-   *
-   * By default the execution path is inferred by snake-casing your command class name
-   * and then replacing underscores with colons.
-   *
-   * @see https://oclif.io/docs/topics
-   */
-  public static executionPath?: string;
 
   /**
    * The data type returned by this command when executed.
