@@ -22,9 +22,6 @@ patchedDependencies:
   '@graphql-eslint/eslint-plugin@3.20.1':
     hash: n437g5o7zq7pnxdxldn52uql2q
     path: patches/@graphql-eslint__eslint-plugin@3.20.1.patch
-  '@oclif/core@3.26.6':
-    hash: 4eyii4k24ifyewx4dm6ralpkvy
-    path: patches/@oclif__core@3.26.6.patch
   '@oclif/core@4.0.6':
     hash: y5acwfkubqiafo3iitlwsynmki
     path: patches/@oclif__core@4.0.6.patch
@@ -416,7 +413,7 @@ importers:
         version: 3.2.0(graphql@16.9.0)
       '@oclif/core':
         specifier: ^3.26.6
-        version: 3.26.6(patch_hash=4eyii4k24ifyewx4dm6ralpkvy)
+        version: 3.26.6
       '@oclif/plugin-help':
         specifier: 6.0.22
         version: 6.0.22
@@ -20164,7 +20161,7 @@ snapshots:
       - bluebird
       - supports-color
 
-  '@oclif/core@3.26.6(patch_hash=4eyii4k24ifyewx4dm6ralpkvy)':
+  '@oclif/core@3.26.6':
     dependencies:
       '@types/cli-progress': 3.11.5
       ansi-escapes: 4.3.2
@@ -20217,7 +20214,7 @@ snapshots:
 
   '@oclif/plugin-help@6.0.22':
     dependencies:
-      '@oclif/core': 3.26.6(patch_hash=4eyii4k24ifyewx4dm6ralpkvy)
+      '@oclif/core': 3.26.6
 
   '@oclif/plugin-help@6.2.2':
     dependencies:
@@ -20233,7 +20230,7 @@ snapshots:
   '@oclif/plugin-update@4.2.13':
     dependencies:
       '@inquirer/select': 2.3.5
-      '@oclif/core': 3.26.6(patch_hash=4eyii4k24ifyewx4dm6ralpkvy)
+      '@oclif/core': 3.26.6
       chalk: 5.3.0
       debug: 4.3.7(supports-color@8.1.1)
       filesize: 6.4.0
@@ -20245,7 +20242,7 @@ snapshots:
 
   '@oclif/plugin-warn-if-update-available@3.0.19':
     dependencies:
-      '@oclif/core': 3.26.6(patch_hash=4eyii4k24ifyewx4dm6ralpkvy)
+      '@oclif/core': 3.26.6
       chalk: 5.3.0
       debug: 4.3.7(supports-color@8.1.1)
       http-call: 5.3.0
