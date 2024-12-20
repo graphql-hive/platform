@@ -19,12 +19,12 @@ interface TestCase {
 // prettier-ignore
 const testCases: TestCase[] = [
   { command: 'whoami' },
-  // { command: 'schema:publish' },
-  // { command: 'schema:check' },
-  // { command: 'schema:delete' },
-  // { command: 'schema:fetch' },
-  // { command: 'app:create' },
-  // { command: 'app:publish' },
+  { command: 'schema:publish' },
+  { command: 'schema:check' },
+  { command: 'schema:delete' },
+  { command: 'schema:fetch' },
+  { command: 'app:create' },
+  { command: 'app:publish' },
 ];
 
 test.each(testCases)('CLIErrorUserInput - %s', async ({ command, args }) => {
