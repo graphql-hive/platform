@@ -1,23 +1,12 @@
 import { randomUUID } from 'node:crypto';
-import { writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { execaCommand } from '@esm2cjs/execa';
 import { fetchLatestSchema, fetchLatestValidSchema } from './flow';
+import { generateTmpFile } from './fs';
 import { getServiceHost } from './utils';
 
 const binPath = resolve(__dirname, '../../packages/libraries/cli/bin/run');
 const cliDir = resolve(__dirname, '../../packages/libraries/cli');
-
-async function generateTmpFile(content: string, extension: string) {
-  const dir = tmpdir();
-  const fileName = randomUUID();
-  const filepath = join(dir, `${fileName}.${extension}`);
-
-  await writeFile(filepath, content, 'utf-8');
-
-  return filepath;
-}
 
 async function exec(cmd: string) {
   const outout = await execaCommand(`${binPath} ${cmd}`, {
