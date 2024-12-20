@@ -6,6 +6,7 @@ process.removeAllListeners('warning');
 const oclif = require('@oclif/core');
 
 console.log(oclif.settings);
+console.log('process.env["DEBUG"]', process.env['DEBUG']);
 
 oclif
   .execute({ dir: __dirname })
