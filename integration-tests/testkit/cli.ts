@@ -8,8 +8,8 @@ import { getServiceHost } from './utils';
 const binPath = resolve(__dirname, '../../packages/libraries/cli/bin/run');
 const cliDir = resolve(__dirname, '../../packages/libraries/cli');
 
-async function exec(cmd: string) {
-  const outout = await execaCommand(`${binPath} ${cmd}`, {
+export async function exec(cmd: string) {
+  const result = await execaCommand(`${binPath} ${cmd}`, {
     shell: true,
     env: {
       OCLIF_CLI_CUSTOM_PATH: cliDir,
@@ -17,11 +17,11 @@ async function exec(cmd: string) {
     },
   });
 
-  if (outout.failed) {
-    throw new Error(outout.stderr);
+  if (result.failed) {
+    throw new Error('CLI execution marked as "failed".', { cause: result.stderr });
   }
 
-  return outout.stdout;
+  return result.stdout;
 }
 
 export async function schemaPublish(args: string[]) {

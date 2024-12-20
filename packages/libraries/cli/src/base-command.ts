@@ -2,12 +2,9 @@ import { print } from 'graphql';
 import type { ExecutionResult } from 'graphql';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { Command, Errors, Flags, Interfaces } from '@oclif/core';
-import { CommandError } from '@oclif/core/lib/interfaces';
-import { Record } from '@sinclair/typebox';
+import { Command, Flags, Interfaces } from '@oclif/core';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
-import { CLIErrorWithData } from './helpers/errors/cli-error-with-data';
-import { ClientError } from './helpers/errors/client-error';
+import { Errors } from './helpers/errors/__';
 import { OmitNever } from './helpers/general';
 import { Tex } from './helpers/tex/__';
 import { tb } from './helpers/typebox/__';
@@ -54,7 +51,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       const message = `Whoops. This Hive CLI command tried to output a value that violates its own schema. This should never happen. Please report this issue to the Hive team at https://github.com/graphql-hive/console/issues/new.`;
       // todo: Display data in non-json output.
       // The default textual output of an OClif error will not display any of the data below. We will want that information in a bug report.
-      throw new CLIErrorWithData({
+      throw new Errors.CLIErrorWithData({
         message,
         data: {
           type: 'CLIOutputTypeError',
@@ -83,7 +80,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
      * allows us to convert thrown values into JSON.
      * We throw a CLIFailure which will be specially handled it.
      */
-    throw new CLIErrorWithData({
+    throw new Errors.CLIErrorWithData({
       // @ts-expect-error fixme
       data: result.data,
       // @ts-expect-error fixme
@@ -183,28 +180,28 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * {@link Command.log} with success styling.
    */
   logSuccess(...args: any[]) {
-    this.log(Tex.colors.green('✔'), ...args);
+    this.log(Tex.success(...args));
   }
 
   /**
    * {@link Command.log} with failure styling.
    */
   logFailure(...args: any[]) {
-    this.log(Tex.colors.red('✖'), ...args);
+    this.log(Tex.failure(...args));
   }
 
   /**
    * {@link Command.log} with info styling.
    */
   logInfo(...args: any[]) {
-    this.log(Tex.colors.yellow('ℹ'), ...args);
+    this.log(Tex.info(...args));
   }
 
   /**
    * {@link Command.log} with warning styling.
    */
   logWarning(...args: any[]) {
-    this.log(Tex.colors.yellow('⚠'), ...args);
+    this.log(Tex.warning(...args));
   }
 
   maybe<TArgs extends Record<string, any>, TKey extends keyof TArgs>({
@@ -241,9 +238,9 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * @param env an env var name
    */
   ensure<
-    TKey extends ValidConfigurationKeys,
-    TArgs extends {
-      [key in TKey]: GetConfigurationValueType<TKey>;
+    $Key extends ValidConfigurationKeys,
+    $Args extends {
+      [key in $Key]: GetConfigurationValueType<$Key>;
     },
   >({
     key,
@@ -253,34 +250,34 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     message,
     env,
   }: {
-    args: TArgs;
-    key: TKey;
+    args: $Args;
+    key: $Key;
     /** By default we try to match config names with flag names, but for legacy compatibility we need to provide the old flag name. */
     legacyFlagName?: keyof OmitNever<{
       // Symbol.asyncIterator to discriminate against any lol
-      [TArgKey in keyof TArgs]: typeof Symbol.asyncIterator extends TArgs[TArgKey]
+      [TArgKey in keyof $Args]: typeof Symbol.asyncIterator extends $Args[TArgKey]
         ? never
-        : string extends TArgs[TArgKey]
+        : string extends $Args[TArgKey]
           ? TArgKey
           : never;
     }>;
 
-    defaultValue?: TArgs[keyof TArgs] | null;
+    defaultValue?: $Args[keyof $Args] | null;
     message?: string;
     env?: string;
-  }): NonNullable<GetConfigurationValueType<TKey>> | never {
+  }): NonNullable<GetConfigurationValueType<$Key>> | never {
     if (args[key] != null) {
-      return args[key] as NonNullable<GetConfigurationValueType<TKey>>;
+      return args[key] as NonNullable<GetConfigurationValueType<$Key>>;
     }
 
     if (legacyFlagName && (args as any)[legacyFlagName] != null) {
-      return args[legacyFlagName] as any as NonNullable<GetConfigurationValueType<TKey>>;
+      return args[legacyFlagName] as any as NonNullable<GetConfigurationValueType<$Key>>;
     }
 
     // eslint-disable-next-line no-process-env
     if (env && process.env[env]) {
       // eslint-disable-next-line no-process-env
-      return process.env[env] as TArgs[keyof TArgs] as NonNullable<GetConfigurationValueType<TKey>>;
+      return process.env[env] as $Args[keyof $Args] as NonNullable<GetConfigurationValueType<$Key>>;
     }
 
     const userConfigValue = this._userConfig!.get(key);
@@ -294,10 +291,23 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     }
 
     if (message) {
-      throw new Errors.CLIError(message);
+      throw new Errors.CLIErrorWithData({
+        message,
+        data: {
+          type: 'CLIErrorUserInput',
+          parameter: key,
+        },
+      });
     }
 
-    throw new Errors.CLIError(`Missing "${String(key)}"`);
+    throw new Errors.CLIErrorWithData({
+      message: `Missing "${String(key)}"`,
+      data: {
+        type: 'CLIErrorUserInput',
+        problem: 'namedArgumentMissing',
+        parameter: key,
+      },
+    });
   }
 
   registryApi(registry: string, token: string) {
@@ -362,7 +372,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
         const jsonData = (await response.json()) as ExecutionResult<TResult>;
 
         if (jsonData.errors && jsonData.errors.length > 0) {
-          throw new ClientError(
+          throw new Errors.ClientError(
             `Failed to execute GraphQL operation: ${jsonData.errors
               .map(e => e.message)
               .join('\n')}`,
@@ -381,8 +391,8 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   /**
    * @see https://oclif.io/docs/error_handling/#error-handling-in-the-catch-method
    */
-  async catch(error: CommandError): Promise<void> {
-    if (error instanceof ClientError) {
+  async catch(error: Errors.CommandError): Promise<void> {
+    if (error instanceof Errors.ClientError) {
       await super.catch(clientErrorToCLIFailure(error));
     } else {
       await super.catch(error);
@@ -391,11 +401,41 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
 
   /**
    * Custom logic for how thrown values are converted into JSON.
+   *
+   * @remarks
+   *
+   * 1. OClif input validation error classes have
+   * no structured information available about the error
+   * which limits our ability here to forward structure to
+   * the user. :(
    */
   toErrorJson(value: unknown) {
-    if (value instanceof CLIErrorWithData) {
+    if (value instanceof Errors.CLIErrorWithData) {
       return value.envelope;
     }
+
+    if (value instanceof Errors.FailedFlagValidationError) {
+      return this.failureEnvelope({
+        // @ts-expect-error fixme
+        data: {
+          type: 'CLIErrorUserInput',
+          message: value.message,
+          problem: 'namedArgumentInvalid',
+        },
+      });
+    }
+
+    if (value instanceof Errors.RequiredArgsError) {
+      return this.failureEnvelope({
+        // @ts-expect-error fixme
+        data: {
+          type: 'CLIErrorUserInput',
+          message: value.message,
+          problem: 'positionalArgumentMissing',
+        },
+      });
+    }
+
     if (value instanceof Errors.CLIError) {
       return this.failureEnvelope({
         suggestions: value.suggestions,
@@ -423,7 +463,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       this.error(error);
     }
 
-    if (error instanceof ClientError) {
+    if (error instanceof Errors.ClientError) {
       this.error(clientErrorToCLIFailure(error));
     }
 
@@ -448,7 +488,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 }
 
-const clientErrorToCLIFailure = (error: ClientError): CLIErrorWithData => {
+const clientErrorToCLIFailure = (error: Errors.ClientError): Errors.CLIErrorWithData => {
   const requestId = cleanRequestId(error.response?.headers?.get('x-request-id'));
   const errors =
     error.response?.errors?.map(e => {
@@ -463,7 +503,7 @@ const clientErrorToCLIFailure = (error: ClientError): CLIErrorWithData => {
       : `Caused by:\n${error.message}`;
   const message = `Request to Hive API failed. ${causedByMessage}`;
 
-  return new CLIErrorWithData({
+  return new Errors.CLIErrorWithData({
     message,
     ref: requestId,
     data: {

@@ -90,7 +90,6 @@ export default class Whoami extends Command<typeof Whoami> {
 
   async runResult() {
     const { flags } = await this.parse(Whoami);
-
     const registry = this.ensure({
       key: 'registry.endpoint',
       legacyFlagName: 'registry',
