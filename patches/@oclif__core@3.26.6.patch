@@ -1,5 +1,5 @@
 diff --git a/lib/command.js b/lib/command.js
-index 2212e16d9b8eb4dd3e575e0f58acef0f4db92849..8e8aedf53359c5eb75ea45279389ceb80b90d2a0 100644
+index 2212e16d9b8eb4dd3e575e0f58acef0f4db92849..0d0ae40ea99a551e1dd901dbeba275f4ff770e5d 100644
 --- a/lib/command.js
 +++ b/lib/command.js
 @@ -140,6 +140,7 @@ class Command {
@@ -10,7 +10,28 @@ index 2212e16d9b8eb4dd3e575e0f58acef0f4db92849..8e8aedf53359c5eb75ea45279389ceb8
          if (!argv)
              argv = process.argv.slice(2);
          // Handle the case when a file URL string is passed in such as 'import.meta.url'; covert to file path.
-@@ -302,6 +303,7 @@ class Command {
+@@ -147,6 +148,7 @@ class Command {
+             opts = (0, node_url_1.fileURLToPath)(opts);
+         }
+         const config = await config_1.Config.load(opts || require.main?.filename || __dirname);
++        console.log('did load config, debug.debug', config.debug)
+         const cmd = new this(argv, config);
+         if (!cmd.id) {
+             const id = cmd.constructor.name.toLowerCase();
+@@ -190,9 +192,12 @@ class Command {
+         }
+     }
+     async init() {
++        console.log('init')
+         this.debug('init version: %s argv: %o', this.ctor._base, this.argv);
+         if (this.config.debug)
++            console.log('before Errors.config.debug = true')
+             Errors.config.debug = true;
++            console.log('after')
+         if (this.config.errlog)
+             Errors.config.errlog = this.config.errlog;
+         const g = global;
+@@ -302,6 +307,7 @@ class Command {
          }
      }
      async _run() {
