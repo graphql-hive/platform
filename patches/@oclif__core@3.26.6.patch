@@ -1,3 +1,15 @@
+diff --git a/lib/errors/config.js b/lib/errors/config.js
+index fa9837368913762ed76809bf27d0d98f12595ca7..e5e6151ccf0a10eb4c8450387726cec0880cdccc 100644
+--- a/lib/errors/config.js
++++ b/lib/errors/config.js
+@@ -14,6 +14,7 @@ function displayWarnings() {
+ }
+ exports.config = {
+     get debug() {
++        console.log('config.debug', settings_1.settings.debug)
+         return Boolean(settings_1.settings.debug);
+     },
+     set debug(enabled) {
 diff --git a/lib/errors/errors/pretty-print.js b/lib/errors/errors/pretty-print.js
 index ee08f1c70c4acd98a22846079c0342323ae9c053..58349a144a302681e27ad5cf85a6a3170cb5eef7 100644
 --- a/lib/errors/errors/pretty-print.js
