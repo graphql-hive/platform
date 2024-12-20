@@ -5,6 +5,7 @@ import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { loadOperations } from '../../helpers/operations';
+import { Tex } from '../../helpers/tex/__';
 import { tb } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
@@ -18,7 +19,6 @@ const fetchLatestVersionQuery = graphql(/* GraphQL */ `
 
 export default class OperationsCheck extends Command<typeof OperationsCheck> {
   static description = 'checks operations against a published schema';
-  static descriptionFragmentForAction = 'validate operations';
   static flags = {
     'registry.endpoint': Flags.string({
       description: 'registry endpoint',
@@ -253,7 +253,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
   private renderErrors(sourceName: string, errors: GraphQLError[]) {
     this.logFailure(sourceName);
     errors.forEach(e => {
-      this.log(` - ${this.bolderize(e.message)}`);
+      this.log(` - ${Tex.bolderize(e.message)}`);
     });
     this.log('');
   }

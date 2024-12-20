@@ -1,6 +1,6 @@
 import BaseCommand from '../base-command';
 import { SchemaHive } from '../helpers/schema';
-import { indent } from '../helpers/text';
+import { Tex } from '../helpers/tex/__';
 import { SchemaOutput } from '../schema-output/__';
 
 export namespace SchemaWarningConnection {
@@ -10,11 +10,11 @@ export namespace SchemaWarningConnection {
     this.log('');
 
     warnings.nodes.forEach(warning => {
-      const details = [warning.source ? `source: ${this.bolderize(warning.source)}` : undefined]
+      const details = [warning.source ? `source: ${Tex.bolderize(warning.source)}` : undefined]
         .filter(Boolean)
         .join(', ');
 
-      this.log(indent, `- ${this.bolderize(warning.message)}${details ? ` (${details})` : ''}`);
+      this.log(Tex.indent, `- ${Tex.bolderize(warning.message)}${details ? ` (${details})` : ''}`);
     });
   }
 

@@ -3,7 +3,8 @@ import type { ResultOf } from '@graphql-typed-document-node/core';
 import BaseCommand from '../base-command';
 import { FragmentType, graphql, useFragment } from '../gql';
 import { CriticalityLevel } from '../gql/graphql';
-import { indent } from '../helpers/text';
+import { Tex } from '../helpers/tex/__';
+import { indent } from '../helpers/tex/tex';
 import * as SchemaOutput from '../schema-output/data';
 
 const fragment = graphql(`
@@ -37,7 +38,7 @@ export namespace SchemaChangeConnection {
         const messageParts = [
           String(indent),
           criticalityMap[change.isSafeBasedOnUsage ? CriticalityLevel.Safe : change.criticality],
-          this.bolderize(change.message),
+          Tex.bolderize(change.message),
         ];
 
         if (change.isSafeBasedOnUsage) {

@@ -1,4 +1,3 @@
-import colors from 'colors';
 import { print } from 'graphql';
 import type { ExecutionResult } from 'graphql';
 import { http } from '@graphql-hive/core';
@@ -10,6 +9,7 @@ import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './hel
 import { CLIErrorWithData } from './helpers/errors/cli-error-with-data';
 import { ClientError } from './helpers/errors/client-error';
 import { OmitNever } from './helpers/general';
+import { Tex } from './helpers/tex/__';
 import { tb } from './helpers/typebox/__';
 // todo raise issue with respective ESLint lib author about type imports used in JSDoc being marked as "unused"
 // eslint-disable-next-line
@@ -29,13 +29,6 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * @see https://oclif.io/docs/topics
    */
   public static executionPath?: string;
-
-  /**
-   * A *description fragment* of the action that this command performs.
-   * Formulate your words such that it can be appended to e.g. "Failed to ${descriptionFragmentForAction}".
-   * When non-null, used in certain automated error messages.
-   */
-  public static descriptionFragmentForAction: string | null = null;
 
   /**
    * The data type returned by this command when executed.
@@ -204,37 +197,28 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * {@link Command.log} with success styling.
    */
   logSuccess(...args: any[]) {
-    this.log(colors.green('✔'), ...args);
+    this.log(Tex.colors.green('✔'), ...args);
   }
 
   /**
    * {@link Command.log} with failure styling.
    */
   logFailure(...args: any[]) {
-    this.log(colors.red('✖'), ...args);
+    this.log(Tex.colors.red('✖'), ...args);
   }
 
   /**
    * {@link Command.log} with info styling.
    */
   logInfo(...args: any[]) {
-    this.log(colors.yellow('ℹ'), ...args);
+    this.log(Tex.colors.yellow('ℹ'), ...args);
   }
 
   /**
    * {@link Command.log} with warning styling.
    */
   logWarning(...args: any[]) {
-    this.log(colors.yellow('⚠'), ...args);
-  }
-
-  bolderize(msg: string) {
-    const findSingleQuotes = /'([^']+)'/gim;
-    const findDoubleQuotes = /"([^"]+)"/gim;
-
-    return msg
-      .replace(findSingleQuotes, (_: string, value: string) => colors.bold(value))
-      .replace(findDoubleQuotes, (_: string, value: string) => colors.bold(value));
+    this.log(Tex.colors.yellow('⚠'), ...args);
   }
 
   maybe<TArgs extends Record<string, any>, TKey extends keyof TArgs>({

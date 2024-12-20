@@ -42,7 +42,6 @@ const schemaDeleteMutation = graphql(/* GraphQL */ `
 
 export default class SchemaDelete extends Command<typeof SchemaDelete> {
   static description = 'deletes a schema';
-  static descriptionFragmentForAction = 'delete schema';
   static parameters = {
     positional: tb.Tuple([tb.String()]),
     named: tb.Object({
