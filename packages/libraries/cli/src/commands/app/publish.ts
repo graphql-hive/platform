@@ -24,15 +24,15 @@ export default class AppPublish extends Command<typeof AppPublish> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success('CLISkipAppPublish',{
+    SchemaOutput.success('CLISkipAppPublish', {
       name: tb.StringNonEmpty,
       version: tb.StringNonEmpty,
     }),
-    SchemaOutput.success('ActivateAppDeploymentOk',{
+    SchemaOutput.success('ActivateAppDeploymentOk', {
       name: tb.StringNonEmpty,
       version: tb.StringNonEmpty,
     }),
-    SchemaOutput.failure('ActivateAppDeploymentError',{
+    SchemaOutput.failure('ActivateAppDeploymentError', {
       message: tb.String(),
     }),
   );
