@@ -50,30 +50,29 @@ jobs:
       - name: prepare packages
         run: pnpm --filter integration-tests prepare:env
 
-      # - name: patch compose file volumes
-      #   uses: mikefarah/yq@v4.44.3
-      #   with:
-      #     cmd: yq -i 'del(.services.*.volumes)' docker/docker-compose.community.yml
+      - name: patch compose file volumes
+        uses: mikefarah/yq@v4.44.3
+        with:
+          cmd: yq -i 'del(.services.*.volumes)' docker/docker-compose.community.yml
 
-      # - name: get cpu count for vitest
-      #   id: cpu-cores
-      #   uses: SimenB/github-actions-cpu-cores@v2
+      - name: get cpu count for vitest
+        id: cpu-cores
+        uses: SimenB/github-actions-cpu-cores@v2
 
-      # - name: run containers
-      #   timeout-minutes: 8
-      #   run: |
-      #     docker compose -f docker/docker-compose.community.yml -f ./integration-tests/docker-compose.integration.yaml --env-file ./integration-tests/.env up -d --wait
+      - name: run containers
+        timeout-minutes: 8
+        run: |
+          docker compose -f docker/docker-compose.community.yml -f ./integration-tests/docker-compose.integration.yaml --env-file ./integration-tests/.env up -d --wait
 
-      # - name: troubleshoot containers
-      #   if: ${{ failure() }}
-      #   run: |
-      #     docker compose -f docker/docker-compose.community.yml -f ./integration-tests/docker-compose.integration.yaml --env-file ./integration-tests/.env ps
+      - name: troubleshoot containers
+        if: ${{ failure() }}
+        run: |
+          docker compose -f docker/docker-compose.community.yml -f ./integration-tests/docker-compose.integration.yaml --env-file ./integration-tests/.env ps
 
       - name: run integration tests
         timeout-minutes: 10
         run: |
-          # VITEST_MAX_THREADS=${{ steps.cpu-cores.outputs.count }} pnpm --filter integration-tests test:integration --shard=${{ matrix.shardIndex }}/3
-          pnpm --filter integration-tests test:integration
+          VITEST_MAX_THREADS=${{ steps.cpu-cores.outputs.count }} pnpm --filter integration-tests test:integration --shard=${{ matrix.shardIndex }}/3
 
       - name: log dump
         if: ${{ failure() }}
