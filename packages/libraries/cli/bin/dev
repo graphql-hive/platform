@@ -8,11 +8,14 @@ const oclif = require('@oclif/core');
 // In dev mode -> use ts-node and dev plugins
 process.env.NODE_ENV = 'development';
 
-oclif.settings.debug = process.env.OCLIF_DEBUG === 'true';
+oclif.settings.debug = false; // process.env.OCLIF_DEBUG === 'true';
 
 // Start the CLI
 oclif
-  .execute({ development: true, dir: __dirname })
+  .execute({
+    development: false, // true,
+    dir: __dirname,
+  })
   .catch(e => {
     throw e;
   })
