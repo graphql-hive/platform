@@ -107,20 +107,6 @@ export default class Dev extends Command<typeof Dev> {
     '',
     'Work in Progress: Please note that this command is still under development and may undergo changes in future releases',
   ].join('\n');
-  static parameters = {
-    named: tb.Object({
-      'registry.endpoint': tb.Optional(tb.String()),
-      'registry.accessToken': tb.Optional(tb.String()),
-      service: tb.Optional(tb.Array(tb.String())),
-      url: tb.Optional(tb.Array(tb.String())),
-      schema: tb.Optional(tb.Array(tb.String())),
-      watch: tb.Optional(tb.Boolean()),
-      'watch.interval': tb.Optional(tb.Number()),
-      write: tb.Optional(tb.String()),
-      remote: tb.Optional(tb.Boolean()),
-      unstable__forceLatest: tb.Optional(tb.Boolean()),
-    }),
-  };
   static flags = {
     'registry.endpoint': Flags.string({
       description: 'registry endpoint',

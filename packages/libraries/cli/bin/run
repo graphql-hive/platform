@@ -5,10 +5,8 @@ process.removeAllListeners('warning');
 
 const oclif = require('@oclif/core');
 
-oclif.settings.debug = false;
-
 oclif
-  .execute({ dir: __dirname, development: false })
+  .execute({ dir: __dirname })
   .catch(e => {
     throw e;
   })

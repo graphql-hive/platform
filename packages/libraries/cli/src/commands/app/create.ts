@@ -7,16 +7,6 @@ import { tb } from '../../helpers/typebox/__';
 import { SchemaOutput } from '../../schema-output/__';
 
 export default class AppCreate extends Command<typeof AppCreate> {
-  static parameters = {
-    named: tb.Object({
-      name: tb.String(),
-      version: tb.String(),
-      json: tb.Optional(tb.Boolean()),
-      'registry.endpoint': tb.Optional(tb.String()),
-      'registry.accessToken': tb.Optional(tb.String()),
-    }),
-    positional: tb.Tuple([tb.String()]),
-  };
   static description = 'create an app deployment';
   static flags = {
     'registry.endpoint': Flags.string({
