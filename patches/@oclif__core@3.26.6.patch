@@ -1,3 +1,48 @@
+diff --git a/lib/errors/handle.js b/lib/errors/handle.js
+index 23e4602cb24e1f135a6ef9e5967067e70e93ad26..f0a16ce65cec189986eb64fd959587d94e5fa216 100644
+--- a/lib/errors/handle.js
++++ b/lib/errors/handle.js
+@@ -23,14 +23,18 @@ exports.Exit = {
+     },
+ };
+ async function handle(err) {
++    console.log('handle')
+     try {
+         if (!err)
+             err = new cli_1.CLIError('no error?');
+         if (err.message === 'SIGINT')
+             exports.Exit.exit(1);
+         const shouldPrint = !(err instanceof exit_1.ExitError) && !err.skipOclifErrorHandling;
++        console.log('shouldPrint', shouldPrint);
+         const pretty = (0, pretty_print_1.default)(err);
++        console.log('pretty', pretty);
+         const stack = (0, clean_stack_1.default)(err.stack || '', { pretty: true });
++        console.log('stack', stack);
+         if (shouldPrint) {
+             console.error(pretty ?? stack);
+             const config = cache_1.default.getInstance().get('config');
+@@ -46,7 +50,9 @@ async function handle(err) {
+             }
+         }
+         const exitCode = err.oclif?.exit ?? 1;
++        console.log(`config_1.config.errorLogger, err.code !== 'EEXIT'`,config_1.config.errorLogger, err.code !== 'EEXIT')
+         if (config_1.config.errorLogger && err.code !== 'EEXIT') {
++
+             if (stack) {
+                 config_1.config.errorLogger.log(stack);
+             }
+diff --git a/lib/execute.js b/lib/execute.js
+index ab8cf3d9b13f052f963dee065c1d349e7313c5f1..30530521cf05996aee452728bd013a0bace04ccc 100644
+--- a/lib/execute.js
++++ b/lib/execute.js
+@@ -55,6 +55,7 @@ async function execute(options) {
+         process.env.NODE_ENV = 'development';
+         settings_1.settings.debug = true;
+     }
++    console.log('execute', options, settings_1)
+     return (0, main_1.run)(options.args ?? process.argv.slice(2), options.loadOptions ?? options.dir)
+         .then(async (result) => {
+         (0, flush_1.flush)();
 diff --git a/lib/module-loader.js b/lib/module-loader.js
 index 6162032e60f1e44ecfa19525ee07eecee1186208..58cfe558d025fc29e2e837b4435a3847b6e30585 100644
 --- a/lib/module-loader.js
