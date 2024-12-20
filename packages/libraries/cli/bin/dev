@@ -8,8 +8,7 @@ const oclif = require('@oclif/core');
 // In dev mode -> use ts-node and dev plugins
 process.env.NODE_ENV = 'development';
 
-// In dev mode, always show stack traces
-oclif.settings.debug = true;
+oclif.settings.debug = process.env.OCLIF_DEBUG === 'true';
 
 // Start the CLI
 oclif
