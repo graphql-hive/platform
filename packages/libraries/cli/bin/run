@@ -5,6 +5,8 @@ process.removeAllListeners('warning');
 
 const oclif = require('@oclif/core');
 
+console.log(oclif.settings);
+
 oclif
   .execute({ dir: __dirname })
   .catch(e => {
