@@ -13,7 +13,6 @@ import { Fragments } from '../fragments/__';
 import { graphql } from '../gql';
 import { graphqlEndpoint } from '../helpers/config';
 import { loadSchema } from '../helpers/schema';
-import { tb } from '../helpers/typebox/__';
 import { invariant } from '../helpers/validation';
 
 const CLI_SchemaComposeMutation = graphql(/* GraphQL */ `
