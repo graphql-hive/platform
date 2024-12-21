@@ -12,7 +12,7 @@ export const SuccessOutputStdout = success('SuccessOutputStdout', {
   data: {
     content: tb.String(),
   },
-  text: (_, data) => {
+  text(_, data) {
     return data.content;
   },
 });

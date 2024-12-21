@@ -4,7 +4,6 @@ import { Args, Flags } from '@oclif/core';
 import Command, { InferInput } from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
-import { Tex } from '../../helpers/tex/__';
 import { Output } from '../../output/__';
 
 const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
@@ -70,20 +69,20 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
   static output = [
     Output.failure('FailureSchemaFetchMissingSchema', {
       data: {},
-      text: ({ args }: InferInput<typeof SchemaFetch>) => {
-        return Tex.failure(`No schema found for action id ${args.actionId}`);
+      text({ args }: InferInput<typeof SchemaFetch>, _, s) {
+        s.failure(`No schema found for action id ${args.actionId}`);
       },
     }),
     Output.failure('FailureSchemaFetchInvalidSchema', {
       data: {},
-      text: ({ args }: InferInput<typeof SchemaFetch>) => {
-        return Tex.failure(`Schema is invalid for action id ${args.actionId}`);
+      text({ args }: InferInput<typeof SchemaFetch>, _, s) {
+        s.failure(`Schema is invalid for action id ${args.actionId}`);
       },
     }),
     Output.failure('FailureSchemaFetchMissingSDLType', {
       data: {},
-      text: ({ args, flags }: InferInput<typeof SchemaFetch>) => {
-        return Tex.failure(`No ${flags.type} found for action id ${args.actionId}`);
+      text({ args, flags }: InferInput<typeof SchemaFetch>, _, s) {
+        s.failure(`No ${flags.type} found for action id ${args.actionId}`);
       },
     }),
     Output.SuccessOutputFile,

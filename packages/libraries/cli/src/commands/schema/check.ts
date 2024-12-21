@@ -6,7 +6,6 @@ import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
 import { loadSchema, minifySchema } from '../../helpers/schema';
-import { Tex } from '../../helpers/tex/__';
 import { tb } from '../../helpers/typebox/__';
 import { Output } from '../../output/__';
 
@@ -156,8 +155,8 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       data: {
         message: tb.String(),
       },
-      text: (_, output) => {
-        return Tex.success(output.message);
+      text(_, data, s) {
+        s.success(data.message);
       },
     }),
     Output.success('FailureSchemaCheck', {
@@ -172,8 +171,8 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       data: {
         message: tb.String(),
       },
-      text: (_, data) => {
-        return Tex.failure(data.message);
+      text(_, data, s) {
+        s.failure(data.message);
       },
     }),
   ];

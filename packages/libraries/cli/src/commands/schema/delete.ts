@@ -4,7 +4,6 @@ import { Fragments } from '../../fragments/__';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
-import { Tex } from '../../helpers/tex/__';
 import { Output } from '../../output/__';
 
 const schemaDeleteMutation = graphql(/* GraphQL */ `
@@ -85,19 +84,17 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
   static output = [
     Output.success('SuccessSchemaDelete', {
       data: {},
-      text: ({ args }: InferInput<typeof SchemaDelete>) => {
-        return Tex.success(`${args.service} deleted`);
+      text({ args }: InferInput<typeof SchemaDelete>, _, s) {
+        s.success(`${args.service} deleted`);
       },
     }),
     Output.failure('FailureSchemaDelete', {
       data: {
         errors: Output.SchemaErrors,
       },
-      text: ({ args }: InferInput<typeof SchemaDelete>, data) => {
-        let o = '';
-        o += Tex.failure(`Failed to delete ${args.service}`);
-        o += Output.SchemaErrorsText(data.errors);
-        return o;
+      text({ args }: InferInput<typeof SchemaDelete>, data, s) {
+        s.failure(`Failed to delete ${args.service}`);
+        s(Output.SchemaErrorsText(data.errors));
       },
     }),
   ];

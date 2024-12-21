@@ -9,7 +9,6 @@ import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
 import { loadSchema, minifySchema } from '../../helpers/schema';
-import { Tex } from '../../helpers/tex/__';
 import { tb } from '../../helpers/typebox/__';
 import { invariant } from '../../helpers/validation';
 import { Output } from '../../output/__';
@@ -157,24 +156,22 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         changes: tb.Array(Output.SchemaChange),
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
-      text: (_, data) => {
-        let o = '';
+      text(_, data, s) {
         if (data.diffType === 'initial') {
-          o += Tex.success('Published initial schema.');
+          s.success('Published initial schema.');
         } else if (data.message) {
-          o += Tex.success(data.message);
+          s.success(data.message);
         } else if (data.diffType === 'change' && data.changes.length === 0) {
-          o += Tex.success('No changes. Skipping.');
+          s.success('No changes. Skipping.');
         } else {
           if (data.changes.length) {
-            o += Output.SchemaChangesText(data.changes);
+            Output.SchemaChangesText(data.changes);
           }
-          o += Tex.success('Schema published');
+          s.success('Schema published');
         }
         if (data.url) {
-          o += Tex.info(`Available at ${data.url}`);
+          s.info(`Available at ${data.url}`);
         }
-        return o;
       },
     }),
     Output.success('FailureSchemaPublish', {
@@ -183,39 +180,37 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         errors: Output.SchemaErrors,
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
-      text: ({ flags }: InferInput<typeof SchemaPublish>, data) => {
-        let o = '';
-        o += Output.SchemaErrorsText(data.errors);
-        o += '\n';
+      text({ flags }: InferInput<typeof SchemaPublish>, data, s) {
+        s(Output.SchemaErrorsText(data.errors));
+        s();
         if (data.changes.length) {
-          o += Output.SchemaChangesText(data.changes);
-          o += '\n';
+          s(Output.SchemaChangesText(data.changes));
+          s();
         }
         if (!flags.force) {
-          o += Tex.failure('Failed to publish schema');
+          s.failure('Failed to publish schema');
         } else {
-          o += Tex.success('Schema published (forced)');
+          s.success('Schema published (forced)');
         }
         if (data.url) {
-          o += Tex.info(`Available at ${data.url}`);
+          s.info(`Available at ${data.url}`);
         }
-        return o;
       },
     }),
     Output.success('SuccessSchemaPublishGitHub', {
       data: {
         message: tb.String(),
       },
-      text: (_, data) => {
-        return Tex.success(data.message);
+      text(_, data, s) {
+        s.success(data.message);
       },
     }),
     Output.failure('FailureSchemaPublishGitHub', {
       data: {
         message: tb.String(),
       },
-      text: (_, data) => {
-        return Tex.failure(data.message);
+      text(_, data, s) {
+        s.failure(data.message);
       },
     }),
     Output.failure('FailureSchemaPublishInvalidGraphQLSchema', {
@@ -228,12 +223,13 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
           }),
         ),
       },
-      text: (_, data) => {
-        const locationString =
+      text(_, data, s) {
+        const location =
           data.locations.length > 0
             ? ` at line ${data.locations[0].line}, column ${data.locations[0].column}`
             : '';
-        return Tex.failure(`The SDL is not valid${locationString}: ${data.message}`);
+        s.failure(`The SDL is not valid${location}:`);
+        s(data.message);
       },
     }),
   ];

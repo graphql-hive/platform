@@ -27,13 +27,18 @@ export type SchemaChange = tb.Static<typeof SchemaChange>;
 
 export const SchemaChanges = tb.Array(SchemaChange);
 export type SchemaChanges = tb.Static<typeof SchemaChanges>;
-export const SchemaChangesText = (data: SchemaChanges) => {
-  let o = '';
-
+export const SchemaChangesText = (data: SchemaChanges): Tex.Builder => {
+  const breakingChanges = data.filter(
+    change => change.criticality === schemaChangeCriticalityLevel.Breaking,
+  );
+  const safeChanges = data.filter(
+    change => change.criticality !== schemaChangeCriticalityLevel.Breaking,
+  );
+  const s = Tex.builder();
   const writeChanges = (schemaChanges: SchemaChange[]) => {
     return schemaChanges
       .map(change => {
-        const messageParts = [
+        const parts = [
           Tex.indent,
           criticalityMap[
             change.isSafeBasedOnUsage ? schemaChangeCriticalityLevel.Safe : change.criticality
@@ -42,39 +47,32 @@ export const SchemaChangesText = (data: SchemaChanges) => {
         ];
 
         if (change.isSafeBasedOnUsage) {
-          messageParts.push(Tex.colors.green('(Safe based on usage ✓)'));
+          parts.push(Tex.colors.green('(Safe based on usage ✓)'));
         }
         if (change.approval) {
-          messageParts.push(
+          parts.push(
             Tex.colors.green(`(Approved by ${change.approval.by?.displayName ?? '<unknown>'} ✓)`),
           );
         }
 
-        return messageParts.join(' ');
+        return parts.join(Tex.space);
       })
-      .join('\n');
+      .join(Tex.newline);
   };
 
-  o += Tex.info(`Detected ${data.length} change${Tex.plural(data)}`);
-
-  const breakingChanges = data.filter(
-    change => change.criticality === schemaChangeCriticalityLevel.Breaking,
-  );
-  const safeChanges = data.filter(
-    change => change.criticality !== schemaChangeCriticalityLevel.Breaking,
-  );
+  s.info(`Detected ${data.length} change${Tex.plural(data)}`);
 
   if (breakingChanges.length) {
-    o += Tex.indent + `Breaking changes:\n`;
-    o += writeChanges(breakingChanges);
+    s.indent(`Breaking changes:`);
+    s(writeChanges(breakingChanges));
   }
 
   if (safeChanges.length) {
-    o += Tex.indent + `Safe changes:\n`;
-    o += writeChanges(safeChanges);
+    s.indent(`Safe changes:`);
+    s(writeChanges(safeChanges));
   }
 
-  return o + '\n';
+  return s;
 };
 
 const criticalityMap = {
@@ -99,12 +97,12 @@ export type SchemaError = tb.Static<typeof SchemaError>;
 
 export const SchemaErrors = tb.Array(SchemaError);
 export const SchemaErrorsText = (data: tb.Static<typeof SchemaErrors>) => {
-  let o = '';
-  o += Tex.failure(`Detected ${data.length} error${Tex.plural(data)}`);
+  const s = Tex.builder();
+  s.failure(`Detected ${data.length} error${Tex.plural(data)}`);
   data.forEach(error => {
-    o += Tex.indent + Tex.colors.red('-') + Tex.bolderize(error.message) + '\n';
+    s.indent(Tex.colors.red('-') + Tex.bolderize(error.message));
   });
-  return o + '\n';
+  return s;
 };
 
 export const AppDeploymentStatus = tb.Enum({

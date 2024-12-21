@@ -86,7 +86,24 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
 
     // Data types can optionally bundle a textual representation of their data.
     if (dataType.text) {
-      this.log(dataType.text({ flags: this.flags, args: this.args }, result.data));
+      const texBuilder = Tex.builder();
+      const dataTypeTextInit = dataType.text(
+        { flags: this.flags, args: this.args },
+        result.data,
+        texBuilder,
+      );
+      const dataTypeText =
+        typeof dataTypeTextInit === 'string'
+          ? dataTypeTextInit
+          : dataTypeTextInit === undefined
+            ? // This pattern designed for user relying on mutated state of the given Tex.Builder.
+              texBuilder.state.value
+            : // They returned a Tex.Builder instance.
+              dataTypeTextInit.state.value;
+      // We trim trailing whitespace because this.log() will add a newline at the end.
+      // We don't trim leading whitespace because this function may also be used to output files to stdout.
+      // Unlike trailing whitespace, leading whitespace is expected to be preserved in terminal output.
+      this.log(Tex.trimEnd(dataTypeText));
     }
 
     /**
@@ -203,28 +220,28 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * {@link Command.log} with success styling.
    */
   logSuccess(...args: any[]) {
-    this.log(Tex.success(...args));
+    this.log(Tex.success(...args).trim());
   }
 
   /**
    * {@link Command.log} with failure styling.
    */
   logFailure(...args: any[]) {
-    this.log(Tex.failure(...args));
+    this.log(Tex.failure(...args).trim());
   }
 
   /**
    * {@link Command.log} with info styling.
    */
   logInfo(...args: any[]) {
-    this.log(Tex.info(...args));
+    this.log(Tex.info(...args).trim());
   }
 
   /**
    * {@link Command.log} with warning styling.
    */
   logWarning(...args: any[]) {
-    this.log(Tex.warning(...args));
+    this.log(Tex.warning(...args).trim());
   }
 
   maybe<TArgs extends Record<string, any>, TKey extends keyof TArgs>({

@@ -44,6 +44,12 @@ export default class AppCreate extends Command<typeof AppCreate> {
     Output.success('SuccessAppCreate', {
       data: {
         id: tb.StringNonEmpty,
+        operationsCount: tb.Number(),
+      },
+      text(args: InferInput<typeof AppCreate>, data, s) {
+        s(
+          `App deployment "${args.flags.name}@${args.flags.version}" (${data.operationsCount} operations) created.\nActivate it with the "hive app:publish" command.`,
+        );
       },
     }),
     Output.failure('FailureAppCreate', {
@@ -109,9 +115,6 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }
 
     if (result.ok.createdAppDeployment.status !== SchemaHive.AppDeploymentStatus.Pending) {
-      // this.log(
-      //   `App deployment "${flags['name']}@${flags['version']}" is "${result.ok.createdAppDeployment.status}". Skip uploading documents...`,
-      // );
       return this.success({
         type: 'SuccessSkipAppCreate',
         status: result.ok.createdAppDeployment.status,
@@ -170,12 +173,10 @@ export default class AppCreate extends Command<typeof AppCreate> {
 
     await flush(true);
 
-    this.log(
-      `App deployment "${flags['name']}@${flags['version']}" (${counter} operations) created.\nActivate it with the "hive app:publish" command.`,
-    );
     return this.success({
       type: 'SuccessAppCreate',
       id: result.ok.createdAppDeployment.id,
+      operationsCount: counter,
     });
   }
 }
