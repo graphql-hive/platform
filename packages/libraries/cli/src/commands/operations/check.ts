@@ -6,7 +6,7 @@ import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { loadOperations } from '../../helpers/operations';
 import { Tex } from '../../helpers/tex/__';
-import { tb } from '../../helpers/typebox/__';
+import { T } from '../../helpers/typebox/__';
 import { Output } from '../../output/__';
 
 const fetchLatestVersionQuery = graphql(/* GraphQL */ `
@@ -83,27 +83,32 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     Output.success('SuccessOperationsCheckNoOperationsFound', { data: {} }),
     Output.success('SuccessOperationsCheck', {
       data: {
-        countTotal: tb.Integer({ minimum: 0 }),
-        countInvalid: tb.Integer({ minimum: 0 }),
-        countValid: tb.Integer({ minimum: 0 }),
-        invalidOperations: tb.Array(
-          tb.Object({
-            source: tb.Object({
-              name: tb.String(),
+        countTotal: T.Integer({ minimum: 0 }),
+        countInvalid: T.Integer({ minimum: 0 }),
+        countValid: T.Integer({ minimum: 0 }),
+        invalidOperations: T.Array(
+          T.Object({
+            source: T.Object({
+              name: T.String(),
             }),
-            errors: tb.Array(
-              tb.Object({
-                message: tb.String(),
-                locations: tb.Array(
-                  tb.Object({
-                    line: tb.Integer({ minimum: 0 }),
-                    column: tb.Integer({ minimum: 0 }),
+            errors: T.Array(
+              T.Object({
+                message: T.String(),
+                locations: T.Array(
+                  T.Object({
+                    line: T.Integer({ minimum: 0 }),
+                    column: T.Integer({ minimum: 0 }),
                   }),
                 ),
               }),
             ),
           }),
         ),
+      },
+      text(_, data, s) {
+        if (data.invalidOperations.length === 0) {
+          s.success(`All operations are valid (${data.countTotal})`);
+        }
       },
     }),
   ];
@@ -197,9 +202,9 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
 
     const operationsWithErrors = invalidOperations.filter(o => o.errors.length > 0);
 
-    if (operationsWithErrors.length === 0) {
-      this.logSuccess(`All operations are valid (${operations.length})`);
-    } else {
+    // todo migrate text output to data type text formatter.
+    // We just need a migration away from the anyways-deprecated ux.styledHeader function.
+    if (operationsWithErrors.length) {
       ux.styledHeader('Summary');
       this.log(
         [

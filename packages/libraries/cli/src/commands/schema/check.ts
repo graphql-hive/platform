@@ -6,7 +6,7 @@ import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
 import { loadSchema, minifySchema } from '../../helpers/schema';
-import { tb } from '../../helpers/typebox/__';
+import { T } from '../../helpers/typebox/__';
 import { Output } from '../../output/__';
 
 const schemaCheckMutation = graphql(/* GraphQL */ `
@@ -146,14 +146,14 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   static output = [
     Output.success('SuccessSchemaCheck', {
       data: {
-        diffType: tb.Enum({
+        diffType: T.Enum({
           initial: 'initial',
           change: 'change',
           unknown: 'unknown', // todo: improve this, need better understanding of the api
         }),
-        changes: tb.Array(Output.SchemaChange),
-        warnings: tb.Array(Output.SchemaWarning),
-        url: tb.Nullable(tb.String({ format: 'uri' })),
+        changes: T.Array(Output.SchemaChange),
+        warnings: T.Array(Output.SchemaWarning),
+        url: T.Nullable(T.String({ format: 'uri' })),
       },
       text(_, data, s) {
         if (data.diffType === 'initial') {
@@ -177,7 +177,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }),
     Output.success('SuccessSchemaCheckGitHub', {
       data: {
-        message: tb.String(),
+        message: T.String(),
       },
       text(_, data, s) {
         s.success(data.message);
@@ -188,7 +188,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         changes: Output.SchemaChanges,
         warnings: Output.SchemaWarnings,
         errors: Output.SchemaErrors,
-        url: tb.Nullable(tb.String({ format: 'uri' })),
+        url: T.Nullable(T.String({ format: 'uri' })),
       },
       text({ flags }, data, s) {
         s.line(Output.schemaErrorsText(data.errors));
@@ -215,7 +215,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
 
     Output.failure('FailureSchemaCheckGitHub', {
       data: {
-        message: tb.String(),
+        message: T.String(),
       },
       text(_, data, s) {
         s.failure(data.message);

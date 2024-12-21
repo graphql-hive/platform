@@ -1,9 +1,10 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
 import { Args, Flags } from '@oclif/core';
-import Command, { InferInput } from '../../base-command';
+import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
+import { InferInput } from '../../helpers/oclif';
 import { Output } from '../../output/__';
 
 const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `

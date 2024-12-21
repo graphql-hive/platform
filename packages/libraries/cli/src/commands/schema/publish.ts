@@ -2,14 +2,15 @@ import { existsSync, readFileSync } from 'fs';
 import { GraphQLError, print } from 'graphql';
 import { transformCommentsToDescriptions } from '@graphql-tools/utils';
 import { Args, Errors, Flags } from '@oclif/core';
-import Command, { InferInput } from '../../base-command';
+import Command from '../../base-command';
 import { Fragments } from '../../fragments/__';
 import { DocumentType, graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
+import { InferInput } from '../../helpers/oclif';
 import { loadSchema, minifySchema } from '../../helpers/schema';
-import { tb } from '../../helpers/typebox/__';
+import { T } from '../../helpers/typebox/__';
 import { invariant } from '../../helpers/validation';
 import { Output } from '../../output/__';
 
@@ -147,14 +148,14 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
   static output = [
     Output.success('SuccessSchemaPublish', {
       data: {
-        diffType: tb.Enum({
+        diffType: T.Enum({
           initial: 'initial',
           change: 'change',
           unknown: 'unknown', // todo: improve this, need better understanding of the api
         }),
-        message: tb.Nullable(tb.String()),
-        changes: tb.Array(Output.SchemaChange),
-        url: tb.Nullable(tb.String({ format: 'uri' })),
+        message: T.Nullable(T.String()),
+        changes: T.Array(Output.SchemaChange),
+        url: T.Nullable(T.String({ format: 'uri' })),
       },
       text(_, data, s) {
         if (data.diffType === 'initial') {
@@ -179,7 +180,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       data: {
         changes: Output.SchemaChanges,
         errors: Output.SchemaErrors,
-        url: tb.Nullable(tb.String({ format: 'uri' })),
+        url: T.Nullable(T.String({ format: 'uri' })),
       },
       text({ flags }: InferInput<typeof SchemaPublish>, data, s) {
         s.line(Output.schemaErrorsText(data.errors));
@@ -200,7 +201,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }),
     Output.success('SuccessSchemaPublishGitHub', {
       data: {
-        message: tb.String(),
+        message: T.String(),
       },
       text(_, data, s) {
         s.success(data.message);
@@ -208,7 +209,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }),
     Output.failure('FailureSchemaPublishGitHub', {
       data: {
-        message: tb.String(),
+        message: T.String(),
       },
       text(_, data, s) {
         s.failure(data.message);
@@ -216,11 +217,11 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }),
     Output.failure('FailureSchemaPublishInvalidGraphQLSchema', {
       data: {
-        message: tb.String(),
-        locations: tb.Array(
-          tb.Object({
-            line: tb.Readonly(tb.Number()),
-            column: tb.Readonly(tb.Number()),
+        message: T.String(),
+        locations: T.Array(
+          T.Object({
+            line: T.Readonly(T.Number()),
+            column: T.Readonly(T.Number()),
           }),
         ),
       },

@@ -1,9 +1,10 @@
 import { Args, Flags } from '@oclif/core';
-import Command, { InferInput } from '../../base-command';
+import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
+import { InferInput } from '../../helpers/oclif';
 import { SchemaHive } from '../../helpers/schema';
-import { tb } from '../../helpers/typebox/__';
+import { T } from '../../helpers/typebox/__';
 import { Output } from '../../output/__';
 
 export default class AppCreate extends Command<typeof AppCreate> {
@@ -43,8 +44,8 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }),
     Output.success('SuccessAppCreate', {
       data: {
-        id: tb.StringNonEmpty,
-        operationsCount: tb.Number(),
+        id: T.StringNonEmpty,
+        operationsCount: T.Number(),
       },
       text(args: InferInput<typeof AppCreate>, data, s) {
         s.line(
@@ -54,12 +55,12 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }),
     Output.failure('FailureAppCreate', {
       data: {
-        message: tb.String(),
+        message: T.String(),
       },
     }),
     Output.failure('FailureInvalidManifestModel', {
       data: {
-        errors: tb.Array(tb.Value.MaterializedValueErrorT),
+        errors: T.Array(T.Value.MaterializedValueErrorT),
       },
     }),
   ];
@@ -82,11 +83,11 @@ export default class AppCreate extends Command<typeof AppCreate> {
     const file: string = args.file;
     const fs = await import('fs/promises');
     const contents = await fs.readFile(file, 'utf-8');
-    const operations = tb.Value.ParseJsonSafe(ManifestModel, contents);
-    if (operations instanceof tb.Value.AssertError) {
+    const operations = T.Value.ParseJsonSafe(ManifestModel, contents);
+    if (operations instanceof T.Value.AssertError) {
       return this.failure({
         type: 'FailureInvalidManifestModel',
-        errors: tb.Value.MaterializeValueErrorIterator(operations.Errors()),
+        errors: T.Value.MaterializeValueErrorIterator(operations.Errors()),
       });
     }
 
@@ -181,7 +182,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
   }
 }
 
-const ManifestModel = tb.Record(tb.String(), tb.String());
+const ManifestModel = T.Record(T.String(), T.String());
 
 const CreateAppDeploymentMutation = graphql(/* GraphQL */ `
   mutation CreateAppDeployment($input: CreateAppDeploymentInput!) {

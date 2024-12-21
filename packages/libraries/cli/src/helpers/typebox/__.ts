@@ -1,1 +1,1 @@
-export * as tb from './_';
+export * as T from './_';

@@ -1,9 +1,10 @@
 import { Args, Flags, ux } from '@oclif/core';
-import Command, { InferInput } from '../../base-command';
+import Command from '../../base-command';
 import { Fragments } from '../../fragments/__';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
+import { InferInput } from '../../helpers/oclif';
 import { Output } from '../../output/__';
 
 const schemaDeleteMutation = graphql(/* GraphQL */ `

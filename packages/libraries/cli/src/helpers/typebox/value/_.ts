@@ -2,6 +2,7 @@ import { Static, TAnySchema } from '@sinclair/typebox';
 import { AssertError, Value, ValueError, ValueErrorType } from '@sinclair/typebox/value';
 
 export * from '@sinclair/typebox/value';
+
 export * from './materialized-value-error';
 
 /**

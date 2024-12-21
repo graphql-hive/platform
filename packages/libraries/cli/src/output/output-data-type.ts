@@ -1,9 +1,9 @@
 import { Tex } from '../helpers/tex/__';
-import { tb } from '../helpers/typebox/__';
+import { T } from '../helpers/typebox/__';
 import { FailureBase } from './failure';
 import { SuccessBase } from './success';
 
-export interface DataType<$Schema extends tb.TObject = tb.TObject> {
+export interface DataType<$Schema extends T.TObject = T.TObject> {
   schema: $Schema;
   text?: TextBuilder;
 }
@@ -11,12 +11,12 @@ export interface DataType<$Schema extends tb.TObject = tb.TObject> {
 export const success: Factory<typeof SuccessBase> = (typeName, config) => {
   return {
     text: config.text,
-    schema: tb.Composite([
+    schema: T.Composite([
       SuccessBase,
-      tb.Object({
-        data: tb.Composite([
-          tb.Object({ type: tb.Literal(typeName, { default: typeName }) }),
-          tb.Object(config.data),
+      T.Object({
+        data: T.Composite([
+          T.Object({ type: T.Literal(typeName, { default: typeName }) }),
+          T.Object(config.data),
         ]),
       }),
     ]),
@@ -26,27 +26,27 @@ export const success: Factory<typeof SuccessBase> = (typeName, config) => {
 export const failure: Factory<typeof FailureBase> = (typeName, config) => {
   return {
     text: config.text,
-    schema: tb.Composite([
+    schema: T.Composite([
       FailureBase,
-      tb.Object({
-        data: tb.Composite([
-          tb.Object({ type: tb.Literal(typeName, { default: typeName }) }),
-          tb.Object(config.data),
+      T.Object({
+        data: T.Composite([
+          T.Object({ type: T.Literal(typeName, { default: typeName }) }),
+          T.Object(config.data),
         ]),
       }),
     ]),
   } as any;
 };
 
-export type Factory<$BaseT extends tb.TObject> = <
-  $DataT extends tb.TProperties,
+export type Factory<$BaseT extends T.TObject> = <
+  $DataT extends T.TProperties,
   $TypeName extends string,
-  $OutputT extends tb.TObject = tb.TComposite<
+  $OutputT extends T.TObject = T.TComposite<
     [
       $BaseT,
-      tb.TObject<{
-        data: tb.TComposite<
-          [tb.TObject<{ type: tb.TLiteral<$TypeName> }>, tb.TObject<NoInfer<$DataT>>]
+      T.TObject<{
+        data: T.TComposite<
+          [T.TObject<{ type: T.TLiteral<$TypeName> }>, T.TObject<NoInfer<$DataT>>]
         >;
       }>,
     ]
@@ -73,7 +73,7 @@ export type Factory<$BaseT extends tb.TObject> = <
      *
      * Note: If user invoked the CLI with --json, then the output from this function is ignored.
      */
-    text?: TextBuilder<tb.Static<$OutputT>['data']>;
+    text?: TextBuilder<T.Static<$OutputT>['data']>;
   },
 ) => DataType<$OutputT>;
 

@@ -71,8 +71,7 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       const fs = await import('fs/promises');
       const contents = Buffer.from(await response.arrayBuffer());
       await fs.writeFile(flags.outputFile, contents);
-      const message = `Wrote ${contents.length} bytes to ${flags.outputFile}`;
-      this.log(message);
+      this.log(`Wrote ${contents.length} bytes to ${flags.outputFile}`);
       return this.success({
         type: 'SuccessOutputFile',
         path: flags.outputFile,

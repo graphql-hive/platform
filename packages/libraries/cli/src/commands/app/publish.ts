@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
-import { tb } from '../../helpers/typebox/__';
+import { T } from '../../helpers/typebox/__';
 import { Output } from '../../output/__';
 
 export default class AppPublish extends Command<typeof AppPublish> {
@@ -26,19 +26,27 @@ export default class AppPublish extends Command<typeof AppPublish> {
   static output = [
     Output.success('SuccessSkipAppPublish', {
       data: {
-        name: tb.StringNonEmpty,
-        version: tb.StringNonEmpty,
+        name: T.StringNonEmpty,
+        version: T.StringNonEmpty,
+      },
+      text(_, data, s) {
+        s.warning(
+          `App deployment "${data.name}@${data.version}" is already published. Skipping...`,
+        );
       },
     }),
     Output.success('SuccessAppPublish', {
       data: {
-        name: tb.StringNonEmpty,
-        version: tb.StringNonEmpty,
+        name: T.StringNonEmpty,
+        version: T.StringNonEmpty,
+      },
+      text(_, data, s) {
+        s.success(`App deployment "${data.name}@${data.version}" published successfully.`);
       },
     }),
     Output.failure('FailureAppPublish', {
       data: {
-        message: tb.String(),
+        message: T.String(),
       },
     }),
   ];
@@ -82,26 +90,18 @@ export default class AppPublish extends Command<typeof AppPublish> {
       throw new Error('Unknown error');
     }
 
-    const name = `${result.ok.activatedAppDeployment.name}@${result.ok.activatedAppDeployment.version}`;
-
     if (result.ok.isSkipped) {
-      this.warn(`App deployment "${name}" is already published. Skipping...`);
-      return this.successEnvelope({
-        data: {
-          type: 'SuccessSkipAppPublish',
-          name: result.ok.activatedAppDeployment.name,
-          version: result.ok.activatedAppDeployment.version,
-        },
+      return this.success({
+        type: 'SuccessSkipAppPublish',
+        name: result.ok.activatedAppDeployment.name,
+        version: result.ok.activatedAppDeployment.version,
       });
     }
 
-    this.log(`App deployment "${name}" published successfully.`);
-    return this.successEnvelope({
-      data: {
-        type: 'SuccessAppPublish',
-        name: result.ok.activatedAppDeployment.name,
-        version: result.ok.activatedAppDeployment.version,
-      },
+    return this.success({
+      type: 'SuccessAppPublish',
+      name: result.ok.activatedAppDeployment.name,
+      version: result.ok.activatedAppDeployment.version,
     });
   }
 }

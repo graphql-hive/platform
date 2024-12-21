@@ -5,7 +5,7 @@ import { graphql } from '../gql';
 import { graphqlEndpoint } from '../helpers/config';
 import { casesExhausted } from '../helpers/general';
 import { Tex } from '../helpers/tex/__';
-import { tb } from '../helpers/typebox/__';
+import { T } from '../helpers/typebox/__';
 import { Output } from '../output/__';
 
 const myTokenInfoQuery = graphql(/* GraphQL */ `
@@ -65,26 +65,26 @@ export default class Whoami extends Command<typeof Whoami> {
   static output = [
     Output.success('SuccessWhoami', {
       data: {
-        token: tb.Object({
-          name: tb.String(),
+        token: T.Object({
+          name: T.String(),
         }),
-        organization: tb.Object({
-          slug: tb.String(),
-          url: tb.String({ format: 'uri' }),
+        organization: T.Object({
+          slug: T.String(),
+          url: T.String({ format: 'uri' }),
         }),
-        project: tb.Object({
-          type: tb.String(),
-          slug: tb.String(),
-          url: tb.String({ format: 'uri' }),
+        project: T.Object({
+          type: T.String(),
+          slug: T.String(),
+          url: T.String({ format: 'uri' }),
         }),
-        target: tb.Object({
-          slug: tb.String(),
-          url: tb.String({ format: 'uri' }),
+        target: T.Object({
+          slug: T.String(),
+          url: T.String({ format: 'uri' }),
         }),
-        authorization: tb.Object({
-          schema: tb.Object({
-            publish: tb.Boolean(),
-            check: tb.Boolean(),
+        authorization: T.Object({
+          schema: T.Object({
+            publish: T.Boolean(),
+            check: T.Boolean(),
           }),
         }),
       },
@@ -108,7 +108,7 @@ export default class Whoami extends Command<typeof Whoami> {
     }),
     Output.failure('FailureWhoamiTokenNotFound', {
       data: {
-        message: tb.String(),
+        message: T.String(),
       },
     }),
   ];

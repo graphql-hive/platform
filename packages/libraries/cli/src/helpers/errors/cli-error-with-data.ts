@@ -1,7 +1,7 @@
 import { Errors } from '@oclif/core';
 import { Output } from '../../output/__';
 
-export class CLIErrorWithData extends Errors.CLIError {
+export class Failure extends Errors.CLIError {
   public envelope: Output.FailureGeneric;
   constructor(args: {
     message: string;

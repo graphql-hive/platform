@@ -3,13 +3,12 @@ import type { ExecutionResult } from 'graphql';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Flags, Interfaces } from '@oclif/core';
-import { ParserOutput } from '@oclif/core/lib/interfaces/parser';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 import { Errors } from './helpers/errors/__';
-import { CLIErrorWithData } from './helpers/errors/cli-error-with-data';
+import { Failure } from './helpers/errors/cli-error-with-data';
 import { OmitNever } from './helpers/general';
 import { Tex } from './helpers/tex/__';
-import { tb } from './helpers/typebox/__';
+import { T } from './helpers/typebox/__';
 import { Output } from './output/__';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
@@ -54,7 +53,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       dataType => dataType.schema.properties.data.properties.type.const === resultDataTypeName,
     );
     if (!dataType) {
-      throw new CLIErrorWithData({
+      throw new Failure({
         message: schemaViolationMessage,
         data: {
           type: 'ErrorDataTypeNotFound',
@@ -64,12 +63,12 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       });
     }
 
-    const errorsIterator = tb.Value.Value.Errors(dataType.schema, resultUnparsed);
-    const materializedErrors = tb.Value.MaterializeValueErrorIterator(errorsIterator);
+    const errorsIterator = T.Value.Value.Errors(dataType.schema, resultUnparsed);
+    const materializedErrors = T.Value.MaterializeValueErrorIterator(errorsIterator);
     if (materializedErrors.length > 0) {
       // todo: Display data in non-json output.
       // The default textual output of an OClif error will not display any of the data below. We will want that information in a bug report.
-      throw new Errors.CLIErrorWithData({
+      throw new Errors.Failure({
         message: schemaViolationMessage,
         data: {
           type: 'ErrorOutputSchemaViolation',
@@ -82,7 +81,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     }
 
     // Should never throw because we checked for errors above.
-    const result = tb.Value.Parse(dataType.schema, resultUnparsed);
+    const result = T.Value.Parse(dataType.schema, resultUnparsed);
 
     // Data types can optionally bundle a textual representation of their data.
     if (dataType.text) {
@@ -119,7 +118,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
      * allows us to convert thrown values into JSON.
      * We throw a CLIFailure which will be specially handled it.
      */
-    throw new Errors.CLIErrorWithData({
+    throw new Errors.Failure({
       // @ts-expect-error fixme
       data: result.data,
       // @ts-expect-error fixme
@@ -330,7 +329,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     }
 
     if (message) {
-      throw new Errors.CLIErrorWithData({
+      throw new Errors.Failure({
         message,
         data: {
           type: 'FailureUserInput',
@@ -339,7 +338,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       });
     }
 
-    throw new Errors.CLIErrorWithData({
+    throw new Errors.Failure({
       message: `Missing "${String(key)}"`,
       data: {
         type: 'FailureUserInput',
@@ -449,7 +448,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * the user. :(
    */
   toErrorJson(value: unknown) {
-    if (value instanceof Errors.CLIErrorWithData) {
+    if (value instanceof Errors.Failure) {
       return value.envelope;
     }
 
@@ -523,7 +522,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
   }
 }
 
-const clientErrorToCLIFailure = (error: Errors.ClientError): Errors.CLIErrorWithData => {
+const clientErrorToCLIFailure = (error: Errors.ClientError): Errors.Failure => {
   const requestId = cleanRequestId(error.response?.headers?.get('x-request-id'));
   const errors =
     error.response?.errors?.map(e => {
@@ -538,7 +537,7 @@ const clientErrorToCLIFailure = (error: Errors.ClientError): Errors.CLIErrorWith
       : `Caused by:\n${error.message}`;
   const message = `Request to Hive API failed. ${causedByMessage}`;
 
-  return new Errors.CLIErrorWithData({
+  return new Errors.Failure({
     message,
     ref: requestId,
     data: {
@@ -593,8 +592,3 @@ type GetOutput<$CommandClass extends typeof Command> =
 const cleanRequestId = (requestId?: string | null) => {
   return requestId ? requestId.split(',')[0].trim() : undefined;
 };
-
-export type InferInput<$Command extends typeof Command> = Pick<
-  ParserOutput<$Command['flags'], $Command['baseFlags'], $Command['args']>,
-  'args' | 'flags'
->;

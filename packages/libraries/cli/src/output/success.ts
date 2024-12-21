@@ -1,22 +1,22 @@
 import { OptionalizePropertyUnsafe, Simplify } from '../helpers/general';
-import { tb } from '../helpers/typebox/__';
+import { T } from '../helpers/typebox/__';
 import type { FailureBase } from './failure';
 import { DataType } from './output-data-type';
 
-export const SuccessBase = tb.Object({
-  type: tb.Literal('success', { default: 'success' }),
+export const SuccessBase = T.Object({
+  type: T.Literal('success', { default: 'success' }),
 });
-export type SuccessBase = tb.Static<typeof SuccessBase>;
+export type SuccessBase = T.Static<typeof SuccessBase>;
 
-export const SuccessGeneric = tb.Composite([
+export const SuccessGeneric = T.Composite([
   SuccessBase,
-  tb.Object({
-    data: tb.Record(tb.String(), tb.Any()),
+  T.Object({
+    data: T.Record(T.String(), T.Any()),
   }),
 ]);
-export type SuccessGeneric = tb.Static<typeof SuccessGeneric>;
+export type SuccessGeneric = T.Static<typeof SuccessGeneric>;
 
-export const successDefaults: tb.Static<typeof SuccessGeneric> = {
+export const successDefaults: T.Static<typeof SuccessGeneric> = {
   type: 'success',
   data: {},
 };
@@ -35,6 +35,6 @@ export type InferSuccessEnvelopeInit<$DataType extends DataType> = Simplify<
 >;
 
 export type InferSuccess<$DataType extends DataType> = Extract<
-  tb.Static<$DataType['schema']>,
+  T.Static<$DataType['schema']>,
   { type: 'success' }
 >;

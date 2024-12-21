@@ -1,6 +1,6 @@
 import { SchemaHive } from '../helpers/schema';
 import { Tex } from '../helpers/tex/__';
-import { tb } from '../helpers/typebox/__';
+import { T } from '../helpers/typebox/__';
 
 export const schemaChangeCriticalityLevel = {
   Breaking: 'Breaking',
@@ -9,24 +9,24 @@ export const schemaChangeCriticalityLevel = {
 } as const;
 export type SchemaChangeCriticalityLevel = keyof typeof schemaChangeCriticalityLevel;
 
-export const SchemaChange = tb.Object({
-  message: tb.String(),
-  criticality: tb.Enum(schemaChangeCriticalityLevel),
-  isSafeBasedOnUsage: tb.Boolean(),
-  approval: tb.Nullable(
-    tb.Object({
-      by: tb.Nullable(
-        tb.Object({
-          displayName: tb.Nullable(tb.String()),
+export const SchemaChange = T.Object({
+  message: T.String(),
+  criticality: T.Enum(schemaChangeCriticalityLevel),
+  isSafeBasedOnUsage: T.Boolean(),
+  approval: T.Nullable(
+    T.Object({
+      by: T.Nullable(
+        T.Object({
+          displayName: T.Nullable(T.String()),
         }),
       ),
     }),
   ),
 });
-export type SchemaChange = tb.Static<typeof SchemaChange>;
+export type SchemaChange = T.Static<typeof SchemaChange>;
 
-export const SchemaChanges = tb.Array(SchemaChange);
-export type SchemaChanges = tb.Static<typeof SchemaChanges>;
+export const SchemaChanges = T.Array(SchemaChange);
+export type SchemaChanges = T.Static<typeof SchemaChanges>;
 export const schemaChangesText = (data: SchemaChanges): string => {
   const breakingChanges = data.filter(
     change => change.criticality === schemaChangeCriticalityLevel.Breaking,
@@ -82,16 +82,16 @@ const criticalityMap = {
   [schemaChangeCriticalityLevel.Dangerous]: Tex.colors.green('-'),
 } satisfies Record<SchemaChangeCriticalityLevel, string>;
 
-export const SchemaWarning = tb.Object({
-  message: tb.String(),
-  source: tb.Nullable(tb.String()),
-  line: tb.Nullable(tb.Number()),
-  column: tb.Nullable(tb.Number()),
+export const SchemaWarning = T.Object({
+  message: T.String(),
+  source: T.Nullable(T.String()),
+  line: T.Nullable(T.Number()),
+  column: T.Nullable(T.Number()),
 });
-export type SchemaWarning = tb.Static<typeof SchemaWarning>;
+export type SchemaWarning = T.Static<typeof SchemaWarning>;
 
-export const SchemaWarnings = tb.Array(SchemaWarning);
-export type SchemaWarnings = tb.Static<typeof SchemaWarnings>;
+export const SchemaWarnings = T.Array(SchemaWarning);
+export type SchemaWarnings = T.Static<typeof SchemaWarnings>;
 export const schemaWarningsText = (warnings: SchemaWarnings): string => {
   const s = Tex.createBuilder();
   s.warning(`Detected ${warnings.length} warning${Tex.plural(warnings)}`);
@@ -105,14 +105,14 @@ export const schemaWarningsText = (warnings: SchemaWarnings): string => {
   return s.state.value.trim();
 };
 
-export const SchemaError = tb.Object({
-  message: tb.String(),
+export const SchemaError = T.Object({
+  message: T.String(),
 });
 
-export type SchemaError = tb.Static<typeof SchemaError>;
+export type SchemaError = T.Static<typeof SchemaError>;
 
-export const SchemaErrors = tb.Array(SchemaError);
-export const schemaErrorsText = (data: tb.Static<typeof SchemaErrors>): string => {
+export const SchemaErrors = T.Array(SchemaError);
+export const schemaErrorsText = (data: T.Static<typeof SchemaErrors>): string => {
   const s = Tex.createBuilder();
   s.failure(`Detected ${data.length} error${Tex.plural(data)}`);
   s.line();
@@ -122,9 +122,9 @@ export const schemaErrorsText = (data: tb.Static<typeof SchemaErrors>): string =
   return s.state.value.trim();
 };
 
-export const AppDeploymentStatus = tb.Enum({
+export const AppDeploymentStatus = T.Enum({
   active: SchemaHive.AppDeploymentStatus.Active,
   pending: SchemaHive.AppDeploymentStatus.Pending,
   retired: SchemaHive.AppDeploymentStatus.Retired,
 });
-export type AppDeploymentStatus = tb.Static<typeof AppDeploymentStatus>;
+export type AppDeploymentStatus = T.Static<typeof AppDeploymentStatus>;
