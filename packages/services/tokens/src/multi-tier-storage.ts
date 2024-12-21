@@ -197,7 +197,7 @@ export async function createStorage(
       const context = { maskedToken, source: 'in-memory' };
       const tokenLogger = serverLogger.child({
         maskedToken,
-      })
+      });
       const data = await cache.fetch(hashedToken, {
         context,
         status,
