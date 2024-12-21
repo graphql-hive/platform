@@ -143,25 +143,33 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(
+  static output = [
     SchemaOutput.success('SuccessSchemaCheck', {
-      changes: tb.Array(SchemaOutput.SchemaChange),
-      warnings: tb.Array(SchemaOutput.SchemaWarning),
-      url: tb.Nullable(tb.String({ format: 'uri' })),
+      schema: {
+        changes: tb.Array(SchemaOutput.SchemaChange),
+        warnings: tb.Array(SchemaOutput.SchemaWarning),
+        url: tb.Nullable(tb.String({ format: 'uri' })),
+      },
     }),
     SchemaOutput.success('SuccessSchemaCheckGitHub', {
-      message: tb.String(),
+      schema: {
+        message: tb.String(),
+      },
     }),
     SchemaOutput.success('FailureSchemaCheck', {
-      changes: tb.Array(SchemaOutput.SchemaChange),
-      warnings: tb.Array(SchemaOutput.SchemaWarning),
-      url: tb.Nullable(tb.String({ format: 'uri' })),
+      schema: {
+        changes: tb.Array(SchemaOutput.SchemaChange),
+        warnings: tb.Array(SchemaOutput.SchemaWarning),
+        url: tb.Nullable(tb.String({ format: 'uri' })),
+      },
     }),
 
     SchemaOutput.failure('FailureSchemaCheckGitHub', {
-      message: tb.String(),
+      schema: {
+        message: tb.String(),
+      },
     }),
-  );
+  ];
 
   async runResult() {
     const { flags, args } = await this.parse(SchemaCheck);

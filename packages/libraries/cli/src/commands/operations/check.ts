@@ -78,33 +78,35 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(
-    SchemaOutput.failure('FailureOperationsCheckNoSchemaFound', {}),
-    SchemaOutput.success('SuccessOperationsCheckNoOperationsFound', {}),
+  static output = [
+    SchemaOutput.failure('FailureOperationsCheckNoSchemaFound', { schema: {} }),
+    SchemaOutput.success('SuccessOperationsCheckNoOperationsFound', { schema: {} }),
     SchemaOutput.success('SuccessOperationsCheck', {
-      countTotal: tb.Integer({ minimum: 0 }),
-      countInvalid: tb.Integer({ minimum: 0 }),
-      countValid: tb.Integer({ minimum: 0 }),
-      invalidOperations: tb.Array(
-        tb.Object({
-          source: tb.Object({
-            name: tb.String(),
-          }),
-          errors: tb.Array(
-            tb.Object({
-              message: tb.String(),
-              locations: tb.Array(
-                tb.Object({
-                  line: tb.Integer({ minimum: 0 }),
-                  column: tb.Integer({ minimum: 0 }),
-                }),
-              ),
+      schema: {
+        countTotal: tb.Integer({ minimum: 0 }),
+        countInvalid: tb.Integer({ minimum: 0 }),
+        countValid: tb.Integer({ minimum: 0 }),
+        invalidOperations: tb.Array(
+          tb.Object({
+            source: tb.Object({
+              name: tb.String(),
             }),
-          ),
-        }),
-      ),
+            errors: tb.Array(
+              tb.Object({
+                message: tb.String(),
+                locations: tb.Array(
+                  tb.Object({
+                    line: tb.Integer({ minimum: 0 }),
+                    column: tb.Integer({ minimum: 0 }),
+                  }),
+                ),
+              }),
+            ),
+          }),
+        ),
+      },
     }),
-  );
+  ];
 
   async runResult() {
     const { flags, args } = await this.parse(OperationsCheck);

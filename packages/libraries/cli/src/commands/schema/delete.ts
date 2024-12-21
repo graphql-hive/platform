@@ -82,12 +82,16 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(
-    SchemaOutput.success('SuccessSchemaDelete', {}),
-    SchemaOutput.failure('FailureSchemaDelete', {
-      errors: tb.Array(SchemaOutput.SchemaError),
+  static output = [
+    SchemaOutput.success('SuccessSchemaDelete', {
+      schema: {},
     }),
-  );
+    SchemaOutput.failure('FailureSchemaDelete', {
+      schema: {
+        errors: tb.Array(SchemaOutput.SchemaError),
+      },
+    }),
+  ];
 
   async runResult() {
     const { flags, args } = await this.parse(SchemaDelete);

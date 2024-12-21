@@ -1,6 +1,7 @@
 import { OptionalizePropertyUnsafe, Simplify } from '../helpers/general';
 import { tb } from '../helpers/typebox/__';
-import { OutputBase, OutputBaseT } from './output';
+import type { FailureBase } from './failure';
+import { OutputDataType } from './output-data-type';
 
 export const SuccessBase = tb.Object({
   type: tb.Literal('success', { default: 'success' }),
@@ -20,41 +21,20 @@ export const successDefaults: tb.Static<typeof SuccessGeneric> = {
   data: {},
 };
 
-export const isSuccess = <$Output extends OutputBase>(
+export const isSuccess = <$Output extends FailureBase | SuccessBase>(
   schema: $Output,
 ): schema is Extract<$Output, { type: 'success' }> =>
   schema.type === SuccessBase.properties.type.const;
 
-export const success = <$DataInit extends tb.TProperties, $TypeName extends string>(
-  typeName: $TypeName,
-  data: $DataInit,
-): tb.TComposite<
-  [
-    typeof SuccessBase,
-    tb.TObject<{
-      data: tb.TComposite<[tb.TObject<{ type: tb.TLiteral<$TypeName> }>, tb.TObject<$DataInit>]>;
-    }>,
-  ]
-> =>
-  tb.Composite([
-    SuccessBase,
-    tb.Object({
-      data: tb.Composite([
-        tb.Object({ type: tb.Literal(typeName, { default: typeName }) }),
-        tb.Object(data),
-      ]),
-    }),
-  ]) as any;
-
-export type InferSuccessData<$Schema extends OutputBaseT> =
-  // @ts-expect-error fixme
-  Simplify<InferSuccess<$Schema>['data']>;
-
-export type InferSuccessEnvelopeInit<$Schema extends OutputBaseT> = Simplify<
-  OptionalizePropertyUnsafe<Omit<InferSuccess<$Schema>, 'type'>, 'data'>
+export type InferSuccessData<$DataType extends OutputDataType> = Simplify<
+  InferSuccess<$DataType>['data']
 >;
 
-export type InferSuccess<$Schema extends OutputBaseT> = Extract<
-  tb.Static<$Schema>,
+export type InferSuccessEnvelopeInit<$DataType extends OutputDataType> = Simplify<
+  OptionalizePropertyUnsafe<Omit<InferSuccess<$DataType>, 'type'>, 'data'>
+>;
+
+export type InferSuccess<$DataType extends OutputDataType> = Extract<
+  tb.Static<$DataType['schema']>,
   { type: 'success' }
 >;

@@ -34,7 +34,7 @@ type InferFunctionParameters<$Command extends typeof BaseCommand<any>> =
 // prettier-ignore
 type InferReturn<$Command extends typeof BaseCommand<any>, $Args extends Args> =
 	$Args extends { json: true }
-		? tb.Static<$Command['output']>
+		? tb.Static<$Command['output'][number]['schema']>
 		: string
 
 export const renderSubcommandExecution = (

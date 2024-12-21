@@ -1,5 +1,5 @@
 import { Args, Flags } from '@oclif/core';
-import Command from '../../base-command';
+import Command, { InferInput } from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { SchemaHive } from '../../helpers/schema';
@@ -32,20 +32,31 @@ export default class AppCreate extends Command<typeof AppCreate> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(
+  static output = [
     SchemaOutput.success('SuccessSkipAppCreate', {
-      status: SchemaOutput.AppDeploymentStatus,
+      schema: {
+        status: SchemaOutput.AppDeploymentStatus,
+      },
+      render(input: InferInput<typeof AppCreate>, output) {
+        return `App deployment "${input.flags.name}@${input.flags.version}" is "${output.status}". Skip uploading documents...`;
+      },
     }),
     SchemaOutput.success('SuccessAppCreate', {
-      id: tb.StringNonEmpty,
+      schema: {
+        id: tb.StringNonEmpty,
+      },
     }),
     SchemaOutput.failure('FailureAppCreate', {
-      message: tb.String(),
+      schema: {
+        message: tb.String(),
+      },
     }),
     SchemaOutput.failure('FailureInvalidManifestModel', {
-      errors: tb.Array(tb.Value.MaterializedValueErrorT),
+      schema: {
+        errors: tb.Array(tb.Value.MaterializedValueErrorT),
+      },
     }),
-  );
+  ];
 
   async runResult() {
     const { flags, args } = await this.parse(AppCreate);
@@ -98,9 +109,9 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }
 
     if (result.ok.createdAppDeployment.status !== SchemaHive.AppDeploymentStatus.Pending) {
-      this.log(
-        `App deployment "${flags['name']}@${flags['version']}" is "${result.ok.createdAppDeployment.status}". Skip uploading documents...`,
-      );
+      // this.log(
+      //   `App deployment "${flags['name']}@${flags['version']}" is "${result.ok.createdAppDeployment.status}". Skip uploading documents...`,
+      // );
       return this.success({
         type: 'SuccessSkipAppCreate',
         status: result.ok.createdAppDeployment.status,

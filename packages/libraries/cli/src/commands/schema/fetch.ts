@@ -66,13 +66,13 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(
-    SchemaOutput.failure('CLISchemaFetchMissingSchema', {}),
-    SchemaOutput.failure('CLISchemaFetchInvalidSchema', {}),
-    SchemaOutput.failure('CLISchemaFetchMissingSDLType', {}),
+  static output = [
+    SchemaOutput.failure('CLISchemaFetchMissingSchema', { schema: {} }),
+    SchemaOutput.failure('CLISchemaFetchInvalidSchema', { schema: {} }),
+    SchemaOutput.failure('CLISchemaFetchMissingSDLType', { schema: {} }),
     SchemaOutput.SuccessOutputFile,
     SchemaOutput.SuccessOutputStdout,
-  );
+  ];
 
   async runResult() {
     const { flags, args } = await this.parse(SchemaFetch);

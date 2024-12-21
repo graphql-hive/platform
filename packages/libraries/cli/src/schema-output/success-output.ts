@@ -1,10 +1,14 @@
 import { tb } from '../helpers/typebox/__';
-import { success } from './success';
+import { success } from './output-data-type';
 
 export const SuccessOutputFile = success('SuccessOutputFile', {
-  path: tb.String(),
+  schema: {
+    path: tb.String(),
+  },
 });
 
 export const SuccessOutputStdout = success('SuccessOutputStdout', {
-  content: tb.String(),
+  schema: {
+    content: tb.String(),
+  },
 });

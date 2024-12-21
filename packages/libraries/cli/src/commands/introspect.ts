@@ -27,10 +27,7 @@ export default class Introspect extends Command<typeof Introspect> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(
-    SchemaOutput.SuccessOutputFile,
-    SchemaOutput.SuccessOutputStdout,
-  );
+  static output = [SchemaOutput.SuccessOutputFile, SchemaOutput.SuccessOutputStdout];
 
   async runResult() {
     const { flags, args } = await this.parse(Introspect);

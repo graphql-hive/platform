@@ -3,12 +3,19 @@ import type { ExecutionResult } from 'graphql';
 import { http } from '@graphql-hive/core';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Command, Flags, Interfaces } from '@oclif/core';
+import { ParserOutput } from '@oclif/core/lib/interfaces/parser';
 import { Config, GetConfigurationValueType, ValidConfigurationKeys } from './helpers/config';
 import { Errors } from './helpers/errors/__';
+import { CLIErrorWithData } from './helpers/errors/cli-error-with-data';
 import { OmitNever } from './helpers/general';
 import { Tex } from './helpers/tex/__';
 import { tb } from './helpers/typebox/__';
 import { SchemaOutput } from './schema-output/__';
+
+export type InferInput<T extends typeof Command> = Pick<
+  ParserOutput<T['flags'], T['baseFlags'], T['args']>,
+  'args' | 'flags'
+>;
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
@@ -18,7 +25,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * Used by methods: {@link BaseCommand.success}, {@link BaseCommand.failure}, {@link BaseCommand.runResult}.
    */
-  public static output: SchemaOutput.OutputBaseT = SchemaOutput.OutputBase;
+  public static output: SchemaOutput.OutputDataType[] = [];
 
   protected _userConfig: Config | undefined;
 
@@ -39,24 +46,40 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * By default this command runs {@link BaseCommand.runResult}, having logic to handle its return value.
    */
   async run(): Promise<void | SchemaOutput.InferSuccess<GetOutput<$Command>>> {
-    const resultUnparsed = await this.runResult();
-    const schema = (this.constructor as typeof BaseCommand).output as SchemaOutput.OutputBaseT;
+    // todo: Make it easier for the Hive team to be alerted.
+    // - Alert the Hive team automatically with some opt-in telemetry?
+    // - A single-click-link with all relevant variables serialized into search parameters?
+    const schemaViolationMessage = `Whoops. This Hive CLI command tried to output a value that violates its own schema. This should never happen. Please report this error to the Hive team at https://github.com/graphql-hive/console/issues/new.`;
 
-    const errorsIterator = tb.Value.Value.Errors(schema, resultUnparsed);
+    const thisClass = this.constructor as typeof BaseCommand;
+    const resultUnparsed = await this.runResult();
+    // @ts-expect-error fixme
+    const resultDataTypeName = resultUnparsed.data.type;
+    const dataType = thisClass.output.find(
+      dataType => dataType.schema.properties.data.properties.type.const === resultDataTypeName,
+    );
+    if (!dataType) {
+      throw new CLIErrorWithData({
+        message: schemaViolationMessage,
+        data: {
+          type: 'ErrorDataTypeNotFound',
+          message: schemaViolationMessage,
+          value: resultUnparsed,
+        },
+      });
+    }
+
+    const errorsIterator = tb.Value.Value.Errors(dataType.schema, resultUnparsed);
     const materializedErrors = tb.Value.MaterializeValueErrorIterator(errorsIterator);
     if (materializedErrors.length > 0) {
-      // todo: Make it easier for the Hive team to be alerted.
-      // - Alert the Hive team automatically with some opt-in telemetry?
-      // - A single-click-link with all relevant variables serialized into search parameters?
-      const message = `Whoops. This Hive CLI command tried to output a value that violates its own schema. This should never happen. Please report this error to the Hive team at https://github.com/graphql-hive/console/issues/new.`;
       // todo: Display data in non-json output.
       // The default textual output of an OClif error will not display any of the data below. We will want that information in a bug report.
       throw new Errors.CLIErrorWithData({
-        message,
+        message: schemaViolationMessage,
         data: {
           type: 'ErrorOutputSchemaViolation',
-          message,
-          schema: schema,
+          message: schemaViolationMessage,
+          schema: dataType,
           value: resultUnparsed,
           errors: materializedErrors,
         },
@@ -64,12 +87,17 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     }
 
     // Should never throw because we checked for errors above.
-    const result = tb.Value.Parse(schema, resultUnparsed);
+    const result = tb.Value.Parse(dataType.schema, resultUnparsed);
+
+    // Data types can optionally bundle a textual representation of their data.
+    if (dataType.render) {
+      this.log(dataType.render({ flags: this.flags, args: this.args }, result.data));
+    }
 
     /**
      * OClif outputs returned values as JSON.
      */
-    if (SchemaOutput.isSuccess(result)) {
+    if (SchemaOutput.isSuccess(result as any)) {
       return result as any;
     }
 
@@ -417,43 +445,39 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     if (value instanceof Errors.FailedFlagValidationError) {
       return this.failureEnvelope({
         suggestions: value.suggestions,
-        // @ts-expect-error fixme
         data: {
           type: 'FailureUserInput',
           message: value.message,
           problem: 'namedArgumentInvalid',
         },
-      });
+      } as any);
     }
 
     if (value instanceof Errors.RequiredArgsError) {
       return this.failureEnvelope({
         suggestions: value.suggestions,
-        // @ts-expect-error fixme
         data: {
           type: 'FailureUserInput',
           message: value.message,
           problem: 'positionalArgumentMissing',
         },
-      });
+      } as any);
     }
 
     if (value instanceof Errors.CLIError) {
       return this.failureEnvelope({
         suggestions: value.suggestions,
-        // @ts-expect-error fixme
         data: {
           type: 'Failure',
           message: value.message,
         },
-      });
+      } as any);
     }
     if (value instanceof Error) {
       return this.failure({
-        // @ts-expect-error fixme
         type: 'Failure',
         message: value.message,
-      });
+      } as any);
     }
     return super.toErrorJson(value);
   }
@@ -550,8 +574,8 @@ type InferOutputSuccessData<$CommandClass extends typeof Command> =
 // prettier-ignore
 type GetOutput<$CommandClass extends typeof Command> =
   'output' extends keyof $CommandClass
-    ? $CommandClass['output'] extends SchemaOutput.OutputBaseT
-      ? $CommandClass['output']
+    ? $CommandClass['output'] extends SchemaOutput.OutputDataType[]
+      ? $CommandClass['output'][number]
     : never
   : never;
 

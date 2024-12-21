@@ -61,32 +61,36 @@ export default class Whoami extends Command<typeof Whoami> {
       },
     }),
   };
-  static output = SchemaOutput.output(
+  static output = [
     SchemaOutput.success('SuccessWhoami', {
-      token: tb.Object({
-        name: tb.String(),
-      }),
-      organization: tb.Object({
-        slug: tb.String(),
-      }),
-      project: tb.Object({
-        type: tb.String(),
-        slug: tb.String(),
-      }),
-      target: tb.Object({
-        slug: tb.String(),
-      }),
-      authorization: tb.Object({
-        schema: tb.Object({
-          publish: tb.Boolean(),
-          check: tb.Boolean(),
+      schema: {
+        token: tb.Object({
+          name: tb.String(),
         }),
-      }),
+        organization: tb.Object({
+          slug: tb.String(),
+        }),
+        project: tb.Object({
+          type: tb.String(),
+          slug: tb.String(),
+        }),
+        target: tb.Object({
+          slug: tb.String(),
+        }),
+        authorization: tb.Object({
+          schema: tb.Object({
+            publish: tb.Boolean(),
+            check: tb.Boolean(),
+          }),
+        }),
+      },
     }),
     SchemaOutput.failure('FailureWhoamiTokenNotFound', {
-      message: tb.String(),
+      schema: {
+        message: tb.String(),
+      },
     }),
-  );
+  ];
 
   async runResult() {
     const { flags } = await this.parse(Whoami);

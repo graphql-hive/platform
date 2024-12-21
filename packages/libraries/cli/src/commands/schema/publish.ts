@@ -161,32 +161,42 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(
+  static output = [
     SchemaOutput.success('SchemaPublishSuccess', {
-      changes: tb.Array(SchemaOutput.SchemaChange),
-      url: tb.Nullable(tb.String({ format: 'uri' })),
+      schema: {
+        changes: tb.Array(SchemaOutput.SchemaChange),
+        url: tb.Nullable(tb.String({ format: 'uri' })),
+      },
     }),
     SchemaOutput.success('SchemaPublishError', {
-      changes: tb.Array(SchemaOutput.SchemaChange),
-      errors: tb.Array(SchemaOutput.SchemaError),
-      url: tb.Nullable(tb.String({ format: 'uri' })),
+      schema: {
+        changes: tb.Array(SchemaOutput.SchemaChange),
+        errors: tb.Array(SchemaOutput.SchemaError),
+        url: tb.Nullable(tb.String({ format: 'uri' })),
+      },
     }),
     SchemaOutput.success('GitHubSchemaPublishSuccess', {
-      message: tb.String(),
+      schema: {
+        message: tb.String(),
+      },
     }),
     SchemaOutput.failure('GitHubSchemaPublishError', {
-      message: tb.String(),
+      schema: {
+        message: tb.String(),
+      },
     }),
     SchemaOutput.failure('CLIInvalidGraphQLSchema', {
-      message: tb.String(),
-      locations: tb.Array(
-        tb.Object({
-          line: tb.Readonly(tb.Number()),
-          column: tb.Readonly(tb.Number()),
-        }),
-      ),
+      schema: {
+        message: tb.String(),
+        locations: tb.Array(
+          tb.Object({
+            line: tb.Readonly(tb.Number()),
+            column: tb.Readonly(tb.Number()),
+          }),
+        ),
+      },
     }),
-  );
+  ];
 
   resolveMetadata(metadata: string | undefined): string | undefined {
     if (!metadata) {

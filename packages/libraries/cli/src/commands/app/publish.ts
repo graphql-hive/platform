@@ -23,19 +23,25 @@ export default class AppPublish extends Command<typeof AppPublish> {
       required: true,
     }),
   };
-  static output = SchemaOutput.output(
+  static output = [
     SchemaOutput.success('SuccessSkipAppPublish', {
-      name: tb.StringNonEmpty,
-      version: tb.StringNonEmpty,
+      schema: {
+        name: tb.StringNonEmpty,
+        version: tb.StringNonEmpty,
+      },
     }),
     SchemaOutput.success('SuccessAppPublish', {
-      name: tb.StringNonEmpty,
-      version: tb.StringNonEmpty,
+      schema: {
+        name: tb.StringNonEmpty,
+        version: tb.StringNonEmpty,
+      },
     }),
     SchemaOutput.failure('FailureAppPublish', {
-      message: tb.String(),
+      schema: {
+        message: tb.String(),
+      },
     }),
-  );
+  ];
 
   async runResult() {
     const { flags } = await this.parse(AppPublish);

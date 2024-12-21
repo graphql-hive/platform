@@ -357,7 +357,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "HiveApiRequestError",
+    "type": "FailureHiveApiRequest",
     "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
     "requestId": "__ID__",
     "errors": [
@@ -718,7 +718,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "HiveApiRequestError",
+    "type": "FailureHiveApiRequest",
     "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
     "requestId": "__ID__",
     "errors": [
@@ -1036,7 +1036,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "HiveApiRequestError",
+    "type": "FailureHiveApiRequest",
     "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
     "requestId": "__ID__",
     "errors": [
@@ -1354,7 +1354,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "HiveApiRequestError",
+    "type": "FailureHiveApiRequest",
     "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
     "requestId": "__ID__",
     "errors": [
@@ -1723,7 +1723,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "HiveApiRequestError",
+    "type": "FailureHiveApiRequest",
     "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
     "requestId": "__ID__",
     "errors": [
@@ -2086,7 +2086,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "HiveApiRequestError",
+    "type": "FailureHiveApiRequest",
     "message": "Request to Hive API failed. Caused by error(s):\\nInvalid token provided",
     "requestId": "__ID__",
     "errors": [
