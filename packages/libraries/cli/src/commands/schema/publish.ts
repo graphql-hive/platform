@@ -73,23 +73,6 @@ const schemaPublishMutation = graphql(/* GraphQL */ `
 
 export default class SchemaPublish extends Command<typeof SchemaPublish> {
   static description = 'publishes schema';
-  static parameters = {
-    positional: tb.Tuple([tb.String()]),
-    named: tb.Object({
-      json: tb.Optional(tb.Boolean()),
-      service: tb.Optional(tb.String()),
-      url: tb.Optional(tb.String()),
-      metadata: tb.Optional(tb.String()),
-      'registry.endpoint': tb.Optional(tb.String()),
-      'registry.accessToken': tb.Optional(tb.String()),
-      author: tb.Optional(tb.String()),
-      commit: tb.Optional(tb.String()),
-      github: tb.Optional(tb.Boolean()),
-      force: tb.Optional(tb.Boolean()),
-      experimental_acceptBreakingChanges: tb.Optional(tb.Boolean()),
-      require: tb.Optional(tb.Array(tb.String())),
-    }),
-  };
   static flags = {
     service: Flags.string({
       description: 'service name (only for distributed schemas)',
@@ -165,11 +148,25 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
   static output = [
     Output.success('SuccessSchemaPublish', {
       data: {
+        isInitial: tb.Boolean(),
+        message: tb.Nullable(tb.String()),
         changes: tb.Array(Output.SchemaChange),
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
       text: (_, data) => {
         let o = '';
+        if (data.isInitial) {
+          o += Tex.success('Published initial schema.\n');
+        } else if (data.message) {
+          o += Tex.success(data.message + '\n');
+        } else if (data.changes && data.changes.length === 0) {
+          o += Tex.success('No changes. Skipping.\n');
+        } else {
+          if (data.changes.length) {
+            o += Output.SchemaChangesText(data.changes);
+          }
+          o += Tex.success('Schema published\n');
+        }
         if (data.url) {
           o += Tex.info(`Available at ${data.url}\n`);
         }
@@ -178,12 +175,18 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }),
     Output.success('FailureSchemaPublish', {
       data: {
-        changes: tb.Array(Output.SchemaChange),
-        errors: tb.Array(Output.SchemaError),
+        changes: Output.SchemaChanges,
+        errors: Output.SchemaErrors,
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
       text: ({ flags }: InferInput<typeof SchemaPublish>, data) => {
         let o = '';
+        o += Output.SchemaErrorsText(data.errors);
+        o += '\n';
+        if (data.changes.length) {
+          o += Output.SchemaChangesText(data.changes);
+          o += '\n';
+        }
         if (!flags.force) {
           o += Tex.failure('Failed to publish schema\n');
         } else {
@@ -394,21 +397,10 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     } while (result === null);
 
     if (result.__typename === 'SchemaPublishSuccess') {
-      if (result.initial) {
-        this.logSuccess('Published initial schema.');
-      } else if (result.successMessage) {
-        this.logSuccess(result.successMessage);
-      } else if (result.changes && result.changes.total === 0) {
-        this.logSuccess('No changes. Skipping.');
-      } else {
-        if (result.changes) {
-          Fragments.SchemaChangeConnection.log.call(this, result.changes);
-        }
-        this.logSuccess('Schema published');
-      }
-
       return this.success({
         type: 'SuccessSchemaPublish',
+        isInitial: result.initial,
+        message: result.successMessage ?? null,
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         url: result.linkToWebsite ?? null,
       });
@@ -425,18 +417,9 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }
 
     if (result.__typename === 'SchemaPublishError') {
-      Fragments.SchemaErrorConnection.log.call(this, result.errors);
-
-      if (result.changes?.total) {
-        this.log('');
-        Fragments.SchemaChangeConnection.log.call(this, result.changes);
-      }
-      this.log('');
-
       if (!flags.force) {
         process.exitCode = 1;
       }
-
       return this.success({
         type: 'FailureSchemaPublish',
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),

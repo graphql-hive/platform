@@ -92,17 +92,12 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
     }),
     Output.failure('FailureSchemaDelete', {
       data: {
-        errors: tb.Array(Output.SchemaError),
+        errors: Output.SchemaErrors,
       },
-      text: ({ args }: InferInput<typeof SchemaDelete>, output) => {
+      text: ({ args }: InferInput<typeof SchemaDelete>, data) => {
         let o = '';
         o += Tex.failure(`Failed to delete ${args.service}\n`);
-        o += Tex.failure(
-          `Detected ${output.errors.length} error${output.errors.length > 1 ? 's' : ''}\n`,
-        );
-        output.errors.forEach(error => {
-          o += Tex.indent + Tex.colors.red('-') + Tex.bolderize(error.message) + '\n';
-        });
+        o += Output.SchemaErrorsText(data.errors);
         return o;
       },
     }),
