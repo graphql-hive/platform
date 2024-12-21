@@ -1,4 +1,4 @@
-import { Static, TAnySchema, TypeBoxError } from '@sinclair/typebox';
+import { Static, TAnySchema } from '@sinclair/typebox';
 import { AssertError, Value, ValueError, ValueErrorType } from '@sinclair/typebox/value';
 
 export * from '@sinclair/typebox/value';
