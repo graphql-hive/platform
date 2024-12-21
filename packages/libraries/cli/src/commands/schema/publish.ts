@@ -165,7 +165,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
           s.success('No changes. Skipping.');
         } else {
           if (data.changes.length) {
-            Output.SchemaChangesText(data.changes);
+            s(Output.SchemaChangesText(data.changes));
           }
           s.success('Schema published');
         }

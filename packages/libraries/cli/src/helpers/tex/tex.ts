@@ -104,7 +104,7 @@ export const builder = (): Builder => {
     } else if (typeof value === 'string') {
       state.value = state.value + value + newline;
     } else {
-      state.value = state.value + value.state;
+      state.value = state.value + value.state.value;
     }
     return self as Builder;
   }) as Builder;
