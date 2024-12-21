@@ -86,7 +86,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
 
     // Data types can optionally bundle a textual representation of their data.
     if (dataType.text) {
-      const texBuilder = Tex.builder();
+      const texBuilder = Tex.createBuilder();
       const dataTypeTextInit = dataType.text(
         { flags: this.flags, args: this.args },
         result.data,

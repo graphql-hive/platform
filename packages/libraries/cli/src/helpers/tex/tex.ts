@@ -49,15 +49,10 @@ export const warning = (...values: unknown[]) =>
   prefixedInspect(colors.yellow('⚠'))(...values) + newline;
 
 /**
- * Helper function and methods for quickly building strings.
- *
- * The function form is an alias to the `line` method.
+ * A text builder. Its methods mutate an internal string value.
+ * Useful for quickly building up content.
  */
-export interface Builder extends BuilderProperties {
-  (...args: Parameters<BuilderProperties['line']>): Builder;
-}
-
-export interface BuilderProperties {
+export interface Builder {
   /**
    * When another builder is passed its value is appended _without_ a newline at the end
    * since builders already supply newlines to their content.
@@ -93,48 +88,44 @@ interface BuilderState {
   value: string;
 }
 
-export const builder = (): Builder => {
+export const createBuilder = (): Builder => {
   const state: BuilderState = {
     value: '',
   };
 
-  const self: Builder = (value => {
-    if (value === undefined) {
-      state.value = state.value + newline;
-    } else if (typeof value === 'string') {
-      state.value = state.value + value + newline;
-    } else {
-      state.value = state.value + value.state.value;
-    }
-    return self as Builder;
-  }) as Builder;
-
-  const properties: BuilderProperties = {
-    line: self,
+  const builder: Builder = {
+    line: value => {
+      if (value === undefined) {
+        state.value = state.value + newline;
+      } else if (typeof value === 'string') {
+        state.value = state.value + value + newline;
+      } else {
+        state.value = state.value + value.state.value;
+      }
+      return builder;
+    },
     indent: value => {
       state.value = state.value + indent + value + newline;
-      return self;
+      return builder;
     },
     success: (...values) => {
       state.value = state.value + success(...values);
-      return self;
+      return builder;
     },
     failure: (...values) => {
       state.value = state.value + failure(...values);
-      return self;
+      return builder;
     },
     info: (...values) => {
       state.value = state.value + info(...values);
-      return self;
+      return builder;
     },
     warning: (...values) => {
       state.value = state.value + warning(...values);
-      return self;
+      return builder;
     },
     state,
   };
 
-  Object.assign(self, properties);
-
-  return self;
+  return builder;
 };

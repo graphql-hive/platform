@@ -165,8 +165,8 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
           s.success('No changes. Skipping.');
         } else {
           if (data.changes.length) {
-            s(Output.schemaChangesText(data.changes));
-            s();
+            s.line(Output.schemaChangesText(data.changes));
+            s.line();
           }
           s.success('Schema published');
         }
@@ -182,11 +182,11 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
       text({ flags }: InferInput<typeof SchemaPublish>, data, s) {
-        s(Output.schemaErrorsText(data.errors));
-        s();
+        s.line(Output.schemaErrorsText(data.errors));
+        s.line();
         if (data.changes.length) {
-          s(Output.schemaChangesText(data.changes));
-          s();
+          s.line(Output.schemaChangesText(data.changes));
+          s.line();
         }
         if (!flags.force) {
           s.failure('Failed to publish schema');
@@ -230,7 +230,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
             ? ` at line ${data.locations[0].line}, column ${data.locations[0].column}`
             : '';
         s.failure(`The SDL is not valid${location}:`);
-        s(data.message);
+        s.line(data.message);
       },
     }),
   ];

@@ -47,7 +47,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
         operationsCount: tb.Number(),
       },
       text(args: InferInput<typeof AppCreate>, data, s) {
-        s(
+        s.line(
           `App deployment "${args.flags.name}@${args.flags.version}" (${data.operationsCount} operations) created.\nActivate it with the "hive app:publish" command.`,
         );
       },

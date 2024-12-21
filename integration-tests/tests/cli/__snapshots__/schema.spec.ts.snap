@@ -1812,7 +1812,7 @@ stdout--------------------------------------------:
         "message": "Unknown type: \\"User\\"."
       },
       {
-        "message": "Error: Unknown type: \\"User\\"."
+        "message": "Unknown type: \\"User\\"."
       }
     ],
     "warnings": [],

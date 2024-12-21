@@ -38,16 +38,26 @@ export const failure: Factory<typeof FailureBase> = (typeName, config) => {
   } as any;
 };
 
-export type Factory<$Base extends tb.TObject> = <
-  $DataSchema extends tb.TProperties,
+export type Factory<$BaseT extends tb.TObject> = <
+  $DataT extends tb.TProperties,
   $TypeName extends string,
+  $OutputT extends tb.TObject = tb.TComposite<
+    [
+      $BaseT,
+      tb.TObject<{
+        data: tb.TComposite<
+          [tb.TObject<{ type: tb.TLiteral<$TypeName> }>, tb.TObject<NoInfer<$DataT>>]
+        >;
+      }>,
+    ]
+  >,
 >(
   typeName: $TypeName,
   config: {
     /**
      * The schema for this data type.
      */
-    data: $DataSchema;
+    data: $DataT;
     /**
      * An optional function used to create a string to be displayed to the user
      * whenever this data type is output by a command.
@@ -63,34 +73,9 @@ export type Factory<$Base extends tb.TObject> = <
      *
      * Note: If user invoked the CLI with --json, then the output from this function is ignored.
      */
-    text?: TextBuilder<
-      // @ts-expect-error fixme
-      tb.Static<
-        tb.TComposite<
-          [
-            $Base,
-            tb.TObject<{
-              data: tb.TComposite<
-                [tb.TObject<{ type: tb.TLiteral<$TypeName> }>, tb.TObject<NoInfer<$DataSchema>>]
-              >;
-            }>,
-          ]
-        >
-      >['data']
-    >;
+    text?: TextBuilder<tb.Static<$OutputT>['data']>;
   },
-) => DataType<
-  tb.TComposite<
-    [
-      $Base,
-      tb.TObject<{
-        data: tb.TComposite<
-          [tb.TObject<{ type: tb.TLiteral<$TypeName> }>, tb.TObject<$DataSchema>]
-        >;
-      }>,
-    ]
-  >
->;
+) => DataType<$OutputT>;
 
 interface TextBuilder<$Data = any> {
   (

@@ -191,10 +191,10 @@ function createPrinter(records: { [label: string]: [value: string, extra?: strin
   const maxValuesLen = Math.max(...values.map(v => v.length)) + 4;
 
   return () => {
-    const s = Tex.builder();
+    const s = Tex.createBuilder();
     for (const label in records) {
       const [value, extra] = records[label];
-      s(label.padEnd(maxLabelsLen, ' ') + value.padEnd(maxValuesLen, ' ') + (extra || ''));
+      s.line(label.padEnd(maxLabelsLen, ' ') + value.padEnd(maxValuesLen, ' ') + (extra || ''));
     }
     return s.state.value;
   };

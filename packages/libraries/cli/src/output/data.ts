@@ -34,7 +34,7 @@ export const schemaChangesText = (data: SchemaChanges): string => {
   const safeChanges = data.filter(
     change => change.criticality !== schemaChangeCriticalityLevel.Breaking,
   );
-  const s = Tex.builder();
+  const s = Tex.createBuilder();
   const writeChanges = (schemaChanges: SchemaChange[]) => {
     return schemaChanges
       .map(change => {
@@ -64,12 +64,12 @@ export const schemaChangesText = (data: SchemaChanges): string => {
 
   if (breakingChanges.length) {
     s.indent(`Breaking changes:`);
-    s(writeChanges(breakingChanges));
+    s.line(writeChanges(breakingChanges));
   }
 
   if (safeChanges.length) {
     s.indent(`Safe changes:`);
-    s(writeChanges(safeChanges));
+    s.line(writeChanges(safeChanges));
   }
 
   return s.state.value.trim();
@@ -92,7 +92,7 @@ export type SchemaWarning = tb.Static<typeof SchemaWarning>;
 export const SchemaWarnings = tb.Array(SchemaWarning);
 export type SchemaWarnings = tb.Static<typeof SchemaWarnings>;
 export const schemaWarningsText = (warnings: SchemaWarnings): string => {
-  const s = Tex.builder();
+  const s = Tex.createBuilder();
   s.warning(`Detected ${warnings.length} warning${Tex.plural(warnings)}`);
   s.line();
   warnings.forEach(warning => {
@@ -112,9 +112,9 @@ export type SchemaError = tb.Static<typeof SchemaError>;
 
 export const SchemaErrors = tb.Array(SchemaError);
 export const schemaErrorsText = (data: tb.Static<typeof SchemaErrors>): string => {
-  const s = Tex.builder();
+  const s = Tex.createBuilder();
   s.failure(`Detected ${data.length} error${Tex.plural(data)}`);
-  s();
+  s.line();
   data.forEach(error => {
     s.indent(Tex.colors.red('-') + ' ' + Tex.bolderize(error.message));
   });

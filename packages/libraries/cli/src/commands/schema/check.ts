@@ -159,18 +159,18 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         if (data.diffType === 'initial') {
           s.success('Schema registry is empty, nothing to compare your schema with.');
         } else if (data.diffType === 'change' && data.changes.length === 0) {
-          s('No changes');
+          s.line('No changes');
         } else {
-          s(Output.schemaChangesText(data.changes));
-          s();
+          s.line(Output.schemaChangesText(data.changes));
+          s.line();
         }
         if (data.warnings.length) {
-          s(Output.schemaWarningsText(data.warnings));
-          s();
+          s.line(Output.schemaWarningsText(data.warnings));
+          s.line();
         }
         if (data.url) {
-          s(`View full report:`);
-          s(data.url);
+          s.line(`View full report:`);
+          s.line(data.url);
         }
       },
     }),
@@ -190,20 +190,20 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
       text({ flags }, data, s) {
-        s(Output.schemaErrorsText(data.errors));
-        s();
+        s.line(Output.schemaErrorsText(data.errors));
+        s.line();
         if (data.warnings.length) {
-          s(Output.schemaWarningsText(data.warnings));
-          s();
+          s.line(Output.schemaWarningsText(data.warnings));
+          s.line();
         }
         if (data.changes.length) {
-          s(Output.schemaChangesText(data.changes));
-          s();
+          s.line(Output.schemaChangesText(data.changes));
+          s.line();
         }
         if (data.url) {
-          s(`View full report:`);
-          s(data.url);
-          s();
+          s.line(`View full report:`);
+          s.line(data.url);
+          s.line();
         }
         if (flags.forceSafe) {
           s.success('Breaking changes were expected (forced)');
