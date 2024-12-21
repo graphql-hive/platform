@@ -193,27 +193,32 @@ export async function createStorage(
     async readToken(hashedToken, maskedToken) {
       const status: LRUCache.Status<CacheEntry> = {};
       const context = { maskedToken, source: 'in-memory' };
+      serverLogger.debug('Reading token %s', maskedToken);
       const data = await cache.fetch(hashedToken, {
         context,
         status,
       });
 
       if (status.fetch) {
+        serverLogger.debug('Status %s', status.fetch);
         recordCacheRead(status.fetch);
       } else {
         serverLogger.warn('Status of the fetch is missing');
       }
 
       if (!data) {
+        serverLogger.debug('No data');
         // Looked up in all layers, and the token is not found
         return null;
       }
 
       if (data === 'not-found') {
+        serverLogger.debug('Not found');
         return null;
       }
 
       touch.schedule(hashedToken);
+      serverLogger.debug('Found');
       return data;
     },
     writeToken: tracker.wrap(async item => {
