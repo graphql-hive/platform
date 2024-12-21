@@ -210,7 +210,8 @@ export async function createStorage(
       }
 
       if (status.fetchError) {
-        tokenLogger.error('Fetch error in the In-Memory-Cache', status.fetchError)
+        tokenLogger.error('Fetch error in the In-Memory-Cache (error=%s)', status.fetchError)
+        tokenLogger.error(status.fetchError);
       }
 
       if (!data) {
