@@ -1,10 +1,10 @@
 import { tb } from '../helpers/typebox/__';
 import { success } from './success';
 
-export const CLIOutputFile = success('CLIOutputFile', {
+export const SuccessOutputFile = success('SuccessOutputFile', {
   path: tb.String(),
 });
 
-export const CLIOutputStdout = success('CLIOutputStdout', {
+export const SuccessOutputStdout = success('SuccessOutputStdout', {
   content: tb.String(),
 });

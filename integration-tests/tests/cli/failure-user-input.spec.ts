@@ -27,7 +27,7 @@ const testCases: TestCase[] = [
   { command: 'app:publish' },
 ];
 
-test.each(testCases)('CLIErrorUserInput - %s', async ({ command, args }) => {
+test.each(testCases)('FailureUserInput - %s', async ({ command, args }) => {
   const preparedArgs = args
     ? Object.entries(args)
         .map(([key, value]) => `--${key}=${value}`)

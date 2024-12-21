@@ -42,3 +42,13 @@ export const AppDeploymentStatus = tb.Enum({
   retired: SchemaHive.AppDeploymentStatus.Retired,
 });
 export type AppDeploymentStatus = tb.Static<typeof AppDeploymentStatus>;
+
+// export const SchemaError2 = tb.Object({
+//   message: tb.String(),
+//   locations: tb.Array(
+//     tb.Object({
+//       line: tb.Integer({ minimum: 0 }),
+//       column: tb.Integer({ minimum: 0 }),
+//     }),
+//   ),
+// });

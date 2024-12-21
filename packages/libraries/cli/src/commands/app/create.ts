@@ -33,14 +33,17 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success('CLISkipAppCreate', {
+    SchemaOutput.success('SuccessSkipAppCreate', {
       status: SchemaOutput.AppDeploymentStatus,
     }),
-    SchemaOutput.success('CreateAppDeploymentOk', {
+    SchemaOutput.success('SuccessAppCreate', {
       id: tb.StringNonEmpty,
     }),
-    SchemaOutput.failure('CreateAppDeploymentError', {
+    SchemaOutput.failure('FailureAppCreate', {
       message: tb.String(),
+    }),
+    SchemaOutput.failure('FailureInvalidManifestModel', {
+      errors: tb.Array(tb.Value.MaterializedValueErrorT),
     }),
   );
 
@@ -62,8 +65,13 @@ export default class AppCreate extends Command<typeof AppCreate> {
     const file: string = args.file;
     const fs = await import('fs/promises');
     const contents = await fs.readFile(file, 'utf-8');
-    // TODO: better error message if parsing fails :)
-    const operations = tb.Value.ParseJson(ManifestModel, contents);
+    const operations = tb.Value.ParseJsonSafe(ManifestModel, contents);
+    if (operations instanceof tb.Value.AssertError) {
+      return this.failure({
+        type: 'FailureInvalidManifestModel',
+        errors: tb.Value.MaterializeValueErrorIterator(operations.Errors()),
+      });
+    }
 
     const result = await this.registryApi(endpoint, accessToken)
       .request({
@@ -79,7 +87,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
 
     if (result.error) {
       return this.failure({
-        type: 'CreateAppDeploymentError',
+        type: 'FailureAppCreate',
         message: result.error.message,
       });
     }
@@ -94,7 +102,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
         `App deployment "${flags['name']}@${flags['version']}" is "${result.ok.createdAppDeployment.status}". Skip uploading documents...`,
       );
       return this.success({
-        type: 'CLISkipAppCreate',
+        type: 'SuccessSkipAppCreate',
         status: result.ok.createdAppDeployment.status,
       });
     }
@@ -155,7 +163,7 @@ export default class AppCreate extends Command<typeof AppCreate> {
       `App deployment "${flags['name']}@${flags['version']}" (${counter} operations) created.\nActivate it with the "hive app:publish" command.`,
     );
     return this.success({
-      type: 'CreateAppDeploymentOk',
+      type: 'SuccessAppCreate',
       id: result.ok.createdAppDeployment.id,
     });
   }

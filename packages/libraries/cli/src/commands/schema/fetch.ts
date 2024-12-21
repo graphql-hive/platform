@@ -70,8 +70,8 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
     SchemaOutput.failure('CLISchemaFetchMissingSchema', {}),
     SchemaOutput.failure('CLISchemaFetchInvalidSchema', {}),
     SchemaOutput.failure('CLISchemaFetchMissingSDLType', {}),
-    SchemaOutput.CLIOutputFile,
-    SchemaOutput.CLIOutputStdout,
+    SchemaOutput.SuccessOutputFile,
+    SchemaOutput.SuccessOutputStdout,
   );
 
   async runResult() {
@@ -152,14 +152,14 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
           this.exit(1);
       }
       return this.success({
-        type: 'CLIOutputFile',
+        type: 'SuccessOutputFile',
         path: filepath,
       });
     }
 
     this.log(schema);
     return this.success({
-      type: 'CLIOutputStdout',
+      type: 'SuccessOutputStdout',
       content: schema,
     });
   }

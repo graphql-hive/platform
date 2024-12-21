@@ -21,7 +21,10 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       description: 'whether to write to a file instead of stdout',
     }),
   };
-  static output = SchemaOutput.output(SchemaOutput.CLIOutputFile, SchemaOutput.CLIOutputStdout);
+  static output = SchemaOutput.output(
+    SchemaOutput.SuccessOutputFile,
+    SchemaOutput.SuccessOutputStdout,
+  );
 
   async runResult() {
     const { flags } = await this.parse(ArtifactsFetch);
@@ -73,18 +76,16 @@ export default class ArtifactsFetch extends Command<typeof ArtifactsFetch> {
       await fs.writeFile(flags.outputFile, contents);
       const message = `Wrote ${contents.length} bytes to ${flags.outputFile}`;
       this.log(message);
-      return this.successEnvelope({
-        data: {
-          type: 'CLIOutputFile',
-          path: flags.outputFile,
-        },
+      return this.success({
+        type: 'SuccessOutputFile',
+        path: flags.outputFile,
       });
     }
 
     const content = await response.text();
     this.log(content);
     return this.success({
-      type: 'CLIOutputStdout',
+      type: 'SuccessOutputStdout',
       content,
     });
   }

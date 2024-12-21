@@ -24,15 +24,15 @@ export default class AppPublish extends Command<typeof AppPublish> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success('CLISkipAppPublish', {
+    SchemaOutput.success('SuccessSkipAppPublish', {
       name: tb.StringNonEmpty,
       version: tb.StringNonEmpty,
     }),
-    SchemaOutput.success('ActivateAppDeploymentOk', {
+    SchemaOutput.success('SuccessAppPublish', {
       name: tb.StringNonEmpty,
       version: tb.StringNonEmpty,
     }),
-    SchemaOutput.failure('ActivateAppDeploymentError', {
+    SchemaOutput.failure('FailureAppPublish', {
       message: tb.String(),
     }),
   );
@@ -66,7 +66,7 @@ export default class AppPublish extends Command<typeof AppPublish> {
 
     if (result.error) {
       return this.failure({
-        type: 'ActivateAppDeploymentError',
+        type: 'FailureAppPublish',
         message: result.error.message,
       });
     }
@@ -82,7 +82,7 @@ export default class AppPublish extends Command<typeof AppPublish> {
       this.warn(`App deployment "${name}" is already published. Skipping...`);
       return this.successEnvelope({
         data: {
-          type: 'CLISkipAppPublish',
+          type: 'SuccessSkipAppPublish',
           name: result.ok.activatedAppDeployment.name,
           version: result.ok.activatedAppDeployment.version,
         },
@@ -92,7 +92,7 @@ export default class AppPublish extends Command<typeof AppPublish> {
     this.log(`App deployment "${name}" published successfully.`);
     return this.successEnvelope({
       data: {
-        type: 'ActivateAppDeploymentOk',
+        type: 'SuccessAppPublish',
         name: result.ok.activatedAppDeployment.name,
         version: result.ok.activatedAppDeployment.version,
       },

@@ -79,9 +79,9 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success('CLIOperationsCheckNoneFound', {}),
-    SchemaOutput.failure('CLIOperationsCheckNoSchemaFound', {}),
-    SchemaOutput.success('CLIOperationsCheckResult', {
+    SchemaOutput.failure('FailureOperationsCheckNoSchemaFound', {}),
+    SchemaOutput.success('SuccessOperationsCheckNoOperationsFound', {}),
+    SchemaOutput.success('SuccessOperationsCheck', {
       countTotal: tb.Integer({ minimum: 0 }),
       countInvalid: tb.Integer({ minimum: 0 }),
       countValid: tb.Integer({ minimum: 0 }),
@@ -144,10 +144,8 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     if (operations.length === 0) {
       const message = 'No operations found';
       this.logInfo(message);
-      return this.successEnvelope({
-        data: {
-          type: 'CLIOperationsCheckNoneFound',
-        },
+      return this.success({
+        type: 'SuccessOperationsCheckNoOperationsFound',
       });
     }
 
@@ -164,7 +162,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       return this.failureEnvelope({
         suggestions: ['Publish a valid schema first.'],
         data: {
-          type: 'CLIOperationsCheckNoSchemaFound',
+          type: 'FailureOperationsCheckNoSchemaFound',
         },
       });
     }
@@ -218,7 +216,7 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     }
 
     return this.success({
-      type: 'CLIOperationsCheckResult',
+      type: 'SuccessOperationsCheck',
       countTotal: operations.length,
       countInvalid: operationsWithErrors.length,
       countValid: operations.length - operationsWithErrors.length,

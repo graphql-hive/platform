@@ -48,13 +48,13 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       // todo: Make it easier for the Hive team to be alerted.
       // - Alert the Hive team automatically with some opt-in telemetry?
       // - A single-click-link with all relevant variables serialized into search parameters?
-      const message = `Whoops. This Hive CLI command tried to output a value that violates its own schema. This should never happen. Please report this issue to the Hive team at https://github.com/graphql-hive/console/issues/new.`;
+      const message = `Whoops. This Hive CLI command tried to output a value that violates its own schema. This should never happen. Please report this error to the Hive team at https://github.com/graphql-hive/console/issues/new.`;
       // todo: Display data in non-json output.
       // The default textual output of an OClif error will not display any of the data below. We will want that information in a bug report.
       throw new Errors.CLIErrorWithData({
         message,
         data: {
-          type: 'CLIOutputTypeError',
+          type: 'ErrorOutputSchemaViolation',
           message,
           schema: schema,
           value: resultUnparsed,
@@ -294,7 +294,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
       throw new Errors.CLIErrorWithData({
         message,
         data: {
-          type: 'CLIErrorUserInput',
+          type: 'FailureUserInput',
           parameter: key,
         },
       });
@@ -303,7 +303,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     throw new Errors.CLIErrorWithData({
       message: `Missing "${String(key)}"`,
       data: {
-        type: 'CLIErrorUserInput',
+        type: 'FailureUserInput',
         problem: 'namedArgumentMissing',
         parameter: key,
       },
@@ -416,9 +416,10 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
 
     if (value instanceof Errors.FailedFlagValidationError) {
       return this.failureEnvelope({
+        suggestions: value.suggestions,
         // @ts-expect-error fixme
         data: {
-          type: 'CLIErrorUserInput',
+          type: 'FailureUserInput',
           message: value.message,
           problem: 'namedArgumentInvalid',
         },
@@ -427,9 +428,10 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
 
     if (value instanceof Errors.RequiredArgsError) {
       return this.failureEnvelope({
+        suggestions: value.suggestions,
         // @ts-expect-error fixme
         data: {
-          type: 'CLIErrorUserInput',
+          type: 'FailureUserInput',
           message: value.message,
           problem: 'positionalArgumentMissing',
         },
@@ -441,18 +443,16 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
         suggestions: value.suggestions,
         // @ts-expect-error fixme
         data: {
-          type: 'CLIError',
+          type: 'Failure',
           message: value.message,
         },
       });
     }
     if (value instanceof Error) {
-      return this.failureEnvelope({
+      return this.failure({
         // @ts-expect-error fixme
-        data: {
-          type: 'CLIError',
-          message: value.message,
-        },
+        type: 'Failure',
+        message: value.message,
       });
     }
     return super.toErrorJson(value);
@@ -507,7 +507,7 @@ const clientErrorToCLIFailure = (error: Errors.ClientError): Errors.CLIErrorWith
     message,
     ref: requestId,
     data: {
-      type: 'HiveApiRequestError',
+      type: 'FailureHiveApiRequest',
       message,
       requestId,
       errors,

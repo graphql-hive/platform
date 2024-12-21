@@ -83,8 +83,8 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success('SchemaDeleteSuccess', {}),
-    SchemaOutput.failure('SchemaDeleteError', {
+    SchemaOutput.success('SuccessSchemaDelete', {}),
+    SchemaOutput.failure('FailureSchemaDelete', {
       errors: tb.Array(SchemaOutput.SchemaError),
     }),
   );
@@ -132,24 +132,18 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       .then(_ => _.schemaDelete);
 
     if (result.__typename === 'SchemaDeleteSuccess') {
-      const message = `${service} deleted`;
-      this.logSuccess(message);
-      return this.successEnvelope({
-        data: {
-          type: 'SchemaDeleteSuccess',
-        },
+      this.logSuccess(`${service} deleted`);
+      return this.success({
+        type: 'SuccessSchemaDelete',
       });
     }
 
     if (result.__typename === 'SchemaDeleteError') {
-      const message = `Failed to delete ${service}`;
-      this.logFailure(message);
+      this.logFailure(`Failed to delete ${service}`);
       Fragments.SchemaErrorConnection.log.call(this, result.errors);
-      return this.failureEnvelope({
-        data: {
-          type: 'SchemaDeleteError',
-          errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
-        },
+      return this.failure({
+        type: 'FailureSchemaDelete',
+        errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
       });
     }
 

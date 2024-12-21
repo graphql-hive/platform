@@ -1,8 +1,25 @@
 import { Static, TAnySchema, TypeBoxError } from '@sinclair/typebox';
-import { Value } from '@sinclair/typebox/value';
+import { AssertError, Value, ValueError, ValueErrorType } from '@sinclair/typebox/value';
 
 export * from '@sinclair/typebox/value';
 export * from './materialized-value-error';
+
+/**
+ * Non-throwing version of {@link ParseJson}.
+ *
+ * If JSON parsing fails then {@link TypeBoxError} is returned.
+ * Otherwise its just the regular {@link Value.Parse} error of type {@link AssertError}.
+ */
+export const ParseJsonSafe = <$Type extends TAnySchema>(
+  type: $Type,
+  jsonString: string,
+): Static<$Type> | AssertError => {
+  try {
+    return ParseJson(type, jsonString);
+  } catch (e) {
+    return e;
+  }
+};
 
 /**
  * Parses a JSON string and validates it against a TypeBox schema
@@ -25,7 +42,18 @@ export const ParseJson = <$Type extends TAnySchema>(
   try {
     rawData = JSON.parse(jsonString);
   } catch (e) {
-    throw new TypeBoxError(`Failed to parse JSON: ${e instanceof Error ? e.message : String(e)}`);
+    const error = e as Error;
+    const message = `Failed to parse contents of given JSON because the JSON itself was invalid: ${error.message}`;
+    const valueError: ValueError = {
+      value: jsonString,
+      type: ValueErrorType.StringFormat,
+      message,
+      path: '',
+      errors: [],
+      schema: type,
+    };
+
+    throw new AssertError(new Value.ValueErrorIterator([valueError][Symbol.iterator]()));
   }
 
   return Value.Parse(type, rawData);

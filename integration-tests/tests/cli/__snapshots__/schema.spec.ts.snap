@@ -160,7 +160,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -203,7 +203,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -225,7 +225,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -319,7 +319,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -337,7 +337,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -527,7 +527,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -570,7 +570,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -592,7 +592,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -680,7 +680,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -698,7 +698,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -873,7 +873,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -916,7 +916,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -938,7 +938,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -998,7 +998,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -1016,7 +1016,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -1191,7 +1191,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -1234,7 +1234,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -1256,7 +1256,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -1316,7 +1316,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -1334,7 +1334,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -1526,7 +1526,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -1569,7 +1569,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -1591,7 +1591,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -1685,7 +1685,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -1703,7 +1703,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -1895,7 +1895,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -1938,7 +1938,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -1960,7 +1960,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [
       {
@@ -2048,7 +2048,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckSuccess",
+    "type": "SuccessSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"
@@ -2066,7 +2066,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaCheckError",
+    "type": "FailureSchemaCheck",
     "warnings": [],
     "changes": [],
     "url": "__URL__"

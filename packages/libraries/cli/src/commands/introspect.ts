@@ -27,7 +27,10 @@ export default class Introspect extends Command<typeof Introspect> {
       hidden: false,
     }),
   };
-  static output = SchemaOutput.output(SchemaOutput.CLIOutputFile, SchemaOutput.CLIOutputStdout);
+  static output = SchemaOutput.output(
+    SchemaOutput.SuccessOutputFile,
+    SchemaOutput.SuccessOutputStdout,
+  );
 
   async runResult() {
     const { flags, args } = await this.parse(Introspect);
@@ -65,7 +68,7 @@ export default class Introspect extends Command<typeof Introspect> {
     if (!flags.write) {
       this.log(schema);
       return this.success({
-        type: 'CLIOutputStdout',
+        type: 'SuccessOutputStdout',
         content: schema,
       });
     }
@@ -97,7 +100,7 @@ export default class Introspect extends Command<typeof Introspect> {
 
     this.logSuccess(`Saved to ${filepath}`);
     return this.success({
-      type: 'CLIOutputFile',
+      type: 'SuccessOutputFile',
       path: filepath,
     });
   }

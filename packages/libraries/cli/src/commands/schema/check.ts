@@ -144,20 +144,21 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }),
   };
   static output = SchemaOutput.output(
-    SchemaOutput.success('SchemaCheckSuccess', {
+    SchemaOutput.success('SuccessSchemaCheck', {
       changes: tb.Array(SchemaOutput.SchemaChange),
       warnings: tb.Array(SchemaOutput.SchemaWarning),
       url: tb.Nullable(tb.String({ format: 'uri' })),
     }),
-    SchemaOutput.success('SchemaCheckError', {
-      changes: tb.Array(SchemaOutput.SchemaChange),
-      warnings: tb.Array(SchemaOutput.SchemaWarning),
-      url: tb.Nullable(tb.String({ format: 'uri' })),
-    }),
-    SchemaOutput.success('GitHubSchemaCheckSuccess', {
+    SchemaOutput.success('SuccessSchemaCheckGitHub', {
       message: tb.String(),
     }),
-    SchemaOutput.failure('GitHubSchemaCheckError', {
+    SchemaOutput.success('FailureSchemaCheck', {
+      changes: tb.Array(SchemaOutput.SchemaChange),
+      warnings: tb.Array(SchemaOutput.SchemaWarning),
+      url: tb.Nullable(tb.String({ format: 'uri' })),
+    }),
+
+    SchemaOutput.failure('FailureSchemaCheckGitHub', {
       message: tb.String(),
     }),
   );
@@ -269,7 +270,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       }
 
       return this.success({
-        type: 'SchemaCheckSuccess',
+        type: 'SuccessSchemaCheck',
         //   breakingChanges: false,
         warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
@@ -278,19 +279,16 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }
 
     if (result.__typename === 'SchemaCheckError') {
-      const changes = result.changes;
-      const errors = result.errors;
-      const warnings = result.warnings;
-      Fragments.SchemaErrorConnection.log.call(this, errors);
+      Fragments.SchemaErrorConnection.log.call(this, result.errors);
 
-      if (warnings?.total) {
-        Fragments.SchemaWarningConnection.log.call(this, warnings);
+      if (result?.warnings?.total) {
+        Fragments.SchemaWarningConnection.log.call(this, result.warnings);
         this.log('');
       }
 
-      if (changes && changes.total) {
+      if (result?.changes?.total) {
         this.log('');
-        Fragments.SchemaChangeConnection.log.call(this, changes);
+        Fragments.SchemaChangeConnection.log.call(this, result.changes);
       }
 
       if (result.schemaCheck?.webUrl) {
@@ -307,7 +305,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       }
 
       return this.success({
-        type: 'SchemaCheckError',
+        type: 'FailureSchemaCheck',
         warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         url: result.schemaCheck?.webUrl ?? null,
@@ -317,7 +315,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     if (result.__typename === 'GitHubSchemaCheckSuccess') {
       this.logSuccess(result.message);
       return this.success({
-        type: 'GitHubSchemaCheckSuccess',
+        type: 'SuccessSchemaCheckGitHub',
         message: result.message,
       });
     }
@@ -325,7 +323,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     if (result.__typename === 'GitHubSchemaCheckError') {
       this.logFailure(result.message);
       return this.failure({
-        type: 'GitHubSchemaCheckError',
+        type: 'FailureSchemaCheckGitHub',
         message: result.message,
       });
     }
