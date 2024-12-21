@@ -5,7 +5,6 @@ import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { Tex } from '../../helpers/tex/__';
-import { tb } from '../../helpers/typebox/__';
 import { Output } from '../../output/__';
 
 const schemaDeleteMutation = graphql(/* GraphQL */ `
