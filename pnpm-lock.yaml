@@ -274,9 +274,6 @@ importers:
       '@graphql-hive/apollo':
         specifier: workspace:*
         version: link:../packages/libraries/apollo/dist
-      '@graphql-hive/cli':
-        specifier: workspace:*
-        version: link:../packages/libraries/cli
       '@graphql-hive/core':
         specifier: workspace:*
         version: link:../packages/libraries/core/dist
