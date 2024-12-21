@@ -148,27 +148,31 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
   static output = [
     Output.success('SuccessSchemaPublish', {
       data: {
-        isInitial: tb.Boolean(),
+        diffType: tb.Enum({
+          initial: 'initial',
+          change: 'change',
+          unknown: 'unknown', // todo: improve this, need better understanding of the api
+        }),
         message: tb.Nullable(tb.String()),
         changes: tb.Array(Output.SchemaChange),
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
       text: (_, data) => {
         let o = '';
-        if (data.isInitial) {
-          o += Tex.success('Published initial schema.\n');
+        if (data.diffType === 'initial') {
+          o += Tex.success('Published initial schema.');
         } else if (data.message) {
-          o += Tex.success(data.message + '\n');
-        } else if (data.changes && data.changes.length === 0) {
-          o += Tex.success('No changes. Skipping.\n');
+          o += Tex.success(data.message);
+        } else if (data.diffType === 'change' && data.changes.length === 0) {
+          o += Tex.success('No changes. Skipping.');
         } else {
           if (data.changes.length) {
             o += Output.SchemaChangesText(data.changes);
           }
-          o += Tex.success('Schema published\n');
+          o += Tex.success('Schema published');
         }
         if (data.url) {
-          o += Tex.info(`Available at ${data.url}\n`);
+          o += Tex.info(`Available at ${data.url}`);
         }
         return o;
       },
@@ -188,12 +192,12 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
           o += '\n';
         }
         if (!flags.force) {
-          o += Tex.failure('Failed to publish schema\n');
+          o += Tex.failure('Failed to publish schema');
         } else {
-          o += Tex.success('Schema published (forced)\n');
+          o += Tex.success('Schema published (forced)');
         }
         if (data.url) {
-          o += Tex.info(`Available at ${data.url}\n`);
+          o += Tex.info(`Available at ${data.url}`);
         }
         return o;
       },
@@ -223,6 +227,13 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
             column: tb.Readonly(tb.Number()),
           }),
         ),
+      },
+      text: (_, data) => {
+        const locationString =
+          data.locations.length > 0
+            ? ` at line ${data.locations[0].line}, column ${data.locations[0].column}`
+            : '';
+        return Tex.failure(`The SDL is not valid${locationString}: ${data.message}`);
       },
     }),
   ];
@@ -344,11 +355,6 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     } catch (err) {
       if (err instanceof GraphQLError) {
         const locations = err.locations?.map(location => ({ ...location })) ?? [];
-        const locationString =
-          locations.length > 0
-            ? ` at line ${locations[0].line}, column ${locations[0].column}`
-            : '';
-        this.logFailure(`The SDL is not valid${locationString}:\n ${err.message}`);
         return this.failure({
           type: 'FailureSchemaPublishInvalidGraphQLSchema',
           message: err.message,
@@ -397,10 +403,15 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     } while (result === null);
 
     if (result.__typename === 'SchemaPublishSuccess') {
+      // todo can this data type be split into different cases?
       return this.success({
         type: 'SuccessSchemaPublish',
-        isInitial: result.initial,
-        message: result.successMessage ?? null,
+        // In API it seems that these two cases represent different things:
+        // 1. result.changes = undefined
+        // 2. result.changes = []
+        // TODO understand this better and improve the name of "unknown" here.
+        diffType: result.initial ? 'initial' : result.changes ? 'change' : 'unknown',
+        message: result.successMessage || null,
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         url: result.linkToWebsite ?? null,
       });

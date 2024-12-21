@@ -55,7 +55,7 @@ export const SchemaChangesText = (data: SchemaChanges) => {
       .join('\n');
   };
 
-  o += Tex.info(`Detected ${data.length} change${data.length > 1 ? 's' : ''}\n`);
+  o += Tex.info(`Detected ${data.length} change${Tex.plural(data)}`);
 
   const breakingChanges = data.filter(
     change => change.criticality === schemaChangeCriticalityLevel.Breaking,
@@ -100,7 +100,7 @@ export type SchemaError = tb.Static<typeof SchemaError>;
 export const SchemaErrors = tb.Array(SchemaError);
 export const SchemaErrorsText = (data: tb.Static<typeof SchemaErrors>) => {
   let o = '';
-  o += Tex.failure(`Detected ${data.length} error${data.length > 1 ? 's' : ''}\n`);
+  o += Tex.failure(`Detected ${data.length} error${Tex.plural(data)}`);
   data.forEach(error => {
     o += Tex.indent + Tex.colors.red('-') + Tex.bolderize(error.message) + '\n';
   });

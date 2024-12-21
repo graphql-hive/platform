@@ -5,6 +5,10 @@ export { colors };
 
 export const indent = '  ';
 
+export const newline = '\n';
+
+export const plural = (value: unknown[]) => (value.length > 1 ? 's' : '');
+
 export const bolderize = (msg: string) => {
   const findSingleQuotes = /'([^']+)'/gim;
   const findDoubleQuotes = /"([^"]+)"/gim;
@@ -28,10 +32,14 @@ export const inspect = (value: unknown) => {
   return nodeInspect(value);
 };
 
-export const success = prefixedInspect(colors.green('✔'));
+export const success = (...values: unknown[]) =>
+  prefixedInspect(colors.green('✔'))(...values) + newline;
 
-export const failure = prefixedInspect(colors.red('✖'));
+export const failure = (...values: unknown[]) =>
+  prefixedInspect(colors.red('✖'))(...values) + newline;
 
-export const info = prefixedInspect(colors.yellow('ℹ'));
+export const info = (...values: unknown[]) =>
+  prefixedInspect(colors.yellow('ℹ'))(...values) + newline;
 
-export const warning = prefixedInspect(colors.yellow('⚠'));
+export const warning = (...values: unknown[]) =>
+  prefixedInspect(colors.yellow('⚠'))(...values) + newline;
