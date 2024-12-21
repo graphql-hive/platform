@@ -4,6 +4,7 @@ import Command from '../base-command';
 import { graphql } from '../gql';
 import { graphqlEndpoint } from '../helpers/config';
 import { casesExhausted } from '../helpers/general';
+import { Tex } from '../helpers/tex/__';
 import { tb } from '../helpers/typebox/__';
 import { Output } from '../output/__';
 
@@ -69,13 +70,16 @@ export default class Whoami extends Command<typeof Whoami> {
         }),
         organization: tb.Object({
           slug: tb.String(),
+          url: tb.String({ format: 'uri' }),
         }),
         project: tb.Object({
           type: tb.String(),
           slug: tb.String(),
+          url: tb.String({ format: 'uri' }),
         }),
         target: tb.Object({
           slug: tb.String(),
+          url: tb.String({ format: 'uri' }),
         }),
         authorization: tb.Object({
           schema: tb.Object({
@@ -83,6 +87,23 @@ export default class Whoami extends Command<typeof Whoami> {
             check: tb.Boolean(),
           }),
         }),
+      },
+      text(_, data) {
+        const print = createPrinter({
+          'Token name:': [Tex.colors.bold(data.token.name)],
+          ' ': [''],
+          'Organization:': [
+            Tex.colors.bold(data.organization.slug),
+            Tex.colors.dim(data.organization.url),
+          ],
+          'Project:': [Tex.colors.bold(data.project.slug), Tex.colors.dim(data.project.url)],
+          'Target:': [Tex.colors.bold(data.target.slug), Tex.colors.dim(data.target.url)],
+          '  ': [''],
+          'Access to schema:publish': [data.authorization.schema.publish ? access.yes : access.not],
+          'Access to schema:check': [data.authorization.schema.check ? access.yes : access.not],
+        });
+
+        return print();
       },
     }),
     Output.failure('FailureWhoamiTokenNotFound', {
@@ -115,29 +136,9 @@ export default class Whoami extends Command<typeof Whoami> {
       .then(_ => _.tokenInfo);
 
     if (result.__typename === 'TokenInfo') {
-      const { organization, project, target } = result;
-
-      const organizationUrl = `https://app.graphql-hive.com/${organization.slug}`;
-      const projectUrl = `${organizationUrl}/${project.slug}`;
-      const targetUrl = `${projectUrl}/${target.slug}`;
-
-      const access = {
-        yes: colors.green('Yes'),
-        not: colors.red('No access'),
-      };
-
-      const print = createPrinter({
-        'Token name:': [colors.bold(result.token.name)],
-        ' ': [''],
-        'Organization:': [colors.bold(organization.slug), colors.dim(organizationUrl)],
-        'Project:': [colors.bold(project.slug), colors.dim(projectUrl)],
-        'Target:': [colors.bold(target.slug), colors.dim(targetUrl)],
-        '  ': [''],
-        'Access to schema:publish': [result.canPublishSchema ? access.yes : access.not],
-        'Access to schema:check': [result.canCheckSchema ? access.yes : access.not],
-      });
-
-      this.log(print());
+      const organizationUrl = `https://app.graphql-hive.com/${result.organization.slug}`;
+      const projectUrl = `${organizationUrl}/${result.project.slug}`;
+      const targetUrl = `${projectUrl}/${result.target.slug}`;
 
       return this.success({
         type: 'SuccessWhoami',
@@ -145,14 +146,17 @@ export default class Whoami extends Command<typeof Whoami> {
           name: result.token.name,
         },
         organization: {
-          slug: organization.slug,
+          slug: result.organization.slug,
+          url: organizationUrl,
         },
         project: {
-          type: project.type,
-          slug: project.slug,
+          type: result.project.type,
+          slug: result.project.slug,
+          url: projectUrl,
         },
         target: {
-          slug: target.slug,
+          slug: result.target.slug,
+          url: targetUrl,
         },
         authorization: {
           schema: {
@@ -187,14 +191,16 @@ function createPrinter(records: { [label: string]: [value: string, extra?: strin
   const maxValuesLen = Math.max(...values.map(v => v.length)) + 4;
 
   return () => {
-    const lines: string[] = [];
-
+    const s = Tex.builder();
     for (const label in records) {
       const [value, extra] = records[label];
-
-      lines.push(label.padEnd(maxLabelsLen, ' ') + value.padEnd(maxValuesLen, ' ') + (extra || ''));
+      s(label.padEnd(maxLabelsLen, ' ') + value.padEnd(maxValuesLen, ' ') + (extra || ''));
     }
-
-    return lines.join('\n');
+    return s.state.value;
   };
 }
+
+const access = {
+  yes: colors.green('Yes'),
+  not: colors.red('No access'),
+};

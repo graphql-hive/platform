@@ -27,7 +27,7 @@ export type SchemaChange = tb.Static<typeof SchemaChange>;
 
 export const SchemaChanges = tb.Array(SchemaChange);
 export type SchemaChanges = tb.Static<typeof SchemaChanges>;
-export const SchemaChangesText = (data: SchemaChanges): Tex.Builder => {
+export const schemaChangesText = (data: SchemaChanges): string => {
   const breakingChanges = data.filter(
     change => change.criticality === schemaChangeCriticalityLevel.Breaking,
   );
@@ -72,7 +72,7 @@ export const SchemaChangesText = (data: SchemaChanges): Tex.Builder => {
     s(writeChanges(safeChanges));
   }
 
-  return s;
+  return s.state.value.trim();
 };
 
 const criticalityMap = {
@@ -89,6 +89,21 @@ export const SchemaWarning = tb.Object({
 });
 export type SchemaWarning = tb.Static<typeof SchemaWarning>;
 
+export const SchemaWarnings = tb.Array(SchemaWarning);
+export type SchemaWarnings = tb.Static<typeof SchemaWarnings>;
+export const schemaWarningsText = (warnings: SchemaWarnings): string => {
+  const s = Tex.builder();
+  s.warning(`Detected ${warnings.length} warning${Tex.plural(warnings)}`);
+  s.line();
+  warnings.forEach(warning => {
+    const details = [warning.source ? `source: ${Tex.bolderize(warning.source)}` : undefined]
+      .filter(Boolean)
+      .join(', ');
+    s.indent(`- ${Tex.bolderize(warning.message)}${details ? ` (${details})` : ''}`);
+  });
+  return s.state.value.trim();
+};
+
 export const SchemaError = tb.Object({
   message: tb.String(),
 });
@@ -96,13 +111,14 @@ export const SchemaError = tb.Object({
 export type SchemaError = tb.Static<typeof SchemaError>;
 
 export const SchemaErrors = tb.Array(SchemaError);
-export const SchemaErrorsText = (data: tb.Static<typeof SchemaErrors>) => {
+export const schemaErrorsText = (data: tb.Static<typeof SchemaErrors>): string => {
   const s = Tex.builder();
   s.failure(`Detected ${data.length} error${Tex.plural(data)}`);
+  s();
   data.forEach(error => {
-    s.indent(Tex.colors.red('-') + Tex.bolderize(error.message));
+    s.indent(Tex.colors.red('-') + ' ' + Tex.bolderize(error.message));
   });
-  return s;
+  return s.state.value.trim();
 };
 
 export const AppDeploymentStatus = tb.Enum({

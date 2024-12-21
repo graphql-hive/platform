@@ -146,9 +146,32 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
   static output = [
     Output.success('SuccessSchemaCheck', {
       data: {
+        diffType: tb.Enum({
+          initial: 'initial',
+          change: 'change',
+          unknown: 'unknown', // todo: improve this, need better understanding of the api
+        }),
         changes: tb.Array(Output.SchemaChange),
         warnings: tb.Array(Output.SchemaWarning),
         url: tb.Nullable(tb.String({ format: 'uri' })),
+      },
+      text(_, data, s) {
+        if (data.diffType === 'initial') {
+          s.success('Schema registry is empty, nothing to compare your schema with.');
+        } else if (data.diffType === 'change' && data.changes.length === 0) {
+          s('No changes');
+        } else {
+          s(Output.schemaChangesText(data.changes));
+          s();
+        }
+        if (data.warnings.length) {
+          s(Output.schemaWarningsText(data.warnings));
+          s();
+        }
+        if (data.url) {
+          s(`View full report:`);
+          s(data.url);
+        }
       },
     }),
     Output.success('SuccessSchemaCheckGitHub', {
@@ -161,9 +184,30 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }),
     Output.success('FailureSchemaCheck', {
       data: {
-        changes: tb.Array(Output.SchemaChange),
-        warnings: tb.Array(Output.SchemaWarning),
+        changes: Output.SchemaChanges,
+        warnings: Output.SchemaWarnings,
+        errors: Output.SchemaErrors,
         url: tb.Nullable(tb.String({ format: 'uri' })),
+      },
+      text({ flags }, data, s) {
+        s(Output.schemaErrorsText(data.errors));
+        s();
+        if (data.warnings.length) {
+          s(Output.schemaWarningsText(data.warnings));
+          s();
+        }
+        if (data.changes.length) {
+          s(Output.schemaChangesText(data.changes));
+          s();
+        }
+        if (data.url) {
+          s(`View full report:`);
+          s(data.url);
+          s();
+        }
+        if (flags.forceSafe) {
+          s.success('Breaking changes were expected (forced)');
+        }
       },
     }),
 
@@ -263,29 +307,9 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
       .then(_ => _.schemaCheck);
 
     if (result.__typename === 'SchemaCheckSuccess') {
-      const changes = result.changes;
-      if (result.initial) {
-        this.logSuccess('Schema registry is empty, nothing to compare your schema with.');
-      } else if (!changes?.total) {
-        this.logSuccess('No changes');
-      } else {
-        Fragments.SchemaChangeConnection.log.call(this, changes);
-        this.log('');
-      }
-
-      const warnings = result.warnings;
-      if (warnings?.total) {
-        Fragments.SchemaWarningConnection.log.call(this, warnings);
-        this.log('');
-      }
-
-      if (result.schemaCheck?.webUrl) {
-        this.log(`View full report:\n${result.schemaCheck.webUrl}`);
-      }
-
       return this.success({
         type: 'SuccessSchemaCheck',
-        //   breakingChanges: false,
+        diffType: result.initial ? 'initial' : result.changes ? 'change' : 'unknown',
         warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         url: result.schemaCheck?.webUrl ?? null,
@@ -293,33 +317,12 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }
 
     if (result.__typename === 'SchemaCheckError') {
-      Fragments.SchemaErrorConnection.log.call(this, result.errors);
-
-      if (result?.warnings?.total) {
-        Fragments.SchemaWarningConnection.log.call(this, result.warnings);
-        this.log('');
-      }
-
-      if (result?.changes?.total) {
-        this.log('');
-        Fragments.SchemaChangeConnection.log.call(this, result.changes);
-      }
-
-      if (result.schemaCheck?.webUrl) {
-        this.log('');
-        this.log(`View full report:\n${result.schemaCheck.webUrl}`);
-      }
-
-      this.log('');
-
-      if (forceSafe) {
-        this.logSuccess('Breaking changes were expected (forced)');
-      } else {
+      if (!forceSafe) {
         process.exitCode = 1;
       }
-
       return this.success({
         type: 'FailureSchemaCheck',
+        errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
         warnings: Fragments.SchemaWarningConnection.toSchemaOutput(result.warnings),
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         url: result.schemaCheck?.webUrl ?? null,

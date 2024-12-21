@@ -1,23 +1,7 @@
-import BaseCommand from '../base-command';
 import { SchemaHive } from '../helpers/schema';
-import { Tex } from '../helpers/tex/__';
 import { Output } from '../output/__';
 
 export namespace SchemaWarningConnection {
-  export function log(this: BaseCommand<any>, warnings: SchemaHive.SchemaWarningConnection) {
-    this.log('');
-    this.logWarning(`Detected ${warnings.total} warning${warnings.total > 1 ? 's' : ''}`);
-    this.log('');
-
-    warnings.nodes.forEach(warning => {
-      const details = [warning.source ? `source: ${Tex.bolderize(warning.source)}` : undefined]
-        .filter(Boolean)
-        .join(', ');
-
-      this.log(Tex.indent, `- ${Tex.bolderize(warning.message)}${details ? ` (${details})` : ''}`);
-    });
-  }
-
   export const toSchemaOutput = (
     warnings: undefined | null | SchemaHive.SchemaWarningConnection,
   ): Output.SchemaWarning[] => {

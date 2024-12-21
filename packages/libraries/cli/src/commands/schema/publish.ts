@@ -165,7 +165,8 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
           s.success('No changes. Skipping.');
         } else {
           if (data.changes.length) {
-            s(Output.SchemaChangesText(data.changes));
+            s(Output.schemaChangesText(data.changes));
+            s();
           }
           s.success('Schema published');
         }
@@ -181,10 +182,10 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
       text({ flags }: InferInput<typeof SchemaPublish>, data, s) {
-        s(Output.SchemaErrorsText(data.errors));
+        s(Output.schemaErrorsText(data.errors));
         s();
         if (data.changes.length) {
-          s(Output.SchemaChangesText(data.changes));
+          s(Output.schemaChangesText(data.changes));
           s();
         }
         if (!flags.force) {

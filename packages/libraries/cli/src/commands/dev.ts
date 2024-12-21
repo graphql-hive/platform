@@ -14,6 +14,7 @@ import { graphql } from '../gql';
 import { graphqlEndpoint } from '../helpers/config';
 import { loadSchema } from '../helpers/schema';
 import { invariant } from '../helpers/validation';
+import { Output } from '../output/__';
 
 const CLI_SchemaComposeMutation = graphql(/* GraphQL */ `
   mutation CLI_SchemaComposeMutation($input: SchemaComposeInput!) {
@@ -317,12 +318,13 @@ export default class Dev extends Command<typeof Dev> {
 
     if (compositionHasErrors(compositionResult)) {
       if (compositionResult.errors) {
-        Fragments.SchemaErrorConnection.log.call(this, {
+        const errors = Fragments.SchemaErrorConnection.toSchemaOutput({
           total: compositionResult.errors.length,
           nodes: compositionResult.errors.map(error => ({
             message: error.message,
           })),
         });
+        this.log(Output.schemaErrorsText(errors));
       }
 
       input.onError('Composition failed');
@@ -380,7 +382,8 @@ export default class Dev extends Command<typeof Dev> {
 
     if (!valid) {
       if (compositionResult.errors) {
-        Fragments.SchemaErrorConnection.log.call(this, compositionResult.errors);
+        const errors = Fragments.SchemaErrorConnection.toSchemaOutput(compositionResult.errors);
+        this.log(Output.schemaErrorsText(errors));
       }
 
       input.onError('Composition failed');
