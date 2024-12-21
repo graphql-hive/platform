@@ -3,6 +3,10 @@ import { Flags } from '@oclif/core';
 import Command from '../base-command';
 import { graphql } from '../gql';
 import { graphqlEndpoint } from '../helpers/config';
+import { casesExhausted } from '../helpers/general';
+import { Tex } from '../helpers/tex/__';
+import { tb } from '../helpers/typebox/__';
+import { Output } from '../output/__';
 
 const myTokenInfoQuery = graphql(/* GraphQL */ `
   query myTokenInfo {
@@ -32,7 +36,7 @@ const myTokenInfoQuery = graphql(/* GraphQL */ `
   }
 `);
 
-export default class WhoAmI extends Command<typeof WhoAmI> {
+export default class Whoami extends Command<typeof Whoami> {
   static description = 'shows information about the current token';
   static flags = {
     'registry.endpoint': Flags.string({
@@ -58,10 +62,59 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       },
     }),
   };
+  static output = [
+    Output.success('SuccessWhoami', {
+      data: {
+        token: tb.Object({
+          name: tb.String(),
+        }),
+        organization: tb.Object({
+          slug: tb.String(),
+          url: tb.String({ format: 'uri' }),
+        }),
+        project: tb.Object({
+          type: tb.String(),
+          slug: tb.String(),
+          url: tb.String({ format: 'uri' }),
+        }),
+        target: tb.Object({
+          slug: tb.String(),
+          url: tb.String({ format: 'uri' }),
+        }),
+        authorization: tb.Object({
+          schema: tb.Object({
+            publish: tb.Boolean(),
+            check: tb.Boolean(),
+          }),
+        }),
+      },
+      text(_, data) {
+        const print = createPrinter({
+          'Token name:': [Tex.colors.bold(data.token.name)],
+          ' ': [''],
+          'Organization:': [
+            Tex.colors.bold(data.organization.slug),
+            Tex.colors.dim(data.organization.url),
+          ],
+          'Project:': [Tex.colors.bold(data.project.slug), Tex.colors.dim(data.project.url)],
+          'Target:': [Tex.colors.bold(data.target.slug), Tex.colors.dim(data.target.url)],
+          '  ': [''],
+          'Access to schema:publish': [data.authorization.schema.publish ? access.yes : access.not],
+          'Access to schema:check': [data.authorization.schema.check ? access.yes : access.not],
+        });
 
-  async run() {
-    const { flags } = await this.parse(WhoAmI);
+        return print();
+      },
+    }),
+    Output.failure('FailureWhoamiTokenNotFound', {
+      data: {
+        message: tb.String(),
+      },
+    }),
+  ];
 
+  async runResult() {
+    const { flags } = await this.parse(Whoami);
     const registry = this.ensure({
       key: 'registry.endpoint',
       legacyFlagName: 'registry',
@@ -80,41 +133,54 @@ export default class WhoAmI extends Command<typeof WhoAmI> {
       .request({
         operation: myTokenInfoQuery,
       })
-      .catch(error => {
-        this.handleFetchError(error);
-      });
+      .then(_ => _.tokenInfo);
 
-    if (result.tokenInfo.__typename === 'TokenInfo') {
-      const { tokenInfo } = result;
-      const { organization, project, target } = tokenInfo;
+    if (result.__typename === 'TokenInfo') {
+      const organizationUrl = `https://app.graphql-hive.com/${result.organization.slug}`;
+      const projectUrl = `${organizationUrl}/${result.project.slug}`;
+      const targetUrl = `${projectUrl}/${result.target.slug}`;
 
-      const organizationUrl = `https://app.graphql-hive.com/${organization.slug}`;
-      const projectUrl = `${organizationUrl}/${project.slug}`;
-      const targetUrl = `${projectUrl}/${target.slug}`;
-
-      const access = {
-        yes: colors.green('Yes'),
-        not: colors.red('No access'),
-      };
-
-      const print = createPrinter({
-        'Token name:': [colors.bold(tokenInfo.token.name)],
-        ' ': [''],
-        'Organization:': [colors.bold(organization.slug), colors.dim(organizationUrl)],
-        'Project:': [colors.bold(project.slug), colors.dim(projectUrl)],
-        'Target:': [colors.bold(target.slug), colors.dim(targetUrl)],
-        '  ': [''],
-        'Access to schema:publish': [tokenInfo.canPublishSchema ? access.yes : access.not],
-        'Access to schema:check': [tokenInfo.canCheckSchema ? access.yes : access.not],
-      });
-
-      this.log(print());
-    } else if (result.tokenInfo.__typename === 'TokenNotFoundError') {
-      this.error(`Token not found. Reason: ${result.tokenInfo.message}`, {
-        exit: 0,
-        suggestions: [`How to create a token? https://docs.graphql-hive.com/features/tokens`],
+      return this.success({
+        type: 'SuccessWhoami',
+        token: {
+          name: result.token.name,
+        },
+        organization: {
+          slug: result.organization.slug,
+          url: organizationUrl,
+        },
+        project: {
+          type: result.project.type,
+          slug: result.project.slug,
+          url: projectUrl,
+        },
+        target: {
+          slug: result.target.slug,
+          url: targetUrl,
+        },
+        authorization: {
+          schema: {
+            publish: result.canPublishSchema,
+            check: result.canCheckSchema,
+          },
+        },
       });
     }
+
+    if (result.__typename === 'TokenNotFoundError') {
+      process.exitCode = 0;
+      return this.failureEnvelope({
+        suggestions: [
+          `Not sure how to create a token? Learn more at https://docs.graphql-hive.com/features/tokens.`,
+        ],
+        data: {
+          type: 'FailureWhoamiTokenNotFound',
+          message: result.message,
+        },
+      });
+    }
+
+    throw casesExhausted(result);
   }
 }
 
@@ -125,14 +191,16 @@ function createPrinter(records: { [label: string]: [value: string, extra?: strin
   const maxValuesLen = Math.max(...values.map(v => v.length)) + 4;
 
   return () => {
-    const lines: string[] = [];
-
+    const s = Tex.createBuilder();
     for (const label in records) {
       const [value, extra] = records[label];
-
-      lines.push(label.padEnd(maxLabelsLen, ' ') + value.padEnd(maxValuesLen, ' ') + (extra || ''));
+      s.line(label.padEnd(maxLabelsLen, ' ') + value.padEnd(maxValuesLen, ' ') + (extra || ''));
     }
-
-    return lines.join('\n');
+    return s.state.value;
   };
 }
+
+const access = {
+  yes: colors.green('Yes'),
+  not: colors.red('No access'),
+};

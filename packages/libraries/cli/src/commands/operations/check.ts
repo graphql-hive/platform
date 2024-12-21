@@ -1,10 +1,13 @@
 import { buildSchema, GraphQLError, Source } from 'graphql';
 import { InvalidDocument, validate } from '@graphql-inspector/core';
-import { Args, Errors, Flags, ux } from '@oclif/core';
+import { Args, Flags, ux } from '@oclif/core';
 import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { loadOperations } from '../../helpers/operations';
+import { Tex } from '../../helpers/tex/__';
+import { tb } from '../../helpers/typebox/__';
+import { Output } from '../../output/__';
 
 const fetchLatestVersionQuery = graphql(/* GraphQL */ `
   query fetchLatestVersion {
@@ -67,7 +70,6 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       default: false,
     }),
   };
-
   static args = {
     file: Args.string({
       name: 'file',
@@ -76,92 +78,128 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       hidden: false,
     }),
   };
+  static output = [
+    Output.failure('FailureOperationsCheckNoSchemaFound', { data: {} }),
+    Output.success('SuccessOperationsCheckNoOperationsFound', { data: {} }),
+    Output.success('SuccessOperationsCheck', {
+      data: {
+        countTotal: tb.Integer({ minimum: 0 }),
+        countInvalid: tb.Integer({ minimum: 0 }),
+        countValid: tb.Integer({ minimum: 0 }),
+        invalidOperations: tb.Array(
+          tb.Object({
+            source: tb.Object({
+              name: tb.String(),
+            }),
+            errors: tb.Array(
+              tb.Object({
+                message: tb.String(),
+                locations: tb.Array(
+                  tb.Object({
+                    line: tb.Integer({ minimum: 0 }),
+                    column: tb.Integer({ minimum: 0 }),
+                  }),
+                ),
+              }),
+            ),
+          }),
+        ),
+      },
+    }),
+  ];
 
-  async run() {
-    try {
-      const { flags, args } = await this.parse(OperationsCheck);
+  async runResult() {
+    const { flags, args } = await this.parse(OperationsCheck);
 
-      await this.require(flags);
+    await this.require(flags);
 
-      const endpoint = this.ensure({
-        key: 'registry.endpoint',
-        args: flags,
-        legacyFlagName: 'registry',
-        defaultValue: graphqlEndpoint,
-        env: 'HIVE_REGISTRY',
+    const endpoint = this.ensure({
+      key: 'registry.endpoint',
+      args: flags,
+      legacyFlagName: 'registry',
+      defaultValue: graphqlEndpoint,
+      env: 'HIVE_REGISTRY',
+    });
+    const accessToken = this.ensure({
+      key: 'registry.accessToken',
+      args: flags,
+      legacyFlagName: 'token',
+      env: 'HIVE_TOKEN',
+    });
+    const graphqlTag = flags.graphqlTag;
+    const globalGraphqlTag = flags.globalGraphqlTag;
+
+    const file: string = args.file;
+
+    const operations = await loadOperations(file, {
+      normalize: false,
+      pluckModules: graphqlTag?.map(tag => {
+        const [name, identifier] = tag.split(':');
+        return {
+          name,
+          identifier,
+        };
+      }),
+      pluckGlobalGqlIdentifierName: globalGraphqlTag,
+    });
+
+    if (operations.length === 0) {
+      const message = 'No operations found';
+      this.logInfo(message);
+      return this.success({
+        type: 'SuccessOperationsCheckNoOperationsFound',
       });
-      const accessToken = this.ensure({
-        key: 'registry.accessToken',
-        args: flags,
-        legacyFlagName: 'token',
-        env: 'HIVE_TOKEN',
-      });
-      const graphqlTag = flags.graphqlTag;
-      const globalGraphqlTag = flags.globalGraphqlTag;
+    }
 
-      const file: string = args.file;
-
-      const operations = await loadOperations(file, {
-        normalize: false,
-        pluckModules: graphqlTag?.map(tag => {
-          const [name, identifier] = tag.split(':');
-          return {
-            name,
-            identifier,
-          };
-        }),
-        pluckGlobalGqlIdentifierName: globalGraphqlTag,
-      });
-
-      if (operations.length === 0) {
-        this.info('No operations found');
-        this.exit(0);
-        return;
-      }
-
-      const result = await this.registryApi(endpoint, accessToken).request({
+    const result = await this.registryApi(endpoint, accessToken)
+      .request({
         operation: fetchLatestVersionQuery,
-      });
+      })
+      .then(_ => _.latestValidVersion);
 
-      const sdl = result.latestValidVersion?.sdl;
+    const sdl = result?.sdl;
 
-      if (!sdl) {
-        this.error('Could not find a published schema. Please publish a valid schema first.');
-      }
-
-      const schema = buildSchema(sdl, {
-        assumeValidSDL: true,
-        assumeValid: true,
-      });
-
-      if (!flags.apolloClient) {
-        const detectedApolloDirectives = operations.some(
-          s => s.content.includes('@client') || s.content.includes('@connection'),
-        );
-
-        if (detectedApolloDirectives) {
-          this.warn(
-            'Apollo Client specific directives detected (@client, @connection). Please use the --apolloClient flag to enable support.',
-          );
-        }
-      }
-
-      const invalidOperations = validate(
-        schema,
-        operations.map(s => new Source(s.content, s.location)),
-        {
-          apollo: flags.apolloClient === true,
+    if (!sdl) {
+      this.logFailure('Could not find a published schema.');
+      return this.failureEnvelope({
+        suggestions: ['Publish a valid schema first.'],
+        data: {
+          type: 'FailureOperationsCheckNoSchemaFound',
         },
+      });
+    }
+
+    const schema = buildSchema(sdl, {
+      assumeValidSDL: true,
+      assumeValid: true,
+    });
+
+    if (!flags.apolloClient) {
+      const detectedApolloDirectives = operations.some(
+        s => s.content.includes('@client') || s.content.includes('@connection'),
       );
 
-      const operationsWithErrors = invalidOperations.filter(o => o.errors.length > 0);
-
-      if (operationsWithErrors.length === 0) {
-        this.success(`All operations are valid (${operations.length})`);
-        this.exit(0);
-        return;
+      if (detectedApolloDirectives) {
+        // TODO: Gather warnings into a "warnings" array property in our envelope.
+        this.warn(
+          'Apollo Client specific directives detected (@client, @connection). Please use the --apolloClient flag to enable support.',
+        );
       }
+    }
 
+    const invalidOperations = validate(
+      schema,
+      operations.map(s => new Source(s.content, s.location)),
+      {
+        apollo: flags.apolloClient === true,
+      },
+    );
+
+    const operationsWithErrors = invalidOperations.filter(o => o.errors.length > 0);
+
+    if (operationsWithErrors.length === 0) {
+      this.logSuccess(`All operations are valid (${operations.length})`);
+    } else {
       ux.styledHeader('Summary');
       this.log(
         [
@@ -176,15 +214,34 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
       ux.styledHeader('Details');
 
       this.printInvalidDocuments(operationsWithErrors);
-      this.exit(1);
-    } catch (error) {
-      if (error instanceof Errors.ExitError) {
-        throw error;
-      } else {
-        this.fail('Failed to validate operations');
-        this.handleFetchError(error);
-      }
+      process.exitCode = 1;
     }
+
+    return this.success({
+      type: 'SuccessOperationsCheck',
+      countTotal: operations.length,
+      countInvalid: operationsWithErrors.length,
+      countValid: operations.length - operationsWithErrors.length,
+      invalidOperations: operationsWithErrors.map(o => {
+        return {
+          source: {
+            name: o.source.name,
+          },
+          errors: o.errors.map(e => {
+            return {
+              message: e.message,
+              locations:
+                e.locations?.map(l => {
+                  return {
+                    line: l.line,
+                    column: l.column,
+                  };
+                }) ?? [],
+            };
+          }),
+        };
+      }),
+    });
   }
 
   private printInvalidDocuments(invalidDocuments: InvalidDocument[]): void {
@@ -194,9 +251,9 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
   }
 
   private renderErrors(sourceName: string, errors: GraphQLError[]) {
-    this.fail(sourceName);
+    this.logFailure(sourceName);
     errors.forEach(e => {
-      this.log(` - ${this.bolderize(e.message)}`);
+      this.log(` - ${Tex.bolderize(e.message)}`);
     });
     this.log('');
   }
