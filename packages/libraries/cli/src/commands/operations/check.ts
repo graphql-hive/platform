@@ -7,7 +7,7 @@ import { graphqlEndpoint } from '../../helpers/config';
 import { loadOperations } from '../../helpers/operations';
 import { Tex } from '../../helpers/tex/__';
 import { tb } from '../../helpers/typebox/__';
-import { SchemaOutput } from '../../schema-output/__';
+import { Output } from '../../output/__';
 
 const fetchLatestVersionQuery = graphql(/* GraphQL */ `
   query fetchLatestVersion {
@@ -79,10 +79,10 @@ export default class OperationsCheck extends Command<typeof OperationsCheck> {
     }),
   };
   static output = [
-    SchemaOutput.failure('FailureOperationsCheckNoSchemaFound', { schema: {} }),
-    SchemaOutput.success('SuccessOperationsCheckNoOperationsFound', { schema: {} }),
-    SchemaOutput.success('SuccessOperationsCheck', {
-      schema: {
+    Output.failure('FailureOperationsCheckNoSchemaFound', { data: {} }),
+    Output.success('SuccessOperationsCheckNoOperationsFound', { data: {} }),
+    Output.success('SuccessOperationsCheck', {
+      data: {
         countTotal: tb.Integer({ minimum: 0 }),
         countInvalid: tb.Integer({ minimum: 0 }),
         countValid: tb.Integer({ minimum: 0 }),

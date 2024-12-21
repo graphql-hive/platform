@@ -10,12 +10,7 @@ import { CLIErrorWithData } from './helpers/errors/cli-error-with-data';
 import { OmitNever } from './helpers/general';
 import { Tex } from './helpers/tex/__';
 import { tb } from './helpers/typebox/__';
-import { SchemaOutput } from './schema-output/__';
-
-export type InferInput<T extends typeof Command> = Pick<
-  ParserOutput<T['flags'], T['baseFlags'], T['args']>,
-  'args' | 'flags'
->;
+import { Output } from './output/__';
 
 export default abstract class BaseCommand<$Command extends typeof Command> extends Command {
   public static enableJsonFlag = true;
@@ -25,7 +20,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * Used by methods: {@link BaseCommand.success}, {@link BaseCommand.failure}, {@link BaseCommand.runResult}.
    */
-  public static output: SchemaOutput.OutputDataType[] = [];
+  public static output: Output.DataType[] = [];
 
   protected _userConfig: Config | undefined;
 
@@ -45,7 +40,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    *
    * By default this command runs {@link BaseCommand.runResult}, having logic to handle its return value.
    */
-  async run(): Promise<void | SchemaOutput.InferSuccess<GetOutput<$Command>>> {
+  async run(): Promise<void | Output.InferSuccess<GetOutput<$Command>>> {
     // todo: Make it easier for the Hive team to be alerted.
     // - Alert the Hive team automatically with some opt-in telemetry?
     // - A single-click-link with all relevant variables serialized into search parameters?
@@ -90,14 +85,14 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     const result = tb.Value.Parse(dataType.schema, resultUnparsed);
 
     // Data types can optionally bundle a textual representation of their data.
-    if (dataType.render) {
-      this.log(dataType.render({ flags: this.flags, args: this.args }, result.data));
+    if (dataType.text) {
+      this.log(dataType.text({ flags: this.flags, args: this.args }, result.data));
     }
 
     /**
      * OClif outputs returned values as JSON.
      */
-    if (SchemaOutput.isSuccess(result as any)) {
+    if (Output.isSuccess(result as any)) {
       return result as any;
     }
 
@@ -126,7 +121,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
    * Note: You must specify your command's output type in {@link BaseCommand.output} to take advantage of this method.
    */
   async runResult(): Promise<
-    SchemaOutput.InferSuccess<GetOutput<$Command>> | SchemaOutput.InferFailure<GetOutput<$Command>>
+    Output.InferSuccess<GetOutput<$Command>> | Output.InferFailure<GetOutput<$Command>>
   > {
     throw new Error('Not implemented');
   }
@@ -147,7 +142,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     envelopeInit: InferOutputSuccessEnvelopeInit<$Command>,
   ): InferOutputSuccess<$Command> {
     return {
-      ...SchemaOutput.successDefaults,
+      ...Output.successDefaults,
       ...(envelopeInit as object),
     } as any;
   }
@@ -172,7 +167,7 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
     envelopeInit: InferOutputFailureEnvelopeInit<$Command>,
   ): InferOutputFailure<$Command> {
     return {
-      ...SchemaOutput.failureDefaults,
+      ...Output.failureDefaults,
       ...(envelopeInit as object),
     } as any;
   }
@@ -549,32 +544,32 @@ type InferArgs<$CommandClass extends typeof Command> =
 
 // prettier-ignore
 type InferOutputSuccess<$CommandClass extends typeof Command> =
-  SchemaOutput.InferSuccess<GetOutput<$CommandClass>>;
+  Output.InferSuccess<GetOutput<$CommandClass>>;
 
 // prettier-ignore
 type InferOutputFailure<$CommandClass extends typeof Command> =
-  SchemaOutput.InferFailure<GetOutput<$CommandClass>>;
+  Output.InferFailure<GetOutput<$CommandClass>>;
 
 // prettier-ignore
 type InferOutputFailureEnvelopeInit<$CommandClass extends typeof Command> =
-  SchemaOutput.InferFailureEnvelopeInit<GetOutput<$CommandClass>>;
+  Output.InferFailureEnvelopeInit<GetOutput<$CommandClass>>;
 
 // prettier-ignore
 type InferOutputSuccessEnvelopeInit<$CommandClass extends typeof Command> =
-  SchemaOutput.InferSuccessEnvelopeInit<GetOutput<$CommandClass>>;
+  Output.InferSuccessEnvelopeInit<GetOutput<$CommandClass>>;
 
 // prettier-ignore
 type InferOutputFailureData<$CommandClass extends typeof Command> =
-  SchemaOutput.InferFailureData<GetOutput<$CommandClass>>;
+  Output.InferFailureData<GetOutput<$CommandClass>>;
 
 // prettier-ignore
 type InferOutputSuccessData<$CommandClass extends typeof Command> =
-  SchemaOutput.InferSuccessData<GetOutput<$CommandClass>>;
+  Output.InferSuccessData<GetOutput<$CommandClass>>;
 
 // prettier-ignore
 type GetOutput<$CommandClass extends typeof Command> =
   'output' extends keyof $CommandClass
-    ? $CommandClass['output'] extends SchemaOutput.OutputDataType[]
+    ? $CommandClass['output'] extends Output.DataType[]
       ? $CommandClass['output'][number]
     : never
   : never;
@@ -582,3 +577,8 @@ type GetOutput<$CommandClass extends typeof Command> =
 const cleanRequestId = (requestId?: string | null) => {
   return requestId ? requestId.split(',')[0].trim() : undefined;
 };
+
+export type InferInput<$Command extends typeof Command> = Pick<
+  ParserOutput<$Command['flags'], $Command['baseFlags'], $Command['args']>,
+  'args' | 'flags'
+>;

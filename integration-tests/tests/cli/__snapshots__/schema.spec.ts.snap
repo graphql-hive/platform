@@ -143,7 +143,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -247,7 +247,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -261,7 +261,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -275,7 +275,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [
       {
         "message": "[test] New service url: 'http://__PATH__ (previously: 'http://__PATH__        "criticality": "Dangerous",
@@ -300,7 +300,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "CLIInvalidGraphQLSchema",
+    "type": "FailureSchemaPublishInvalidGraphQLSchema",
     "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
     "locations": [
       {
@@ -510,7 +510,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -614,7 +614,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -628,7 +628,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -642,7 +642,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -661,7 +661,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "CLIInvalidGraphQLSchema",
+    "type": "FailureSchemaPublishInvalidGraphQLSchema",
     "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
     "locations": [
       {
@@ -856,7 +856,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -960,7 +960,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -979,7 +979,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "CLIInvalidGraphQLSchema",
+    "type": "FailureSchemaPublishInvalidGraphQLSchema",
     "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
     "locations": [
       {
@@ -1174,7 +1174,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -1278,7 +1278,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -1297,7 +1297,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "CLIInvalidGraphQLSchema",
+    "type": "FailureSchemaPublishInvalidGraphQLSchema",
     "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
     "locations": [
       {
@@ -1509,7 +1509,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -1613,7 +1613,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -1627,7 +1627,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -1641,7 +1641,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [
       {
         "message": "[test] New service url: 'http://__PATH__ (previously: 'http://__PATH__        "criticality": "Dangerous",
@@ -1666,7 +1666,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "CLIInvalidGraphQLSchema",
+    "type": "FailureSchemaPublishInvalidGraphQLSchema",
     "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
     "locations": [
       {
@@ -1878,7 +1878,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -1982,7 +1982,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -1996,7 +1996,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -2010,7 +2010,7 @@ stdout--------------------------------------------:
 {
   "type": "success",
   "data": {
-    "type": "SchemaPublishSuccess",
+    "type": "SuccessSchemaPublish",
     "changes": [],
     "url": "__URL__"
   }
@@ -2029,7 +2029,7 @@ stdout--------------------------------------------:
   "reference": null,
   "suggestions": [],
   "data": {
-    "type": "CLIInvalidGraphQLSchema",
+    "type": "FailureSchemaPublishInvalidGraphQLSchema",
     "message": "Syntax Error: Unexpected Name \\"iliketurtles\\".",
     "locations": [
       {

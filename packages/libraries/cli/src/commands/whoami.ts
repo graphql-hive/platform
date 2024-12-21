@@ -5,7 +5,7 @@ import { graphql } from '../gql';
 import { graphqlEndpoint } from '../helpers/config';
 import { casesExhausted } from '../helpers/general';
 import { tb } from '../helpers/typebox/__';
-import { SchemaOutput } from '../schema-output/__';
+import { Output } from '../output/__';
 
 const myTokenInfoQuery = graphql(/* GraphQL */ `
   query myTokenInfo {
@@ -62,8 +62,8 @@ export default class Whoami extends Command<typeof Whoami> {
     }),
   };
   static output = [
-    SchemaOutput.success('SuccessWhoami', {
-      schema: {
+    Output.success('SuccessWhoami', {
+      data: {
         token: tb.Object({
           name: tb.String(),
         }),
@@ -85,8 +85,8 @@ export default class Whoami extends Command<typeof Whoami> {
         }),
       },
     }),
-    SchemaOutput.failure('FailureWhoamiTokenNotFound', {
-      schema: {
+    Output.failure('FailureWhoamiTokenNotFound', {
+      data: {
         message: tb.String(),
       },
     }),

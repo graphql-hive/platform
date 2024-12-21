@@ -1,11 +1,12 @@
 import { Args, Flags, ux } from '@oclif/core';
-import Command from '../../base-command';
+import Command, { InferInput } from '../../base-command';
 import { Fragments } from '../../fragments/__';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
+import { Tex } from '../../helpers/tex/__';
 import { tb } from '../../helpers/typebox/__';
-import { SchemaOutput } from '../../schema-output/__';
+import { Output } from '../../output/__';
 
 const schemaDeleteMutation = graphql(/* GraphQL */ `
   mutation schemaDelete($input: SchemaDeleteInput!) {
@@ -83,12 +84,26 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
     }),
   };
   static output = [
-    SchemaOutput.success('SuccessSchemaDelete', {
-      schema: {},
+    Output.success('SuccessSchemaDelete', {
+      data: {},
+      text: ({ args }: InferInput<typeof SchemaDelete>) => {
+        return Tex.success(`${args.service} deleted`);
+      },
     }),
-    SchemaOutput.failure('FailureSchemaDelete', {
-      schema: {
-        errors: tb.Array(SchemaOutput.SchemaError),
+    Output.failure('FailureSchemaDelete', {
+      data: {
+        errors: tb.Array(Output.SchemaError),
+      },
+      text: ({ args }: InferInput<typeof SchemaDelete>, output) => {
+        let o = '';
+        o += Tex.failure(`Failed to delete ${args.service}\n`);
+        o += Tex.failure(
+          `Detected ${output.errors.length} error${output.errors.length > 1 ? 's' : ''}\n`,
+        );
+        output.errors.forEach(error => {
+          o += Tex.indent + Tex.colors.red('-') + Tex.bolderize(error.message) + '\n';
+        });
+        return o;
       },
     }),
   ];
@@ -96,11 +111,9 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
   async runResult() {
     const { flags, args } = await this.parse(SchemaDelete);
 
-    const service: string = args.service;
-
     if (!flags.confirm) {
       const confirmed = await ux.confirm(
-        `Are you sure you want to delete "${service}" from the registry? (y/n)`,
+        `Are you sure you want to delete "${args.service}" from the registry? (y/n)`,
       );
 
       if (!confirmed) {
@@ -128,7 +141,7 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
         operation: schemaDeleteMutation,
         variables: {
           input: {
-            serviceName: service,
+            serviceName: args.service,
             dryRun: flags.dryRun,
           },
         },
@@ -136,15 +149,12 @@ export default class SchemaDelete extends Command<typeof SchemaDelete> {
       .then(_ => _.schemaDelete);
 
     if (result.__typename === 'SchemaDeleteSuccess') {
-      this.logSuccess(`${service} deleted`);
       return this.success({
         type: 'SuccessSchemaDelete',
       });
     }
 
     if (result.__typename === 'SchemaDeleteError') {
-      this.logFailure(`Failed to delete ${service}`);
-      Fragments.SchemaErrorConnection.log.call(this, result.errors);
       return this.failure({
         type: 'FailureSchemaDelete',
         errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),

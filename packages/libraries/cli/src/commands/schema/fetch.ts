@@ -1,10 +1,11 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, resolve } from 'node:path';
 import { Args, Flags } from '@oclif/core';
-import Command from '../../base-command';
+import Command, { InferInput } from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
-import { SchemaOutput } from '../../schema-output/__';
+import { Tex } from '../../helpers/tex/__';
+import { Output } from '../../output/__';
 
 const SchemaVersionForActionIdQuery = graphql(/* GraphQL */ `
   query SchemaVersionForActionId(
@@ -67,11 +68,26 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
     }),
   };
   static output = [
-    SchemaOutput.failure('CLISchemaFetchMissingSchema', { schema: {} }),
-    SchemaOutput.failure('CLISchemaFetchInvalidSchema', { schema: {} }),
-    SchemaOutput.failure('CLISchemaFetchMissingSDLType', { schema: {} }),
-    SchemaOutput.SuccessOutputFile,
-    SchemaOutput.SuccessOutputStdout,
+    Output.failure('FailureSchemaFetchMissingSchema', {
+      data: {},
+      text: ({ args }: InferInput<typeof SchemaFetch>) => {
+        return Tex.failure(`No schema found for action id ${args.actionId}`);
+      },
+    }),
+    Output.failure('FailureSchemaFetchInvalidSchema', {
+      data: {},
+      text: ({ args }: InferInput<typeof SchemaFetch>) => {
+        return Tex.failure(`Schema is invalid for action id ${args.actionId}`);
+      },
+    }),
+    Output.failure('FailureSchemaFetchMissingSDLType', {
+      data: {},
+      text: ({ args, flags }: InferInput<typeof SchemaFetch>) => {
+        return Tex.failure(`No ${flags.type} found for action id ${args.actionId}`);
+      },
+    }),
+    Output.SuccessOutputFile,
+    Output.SuccessOutputStdout,
   ];
 
   async runResult() {
@@ -92,8 +108,6 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       env: 'HIVE_TOKEN',
     });
 
-    const actionId: string = args.actionId;
-
     const sdlType = this.ensure({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -108,7 +122,7 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       .request({
         operation: SchemaVersionForActionIdQuery,
         variables: {
-          actionId,
+          actionId: args.actionId,
           includeSDL: sdlType === 'sdl',
           includeSupergraph: sdlType === 'supergraph',
         },
@@ -116,25 +130,22 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       .then(_ => _.schemaVersionForActionId);
 
     if (result == null) {
-      this.logFailure(`No schema found for action id ${actionId}`);
       return this.failure({
-        type: 'CLISchemaFetchMissingSchema',
+        type: 'FailureSchemaFetchMissingSchema',
       });
     }
 
     if (result.valid === false) {
-      this.logFailure(`Schema is invalid for action id ${actionId}`);
       return this.failure({
-        type: 'CLISchemaFetchInvalidSchema',
+        type: 'FailureSchemaFetchInvalidSchema',
       });
     }
 
     const schema = result.sdl ?? result.supergraph;
 
     if (schema == null) {
-      this.logFailure(`No ${sdlType} found for action id ${actionId}`);
       return this.failure({
-        type: 'CLISchemaFetchMissingSDLType',
+        type: 'FailureSchemaFetchMissingSDLType',
       });
     }
 
@@ -154,10 +165,10 @@ export default class SchemaFetch extends Command<typeof SchemaFetch> {
       return this.success({
         type: 'SuccessOutputFile',
         path: filepath,
+        bytes: schema.length,
       });
     }
 
-    this.log(schema);
     return this.success({
       type: 'SuccessOutputStdout',
       content: schema,

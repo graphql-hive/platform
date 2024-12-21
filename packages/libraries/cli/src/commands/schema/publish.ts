@@ -2,16 +2,17 @@ import { existsSync, readFileSync } from 'fs';
 import { GraphQLError, print } from 'graphql';
 import { transformCommentsToDescriptions } from '@graphql-tools/utils';
 import { Args, Errors, Flags } from '@oclif/core';
-import Command from '../../base-command';
+import Command, { InferInput } from '../../base-command';
 import { Fragments } from '../../fragments/__';
 import { DocumentType, graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
 import { loadSchema, minifySchema } from '../../helpers/schema';
+import { Tex } from '../../helpers/tex/__';
 import { tb } from '../../helpers/typebox/__';
 import { invariant } from '../../helpers/validation';
-import { SchemaOutput } from '../../schema-output/__';
+import { Output } from '../../output/__';
 
 const schemaPublishMutation = graphql(/* GraphQL */ `
   mutation schemaPublish($input: SchemaPublishInput!, $usesGitHubApp: Boolean!) {
@@ -162,31 +163,56 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }),
   };
   static output = [
-    SchemaOutput.success('SchemaPublishSuccess', {
-      schema: {
-        changes: tb.Array(SchemaOutput.SchemaChange),
+    Output.success('SuccessSchemaPublish', {
+      data: {
+        changes: tb.Array(Output.SchemaChange),
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
+      text: (_, data) => {
+        let o = '';
+        if (data.url) {
+          o += Tex.info(`Available at ${data.url}\n`);
+        }
+        return o;
+      },
     }),
-    SchemaOutput.success('SchemaPublishError', {
-      schema: {
-        changes: tb.Array(SchemaOutput.SchemaChange),
-        errors: tb.Array(SchemaOutput.SchemaError),
+    Output.success('FailureSchemaPublish', {
+      data: {
+        changes: tb.Array(Output.SchemaChange),
+        errors: tb.Array(Output.SchemaError),
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
-    }),
-    SchemaOutput.success('GitHubSchemaPublishSuccess', {
-      schema: {
-        message: tb.String(),
+      text: ({ flags }: InferInput<typeof SchemaPublish>, data) => {
+        let o = '';
+        if (!flags.force) {
+          o += Tex.failure('Failed to publish schema\n');
+        } else {
+          o += Tex.success('Schema published (forced)\n');
+        }
+        if (data.url) {
+          o += Tex.info(`Available at ${data.url}\n`);
+        }
+        return o;
       },
     }),
-    SchemaOutput.failure('GitHubSchemaPublishError', {
-      schema: {
+    Output.success('SuccessSchemaPublishGitHub', {
+      data: {
         message: tb.String(),
       },
+      text: (_, data) => {
+        return Tex.success(data.message);
+      },
     }),
-    SchemaOutput.failure('CLIInvalidGraphQLSchema', {
-      schema: {
+    Output.failure('FailureSchemaPublishGitHub', {
+      data: {
+        message: tb.String(),
+      },
+      text: (_, data) => {
+        return Tex.failure(data.message);
+      },
+    }),
+    Output.failure('FailureSchemaPublishInvalidGraphQLSchema', {
+      data: {
         message: tb.String(),
         locations: tb.Array(
           tb.Object({
@@ -252,7 +278,6 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     const service = flags.service;
     const url = flags.url;
     const file = args.file;
-    const force = flags.force;
     const experimental_acceptBreakingChanges = flags.experimental_acceptBreakingChanges;
     const metadata = this.resolveMetadata(flags.metadata);
     const usesGitHubApp = flags.github;
@@ -322,7 +347,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
             : '';
         this.logFailure(`The SDL is not valid${locationString}:\n ${err.message}`);
         return this.failure({
-          type: 'CLIInvalidGraphQLSchema',
+          type: 'FailureSchemaPublishInvalidGraphQLSchema',
           message: err.message,
           locations,
         });
@@ -343,7 +368,7 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
               author,
               commit,
               sdl,
-              force,
+              force: flags.force,
               experimental_acceptBreakingChanges: experimental_acceptBreakingChanges === true,
               metadata,
               gitHub,
@@ -382,12 +407,8 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
         this.logSuccess('Schema published');
       }
 
-      if (result.linkToWebsite) {
-        this.logInfo(`Available at ${result.linkToWebsite}`);
-      }
-
       return this.success({
-        type: 'SchemaPublishSuccess',
+        type: 'SuccessSchemaPublish',
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         url: result.linkToWebsite ?? null,
       });
@@ -412,19 +433,12 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
       }
       this.log('');
 
-      if (!force) {
-        this.logFailure('Failed to publish schema');
-        this.exit(1);
-      } else {
-        this.logSuccess('Schema published (forced)');
-      }
-
-      if (result.linkToWebsite) {
-        this.logInfo(`Available at ${result.linkToWebsite}`);
+      if (!flags.force) {
+        process.exitCode = 1;
       }
 
       return this.success({
-        type: 'SchemaPublishError',
+        type: 'FailureSchemaPublish',
         changes: Fragments.SchemaChangeConnection.toSchemaOutput(result.changes),
         errors: Fragments.SchemaErrorConnection.toSchemaOutput(result.errors),
         url: result.linkToWebsite ?? null,
@@ -432,20 +446,17 @@ export default class SchemaPublish extends Command<typeof SchemaPublish> {
     }
 
     if (result.__typename === 'GitHubSchemaPublishSuccess') {
-      this.logSuccess(result.message);
       return this.success({
-        type: 'GitHubSchemaPublishSuccess',
+        type: 'SuccessSchemaPublishGitHub',
         message: result.message,
       });
     }
 
     if (result.__typename === 'GitHubSchemaPublishError') {
-      // todo: Why property check? Types suggest it is always there.
-      const message = 'message' in result ? result.message : 'Unknown error';
-      this.error(message);
       return this.failure({
-        type: 'GitHubSchemaPublishError',
-        message,
+        type: 'FailureSchemaPublishGitHub',
+        // todo: Why property check? Types suggest it is always there.
+        message: 'message' in result ? result.message : 'Unknown error',
       });
     }
 

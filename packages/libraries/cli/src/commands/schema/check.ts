@@ -6,8 +6,9 @@ import { graphqlEndpoint } from '../../helpers/config';
 import { casesExhausted } from '../../helpers/general';
 import { gitInfo } from '../../helpers/git';
 import { loadSchema, minifySchema } from '../../helpers/schema';
+import { Tex } from '../../helpers/tex/__';
 import { tb } from '../../helpers/typebox/__';
-import { SchemaOutput } from '../../schema-output/__';
+import { Output } from '../../output/__';
 
 const schemaCheckMutation = graphql(/* GraphQL */ `
   mutation schemaCheck($input: SchemaCheckInput!, $usesGitHubApp: Boolean!) {
@@ -144,29 +145,35 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }),
   };
   static output = [
-    SchemaOutput.success('SuccessSchemaCheck', {
-      schema: {
-        changes: tb.Array(SchemaOutput.SchemaChange),
-        warnings: tb.Array(SchemaOutput.SchemaWarning),
+    Output.success('SuccessSchemaCheck', {
+      data: {
+        changes: tb.Array(Output.SchemaChange),
+        warnings: tb.Array(Output.SchemaWarning),
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
     }),
-    SchemaOutput.success('SuccessSchemaCheckGitHub', {
-      schema: {
+    Output.success('SuccessSchemaCheckGitHub', {
+      data: {
         message: tb.String(),
       },
+      text: (_, output) => {
+        return Tex.success(output.message);
+      },
     }),
-    SchemaOutput.success('FailureSchemaCheck', {
-      schema: {
-        changes: tb.Array(SchemaOutput.SchemaChange),
-        warnings: tb.Array(SchemaOutput.SchemaWarning),
+    Output.success('FailureSchemaCheck', {
+      data: {
+        changes: tb.Array(Output.SchemaChange),
+        warnings: tb.Array(Output.SchemaWarning),
         url: tb.Nullable(tb.String({ format: 'uri' })),
       },
     }),
 
-    SchemaOutput.failure('FailureSchemaCheckGitHub', {
-      schema: {
+    Output.failure('FailureSchemaCheckGitHub', {
+      data: {
         message: tb.String(),
+      },
+      text: (_, data) => {
+        return Tex.failure(data.message);
       },
     }),
   ];
@@ -321,7 +328,6 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }
 
     if (result.__typename === 'GitHubSchemaCheckSuccess') {
-      this.logSuccess(result.message);
       return this.success({
         type: 'SuccessSchemaCheckGitHub',
         message: result.message,
@@ -329,7 +335,6 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
     }
 
     if (result.__typename === 'GitHubSchemaCheckError') {
-      this.logFailure(result.message);
       return this.failure({
         type: 'FailureSchemaCheckGitHub',
         message: result.message,

@@ -2,20 +2,29 @@ import { tb } from '../helpers/typebox/__';
 import { FailureBase } from './failure';
 import { SuccessBase } from './success';
 
-export interface OutputDataType<$Schema extends tb.TObject = tb.TObject> {
+export interface DataType<$Schema extends tb.TObject = tb.TObject> {
+  /**
+   * The schema for this data type.
+   */
   schema: $Schema;
-  render?: (input: { flags: any; args: any }, output: any) => string;
+  /**
+   * An optional function that returns a string to be displayed to the user
+   * whenever this data type is output by a command.
+   *
+   * If user invoked the CLI with --json, then the output from this function is ignored.
+   */
+  text?: (input: { flags: any; args: any }, output: any) => string;
 }
 
 export const success: Factory<typeof SuccessBase> = (typeName, config) => {
   return {
-    render: config.render,
+    text: config.text,
     schema: tb.Composite([
       SuccessBase,
       tb.Object({
         data: tb.Composite([
           tb.Object({ type: tb.Literal(typeName, { default: typeName }) }),
-          tb.Object(config.schema),
+          tb.Object(config.data),
         ]),
       }),
     ]),
@@ -24,13 +33,13 @@ export const success: Factory<typeof SuccessBase> = (typeName, config) => {
 
 export const failure: Factory<typeof FailureBase> = (typeName, config) => {
   return {
-    render: config.render,
+    text: config.text,
     schema: tb.Composite([
       FailureBase,
       tb.Object({
         data: tb.Composite([
           tb.Object({ type: tb.Literal(typeName, { default: typeName }) }),
-          tb.Object(config.schema),
+          tb.Object(config.data),
         ]),
       }),
     ]),
@@ -43,8 +52,8 @@ export type Factory<$Base extends tb.TObject> = <
 >(
   typeName: $TypeName,
   config: {
-    schema: $DataSchema;
-    render?: (
+    data: $DataSchema;
+    text?: (
       input: { flags: any; args: any },
       // @ts-expect-error fixme
       output: tb.Static<
@@ -61,7 +70,7 @@ export type Factory<$Base extends tb.TObject> = <
       >['data'],
     ) => string;
   },
-) => OutputDataType<
+) => DataType<
   tb.TComposite<
     [
       $Base,

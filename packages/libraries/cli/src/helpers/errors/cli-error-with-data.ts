@@ -1,18 +1,18 @@
 import { Errors } from '@oclif/core';
-import { SchemaOutput } from '../../schema-output/__';
+import { Output } from '../../output/__';
 
 export class CLIErrorWithData extends Errors.CLIError {
-  public envelope: SchemaOutput.FailureGeneric;
+  public envelope: Output.FailureGeneric;
   constructor(args: {
     message: string;
     exitCode?: number;
     code?: string;
     ref?: string | undefined;
     suggestions?: string[];
-    data?: Partial<SchemaOutput.FailureGeneric>['data'];
+    data?: Partial<Output.FailureGeneric>['data'];
   }) {
     const envelope = {
-      ...SchemaOutput.failureDefaults,
+      ...Output.failureDefaults,
       data: args.data ?? {},
     };
     super(args.message, {

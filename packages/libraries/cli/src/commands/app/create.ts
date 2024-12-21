@@ -4,7 +4,7 @@ import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { SchemaHive } from '../../helpers/schema';
 import { tb } from '../../helpers/typebox/__';
-import { SchemaOutput } from '../../schema-output/__';
+import { Output } from '../../output/__';
 
 export default class AppCreate extends Command<typeof AppCreate> {
   static description = 'create an app deployment';
@@ -33,26 +33,26 @@ export default class AppCreate extends Command<typeof AppCreate> {
     }),
   };
   static output = [
-    SchemaOutput.success('SuccessSkipAppCreate', {
-      schema: {
-        status: SchemaOutput.AppDeploymentStatus,
+    Output.success('SuccessSkipAppCreate', {
+      data: {
+        status: Output.AppDeploymentStatus,
       },
-      render(input: InferInput<typeof AppCreate>, output) {
+      text(input: InferInput<typeof AppCreate>, output) {
         return `App deployment "${input.flags.name}@${input.flags.version}" is "${output.status}". Skip uploading documents...`;
       },
     }),
-    SchemaOutput.success('SuccessAppCreate', {
-      schema: {
+    Output.success('SuccessAppCreate', {
+      data: {
         id: tb.StringNonEmpty,
       },
     }),
-    SchemaOutput.failure('FailureAppCreate', {
-      schema: {
+    Output.failure('FailureAppCreate', {
+      data: {
         message: tb.String(),
       },
     }),
-    SchemaOutput.failure('FailureInvalidManifestModel', {
-      schema: {
+    Output.failure('FailureInvalidManifestModel', {
+      data: {
         errors: tb.Array(tb.Value.MaterializedValueErrorT),
       },
     }),

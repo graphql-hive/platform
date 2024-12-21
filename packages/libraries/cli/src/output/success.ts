@@ -1,7 +1,7 @@
 import { OptionalizePropertyUnsafe, Simplify } from '../helpers/general';
 import { tb } from '../helpers/typebox/__';
 import type { FailureBase } from './failure';
-import { OutputDataType } from './output-data-type';
+import { DataType } from './output-data-type';
 
 export const SuccessBase = tb.Object({
   type: tb.Literal('success', { default: 'success' }),
@@ -26,15 +26,15 @@ export const isSuccess = <$Output extends FailureBase | SuccessBase>(
 ): schema is Extract<$Output, { type: 'success' }> =>
   schema.type === SuccessBase.properties.type.const;
 
-export type InferSuccessData<$DataType extends OutputDataType> = Simplify<
+export type InferSuccessData<$DataType extends DataType> = Simplify<
   InferSuccess<$DataType>['data']
 >;
 
-export type InferSuccessEnvelopeInit<$DataType extends OutputDataType> = Simplify<
+export type InferSuccessEnvelopeInit<$DataType extends DataType> = Simplify<
   OptionalizePropertyUnsafe<Omit<InferSuccess<$DataType>, 'type'>, 'data'>
 >;
 
-export type InferSuccess<$DataType extends OutputDataType> = Extract<
+export type InferSuccess<$DataType extends DataType> = Extract<
   tb.Static<$DataType['schema']>,
   { type: 'success' }
 >;

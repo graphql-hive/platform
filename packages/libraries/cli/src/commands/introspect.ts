@@ -4,7 +4,7 @@ import { buildSchema, GraphQLError, introspectionFromSchema } from 'graphql';
 import { Args, Flags } from '@oclif/core';
 import Command from '../base-command';
 import { loadSchema } from '../helpers/schema';
-import { SchemaOutput } from '../schema-output/__';
+import { Output } from '../output/__';
 
 export default class Introspect extends Command<typeof Introspect> {
   static description = 'introspects a GraphQL Schema';
@@ -27,7 +27,7 @@ export default class Introspect extends Command<typeof Introspect> {
       hidden: false,
     }),
   };
-  static output = [SchemaOutput.SuccessOutputFile, SchemaOutput.SuccessOutputStdout];
+  static output = [Output.SuccessOutputFile, Output.SuccessOutputStdout];
 
   async runResult() {
     const { flags, args } = await this.parse(Introspect);
@@ -63,7 +63,6 @@ export default class Introspect extends Command<typeof Introspect> {
     }
 
     if (!flags.write) {
-      this.log(schema);
       return this.success({
         type: 'SuccessOutputStdout',
         content: schema,
@@ -99,6 +98,7 @@ export default class Introspect extends Command<typeof Introspect> {
     return this.success({
       type: 'SuccessOutputFile',
       path: filepath,
+      bytes: schema.length,
     });
   }
 }

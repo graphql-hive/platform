@@ -1,6 +1,6 @@
 import { OptionalizePropertyUnsafe, Simplify } from '../helpers/general';
 import { tb } from '../helpers/typebox/__';
-import { OutputDataType } from './output-data-type';
+import { DataType } from './output-data-type';
 import type { SuccessBase } from './success';
 
 export const FailureBase = tb.Object({
@@ -30,15 +30,15 @@ export const failureDefaults: tb.Static<typeof FailureGeneric> = {
   data: {},
 };
 
-export type InferFailureData<$DataType extends OutputDataType> = Simplify<
+export type InferFailureData<$DataType extends DataType> = Simplify<
   InferFailure<$DataType>['data']
 >;
 
-export type InferFailureEnvelopeInit<$DataType extends OutputDataType> = Simplify<
+export type InferFailureEnvelopeInit<$DataType extends DataType> = Simplify<
   OptionalizePropertyUnsafe<Omit<InferFailure<$DataType>, 'type'>, 'suggestions' | 'reference'>
 >;
 
-export type InferFailure<$DataType extends OutputDataType> = Extract<
+export type InferFailure<$DataType extends DataType> = Extract<
   tb.Static<$DataType['schema']>,
   { type: 'failure' }
 >;

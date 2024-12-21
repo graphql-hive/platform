@@ -3,7 +3,7 @@ import Command from '../../base-command';
 import { graphql } from '../../gql';
 import { graphqlEndpoint } from '../../helpers/config';
 import { tb } from '../../helpers/typebox/__';
-import { SchemaOutput } from '../../schema-output/__';
+import { Output } from '../../output/__';
 
 export default class AppPublish extends Command<typeof AppPublish> {
   static description = 'publish an app deployment';
@@ -24,20 +24,20 @@ export default class AppPublish extends Command<typeof AppPublish> {
     }),
   };
   static output = [
-    SchemaOutput.success('SuccessSkipAppPublish', {
-      schema: {
+    Output.success('SuccessSkipAppPublish', {
+      data: {
         name: tb.StringNonEmpty,
         version: tb.StringNonEmpty,
       },
     }),
-    SchemaOutput.success('SuccessAppPublish', {
-      schema: {
+    Output.success('SuccessAppPublish', {
+      data: {
         name: tb.StringNonEmpty,
         version: tb.StringNonEmpty,
       },
     }),
-    SchemaOutput.failure('FailureAppPublish', {
-      schema: {
+    Output.failure('FailureAppPublish', {
+      data: {
         message: tb.String(),
       },
     }),

@@ -5,7 +5,7 @@ import { FragmentType, graphql, useFragment } from '../gql';
 import { CriticalityLevel } from '../gql/graphql';
 import { Tex } from '../helpers/tex/__';
 import { indent } from '../helpers/tex/tex';
-import * as SchemaOutput from '../schema-output/data';
+import * as SchemaOutput from '../output/data';
 
 const fragment = graphql(`
   fragment RenderChanges_schemaChanges on SchemaChangeConnection {

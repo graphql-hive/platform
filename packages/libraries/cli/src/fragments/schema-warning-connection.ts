@@ -1,7 +1,7 @@
 import BaseCommand from '../base-command';
 import { SchemaHive } from '../helpers/schema';
 import { Tex } from '../helpers/tex/__';
-import { SchemaOutput } from '../schema-output/__';
+import { Output } from '../output/__';
 
 export namespace SchemaWarningConnection {
   export function log(this: BaseCommand<any>, warnings: SchemaHive.SchemaWarningConnection) {
@@ -20,7 +20,7 @@ export namespace SchemaWarningConnection {
 
   export const toSchemaOutput = (
     warnings: undefined | null | SchemaHive.SchemaWarningConnection,
-  ): SchemaOutput.SchemaWarning[] => {
+  ): Output.SchemaWarning[] => {
     return (
       warnings?.nodes.map(_ => ({
         message: _.message,
