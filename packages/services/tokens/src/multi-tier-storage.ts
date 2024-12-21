@@ -127,6 +127,8 @@ export async function createStorage(
             action: 'set',
           });
         });
+
+        return cacheEntry;
       } catch (error) {
         // If the DB is down, we log the error, and we throw exception.
         // This will cause the cache to return stale data.
@@ -196,37 +198,31 @@ export async function createStorage(
       const tokenLogger = serverLogger.child({
         maskedToken,
       })
-      tokenLogger.debug('Reading token', maskedToken);
       const data = await cache.fetch(hashedToken, {
         context,
         status,
       });
 
       if (status.fetch) {
-        tokenLogger.debug('Status %s', status.fetch);
         recordCacheRead(status.fetch);
       } else {
         tokenLogger.warn('Status of the fetch is missing');
       }
 
       if (status.fetchError) {
-        tokenLogger.error('Fetch error in the In-Memory-Cache (error=%s)', status.fetchError)
-        tokenLogger.error(status.fetchError);
+        tokenLogger.error('Fetch error in the In-Memory-Cache (error=%s)', status.fetchError);
       }
 
       if (!data) {
-        tokenLogger.debug('No data');
         // Looked up in all layers, and the token is not found
         return null;
       }
 
       if (data === 'not-found') {
-        tokenLogger.debug('Not found');
         return null;
       }
 
       touch.schedule(hashedToken);
-      tokenLogger.debug('Found');
       return data;
     },
     writeToken: tracker.wrap(async item => {
