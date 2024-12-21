@@ -163,6 +163,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         } else {
           s.line(Output.schemaChangesText(data.changes));
           s.line();
+          s.line();
         }
         if (data.warnings.length) {
           s.line(Output.schemaWarningsText(data.warnings));
@@ -194,6 +195,7 @@ export default class SchemaCheck extends Command<typeof SchemaCheck> {
         s.line();
         if (data.warnings.length) {
           s.line(Output.schemaWarningsText(data.warnings));
+          s.line();
           s.line();
         }
         if (data.changes.length) {

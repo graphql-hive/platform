@@ -39,13 +39,11 @@ export const schemaChangesText = (data: SchemaChanges): string => {
     return schemaChanges
       .map(change => {
         const parts = [
-          Tex.indent,
           criticalityMap[
             change.isSafeBasedOnUsage ? schemaChangeCriticalityLevel.Safe : change.criticality
           ],
           Tex.bolderize(change.message),
         ];
-
         if (change.isSafeBasedOnUsage) {
           parts.push(Tex.colors.green('(Safe based on usage ✓)'));
         }
@@ -55,21 +53,24 @@ export const schemaChangesText = (data: SchemaChanges): string => {
           );
         }
 
-        return parts.join(Tex.space);
+        return Tex.indent + parts.join(Tex.space);
       })
       .join(Tex.newline);
   };
 
   s.info(`Detected ${data.length} change${Tex.plural(data)}`);
+  s.line();
 
   if (breakingChanges.length) {
     s.indent(`Breaking changes:`);
     s.line(writeChanges(breakingChanges));
+    s.line();
   }
 
   if (safeChanges.length) {
     s.indent(`Safe changes:`);
     s.line(writeChanges(safeChanges));
+    s.line();
   }
 
   return s.state.value.trim();

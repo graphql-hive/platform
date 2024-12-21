@@ -100,10 +100,9 @@ export default abstract class BaseCommand<$Command extends typeof Command> exten
               texBuilder.state.value
             : // They returned a Tex.Builder instance.
               dataTypeTextInit.state.value;
-      // We trim trailing whitespace because this.log() will add a newline at the end.
-      // We don't trim leading whitespace because this function may also be used to output files to stdout.
-      // Unlike trailing whitespace, leading whitespace is expected to be preserved in terminal output.
-      this.log(Tex.trimEnd(dataTypeText));
+
+      // `this.log` adds a newline, so remove one from text to avoid undesired extra trailing space.
+      this.log(dataTypeText.replace(/\n$/, ''));
     }
 
     /**

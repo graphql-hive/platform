@@ -5,7 +5,7 @@ export { colors };
 
 export const space = ' ';
 
-export const indent = space.repeat(2);
+export const indent = space.repeat(3);
 
 export const newline = '\n';
 

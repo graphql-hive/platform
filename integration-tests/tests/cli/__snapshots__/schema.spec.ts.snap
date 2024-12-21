@@ -17,12 +17,14 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 4 changes
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
-  Safe changes:
+
+   Safe changes:
    - Enum value VIEWER was added to enum UserRole
    - Field address was added to object type User
    - Field User.role changed type from UserRole to UserRole!
@@ -40,10 +42,11 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 1 change
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
 
 View full report:
@@ -55,8 +58,10 @@ exports[`projectType: 'FEDERATION' | model: 'legacy' | json: false > can publish
 
 stdout--------------------------------------------:
 ℹ Detected 1 change
-  Safe changes:
+
+   Safe changes:
    - Field nickname was added to object type User
+
 
 View full report:
 http://__PATH__
@@ -114,9 +119,9 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 3 errors
 
-  - Unknown type: User.
-  - Unknown type User.
-  - Type Query must define one or more fields.
+   - Unknown type: User.
+   - Unknown type User.
+   - Type Query must define one or more fields.
 
 View full report:
 http://__PATH__
@@ -413,12 +418,14 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 4 changes
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
-  Safe changes:
+
+   Safe changes:
    - Enum value VIEWER was added to enum UserRole
    - Field address was added to object type User
    - Field User.role changed type from UserRole to UserRole!
@@ -436,10 +443,11 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 1 change
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
 
 View full report:
@@ -451,8 +459,10 @@ exports[`projectType: 'FEDERATION' | model: 'modern' | json: false > can publish
 
 stdout--------------------------------------------:
 ℹ Detected 1 change
-  Safe changes:
+
+   Safe changes:
    - Field nickname was added to object type User
+
 
 View full report:
 http://__PATH__
@@ -510,7 +520,7 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - [test] Unknown type User
+   - [test] Unknown type User
 
 View full report:
 http://__PATH__
@@ -795,12 +805,14 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 4 changes
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
-  Safe changes:
+
+   Safe changes:
    - Enum value VIEWER was added to enum UserRole
    - Field address was added to object type User
    - Field User.role changed type from UserRole to UserRole!
@@ -818,10 +830,11 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 1 change
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
 
 View full report:
@@ -833,8 +846,10 @@ exports[`projectType: 'SINGLE' | model: 'legacy' | json: false > can publish and
 
 stdout--------------------------------------------:
 ℹ Detected 1 change
-  Safe changes:
+
+   Safe changes:
    - Field nickname was added to object type User
+
 
 View full report:
 http://__PATH__
@@ -877,7 +892,7 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Unknown type User.
+   - Unknown type User.
 
 View full report:
 http://__PATH__
@@ -1131,12 +1146,14 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 4 changes
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
-  Safe changes:
+
+   Safe changes:
    - Enum value VIEWER was added to enum UserRole
    - Field address was added to object type User
    - Field User.role changed type from UserRole to UserRole!
@@ -1154,10 +1171,11 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 1 change
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
 
 View full report:
@@ -1169,8 +1187,10 @@ exports[`projectType: 'SINGLE' | model: 'modern' | json: false > can publish and
 
 stdout--------------------------------------------:
 ℹ Detected 1 change
-  Safe changes:
+
+   Safe changes:
    - Field nickname was added to object type User
+
 
 View full report:
 http://__PATH__
@@ -1213,7 +1233,7 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Unknown type User.
+   - Unknown type User.
 
 View full report:
 http://__PATH__
@@ -1467,12 +1487,14 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 4 changes
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
-  Safe changes:
+
+   Safe changes:
    - Enum value VIEWER was added to enum UserRole
    - Field address was added to object type User
    - Field User.role changed type from UserRole to UserRole!
@@ -1490,10 +1512,11 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 1 change
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
 
 View full report:
@@ -1505,8 +1528,10 @@ exports[`projectType: 'STITCHING' | model: 'legacy' | json: false > can publish 
 
 stdout--------------------------------------------:
 ℹ Detected 1 change
-  Safe changes:
+
+   Safe changes:
    - Field nickname was added to object type User
+
 
 View full report:
 http://__PATH__
@@ -1564,9 +1589,9 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 3 errors
 
-  - Unknown type User.
-  - Unknown type: User.
-  - Error: Unknown type: User.
+   - Unknown type User.
+   - Unknown type: User.
+   - Error: Unknown type: User.
 
 View full report:
 http://__PATH__
@@ -1863,12 +1888,14 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 4 changes
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
-  Safe changes:
+
+   Safe changes:
    - Enum value VIEWER was added to enum UserRole
    - Field address was added to object type User
    - Field User.role changed type from UserRole to UserRole!
@@ -1886,10 +1913,11 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 1 error
 
-  - Field email was removed from object type User
+   - Field email was removed from object type User
 
 ℹ Detected 1 change
-  Breaking changes:
+
+   Breaking changes:
    - Field email was removed from object type User
 
 View full report:
@@ -1901,8 +1929,10 @@ exports[`projectType: 'STITCHING' | model: 'modern' | json: false > can publish 
 
 stdout--------------------------------------------:
 ℹ Detected 1 change
-  Safe changes:
+
+   Safe changes:
    - Field nickname was added to object type User
+
 
 View full report:
 http://__PATH__
@@ -1960,9 +1990,9 @@ __NONE__
 stdout--------------------------------------------:
 ✖ Detected 3 errors
 
-  - Unknown type User.
-  - Unknown type: User.
-  - Unknown type: User.
+   - Unknown type User.
+   - Unknown type: User.
+   - Unknown type: User.
 
 View full report:
 http://__PATH__
