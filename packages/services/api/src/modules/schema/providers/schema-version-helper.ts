@@ -161,6 +161,10 @@ export class SchemaVersionHelper {
       'hive.project.id': input.projectId,
       'hive.version.id': input.id,
     }),
+    resultAttributes: changes => ({
+      'hive.breaking-changes.count': changes?.breaking?.length,
+      'hive.safe-changes.count': changes?.safe?.length,
+    }),
   })
   @cache<SchemaVersion>(version => version.id)
   private async getSchemaChanges(schemaVersion: SchemaVersion) {
@@ -299,6 +303,15 @@ export class SchemaVersionHelper {
     return !composableVersion;
   }
 
+  @traceFn('SchemaVersionHelper.getServiceSdlForPreviousVersionService', {
+    initAttributes: (schemaVersion, serviceName) => ({
+      'hive.organization.id': schemaVersion.organizationId,
+      'hive.project.id': schemaVersion.projectId,
+      'hive.target.id': schemaVersion.targetId,
+      'hive.version.id': schemaVersion.id,
+      'hive.service.name': serviceName,
+    }),
+  })
   async getServiceSdlForPreviousVersionService(schemaVersion: SchemaVersion, serviceName: string) {
     const previousVersion = await this.getPreviousDiffableSchemaVersion(schemaVersion);
     if (!previousVersion) {
