@@ -34,7 +34,6 @@ export function deployCloudFlareSecurityTransform(options: {
   )} } and not http.host in { ${toExpressionList(options.ignoredHosts)} }`;
 
   // TODO: When Preflight PR is merged, we'll need to change this to build this host in a better way.
-  const labHost = `lab-worker.${options.environment.rootDns}`;
   const monacoCdnDynamicBasePath: `https://${string}/` = `https://cdn.jsdelivr.net/npm/monaco-editor@${monacoEditorVersion}/`;
   const monacoCdnStaticBasePath: `https://${string}/` = `https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/`;
   const crispHost = 'client.crisp.chat';
@@ -44,7 +43,6 @@ export function deployCloudFlareSecurityTransform(options: {
     crispHost,
     stripeHost,
     gtmHost,
-    labHost,
     'settings.crisp.chat',
     '*.ingest.sentry.io',
     'wss://client.relay.crisp.chat',
@@ -57,7 +55,6 @@ export function deployCloudFlareSecurityTransform(options: {
   const contentSecurityPolicy = `
   default-src 'self';
   frame-src ${stripeHost} https://game.crisp.chat;
-  worker-src 'self' blob: ${labHost};
   style-src 'self' 'unsafe-inline' ${crispHost} fonts.googleapis.com rsms.me ${monacoCdnDynamicBasePath} ${monacoCdnStaticBasePath};
   script-src 'self' 'unsafe-eval' 'unsafe-inline' {DYNAMIC_HOST_PLACEHOLDER} ${monacoCdnDynamicBasePath} ${monacoCdnStaticBasePath} ${cspHosts};
   connect-src 'self' * {DYNAMIC_HOST_PLACEHOLDER} ${cspHosts}; 

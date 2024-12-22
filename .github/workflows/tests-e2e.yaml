@@ -27,7 +27,7 @@ jobs:
       - name: setup environment
         uses: ./.github/actions/setup
         with:
-          codegen: false
+          codegen: true
           actor: test-e2e
           cacheTurbo: false
 
@@ -43,7 +43,7 @@ jobs:
         timeout-minutes: 10
         run: |
           docker compose \
-            --env-file docker/.end2end.env \
+            --env-file integration-tests/.env \
             -f docker/docker-compose.community.yml \
             -f docker/docker-compose.end2end.yml \
             up -d --wait
@@ -65,7 +65,7 @@ jobs:
           docker --version
           docker ps --format json | jq .
           docker compose \
-            --env-file docker/.end2end.env \
+            --env-file integration-tests/.env \
             -f docker/docker-compose.community.yml \
             -f docker/docker-compose.end2end.yml \
             logs
