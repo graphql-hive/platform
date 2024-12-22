@@ -363,8 +363,7 @@
     },
     {
       "datasource": {
-        "type": "grafana-azure-monitor-datasource",
-        "uid": "u65mwBI4z"
+        "uid": "$Subscription"
       },
       "fieldConfig": {
         "defaults": {
@@ -460,8 +459,7 @@
             "timeGrain": "auto"
           },
           "datasource": {
-            "type": "grafana-azure-monitor-datasource",
-            "uid": "u65mwBI4z"
+            "uid": "$Subscription"
           },
           "queryType": "Azure Monitor",
           "refId": "A",
@@ -485,8 +483,7 @@
             "timeGrain": "auto"
           },
           "datasource": {
-            "type": "grafana-azure-monitor-datasource",
-            "uid": "u65mwBI4z"
+            "uid": "$Subscription"
           },
           "hide": false,
           "queryType": "Azure Monitor",
@@ -513,8 +510,7 @@
             "timeGrain": "auto"
           },
           "datasource": {
-            "type": "grafana-azure-monitor-datasource",
-            "uid": "u65mwBI4z"
+            "uid": "$Subscription"
           },
           "hide": false,
           "queryType": "Azure Monitor",
