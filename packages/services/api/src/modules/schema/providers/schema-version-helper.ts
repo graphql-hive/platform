@@ -2,6 +2,7 @@ import type { SchemaVersionMapper as SchemaVersion } from '../module.graphql.map
 import { print } from 'graphql';
 import { Injectable, Scope } from 'graphql-modules';
 import { CriticalityLevel } from '@graphql-inspector/core';
+import { traceFn } from '@hive/service-common';
 import type { SchemaChangeType } from '@hive/storage';
 import {
   containsSupergraphSpec,
@@ -38,6 +39,14 @@ export class SchemaVersionHelper {
     private logger: Logger,
   ) {}
 
+  @traceFn('SchemaVersionHelper.composeSchemaVersion', {
+    initAttributes: input => ({
+      'hive.target.id': input.targetId,
+      'hive.organization.id': input.organizationId,
+      'hive.project.id': input.projectId,
+      'hive.version.id': input.id,
+    }),
+  })
   @cache<SchemaVersion>(version => version.id)
   private async composeSchemaVersion(schemaVersion: SchemaVersion) {
     const [schemas, project, organization] = await Promise.all([
@@ -145,6 +154,14 @@ export class SchemaVersionHelper {
     return supergraphAst;
   }
 
+  @traceFn('SchemaVersionHelper.getSchemaChanges', {
+    initAttributes: input => ({
+      'hive.target.id': input.targetId,
+      'hive.organization.id': input.organizationId,
+      'hive.project.id': input.projectId,
+      'hive.version.id': input.id,
+    }),
+  })
   @cache<SchemaVersion>(version => version.id)
   private async getSchemaChanges(schemaVersion: SchemaVersion) {
     if (!schemaVersion.isComposable) {
