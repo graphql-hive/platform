@@ -10,6 +10,7 @@ export default withGuildDocs({
   eslint: {
     ignoreDuringBuilds: true,
   },
+
   redirects: async () => [
     {
       source: '/docs/get-started/organizations',

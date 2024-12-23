@@ -8,7 +8,7 @@ export function createConnectionString(config: {
 }) {
   // prettier-ignore
   const encodedUser = encodeURIComponent(config.user);
-  const encodedPassword = typeof config.password === 'string' ? `:${encodeURIComponent(config.password)}` : '';
+  const encodedPassword = encodeURIComponent(config.password);
   const encodedHost = encodeURIComponent(config.host);
   const encodedDb = encodeURIComponent(config.db);
 
