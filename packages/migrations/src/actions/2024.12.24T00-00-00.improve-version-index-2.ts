@@ -6,7 +6,7 @@ export default {
   run: ({ sql }) => [
     {
       name: `create "schema_version_changes"."schema_version_id" lookup index`,
-      query: sql`CREATE INDEX idx_schema_version_changes_id ON schema_version_changes(schema_version_id);`,
+      query: sql`CREATE INDEX CONCURRENTLY idx_schema_version_changes_id ON schema_version_changes(schema_version_id);`,
     },
   ],
 } satisfies MigrationExecutor;
