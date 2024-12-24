@@ -1,5 +1,14 @@
 # hive
 
+## 2.0.1
+
+### Patch Changes
+
+- [#6158](https://github.com/graphql-hive/console/pull/6158)
+  [`3093c9f`](https://github.com/graphql-hive/console/commit/3093c9fc23ab0a53926a187a91fe93ef6fee5be1)
+  Thanks [@dotansimha](https://github.com/dotansimha)! - Added missing index for postgres db field
+  "schema_version_changes.schema_version_id"
+
 ## 2.0.0
 
 ### Major Changes
