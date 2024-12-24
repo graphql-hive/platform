@@ -62,7 +62,6 @@ export function deployUsage({
       exposesMetrics: true,
       port: 4000,
       pdb: true,
-      memoryLimit: '1Gi',
       autoScaling: {
         cpu: {
           cpuAverageToScale: 60,
