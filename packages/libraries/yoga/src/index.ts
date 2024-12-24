@@ -1,10 +1,5 @@
 import { DocumentNode, ExecutionArgs, GraphQLError, GraphQLSchema, Kind, parse } from 'graphql';
-import {
-  _createLRUCache,
-  YogaServer,
-  type GraphQLParams,
-  type Plugin,
-} from 'graphql-yoga';
+import { _createLRUCache, YogaServer, type GraphQLParams, type Plugin } from 'graphql-yoga';
 import {
   autoDisposeSymbol,
   CollectUsageCallback,
@@ -180,25 +175,25 @@ export function useHive(clientOrOptions: HiveClient | HivePluginOptions): Plugin
       hive = isHiveClient(clientOrOptions)
         ? clientOrOptions
         : createHive({
-          ...clientOrOptions,
-          agent: clientOrOptions.agent
-            ? {
-              logger: {
-                // Hive Plugin should respect the given Yoga logger
-                error: (...args) => yoga.logger.error(...args),
-                info: (...args) => yoga.logger.info(...args),
-              },
-              ...clientOrOptions.agent,
-              __testing: {
-                // Hive Plugin should respect the given FetchAPI, note that this is not `yoga.fetch`
-                fetch(...args) {
-                  return yoga.fetchAPI.fetch(...args);
-                },
-                ...clientOrOptions.agent.__testing,
-              },
-            }
-            : undefined,
-        });
+            ...clientOrOptions,
+            agent: clientOrOptions.agent
+              ? {
+                  logger: {
+                    // Hive Plugin should respect the given Yoga logger
+                    error: (...args) => yoga.logger.error(...args),
+                    info: (...args) => yoga.logger.info(...args),
+                  },
+                  ...clientOrOptions.agent,
+                  __testing: {
+                    // Hive Plugin should respect the given FetchAPI, note that this is not `yoga.fetch`
+                    fetch(...args) {
+                      return yoga.fetchAPI.fetch(...args);
+                    },
+                    ...clientOrOptions.agent.__testing,
+                  },
+                }
+              : undefined,
+          });
       void hive.info();
       const { experimental__persistedDocuments } = hive;
       if (!experimental__persistedDocuments) {
