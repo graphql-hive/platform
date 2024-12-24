@@ -1183,8 +1183,8 @@ importers:
         specifier: 3.9.0
         version: 3.9.0(@envelop/core@5.0.2)(graphql-yoga@5.10.8(graphql@16.9.0))(graphql@16.9.0)
       '@graphql-yoga/redis-event-target':
-        specifier: 3.0.1
-        version: 3.0.1(ioredis@5.4.1)
+        specifier: 3.0.2
+        version: 3.0.2(ioredis@5.4.1)
       '@hive/api':
         specifier: workspace:*
         version: link:../api
@@ -4546,8 +4546,8 @@ packages:
       graphql: ^15.2.0 || ^16.0.0
       graphql-yoga: ^5.7.0
 
-  '@graphql-yoga/redis-event-target@3.0.1':
-    resolution: {integrity: sha512-AUQAQdJcJuRmvNdWh/v8ub8Pxq3J+++IOzAPHpzMOs81GEYQkatSrBiiESyiUdILazYoE4AYnKBVeKUVrH0Iyw==}
+  '@graphql-yoga/redis-event-target@3.0.2':
+    resolution: {integrity: sha512-IPvHcLjWwny9zBlcoNrukySl5MaePgvMiE90WVC/Rz77BFi9rTOFY3hXR4Dat36HLwKQy9sPYdcnaO/BSgZWkg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       ioredis: ^5.0.6
@@ -4563,10 +4563,6 @@ packages:
   '@graphql-yoga/typed-event-target@2.0.0':
     resolution: {integrity: sha512-oA/VGxGmaSDym1glOHrltw43qZsFwLLjBwvh57B79UKX/vo3+UQcRgOyE44c5RP7DCYjkrC2tuArZmb6jCzysw==}
     engines: {node: '>=16.0.0'}
-
-  '@graphql-yoga/typed-event-target@3.0.0':
-    resolution: {integrity: sha512-w+liuBySifrstuHbFrHoHAEyVnDFVib+073q8AeAJ/qqJfvFvAwUPLLtNohR/WDVRgSasfXtl3dcNuVJWN+rjg==}
-    engines: {node: '>=18.0.0'}
 
   '@graphql-yoga/typed-event-target@3.0.1':
     resolution: {integrity: sha512-SWVkyFivzlDqGTBrGTWTNg+aFGP/cIiotirUFnvwuUGt2gla6UJoKhII6aPoHNg3/5vpUAL1KzyoaXMK2PO0JA==}
@@ -19633,9 +19629,9 @@ snapshots:
     transitivePeerDependencies:
       - '@envelop/core'
 
-  '@graphql-yoga/redis-event-target@3.0.1(ioredis@5.4.1)':
+  '@graphql-yoga/redis-event-target@3.0.2(ioredis@5.4.1)':
     dependencies:
-      '@graphql-yoga/typed-event-target': 3.0.0
+      '@graphql-yoga/typed-event-target': 3.0.1
       '@whatwg-node/events': 0.1.1
       ioredis: 5.4.1
 
@@ -19654,11 +19650,6 @@ snapshots:
       tslib: 2.8.1
 
   '@graphql-yoga/typed-event-target@2.0.0':
-    dependencies:
-      '@repeaterjs/repeater': 3.0.6
-      tslib: 2.8.1
-
-  '@graphql-yoga/typed-event-target@3.0.0':
     dependencies:
       '@repeaterjs/repeater': 3.0.6
       tslib: 2.8.1
